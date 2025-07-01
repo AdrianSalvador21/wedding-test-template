@@ -3,9 +3,11 @@
 import React from 'react';
 import Image from 'next/image';
 import { Heart, Star, Home, Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useIsMobile } from '@/lib/motion';
 
 const About = () => {
+  const t = useTranslations('about');
   const { isMobile, isLoaded } = useIsMobile();
 
   // Versión estática para móvil
@@ -15,9 +17,9 @@ const About = () => {
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-16">
-            <h2 className="section-title mb-4">Nuestra Historia</h2>
+            <h2 className="section-title mb-4">{t('title')}</h2>
             <p className="section-subtitle">
-              Cómo comenzó todo y por qué decidimos pasar el resto de nuestras vidas juntos
+              {t('subtitle')}
             </p>
           </div>
 
@@ -55,21 +57,7 @@ const About = () => {
 
                 <div className="space-y-4 text-text leading-relaxed">
                   <p>
-                    Nos conocimos en una tarde de primavera de 2018, cuando el destino nos 
-                    cruzó en el camino de la manera más inesperada. Lo que comenzó como una 
-                    simple conversación, se convirtió en horas de risas, sueños compartidos 
-                    y la certeza de que habíamos encontrado algo especial.
-                  </p>
-
-                  <p>
-                    Desde ese primer encuentro, supimos que nuestras vidas estaban destinadas 
-                    a entrelazarse. Cada día juntos ha sido una nueva aventura, llena de 
-                    momentos que atesoramos en nuestros corazones.
-                  </p>
-
-                  <p className="font-semibold text-primary">
-                    Ahora, después de años de amor, crecimiento y complicidad, 
-                    estamos listos para dar el siguiente paso en nuestro viaje juntos.
+                    {t('story')}
                   </p>
                 </div>
               </div>
@@ -79,13 +67,13 @@ const About = () => {
                 <div className="text-center">
                   <div className="text-3xl font-heading font-bold text-primary mb-2">7</div>
                   <div className="text-sm font-semibold text-text uppercase tracking-wide">
-                    Años Juntos
+                    {t('stats.years')}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-heading font-bold text-primary mb-2">∞</div>
                   <div className="text-sm font-semibold text-text uppercase tracking-wide">
-                    Aventuras Vividas
+                    {t('stats.adventures')}
                   </div>
                 </div>
               </div>
@@ -93,8 +81,7 @@ const About = () => {
               {/* Cita especial */}
               <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 border border-border">
                 <blockquote className="text-lg font-body italic text-center text-primary">
-                  &ldquo;En cada amanecer contigo, descubro una nueva razón para amarte más. 
-                  Eres mi hogar, mi aventura y mi paz.&rdquo;
+                  {t('quote')}
                 </blockquote>
                 <div className="text-center mt-4">
                   <div className="w-16 h-px bg-accent mx-auto" />
@@ -106,34 +93,34 @@ const About = () => {
           {/* Momentos especiales simplificados */}
           <div className="mt-20 pt-16 border-t border-border">
             <h2 className="section-title mb-12">
-              Momentos Especiales
+              {t('specialMoments')}
             </h2>
             
             <div className="space-y-6">
               <div className="text-center bg-white rounded-2xl p-6 shadow-lg h-40 flex flex-col justify-center">
                 <Star className="w-12 h-12 text-accent mx-auto mb-4" />
                 <div className="text-2xl font-heading font-bold text-primary mb-2">2018</div>
-                <div className="text-lg font-semibold text-text mb-3">Nos Conocimos</div>
+                <div className="text-lg font-semibold text-text mb-3">{t('timeline.2018.title')}</div>
                 <div className="text-sm text-text opacity-80">
-                  El día que cambió nuestras vidas para siempre
+                  {t('timeline.2018.description')}
                 </div>
               </div>
 
               <div className="text-center bg-white rounded-2xl p-6 shadow-lg h-40 flex flex-col justify-center">
                 <Home className="w-12 h-12 text-accent mx-auto mb-4" />
                 <div className="text-2xl font-heading font-bold text-primary mb-2">2021</div>
-                <div className="text-lg font-semibold text-text mb-3">Vivimos Juntos</div>
+                <div className="text-lg font-semibold text-text mb-3">{t('timeline.2021.title')}</div>
                 <div className="text-sm text-text opacity-80">
-                  Decidimos construir nuestro hogar juntos
+                  {t('timeline.2021.description')}
                 </div>
               </div>
 
               <div className="text-center bg-white rounded-2xl p-6 shadow-lg h-40 flex flex-col justify-center">
                 <Sparkles className="w-12 h-12 text-accent mx-auto mb-4" />
                 <div className="text-2xl font-heading font-bold text-primary mb-2">2024</div>
-                <div className="text-lg font-semibold text-text mb-3">La Propuesta</div>
+                <div className="text-lg font-semibold text-text mb-3">{t('timeline.2024.title')}</div>
                 <div className="text-sm text-text opacity-80">
-                  El momento perfecto para la pregunta perfecta
+                  {t('timeline.2024.description')}
                 </div>
               </div>
             </div>
@@ -172,9 +159,9 @@ const About = () => {
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-16 animation-delay-200">
-            <h2 className="section-title mb-4">Nuestra Historia</h2>
+            <h2 className="section-title mb-4">{t('title')}</h2>
             <p className="section-subtitle">
-              Cómo comenzó todo y por qué decidimos pasar el resto de nuestras vidas juntos
+              {t('subtitle')}
             </p>
           </div>
 
@@ -216,21 +203,7 @@ const About = () => {
 
                 <div className="space-y-4 text-text leading-relaxed">
                   <p className="text-lg">
-                    Nos conocimos en una tarde de primavera de 2018, cuando el destino nos 
-                    cruzó en el camino de la manera más inesperada. Lo que comenzó como una 
-                    simple conversación, se convirtió en horas de risas, sueños compartidos 
-                    y la certeza de que habíamos encontrado algo especial.
-                  </p>
-
-                  <p className="text-lg">
-                    Desde ese primer encuentro, supimos que nuestras vidas estaban destinadas 
-                    a entrelazarse. Cada día juntos ha sido una nueva aventura, llena de 
-                    momentos que atesoramos en nuestros corazones.
-                  </p>
-
-                  <p className="text-lg font-semibold text-primary">
-                    Ahora, después de años de amor, crecimiento y complicidad, 
-                    estamos listos para dar el siguiente paso en nuestro viaje juntos.
+                    {t('story')}
                   </p>
                 </div>
               </div>
@@ -240,13 +213,13 @@ const About = () => {
                 <div className="text-center">
                   <div className="text-3xl font-heading font-bold text-primary mb-2">7</div>
                   <div className="text-sm font-semibold text-text uppercase tracking-wide">
-                    Años Juntos
+                    {t('stats.years')}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-heading font-bold text-primary mb-2">∞</div>
                   <div className="text-sm font-semibold text-text uppercase tracking-wide">
-                    Aventuras Vividas
+                    {t('stats.adventures')}
                   </div>
                 </div>
               </div>
@@ -254,8 +227,7 @@ const About = () => {
               {/* Cita especial */}
               <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 border border-border">
                 <blockquote className="text-lg font-body italic text-center text-primary">
-                  &ldquo;En cada amanecer contigo, descubro una nueva razón para amarte más. 
-                  Eres mi hogar, mi aventura y mi paz.&rdquo;
+                  {t('quote')}
                 </blockquote>
                 <div className="text-center mt-4">
                   <div className="w-16 h-px bg-accent mx-auto" />
@@ -267,7 +239,7 @@ const About = () => {
           {/* Línea temporal de momentos especiales */}
           <div className="mt-20 pt-16 border-t border-border animation-delay-800">
             <h2 className="section-title mb-12">
-              Momentos Especiales
+              {t('specialMoments')}
             </h2>
             
             <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -278,10 +250,10 @@ const About = () => {
                     2018
                   </div>
                   <div className="text-lg font-semibold text-text mb-3">
-                    Nos Conocimos
+                    {t('timeline.2018.title')}
                   </div>
                   <div className="text-sm text-text opacity-80 leading-relaxed">
-                    El día que cambió nuestras vidas para siempre
+                    {t('timeline.2018.description')}
                   </div>
                 </div>
               </div>
@@ -293,10 +265,10 @@ const About = () => {
                     2021
                   </div>
                   <div className="text-lg font-semibold text-text mb-3">
-                    Vivimos Juntos
+                    {t('timeline.2021.title')}
                   </div>
                   <div className="text-sm text-text opacity-80 leading-relaxed">
-                    Decidimos construir nuestro hogar juntos
+                    {t('timeline.2021.description')}
                   </div>
                 </div>
               </div>
@@ -308,10 +280,10 @@ const About = () => {
                     2024
                   </div>
                   <div className="text-lg font-semibold text-text mb-3">
-                    La Propuesta
+                    {t('timeline.2024.title')}
                   </div>
                   <div className="text-sm text-text opacity-80 leading-relaxed">
-                    El momento perfecto para la pregunta perfecta
+                    {t('timeline.2024.description')}
                   </div>
                 </div>
               </div>

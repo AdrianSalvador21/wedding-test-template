@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { useTranslations } from 'next-intl';
 
 interface TimeLeft {
   days: number;
@@ -12,6 +13,7 @@ interface TimeLeft {
 }
 
 const Countdown = () => {
+  const t = useTranslations('countdown');
   const weddingDate = new Date('2025-11-21T18:00:00').getTime();
   
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
@@ -60,10 +62,10 @@ const Countdown = () => {
   }, [weddingDate]);
 
   const timeUnits = [
-    { value: timeLeft.days, label: 'Días' },
-    { value: timeLeft.hours, label: 'Horas' },
-    { value: timeLeft.minutes, label: 'Minutos' },
-    { value: timeLeft.seconds, label: 'Segundos' }
+    { value: timeLeft.days, label: t('days') },
+    { value: timeLeft.hours, label: t('hours') },
+    { value: timeLeft.minutes, label: t('minutes') },
+    { value: timeLeft.seconds, label: t('seconds') }
   ];
 
   // Versión sin animaciones para móvil
@@ -74,7 +76,7 @@ const Countdown = () => {
           <div className="text-center max-w-4xl mx-auto">
             {/* Título minimalista */}
             <h2 className="section-title mb-4">
-              {isEventPassed ? 'Ya nos casamos' : 'Faltan'}
+              {isEventPassed ? t('eventPassed') : t('subtitle')}
             </h2>
 
             <div className="w-16 h-px bg-primary mx-auto mb-12" />
@@ -109,7 +111,7 @@ const Countdown = () => {
             {isEventPassed && (
               <div className="text-center">
                 <div className="text-xl font-body text-primary mb-4">
-                  Gracias por acompañarnos
+                  {t('thankYou')}
                 </div>
                 <div className="text-base text-text opacity-75">
                   Su presencia hizo de nuestro día algo inolvidable
@@ -157,7 +159,7 @@ const Countdown = () => {
             variants={itemVariants}
             className="section-title mb-4"
           >
-            {isEventPassed ? 'Ya nos casamos' : 'Faltan'}
+            {isEventPassed ? t('eventPassed') : t('subtitle')}
           </motion.h2>
 
           <motion.div
@@ -207,7 +209,7 @@ const Countdown = () => {
               className="text-center"
             >
               <div className="text-xl font-body text-primary mb-4">
-                Gracias por acompañarnos
+                {t('thankYou')}
               </div>
               <div className="text-base text-text opacity-75">
                 Su presencia hizo de nuestro día algo inolvidable

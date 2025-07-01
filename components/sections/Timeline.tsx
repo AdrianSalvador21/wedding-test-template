@@ -2,10 +2,12 @@
 
 import React from 'react';
 import { Clock, MapPin, Heart, Camera, Music, Utensils, Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { scrollToSection } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 
 const Timeline = () => {
+  const t = useTranslations('timeline');
   const { isMobile, isLoaded } = useIsMobile();
 
   const handleLocationClick = () => {
@@ -14,45 +16,45 @@ const Timeline = () => {
 
   const events = [
     {
-      time: "15:30",
-      title: "Llegada de Invitados",
-      description: "Recepción y bienvenida en los jardines",
+      time: t('events.arrival.time'),
+      title: t('events.arrival.title'),
+      description: t('events.arrival.description'),
       icon: MapPin,
       color: "from-primary to-secondary"
     },
     {
-      time: "16:00",
-      title: "Ceremonia Civil",
-      description: "¡El momento más esperado! Intercambio de votos",
+      time: t('events.ceremony.time'),
+      title: t('events.ceremony.title'),
+      description: t('events.ceremony.description'),
       icon: Heart,
       color: "from-secondary to-accent",
       highlight: true
     },
     {
-      time: "16:45",
-      title: "Sesión de Fotos",
-      description: "Fotos con familiares y amigos cercanos",
+      time: t('events.photos.time'),
+      title: t('events.photos.title'),
+      description: t('events.photos.description'),
       icon: Camera,
       color: "from-accent to-primary"
     },
     {
-      time: "18:00",
-      title: "Cóctel de Celebración",
-      description: "Aperitivos y bebidas mientras preparamos la recepción",
+      time: t('events.cocktail.time'),
+      title: t('events.cocktail.title'),
+      description: t('events.cocktail.description'),
       icon: Utensils,
       color: "from-primary to-secondary"
     },
     {
-      time: "19:30",
-      title: "Cena y Brindis",
-      description: "Cena especial con nuestros seres queridos",
+      time: t('events.reception.time'),
+      title: t('events.reception.title'),
+      description: t('events.reception.description'),
       icon: Utensils,
       color: "from-secondary to-accent"
     },
     {
-      time: "21:00",
-      title: "¡A Bailar!",
-      description: "Música, baile y diversión hasta altas horas",
+      time: t('events.party.time'),
+      title: t('events.party.title'),
+      description: t('events.party.description'),
       icon: Music,
       color: "from-accent to-primary"
     }
@@ -65,9 +67,9 @@ const Timeline = () => {
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-16">
-            <h2 className="section-title mb-4">Cronograma del Día</h2>
+            <h2 className="section-title mb-4">{t('title')}</h2>
             <p className="section-subtitle">
-              Todo lo que necesitas saber sobre nuestro día especial
+              {t('description')}
             </p>
             
             {/* Ornamento */}
@@ -124,18 +126,18 @@ const Timeline = () => {
           {/* Información adicional */}
           <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto text-center">
             <h3 className="text-xl font-heading font-semibold text-primary mb-4">
-              Información Importante
+              {t('additionalInfo.title')}
             </h3>
             <div className="space-y-3 text-text">
               <p className="flex items-center justify-center">
                 <MapPin className="w-5 h-5 mr-2 text-accent" />
-                <span>Jardines del Edén, Salón de Eventos</span>
+                <span>{t('venue')}</span>
               </p>
               <p className="text-sm opacity-80">
-                Te recomendamos llegar 15 minutos antes de cada evento
+                {t('additionalInfo.arriveEarly')}
               </p>
               <p className="text-sm opacity-80">
-                Habrá servicio de valet parking disponible
+                {t('additionalInfo.valetParking')}
               </p>
             </div>
             
@@ -144,7 +146,7 @@ const Timeline = () => {
               onClick={handleLocationClick}
               className="mt-6 bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-6 rounded-full hover:shadow-lg transition-all duration-300 active:scale-95"
             >
-              Ver Ubicación
+              {t('additionalInfo.seeLocation')}
             </button>
           </div>
         </div>
@@ -184,9 +186,9 @@ const Timeline = () => {
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-16 animation-delay-200">
-            <h2 className="section-title mb-4">Cronograma del Día</h2>
+            <h2 className="section-title mb-4">{t('title')}</h2>
             <p className="section-subtitle">
-              Todo lo que necesitas saber sobre nuestro día especial
+              {t('description')}
             </p>
             
             {/* Ornamento */}
@@ -269,18 +271,18 @@ const Timeline = () => {
           {/* Información adicional */}
           <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto text-center animation-delay-1600">
             <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
-              Información Importante
+              {t('additionalInfo.title')}
             </h3>
             <div className="space-y-3 text-text">
               <p className="flex items-center justify-center">
                 <MapPin className="w-5 h-5 mr-2 text-accent" />
-                <span>Jardines del Edén, Salón de Eventos</span>
+                <span>{t('venue')}</span>
               </p>
               <p className="text-sm opacity-80">
-                Te recomendamos llegar 15 minutos antes de cada evento
+                {t('additionalInfo.arriveEarly')}
               </p>
               <p className="text-sm opacity-80">
-                Habrá servicio de valet parking disponible
+                {t('additionalInfo.valetParking')}
               </p>
             </div>
             
@@ -289,7 +291,7 @@ const Timeline = () => {
               onClick={handleLocationClick}
               className="mt-6 bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-6 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
             >
-              Ver Ubicación
+              {t('additionalInfo.seeLocation')}
             </button>
           </div>
         </div>

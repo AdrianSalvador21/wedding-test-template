@@ -2,30 +2,43 @@
 
 import React from 'react';
 import { MapPin, Clock, Car, Phone, Navigation, ExternalLink, Star, Utensils, Wifi, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 
 const Location = () => {
+  const t = useTranslations('location');
   const { isMobile, isLoaded } = useIsMobile();
 
-  const handleGoogleMapsClick = () => {
-    openExternalLink('https://maps.google.com/?q=Jardines+del+Eden+CDMX');
+  const hotels = t.raw('accommodation.hotels') as Array<{
+    name: string;
+    distance: string;
+    price: string;
+  }>;
+
+  const facilities = t.raw('facilities.features') as string[];
+
+  const handleMapsClick = () => {
+    openExternalLink('https://maps.google.com/maps?q=Jardines+del+Eden');
   };
 
   const handleWazeClick = () => {
-    openExternalLink('https://waze.com/ul?q=Jardines+del+Eden+CDMX');
+    openExternalLink('https://waze.com/ul?q=Jardines+del+Eden');
   };
 
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <section id="location" className="py-20 bg-gradient-to-br from-light via-white to-light">
+      <section className="py-20 bg-white">
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-16">
-            <h2 className="section-title mb-4">Ubicación del Evento</h2>
-            <p className="section-subtitle">
-              Aquí celebraremos nuestro amor rodeados de naturaleza y elegancia
+            <h2 className="section-title mb-4">{t('title')}</h2>
+            <h3 className="text-2xl font-heading font-semibold text-accent mb-4">
+              {t('subtitle')}
+            </h3>
+            <p className="section-subtitle max-w-3xl mx-auto">
+              {t('description')}
             </p>
             
             {/* Ornamento */}
@@ -37,174 +50,95 @@ const Location = () => {
           </div>
 
           <div className="max-w-lg mx-auto space-y-8">
-            
-            {/* Tarjeta principal del lugar */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <div className="flex items-start space-x-4 mb-6">
-                <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-heading font-bold text-primary mb-2">
-                    Jardines del Edén
-                  </h3>
-                  <p className="text-text mb-4">
-                    Salón de Eventos y Jardines
-                  </p>
-                  <p className="text-sm text-text leading-relaxed">
-                    Un lugar mágico rodeado de jardines exuberantes, perfecto para 
-                    celebrar momentos especiales con elegancia y naturaleza.
-                  </p>
+            {/* Información principal */}
+            <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 shadow-lg">
+              <div className="text-center mb-6">
+                <MapPin className="w-12 h-12 mx-auto mb-4 text-accent" />
+                <h3 className="text-xl font-heading font-semibold text-primary mb-2">
+                  {t('subtitle')}
+                </h3>
+                <p className="text-text">{t('address')}</p>
+              </div>
+
+              {/* Mapa placeholder */}
+              <div className="bg-gray-200 rounded-xl h-48 flex items-center justify-center mb-6">
+                <div className="text-center">
+                  <MapPin className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+                  <p className="text-gray-600 text-sm">{t('mapPlaceholder')}</p>
                 </div>
               </div>
 
-              <div className="border-t border-border pt-6">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <Clock className="w-5 h-5 text-accent" />
-                    <div>
-                      <div className="font-semibold text-dark text-sm">Horario</div>
-                      <div className="text-sm text-text">15:30 - 23:00 hrs</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Phone className="w-5 h-5 text-accent" />
-                    <div>
-                      <div className="font-semibold text-dark text-sm">Contacto</div>
-                      <div className="text-sm text-text">+52 55 1234-5678</div>
-                    </div>
-                  </div>
-                </div>
+              {/* Botones de direcciones */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handleMapsClick}
+                  className="flex items-center justify-center bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium"
+                >
+                  <Navigation className="w-4 h-4 mr-2" />
+                  {t('directions.googleMaps')}
+                </button>
+                <button
+                  onClick={handleWazeClick}
+                  className="flex items-center justify-center bg-cyan-500 text-white px-4 py-3 rounded-xl hover:bg-cyan-600 transition-colors text-sm font-medium"
+                >
+                  <Car className="w-4 h-4 mr-2" />
+                  {t('directions.waze')}
+                </button>
               </div>
-            </div>
-
-            {/* Dirección */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <h3 className="text-lg font-heading font-semibold text-primary mb-4 flex items-center">
-                <Navigation className="w-5 h-5 mr-2 text-accent" />
-                Cómo Llegar
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="bg-light rounded-xl p-4">
-                  <div className="font-semibold text-dark mb-2 text-sm">Dirección Completa</div>
-                  <p className="text-sm text-text">
-                    Av. de los Jardines 123, Col. Vista Hermosa<br />
-                    Ciudad de México, CDMX 12345
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-start space-x-3">
-                    <Car className="w-4 h-4 text-accent mt-1" />
-                    <div>
-                      <div className="font-semibold text-dark text-sm">En Automóvil</div>
-                      <div className="text-xs text-text">
-                        Estacionamiento gratuito disponible.<br />
-                        Servicio de valet parking incluido.
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <MapPin className="w-4 h-4 text-accent mt-1" />
-                    <div>
-                      <div className="font-semibold text-dark text-sm">Transporte</div>
-                      <div className="text-xs text-text">
-                        Transporte disponible desde<br />
-                        Hotel Marriott a las 15:00 hrs.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Mapa */}
-            <div className="bg-white rounded-2xl p-4 shadow-lg">
-              <div className="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-light to-accent/20 relative">
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
-                  <div className="text-center">
-                    <MapPin className="w-12 h-12 mx-auto mb-4 text-primary" />
-                    <div className="text-lg font-heading font-semibold text-primary mb-2">
-                      Jardines del Edén
-                    </div>
-                    <div className="text-sm text-text">
-                      Vista satelital del lugar
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Botones de acción */}
-            <div className="space-y-3">
-              <button
-                onClick={handleGoogleMapsClick}
-                className="w-full bg-gradient-primary text-white font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 active:scale-95 flex items-center justify-center space-x-2"
-              >
-                <ExternalLink className="w-5 h-5" />
-                <span>Ver en Google Maps</span>
-              </button>
-              
-              <button
-                onClick={handleWazeClick}
-                className="w-full border-2 border-primary text-primary font-semibold py-3 px-6 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 active:scale-95 flex items-center justify-center space-x-2"
-              >
-                <Navigation className="w-5 h-5" />
-                <span>Abrir en Waze</span>
-              </button>
             </div>
 
             {/* Facilidades */}
             <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <h3 className="text-lg font-heading font-semibold text-primary mb-4">
-                Facilidades del Lugar
+              <h3 className="text-xl font-heading font-semibold text-primary mb-4 text-center">
+                {t('facilities.title')}
               </h3>
+              <ul className="space-y-3">
+                {facilities.map((facility: string, index: number) => (
+                  <li key={index} className="flex items-start">
+                    <div className="w-2 h-2 bg-accent rounded-full mt-2 mr-3 flex-shrink-0" />
+                    <span className="text-text text-sm">{facility}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Hospedaje */}
+            <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 shadow-lg">
+              <h3 className="text-xl font-heading font-semibold text-primary mb-2 text-center">
+                {t('accommodation.title')}
+              </h3>
+              <p className="text-text text-sm mb-4 text-center opacity-80">
+                {t('accommodation.subtitle')}
+              </p>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center">
-                  <Star className="w-8 h-8 text-accent mx-auto mb-2" />
-                  <div className="text-sm font-semibold text-dark">Jardines</div>
-                  <div className="text-xs text-text">Espacios naturales</div>
-                </div>
-                <div className="text-center">
-                  <Utensils className="w-8 h-8 text-accent mx-auto mb-2" />
-                  <div className="text-sm font-semibold text-dark">Catering</div>
-                  <div className="text-xs text-text">Cocina profesional</div>
-                </div>
-                <div className="text-center">
-                  <Wifi className="w-8 h-8 text-accent mx-auto mb-2" />
-                  <div className="text-sm font-semibold text-dark">WiFi</div>
-                  <div className="text-xs text-text">Conexión gratuita</div>
-                </div>
-                <div className="text-center">
-                  <Users className="w-8 h-8 text-accent mx-auto mb-2" />
-                  <div className="text-sm font-semibold text-dark">Capacidad</div>
-                  <div className="text-xs text-text">Hasta 150 personas</div>
-                </div>
+              <div className="space-y-3">
+                {hotels.map((hotel, index) => (
+                  <div key={index} className="bg-white rounded-xl p-4 border border-border">
+                    <h4 className="font-semibold text-dark text-sm">{hotel.name}</h4>
+                    <p className="text-text text-xs opacity-80">{hotel.distance}</p>
+                    <p className="text-accent text-sm font-medium">{hotel.price}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Hoteles recomendados */}
-            <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 shadow-lg">
-              <h3 className="text-lg font-heading font-semibold text-primary mb-4">
-                Hoteles Recomendados
+            {/* Transporte */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg">
+              <h3 className="text-xl font-heading font-semibold text-primary mb-4 text-center">
+                {t('transport.title')}
               </h3>
-              
               <div className="space-y-3">
-                <div className="bg-white rounded-xl p-4 border border-border">
-                  <div className="font-semibold text-dark text-sm">Hotel Marriott</div>
-                  <div className="text-xs text-text mb-2">A 10 minutos del lugar</div>
-                  <div className="text-xs text-text opacity-80">
-                    Transporte incluido desde el hotel
-                  </div>
+                <div className="flex items-center">
+                  <Car className="w-5 h-5 text-accent mr-3" />
+                  <span className="text-text text-sm">{t('transport.parking')}</span>
                 </div>
-                <div className="bg-white rounded-xl p-4 border border-border">
-                  <div className="font-semibold text-dark text-sm">Hotel Fiesta Inn</div>
-                  <div className="text-xs text-text mb-2">A 15 minutos del lugar</div>
-                  <div className="text-xs text-text opacity-80">
-                    Tarifas preferenciales disponibles
-                  </div>
+                <div className="flex items-center">
+                  <Phone className="w-5 h-5 text-accent mr-3" />
+                  <span className="text-text text-sm">{t('transport.uber')}</span>
+                </div>
+                <div className="flex items-center">
+                  <MapPin className="w-5 h-5 text-accent mr-3" />
+                  <span className="text-text text-sm">{t('transport.publicTransport')}</span>
                 </div>
               </div>
             </div>
@@ -345,7 +279,7 @@ const Location = () => {
                 {/* Botones de acción */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <button
-                    onClick={handleGoogleMapsClick}
+                    onClick={handleMapsClick}
                     className="bg-gradient-primary text-white font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
                   >
                     <ExternalLink className="w-5 h-5" />

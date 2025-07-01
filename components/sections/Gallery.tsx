@@ -5,8 +5,10 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import Image from 'next/image';
 import { Camera, Heart } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const Gallery = () => {
+  const t = useTranslations('gallery');
   const [isMobile, setIsMobile] = useState(false);
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -68,9 +70,9 @@ const Gallery = () => {
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-16">
-            <h2 className="section-title mb-4">Nuestra Galería</h2>
+            <h2 className="section-title mb-4">{t('title')}</h2>
             <p className="section-subtitle">
-              Momentos especiales que hemos compartido juntos a lo largo de nuestra relación
+              {t('subtitle')}
             </p>
             
             {/* Ornamento */}
@@ -107,12 +109,10 @@ const Gallery = () => {
             <div className="bg-white rounded-2xl p-8 shadow-lg max-w-3xl mx-auto">
               <Heart className="w-12 h-12 mx-auto mb-6 text-accent" />
               <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
-                Cada Momento Cuenta
+                {t('everyMomentCounts')}
               </h3>
               <p className="text-text leading-relaxed mb-6">
-                Estas son solo algunas de las memorias que hemos creado juntos. 
-                Cada foto cuenta una historia, cada sonrisa refleja nuestro amor, 
-                y cada momento nos ha llevado hasta este día especial.
+                {t('memoryDescription')}
               </p>
               <div className="flex items-center justify-center space-x-4">
                 <div className="w-12 h-px bg-accent" />
@@ -126,15 +126,14 @@ const Gallery = () => {
           <div className="text-center mt-12">
             <div className="bg-gradient-primary rounded-2xl p-8 text-white max-w-2xl mx-auto">
               <h3 className="text-xl font-heading font-semibold mb-4">
-                ¡Ayúdanos a Crear Más Recuerdos!
+                {t('shareMessage')}
               </h3>
               <p className="opacity-90 mb-6">
-                No olvides traer tu cámara y capturar los momentos especiales de nuestro día. 
-                Usa el hashtag <span className="font-semibold">#QuetzaliaYAdrian2025</span> para que podamos ver todas las fotos.
+                {t('cameraMessage')} <span className="font-semibold">{t('hashtag')}</span> {t('hashtagPrompt')}
               </p>
               <div className="flex items-center justify-center space-x-2">
                 <Camera className="w-5 h-5" />
-                <span className="font-semibold">#QuetzaliaYAdrian2025</span>
+                <span className="font-semibold">{t('hashtag')}</span>
               </div>
             </div>
           </div>
@@ -174,9 +173,9 @@ const Gallery = () => {
         >
           {/* Título */}
           <motion.div variants={itemVariants} className="text-center mb-16">
-            <h2 className="section-title mb-4">Nuestra Galería</h2>
+            <h2 className="section-title mb-4">{t('title')}</h2>
             <p className="section-subtitle">
-              Momentos especiales que hemos compartido juntos a lo largo de nuestra relación
+              {t('subtitle')}
             </p>
             
             {/* Ornamento */}
@@ -228,12 +227,10 @@ const Gallery = () => {
             <div className="bg-white rounded-2xl p-8 shadow-elegant max-w-3xl mx-auto">
               <Heart className="w-12 h-12 mx-auto mb-6 text-accent" />
               <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
-                Cada Momento Cuenta
+                {t('everyMomentCounts')}
               </h3>
               <p className="text-text leading-relaxed mb-6">
-                Estas son solo algunas de las memorias que hemos creado juntos. 
-                Cada foto cuenta una historia, cada sonrisa refleja nuestro amor, 
-                y cada momento nos ha llevado hasta este día especial.
+                {t('memoryDescription')}
               </p>
               <div className="flex items-center justify-center space-x-4">
                 <div className="w-12 h-px bg-accent" />
@@ -250,15 +247,14 @@ const Gallery = () => {
           >
             <div className="bg-gradient-primary rounded-2xl p-8 text-white max-w-2xl mx-auto">
               <h3 className="text-xl font-heading font-semibold mb-4">
-                ¡Ayúdanos a Crear Más Recuerdos!
+                {t('shareMessage')}
               </h3>
               <p className="opacity-90 mb-6">
-                No olvides traer tu cámara y capturar los momentos especiales de nuestro día. 
-                Usa el hashtag <span className="font-semibold">#QuetzaliaYAdrian2025</span> para que podamos ver todas las fotos.
+                {t('cameraMessage')} <span className="font-semibold">{t('hashtag')}</span> {t('hashtagPrompt')}
               </p>
               <div className="flex items-center justify-center space-x-2">
                 <Camera className="w-5 h-5" />
-                <span className="font-semibold">#QuetzaliaYAdrian2025</span>
+                <span className="font-semibold">{t('hashtag')}</span>
               </div>
             </div>
           </motion.div>

@@ -2,10 +2,12 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { scrollToSection } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 
 const Hero = () => {
+  const t = useTranslations('hero');
   const { isMobile, isLoaded } = useIsMobile();
 
   const handleRSVPClick = () => {
@@ -35,21 +37,17 @@ const Hero = () => {
           <div className="max-w-4xl mx-auto">
             {/* Subtítulo */}
             <p className="text-sm font-semibold tracking-widest uppercase mb-4 opacity-90">
-              Nuestra Boda
+              {t('subtitle')}
             </p>
 
             {/* Título principal */}
             <h1 className="font-heading text-4xl font-bold mb-6 leading-tight">
-              Quetzalia{' '}
-              <span className="inline-block mx-2 text-accent text-5xl">
-                &
-              </span>{' '}
-              Adrián
+              {t('title')}
             </h1>
 
             {/* Fecha */}
             <p className="text-lg font-body mb-8 opacity-95">
-              21 de Noviembre, 2025
+              {t('date')}
             </p>
 
             {/* Ornamento decorativo */}
@@ -64,7 +62,7 @@ const Hero = () => {
               onClick={handleRSVPClick}
               className="bg-gradient-to-r from-accent to-accent-dark text-white font-semibold py-3 px-8 rounded-full shadow-lg active:scale-95 transition-transform duration-100"
             >
-              Confirmar Asistencia
+              {t('cta')}
             </button>
           </div>
         </div>
@@ -110,21 +108,17 @@ const Hero = () => {
         <div className="max-w-4xl mx-auto animate-fade-in-up">
           {/* Subtítulo */}
           <p className="text-sm sm:text-base md:text-lg font-semibold tracking-widest uppercase mb-6 opacity-90 animation-delay-200">
-            Nuestra Boda
+            {t('subtitle')}
           </p>
 
           {/* Título principal */}
           <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-tight animation-delay-400">
-            Quetzalia{' '}
-            <span className="inline-block mx-4 text-accent text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl">
-              &
-            </span>{' '}
-            Adrián
+            {t('title')}
           </h1>
 
           {/* Fecha */}
           <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-body mb-12 opacity-95 animation-delay-600">
-            21 de Noviembre, 2025
+            {t('date')}
           </p>
 
           {/* Ornamento decorativo */}
@@ -140,7 +134,7 @@ const Hero = () => {
               onClick={handleRSVPClick}
               className="btn-primary text-lg px-12 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
-              Confirmar Asistencia
+              {t('cta')}
             </button>
           </div>
         </div>

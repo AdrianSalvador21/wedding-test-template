@@ -1,0 +1,275 @@
+{
+  "hero": {
+    "title": "María & Carlos",
+    "subtitle": "Nos casamos",
+    "date": "21 de Noviembre, 2025",
+    "location": "Jardines del Edén",
+    "cta": "Confirmar Asistencia",
+    "scrollDown": "Continúa leyendo"
+  },
+  "countdown": {
+    "title": "Cuenta Regresiva",
+    "subtitle": "Faltan",
+    "days": "Días",
+    "hours": "Horas", 
+    "minutes": "Minutos",
+    "seconds": "Segundos",
+    "eventPassed": "¡Ya nos casamos!",
+    "thankYou": "Gracias por acompañarnos en este día tan especial"
+  },
+  "about": {
+    "title": "Nuestra Historia",
+    "subtitle": "Cómo comenzó todo",
+    "story": "Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.",
+    "specialMoments": "Momentos Especiales",
+    "timeline": {
+      "2018": {
+        "title": "Primer Encuentro",
+        "description": "Nos conocimos en una cafetería del centro"
+      },
+      "2021": {
+        "title": "Nuestra Primera Casa",
+        "description": "Comenzamos a vivir juntos"
+      },
+      "2024": {
+        "title": "La Propuesta",
+        "description": "Carlos le pidió matrimonio a María en la playa"
+      }
+    },
+    "stats": {
+      "years": "Años juntos",
+      "adventures": "Aventuras vividas",
+      "memories": "Recuerdos creados",
+      "dreams": "Sueños por cumplir"
+    },
+    "quote": "\"El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.\""
+  },
+  "gallery": {
+    "title": "Nuestros Recuerdos",
+    "subtitle": "Momentos que atesoramos",
+    "shareMessage": "¡Ayúdanos a Crear Más Recuerdos!",
+    "hashtag": "#MaríaYCarlos2025",
+    "everyMomentCounts": "Cada Momento Cuenta",
+    "memoryDescription": "Estas son solo algunas de las memorias que hemos creado juntos. Cada foto cuenta una historia, cada sonrisa refleja nuestro amor, y cada momento nos ha llevado hasta este día especial.",
+    "cameraMessage": "No olvides traer tu cámara y capturar los momentos especiales de nuestro día. Usa el hashtag",
+    "hashtagPrompt": "para que podamos ver todas las fotos."
+  },
+  "timeline": {
+    "title": "Cronograma del Día",
+    "subtitle": "Programa de eventos",
+    "description": "Todo lo que necesitas saber sobre nuestro día especial",
+    "events": {
+      "arrival": {
+        "time": "15:30",
+        "title": "Llegada de Invitados",
+        "description": "Recepción y bienvenida en los jardines"
+      },
+      "ceremony": {
+        "time": "16:00",
+        "title": "Ceremonia Civil",
+        "description": "¡El momento más esperado! Intercambio de votos"
+      },
+      "photos": {
+        "time": "16:45",
+        "title": "Sesión de Fotos",
+        "description": "Fotos con familiares y amigos cercanos"
+      },
+      "cocktail": {
+        "time": "18:00", 
+        "title": "Cóctel de Celebración",
+        "description": "Aperitivos y bebidas mientras preparamos la recepción"
+      },
+      "reception": {
+        "time": "19:30",
+        "title": "Cena y Brindis",
+        "description": "Cena especial con nuestros seres queridos"
+      },
+      "party": {
+        "time": "21:00",
+        "title": "¡A Bailar!",
+        "description": "Música, baile y diversión hasta altas horas"
+      }
+    },
+    "venue": "Jardines del Edén, Salón de Eventos",
+    "additionalInfo": {
+      "title": "Información Importante",
+      "arriveEarly": "Te recomendamos llegar 15 minutos antes de cada evento",
+      "valetParking": "Habrá servicio de valet parking disponible",
+      "seeLocation": "Ver Ubicación"
+    }
+  },
+  "dressCode": {
+    "title": "Código de Vestimenta",
+    "subtitle": "Formal / Cocktail",
+    "description": "Queremos que te sientas elegante y cómodo en nuestra celebración",
+    "mainMessage": "Invitamos a nuestros queridos invitados a vestirse con elegancia. Piensa en una celebración sofisticada al aire libre con toques de jardín.",
+    "ladies": {
+      "title": "Para Damas",
+      "suggestions": {
+        "title": "Sugerencias de Vestimenta",
+        "items": [
+          "Vestidos midi o largos elegantes",
+          "Conjuntos de falda y blusa sofisticados", 
+          "Pantalones de vestir con blusa elegante",
+          "Vestidos cóctel o de fiesta"
+        ]
+      },
+      "colors": {
+        "title": "Colores Recomendados",
+        "description": "Tonos tierra, pasteles elegantes, azul marino, morado, verde bosque"
+      },
+      "tip": {
+        "title": "Tip Especial",
+        "description": "Como la celebración incluye jardines, evita tacones muy altos. Tacones gruesos o zapatos cómodos son perfectos."
+      }
+    },
+    "gentlemen": {
+      "title": "Para Caballeros",
+      "suggestions": {
+        "title": "Sugerencias de Vestimenta",
+        "items": [
+          "Traje completo (saco y pantalón)",
+          "Pantalón de vestir con camisa y saco",
+          "Camisa de vestir (corbata opcional)",
+          "Zapatos de vestir formales"
+        ]
+      },
+      "colors": {
+        "title": "Colores Recomendados",
+        "description": "Azul marino, gris, negro, café, tonos tierra oscuros"
+      },
+      "tip": {
+        "title": "Tip Especial",
+        "description": "Si hace calor, puedes usar camisa sin saco durante el cóctel. La corbata es opcional pero recomendada para la ceremonia."
+      }
+    },
+    "additionalInfo": {
+      "title": "Información Adicional",
+      "environment": {
+        "title": "Ambiente",
+        "description": "Al aire libre con jardines"
+      },
+      "style": {
+        "title": "Estilo",
+        "description": "Elegante y sofisticado"
+      },
+      "avoid": {
+        "casual": "Evitar: Ropa muy casual, shorts, chanclas",
+        "bright": "Evitar: Colores muy brillantes o neón"
+      },
+      "questions": "¿Tienes dudas? No hesites en contactarnos. Lo importante es que te sientas cómodo y elegante para celebrar con nosotros."
+    }
+  },
+  "rsvp": {
+    "title": "Confirma tu Asistencia",
+    "subtitle": "¡Queremos celebrar contigo!",
+    "description": "Por favor confirma tu asistencia antes del 15 de octubre de 2025. Tu presencia hará que este día sea aún más especial.",
+    "form": {
+      "name": "Nombre completo",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "attendance": "¿Asistirás?",
+      "attendanceOptions": {
+        "yes": "Sí, asistiré",
+        "no": "No podré asistir"
+      },
+      "guests": "Número de acompañantes",
+      "guestNames": "Nombres de acompañantes",
+      "dietaryRestrictions": "Restricciones alimentarias",
+      "dietaryPlaceholder": "Vegetariano, vegano, alergias, etc.",
+      "song": "Canción que no puede faltar",
+      "songPlaceholder": "¿Qué canción te gustaría escuchar?",
+      "message": "Mensaje especial",
+      "messagePlaceholder": "Comparte tus buenos deseos...",
+      "submit": "Confirmar Asistencia"
+    },
+    "eventInfo": {
+      "title": "Información del Evento",
+      "date": "Fecha: 21 de Noviembre, 2025",
+      "time": "Hora: 4:00 PM - 2:00 AM",
+      "venue": "Lugar: Jardines del Edén",
+      "address": "Av. Principal 123, Ciudad",
+      "dressCode": "Código: Formal / Cocktail"
+    },
+    "loading": "Enviando...",
+    "success": "¡Gracias por confirmar tu asistencia!",
+    "error": "Error al enviar. Inténtalo de nuevo."
+  },
+  "location": {
+    "title": "Ubicación del Evento",
+    "subtitle": "Jardines del Edén",
+    "address": "Av. Principal 123, Ciudad, Estado 12345",
+    "description": "Un hermoso lugar rodeado de naturaleza, perfecto para celebrar nuestro amor. Con amplios jardines, salones elegantes y vistas espectaculares.",
+    "mapPlaceholder": "Mapa interactivo próximamente",
+    "directions": {
+      "title": "Cómo llegar",
+      "googleMaps": "Abrir en Google Maps",
+      "waze": "Abrir en Waze"
+    },
+    "facilities": {
+      "title": "Facilidades del Lugar",
+      "features": [
+        "Jardines exteriores para ceremonia",
+        "Salón principal climatizado",
+        "Estacionamiento amplio y seguro",
+        "Área de fotos panorámicas",
+        "Coctelera al aire libre",
+        "Música y sonido profesional"
+      ]
+    },
+    "accommodation": {
+      "title": "Hospedaje Recomendado",
+      "subtitle": "Para huéspedes de fuera de la ciudad",
+      "hotels": [
+        {
+          "name": "Hotel Boutique Central",
+          "distance": "5 min del lugar",
+          "price": "Desde $120/noche"
+        },
+        {
+          "name": "Gran Hotel Plaza",
+          "distance": "10 min del lugar", 
+          "price": "Desde $80/noche"
+        }
+      ]
+    },
+    "transport": {
+      "title": "Transporte",
+      "parking": "Estacionamiento gratuito disponible",
+      "uber": "Fácil acceso para Uber/Taxi",
+      "publicTransport": "Estación de metro a 2 cuadras"
+    }
+  },
+  "footer": {
+    "title": "María & Carlos",
+    "subtitle": "21 de Noviembre, 2025",
+    "contact": {
+      "title": "Contacto",
+      "bride": "Novia: María",
+      "groom": "Novio: Carlos",
+      "whatsapp": "WhatsApp",
+      "email": "Email"
+    },
+    "social": {
+      "title": "Síguenos",
+      "instagram": "Instagram",
+      "facebook": "Facebook"
+    },
+    "quote": "\"Dos almas, un corazón, un destino\"",
+    "cta": "¿Tienes preguntas? ¡Contáctanos!",
+    "copyright": "Con amor, María & Carlos"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "retry": "Reintentar",
+    "close": "Cerrar",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar"
+  }
+} 

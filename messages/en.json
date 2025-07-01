@@ -1,0 +1,275 @@
+{
+  "hero": {
+    "title": "María & Carlos",
+    "subtitle": "We're Getting Married",
+    "date": "November 21st, 2025",
+    "location": "Eden Gardens",
+    "cta": "RSVP Now",
+    "scrollDown": "Continue reading"
+  },
+  "countdown": {
+    "title": "Countdown",
+    "subtitle": "Time remaining",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "eventPassed": "We're married!",
+    "thankYou": "Thank you for joining us on this special day"
+  },
+  "about": {
+    "title": "Our Story",
+    "subtitle": "How it all began",
+    "story": "More than 6 years ago, destiny brought us together in a city café. What started as a casual conversation turned into shared laughter, intertwined dreams, and a love that grew day by day. Today, we want to celebrate this unique moment surrounded by the people we love most.",
+    "specialMoments": "Special Moments",
+    "timeline": {
+      "2018": {
+        "title": "First Meeting",
+        "description": "We met at a downtown café"
+      },
+      "2021": {
+        "title": "Our First Home",
+        "description": "We started living together"
+      },
+      "2024": {
+        "title": "The Proposal",
+        "description": "Carlos proposed to María at the beach"
+      }
+    },
+    "stats": {
+      "years": "Years together",
+      "adventures": "Adventures lived",
+      "memories": "Memories created",
+      "dreams": "Dreams to fulfill"
+    },
+    "quote": "\"Love is not just looking at each other, but looking together in the same direction.\""
+  },
+  "gallery": {
+    "title": "Our Memories",
+    "subtitle": "Moments we treasure",
+    "shareMessage": "Help Us Create More Memories!",
+    "hashtag": "#MaríaYCarlos2025",
+    "everyMomentCounts": "Every Moment Counts",
+    "memoryDescription": "These are just some of the memories we've created together. Each photo tells a story, each smile reflects our love, and each moment has led us to this special day.",
+    "cameraMessage": "Don't forget to bring your camera and capture the special moments of our day. Use the hashtag",
+    "hashtagPrompt": "so we can see all the photos."
+  },
+  "timeline": {
+    "title": "Day Schedule",
+    "subtitle": "Event program",
+    "description": "Everything you need to know about our special day",
+    "events": {
+      "arrival": {
+        "time": "3:30 PM",
+        "title": "Guest Arrival",
+        "description": "Reception and welcome in the gardens"
+      },
+      "ceremony": {
+        "time": "4:00 PM",
+        "title": "Civil Ceremony",
+        "description": "The most awaited moment! Exchange of vows"
+      },
+      "photos": {
+        "time": "4:45 PM",
+        "title": "Photo Session",
+        "description": "Photos with family and close friends"
+      },
+      "cocktail": {
+        "time": "6:00 PM", 
+        "title": "Celebration Cocktail",
+        "description": "Appetizers and drinks while we prepare the reception"
+      },
+      "reception": {
+        "time": "7:30 PM",
+        "title": "Dinner and Toasts",
+        "description": "Special dinner with our loved ones"
+      },
+      "party": {
+        "time": "9:00 PM",
+        "title": "Let's Dance!",
+        "description": "Music, dancing and fun until late hours"
+      }
+    },
+    "venue": "Eden Gardens, Event Hall",
+    "additionalInfo": {
+      "title": "Important Information",
+      "arriveEarly": "We recommend arriving 15 minutes before each event",
+      "valetParking": "Valet parking service will be available",
+      "seeLocation": "See Location"
+    }
+  },
+  "dressCode": {
+    "title": "Dress Code",
+    "subtitle": "Formal / Cocktail",
+    "description": "We want you to feel elegant and comfortable at our celebration",
+    "mainMessage": "We invite our dear guests to dress elegantly. Think of a sophisticated outdoor celebration with garden touches.",
+    "ladies": {
+      "title": "For Ladies",
+      "suggestions": {
+        "title": "Outfit Suggestions",
+        "items": [
+          "Elegant midi or long dresses",
+          "Sophisticated skirt and blouse ensembles", 
+          "Dress pants with elegant blouse",
+          "Cocktail or party dresses"
+        ]
+      },
+      "colors": {
+        "title": "Recommended Colors",
+        "description": "Earth tones, elegant pastels, navy blue, purple, forest green"
+      },
+      "tip": {
+        "title": "Special Tip",
+        "description": "Since the celebration includes gardens, avoid very high heels. Block heels or comfortable shoes are perfect."
+      }
+    },
+    "gentlemen": {
+      "title": "For Gentlemen",
+      "suggestions": {
+        "title": "Outfit Suggestions",
+        "items": [
+          "Complete suit (jacket and pants)",
+          "Dress pants with shirt and jacket",
+          "Dress shirt (tie optional)",
+          "Formal dress shoes"
+        ]
+      },
+      "colors": {
+        "title": "Recommended Colors",
+        "description": "Navy blue, gray, black, brown, dark earth tones"
+      },
+      "tip": {
+        "title": "Special Tip",
+        "description": "If it's hot, you can wear a shirt without jacket during cocktail. Tie is optional but recommended for the ceremony."
+      }
+    },
+    "additionalInfo": {
+      "title": "Additional Information",
+      "environment": {
+        "title": "Environment",
+        "description": "Outdoor with gardens"
+      },
+      "style": {
+        "title": "Style",
+        "description": "Elegant and sophisticated"
+      },
+      "avoid": {
+        "casual": "Avoid: Very casual clothing, shorts, flip-flops",
+        "bright": "Avoid: Very bright or neon colors"
+      },
+      "questions": "Have questions? Don't hesitate to contact us. The important thing is that you feel comfortable and elegant to celebrate with us."
+    }
+  },
+  "rsvp": {
+    "title": "RSVP",
+    "subtitle": "We want to celebrate with you!",
+    "description": "Please confirm your attendance before October 15th, 2025. Your presence will make this day even more special.",
+    "form": {
+      "name": "Full name",
+      "email": "Email address",
+      "phone": "Phone number",
+      "attendance": "Will you attend?",
+      "attendanceOptions": {
+        "yes": "Yes, I will attend",
+        "no": "I won't be able to attend"
+      },
+      "guests": "Number of guests",
+      "guestNames": "Guest names",
+      "dietaryRestrictions": "Dietary restrictions",
+      "dietaryPlaceholder": "Vegetarian, vegan, allergies, etc.",
+      "song": "Song that can't be missed",
+      "songPlaceholder": "What song would you like to hear?",
+      "message": "Special message",
+      "messagePlaceholder": "Share your good wishes...",
+      "submit": "Confirm Attendance"
+    },
+    "eventInfo": {
+      "title": "Event Information",
+      "date": "Date: November 21st, 2025",
+      "time": "Time: 4:00 PM - 2:00 AM",
+      "venue": "Venue: Eden Gardens",
+      "address": "123 Main Ave, City",
+      "dressCode": "Code: Formal / Cocktail"
+    },
+    "loading": "Sending...",
+    "success": "Thank you for confirming your attendance!",
+    "error": "Error sending. Please try again."
+  },
+  "location": {
+    "title": "Event Location",
+    "subtitle": "Eden Gardens",
+    "address": "123 Main Ave, City, State 12345",
+    "description": "A beautiful place surrounded by nature, perfect for celebrating our love. With spacious gardens, elegant halls, and spectacular views.",
+    "mapPlaceholder": "Interactive map coming soon",
+    "directions": {
+      "title": "How to get there",
+      "googleMaps": "Open in Google Maps",
+      "waze": "Open in Waze"
+    },
+    "facilities": {
+      "title": "Venue Facilities",
+      "features": [
+        "Outdoor gardens for ceremony",
+        "Air-conditioned main hall",
+        "Ample and secure parking",
+        "Panoramic photo area",
+        "Outdoor cocktail area",
+        "Professional music and sound"
+      ]
+    },
+    "accommodation": {
+      "title": "Recommended Accommodation",
+      "subtitle": "For out-of-town guests",
+      "hotels": [
+        {
+          "name": "Central Boutique Hotel",
+          "distance": "5 min from venue",
+          "price": "From $120/night"
+        },
+        {
+          "name": "Grand Plaza Hotel",
+          "distance": "10 min from venue", 
+          "price": "From $80/night"
+        }
+      ]
+    },
+    "transport": {
+      "title": "Transportation",
+      "parking": "Free parking available",
+      "uber": "Easy access for Uber/Taxi",
+      "publicTransport": "Metro station 2 blocks away"
+    }
+  },
+  "footer": {
+    "title": "María & Carlos",
+    "subtitle": "November 21st, 2025",
+    "contact": {
+      "title": "Contact",
+      "bride": "Bride: María",
+      "groom": "Groom: Carlos",
+      "whatsapp": "WhatsApp",
+      "email": "Email"
+    },
+    "social": {
+      "title": "Follow Us",
+      "instagram": "Instagram",
+      "facebook": "Facebook"
+    },
+    "quote": "\"Two souls, one heart, one destiny\"",
+    "cta": "Have questions? Contact us!",
+    "copyright": "With love, María & Carlos"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "close": "Close",
+    "next": "Next",
+    "previous": "Previous",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm"
+  }
+} 
