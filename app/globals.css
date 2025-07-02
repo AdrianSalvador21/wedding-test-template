@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Crimson+Text:wght@400;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Crimson Text', serif;
+  scroll-behavior: smooth;
+}
+
+/* Optimizaciones para móvil */
+@media (max-width: 768px) {
+  * {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  html, body {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto; /* Cambiar a auto en móvil para mejor rendimiento */
+  }
+  
+  /* Reducir animaciones en móvil */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-title {
+    @apply font-heading font-semibold text-stone-600 opacity-80 text-center;
+    font-size: 1.75rem; /* 28px */
+  }
+
+  @media (min-width: 768px) {
+    .section-title {
+      font-size: 2.125rem; /* 34px */
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-title {
+      font-size: 2.875rem; /* 46px */
+    }
+  }
+
+  .section-subtitle {
+    @apply text-lg md:text-xl text-text text-center max-w-3xl mx-auto leading-relaxed;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-primary text-white font-semibold py-3 px-6 rounded-full hover:shadow-elegant-md transition-all duration-300 transform hover:scale-105;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary text-primary font-semibold py-3 px-6 rounded-full hover:bg-primary hover:text-white transition-all duration-300;
+  }
+
+  .ornament {
+    @apply flex items-center justify-center space-x-4;
+  }
+
+  .ornament-line {
+    @apply w-16 h-px opacity-50;
+  }
+
+  .ornament-center {
+    @apply text-2xl;
+  }
+
+  /* Animaciones CSS puras para reemplazar Framer Motion */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  .animation-delay-200 {
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+  }
+
+  .animation-delay-400 {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+  }
+
+  .animation-delay-600 {
+    animation: fadeInUp 0.6s ease-out 0.6s both;
+  }
+
+  .animation-delay-800 {
+    animation: fadeInUp 0.6s ease-out 0.8s both;
+  }
+
+  .animation-delay-1000 {
+    animation: fadeInUp 0.6s ease-out 1s both;
+  }
+
+  .animation-delay-1200 {
+    animation: fadeInUp 1s ease-out 1.2s both;
+  }
+
+  .animation-delay-1400 {
+    animation: fadeInUp 0.6s ease-out 1.4s both;
+  }
+
+  .animation-delay-1600 {
+    animation: fadeInUp 0.6s ease-out 1.6s both;
+  }
+
+  /* Delays específicos para Timeline */
+  .animation-delay-600 {
+    animation: fadeInUp 0.6s ease-out 0.6s both;
+  }
+
+  .animation-delay-800 {
+    animation: fadeInUp 0.6s ease-out 0.8s both;
+  }
+
+  .animation-delay-1000 {
+    animation: fadeInUp 0.6s ease-out 1.0s both;
+  }
+
+  .animation-delay-1200 {
+    animation: fadeInUp 0.6s ease-out 1.2s both;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Optimización para imágenes en móvil */
+  @media (max-width: 768px) {
+    .btn-primary, .btn-outline {
+      @apply hover:scale-100; /* Eliminar escala en móvil */
+    }
+    
+    /* Deshabilitar animaciones complejas en móvil */
+    .animate-fade-in-up,
+    .animation-delay-200,
+    .animation-delay-400,
+    .animation-delay-600,
+    .animation-delay-800,
+    .animation-delay-1000,
+    .animation-delay-1200,
+    .animation-delay-1400,
+    .animation-delay-1600 {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+} 

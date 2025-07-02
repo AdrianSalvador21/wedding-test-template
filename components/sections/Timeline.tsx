@@ -2,19 +2,41 @@
 
 import React from 'react';
 import { Clock, MapPin, Heart, Camera, Music, Utensils, Sparkles } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations } from '../../lib/translations';
 import { scrollToSection } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
+import { useAppSelector } from '../../src/store/hooks';
+import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 const Timeline = () => {
-  const t = useTranslations('timeline');
+  const { t, raw } = useTranslations('timeline');
   const { isMobile, isLoaded } = useIsMobile();
+  const weddingData = useAppSelector(selectCurrentWedding);
 
   const handleLocationClick = () => {
     scrollToSection('location');
   };
 
-  const events = [
+  // Mapeo de iconos
+  const iconMap: { [key: string]: any } = {
+    'MapPin': MapPin,
+    'Heart': Heart,
+    'Camera': Camera,
+    'Utensils': Utensils,
+    'Music': Music,
+    'Clock': Clock,
+    'Sparkles': Sparkles
+  };
+
+  // Datos dinámicos con fallback
+  const events = weddingData?.timeline?.length ? weddingData.timeline.map((event, index) => ({
+    time: event.time,
+    title: event.title,
+    description: event.description,
+    icon: iconMap[event.icon] || MapPin,
+    color: getEventColor(index),
+    highlight: event.isHighlight || false
+  })) : [
     {
       time: t('events.arrival.time'),
       title: t('events.arrival.title'),
@@ -60,24 +82,33 @@ const Timeline = () => {
     }
   ];
 
+  // Función para generar colores dinámicos
+  function getEventColor(index: number) {
+    const colors = [
+      "from-primary to-secondary",
+      "from-secondary to-accent",
+      "from-accent to-primary",
+      "from-primary to-secondary",
+      "from-secondary to-accent",
+      "from-accent to-primary"
+    ];
+    return colors[index % colors.length];
+  }
+
+  const venueName = weddingData?.event.venue.name || t('venue');
+
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <section className="py-20 bg-gradient-to-br from-light via-white to-light">
+      <section className="py-12 bg-gradient-to-br from-light via-white to-light">
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-16">
-            <h2 className="section-title mb-4">{t('title')}</h2>
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <p className="section-subtitle">
               {t('description')}
             </p>
-            
-            {/* Ornamento */}
-            <div className="flex items-center justify-center mt-8 mb-12">
-              <div className="w-16 h-px bg-accent" />
-              <Clock className="mx-4 w-6 h-6 text-accent" />
-              <div className="w-16 h-px bg-accent" />
-            </div>
           </div>
 
           {/* Timeline simplificado para móvil */}
@@ -131,7 +162,7 @@ const Timeline = () => {
             <div className="space-y-3 text-text">
               <p className="flex items-center justify-center">
                 <MapPin className="w-5 h-5 mr-2 text-accent" />
-                <span>{t('venue')}</span>
+                <span>{venueName}</span>
               </p>
               <p className="text-sm opacity-80">
                 {t('additionalInfo.arriveEarly')}
@@ -157,7 +188,7 @@ const Timeline = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <section className="py-20 bg-gradient-to-br from-light via-white to-light">
+      <section className="py-12 bg-gradient-to-br from-light via-white to-light">
         <div className="section-container">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
@@ -181,22 +212,16 @@ const Timeline = () => {
 
   // Versión para desktop con animaciones CSS
   return (
-    <section className="py-20 bg-gradient-to-br from-light via-white to-light">
+    <section className="py-12 bg-gradient-to-br from-light via-white to-light">
       <div className="section-container">
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-16 animation-delay-200">
-            <h2 className="section-title mb-4">{t('title')}</h2>
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <p className="section-subtitle">
               {t('description')}
             </p>
-            
-            {/* Ornamento */}
-            <div className="flex items-center justify-center mt-8 mb-12">
-              <div className="w-16 h-px bg-accent" />
-              <Clock className="mx-4 w-6 h-6 text-accent" />
-              <div className="w-16 h-px bg-accent" />
-            </div>
           </div>
 
           {/* Timeline */}
@@ -276,7 +301,7 @@ const Timeline = () => {
             <div className="space-y-3 text-text">
               <p className="flex items-center justify-center">
                 <MapPin className="w-5 h-5 mr-2 text-accent" />
-                <span>{t('venue')}</span>
+                <span>{venueName}</span>
               </p>
               <p className="text-sm opacity-80">
                 {t('additionalInfo.arriveEarly')}

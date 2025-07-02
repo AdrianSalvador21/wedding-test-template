@@ -1,161 +1,119 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
-import { scrollToSection } from '@/lib/utils';
-import { useIsMobile } from '@/lib/motion';
+import { motion } from 'framer-motion';
+import { useTranslations } from '../../lib/translations';
+import { ChevronDown, Heart, Calendar, MapPin, Languages } from 'lucide-react';
+import { useAppSelector } from '../../src/store/hooks';
+import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 const Hero = () => {
-  const t = useTranslations('hero');
-  const { isMobile, isLoaded } = useIsMobile();
+  const { t, currentLanguage } = useTranslations('hero');
+  const weddingData = useAppSelector(selectCurrentWedding);
 
-  const handleRSVPClick = () => {
-    scrollToSection('rsvp');
+  // Datos dinámicos con fallbacks
+  const brideNames = weddingData?.couple.bride.name || t('title').split(' & ')[0] || 'María';
+  const groomNames = weddingData?.couple.groom.name || t('title').split(' & ')[1] || 'Carlos';
+  const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
+  const venueName = weddingData?.event.venue.name || t('location');
+  const eventTime = weddingData?.event.time || '16:00';
+
+  const formatDate = (date: Date) => {
+    // Mapeo de idiomas a locales
+    const localeMap = {
+      'es': 'es-ES',
+      'en': 'en-US'
+    };
+    
+    return date.toLocaleDateString(localeMap[currentLanguage] || 'es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
-  // Versión estática para móvil (sin JavaScript pesado)
-  if (isMobile) {
-    return (
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Imagen de fondo */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1080&q=50"
-            alt="Foto de la pareja"
-            fill
-            priority
-            className="object-cover"
-            quality={50}
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hour24 = parseInt(hours);
+    const ampm = hour24 >= 12 ? 'PM' : 'AM';
+    const hour12 = hour24 % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+  };
 
-        {/* Contenido principal */}
-        <div className="relative z-10 text-center text-white px-4">
-          <div className="max-w-4xl mx-auto">
-            {/* Subtítulo */}
-            <p className="text-sm font-semibold tracking-widest uppercase mb-4 opacity-90">
-              {t('subtitle')}
-            </p>
-
-            {/* Título principal */}
-            <h1 className="font-heading text-4xl font-bold mb-6 leading-tight">
-              {t('title')}
-            </h1>
-
-            {/* Fecha */}
-            <p className="text-lg font-body mb-8 opacity-95">
-              {t('date')}
-            </p>
-
-            {/* Ornamento decorativo */}
-            <div className="flex items-center justify-center space-x-4 mb-8">
-              <div className="w-16 h-px bg-white opacity-50" />
-              <div className="text-white text-2xl">❤</div>
-              <div className="w-16 h-px bg-white opacity-50" />
-            </div>
-
-            {/* Botón CTA */}
-            <button
-              onClick={handleRSVPClick}
-              className="bg-gradient-to-r from-accent to-accent-dark text-white font-semibold py-3 px-8 rounded-full shadow-lg active:scale-95 transition-transform duration-100"
-            >
-              {t('cta')}
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // Mostrar loading mientras detecta dispositivo
-  if (!isLoaded) {
-    return (
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-accent to-accent-dark" />
-        <div className="relative z-10 text-center text-white">
-          <div className="animate-pulse">
-            <div className="h-4 bg-white/20 rounded w-32 mx-auto mb-4" />
-            <div className="h-12 bg-white/20 rounded w-64 mx-auto mb-4" />
-            <div className="h-6 bg-white/20 rounded w-48 mx-auto" />
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // Versión para desktop con animaciones (cargado dinámicamente)
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Imagen de fondo */}
+    <section className="hero-section relative h-screen flex items-center justify-center text-white overflow-hidden">
+      {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-          alt="Foto de la pareja"
-          fill
-          priority
-          className="object-cover"
-          quality={80}
-          sizes="100vw"
+        <div 
+          className="w-full h-full bg-cover bg-center bg-fixed"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')"
+          }}
         />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black bg-opacity-40" />
       </div>
 
-      {/* Contenido principal con animaciones CSS */}
-      <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto animate-fade-in-up">
-          {/* Subtítulo */}
-          <p className="text-sm sm:text-base md:text-lg font-semibold tracking-widest uppercase mb-6 opacity-90 animation-delay-200">
-            {t('subtitle')}
-          </p>
-
-          {/* Título principal */}
-          <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-tight animation-delay-400">
-            {t('title')}
-          </h1>
-
-          {/* Fecha */}
-          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-body mb-12 opacity-95 animation-delay-600">
-            {t('date')}
-          </p>
-
-          {/* Ornamento decorativo */}
-          <div className="ornament mb-12 animation-delay-800">
-            <div className="ornament-line bg-white" />
-            <div className="ornament-center text-white text-3xl">❤</div>
-            <div className="ornament-line bg-white" />
+      {/* Content */}
+      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="space-y-12"
+        >
+          {/* "NUESTRA BODA" */}
+          <div className="mb-16">
+            <h2 className="text-sm md:text-base font-light tracking-[0.4em] uppercase text-white opacity-80 mb-12">
+              {t('ourWedding')}
+            </h2>
+            
+            {/* Nombres de la pareja - primer nombre con & */}
+            <div className="space-y-4">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-light text-white opacity-75 tracking-wide">
+                {brideNames} <span className="text-stone-300 opacity-80">&</span>
+              </h1>
+              
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-light text-white opacity-75 tracking-wide">
+                {groomNames}
+              </h1>
+            </div>
           </div>
 
-          {/* Botón CTA */}
-          <div className="animation-delay-1000">
-            <button
-              onClick={handleRSVPClick}
-              className="btn-primary text-lg px-12 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+          {/* Fecha del evento */}
+          <div className="mb-8">
+            <p className="text-xl md:text-2xl font-light text-white opacity-90">
+              {formatDate(weddingDate)}
+            </p>
+          </div>
+
+          {/* Call to Action Button */}
+          <div className="space-y-6">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-stone-400 bg-opacity-70 text-white font-medium py-3.5 px-8 md:py-4 md:px-12 rounded-full text-lg md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white border-opacity-30"
             >
               {t('cta')}
-            </button>
-          </div>
-        </div>
-      </div>
+            </motion.button>
 
-      {/* Indicador de scroll */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 hidden md:block animation-delay-1200">
-        <div className="animate-bounce">
-          <svg
-            className="w-6 h-6 text-white opacity-70"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            />
-          </svg>
+            {/* Scroll indicator - abajo del botón */}
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="flex flex-col items-center opacity-70 pt-4"
+            >
+              <ChevronDown className="w-6 h-6" />
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          <Heart className="absolute top-20 left-10 w-8 h-8 opacity-20 animate-pulse" />
+          <Heart className="absolute top-40 right-16 w-6 h-6 opacity-30 animate-pulse" style={{ animationDelay: '1s' }} />
+          <Heart className="absolute bottom-32 left-20 w-10 h-10 opacity-15 animate-pulse" style={{ animationDelay: '2s' }} />
         </div>
       </div>
     </section>

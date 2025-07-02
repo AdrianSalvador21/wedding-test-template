@@ -1,124 +1,118 @@
 'use client';
 
 import React from 'react';
-import { Heart, Mail, Phone, Instagram, Facebook } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { Heart, Instagram, Facebook, Mail, Phone } from 'lucide-react';
+import { useTranslations } from '../../lib/translations';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
+import { useAppSelector } from '../../src/store/hooks';
+import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 const Footer = () => {
-  const t = useTranslations('footer');
+  const { t } = useTranslations('footer');
   const { isMobile, isLoaded } = useIsMobile();
+  const weddingData = useAppSelector(selectCurrentWedding);
+
+  // Datos dinámicos con fallbacks
+  const couple = weddingData?.couple;
+  const brideName = couple?.bride.name || 'María';
+  const groomName = couple?.groom.name || 'Carlos';
+  const bridPhone = couple?.bride.phone || '+52 55 1234-5678';
+  const groomPhone = couple?.groom.phone || '+52 55 8765-4321';
+  const brideInstagram = couple?.bride.instagram;
+  const groomInstagram = couple?.groom.instagram;
+  const brideFacebook = couple?.bride.facebook;
+  const groomFacebook = couple?.groom.facebook;
+  const coupleEmail = couple?.coupleEmail || 'maria.carlos@email.com';
+  const coupleQuote = couple?.quote || t('quote');
+  const hashtag = couple?.hashtag || '#MaríaYCarlos2025';
 
   const handleInstagramClick = () => {
-    openExternalLink('https://instagram.com/mariaycarlos2025');
+    if (brideInstagram) {
+      openExternalLink(`https://instagram.com/${brideInstagram.replace('@', '')}`);
+    } else if (groomInstagram) {
+      openExternalLink(`https://instagram.com/${groomInstagram.replace('@', '')}`);
+    } else {
+      openExternalLink('https://instagram.com/mariaycarlos2025');
+    }
   };
 
   const handleFacebookClick = () => {
-    openExternalLink('https://facebook.com/mariaycarlos2025');
+    if (brideFacebook) {
+      openExternalLink(`https://facebook.com/${brideFacebook}`);
+    } else if (groomFacebook) {
+      openExternalLink(`https://facebook.com/${groomFacebook}`);
+    } else {
+      openExternalLink('https://facebook.com/mariaycarlos2025');
+    }
   };
 
-  const handleWhatsAppClick = () => {
-    openExternalLink('https://wa.me/5599999999');
+  const handleWhatsAppClick = (phone: string) => {
+    const cleanPhone = phone.replace(/\D/g, '');
+    openExternalLink(`https://wa.me/${cleanPhone}`);
   };
 
   const handleEmailClick = () => {
-    openExternalLink('mailto:maria.carlos@email.com');
+    openExternalLink(`mailto:${coupleEmail}`);
   };
 
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <footer className="bg-gradient-to-br from-primary via-secondary to-accent text-white py-16">
+      <footer className="bg-gradient-to-br from-primary via-secondary to-accent text-white py-12">
         <div className="section-container">
-          <div className="text-center space-y-8">
-            {/* Título principal */}
+          <div className="text-center space-y-6 max-w-sm mx-auto">
+            {/* Nombres de la pareja */}
             <div>
-              <h2 className="text-3xl font-heading font-bold mb-2">
-                {t('title')}
+              <h2 className="text-2xl font-heading font-light mb-2">
+                {brideName} & {groomName}
               </h2>
-              <p className="text-lg opacity-90 mb-6">
-                {t('subtitle')}
-              </p>
-            </div>
-
-            {/* Información de contacto */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-              <h3 className="text-xl font-heading font-semibold mb-4">
-                {t('contact.title')}
-              </h3>
               
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="font-medium opacity-90">{t('contact.bride')}</p>
-                    <button
-                      onClick={handleWhatsAppClick}
-                      className="text-white/80 hover:text-white transition-colors"
-                    >
-                      +52 55 1234-5678
-                    </button>
-                  </div>
-                  <div>
-                    <p className="font-medium opacity-90">{t('contact.groom')}</p>
-                    <button
-                      onClick={handleWhatsAppClick}
-                      className="text-white/80 hover:text-white transition-colors"
-                    >
-                      +52 55 8765-4321
-                    </button>
-                  </div>
-                </div>
-                
-                <button
-                  onClick={handleEmailClick}
-                  className="flex items-center justify-center space-x-2 text-white/80 hover:text-white transition-colors"
-                >
-                  <Mail className="w-4 h-4" />
-                  <span>maria.carlos@email.com</span>
-                </button>
+              {/* Línea decorativa */}
+              <div className="flex items-center justify-center space-x-3 mb-4">
+                <div className="w-8 h-px bg-white/40"></div>
+                <Heart className="w-4 h-4 text-white/60" />
+                <div className="w-8 h-px bg-white/40"></div>
               </div>
             </div>
 
             {/* Redes sociales */}
-            <div>
-              <h3 className="text-lg font-heading font-semibold mb-4">
-                {t('social.title')}
-              </h3>
-              <div className="flex justify-center space-x-6">
+            <div className="flex justify-center space-x-4">
+              {(brideInstagram || groomInstagram) && (
                 <button
                   onClick={handleInstagramClick}
-                  className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                  className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
                 >
-                  <Instagram className="w-6 h-6" />
+                  <Instagram className="w-5 h-5" />
                 </button>
+              )}
+              {(brideFacebook || groomFacebook) && (
                 <button
                   onClick={handleFacebookClick}
-                  className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                  className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
                 >
-                  <Facebook className="w-6 h-6" />
+                  <Facebook className="w-5 h-5" />
                 </button>
-              </div>
+              )}
+              <button
+                onClick={handleEmailClick}
+                className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+              >
+                <Mail className="w-5 h-5" />
+              </button>
             </div>
 
-            {/* Cita y mensaje final */}
-            <div className="space-y-4">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                <Heart className="w-8 h-8 mx-auto mb-4 text-white" />
-                <p className="italic text-lg leading-relaxed">
-                  {t('quote')}
-                </p>
-              </div>
-              
-              <div className="space-y-3">
-                <p className="text-lg font-medium">
-                  {t('cta')}
-                </p>
-                <p className="text-sm opacity-80">
-                  {t('copyright')}
-                </p>
-              </div>
-            </div>
+            {/* Hashtag */}
+            {hashtag && (
+              <p className="text-white/80 text-base font-medium">
+                {hashtag}
+              </p>
+            )}
+
+            {/* Copyright */}
+            <p className="text-white/60 text-xs mt-6">
+              {t('copyright')}
+            </p>
           </div>
         </div>
       </footer>
@@ -153,7 +147,7 @@ const Footer = () => {
           {/* Contenido principal minimalista */}
           <div className="text-center mb-12 animate-fade-in-up animation-delay-200">
             <h3 className="text-2xl font-heading font-light mb-4">
-              {t('title')}
+              {brideName} & {groomName}
             </h3>
             
             <div className="flex items-center justify-center space-x-4 mb-6">
@@ -163,12 +157,18 @@ const Footer = () => {
             </div>
 
             <p className="text-white/80 font-body mb-8 max-w-md mx-auto italic">
-              {t('quote')}
+              {coupleQuote}
             </p>
 
             <p className="text-white/90 text-lg font-medium">
               {t('cta')}
             </p>
+
+            {hashtag && (
+              <p className="text-accent text-lg font-medium mt-4">
+                {hashtag}
+              </p>
+            )}
           </div>
 
           {/* Información de contacto minimalista */}
@@ -178,39 +178,48 @@ const Footer = () => {
               className="flex items-center justify-center space-x-3 hover:text-accent transition-colors"
             >
               <Mail className="w-4 h-4" />
-              <span className="text-sm">maria.carlos@email.com</span>
+              <span className="text-sm">{coupleEmail}</span>
             </button>
-            <button
-              onClick={handleWhatsAppClick}
-              className="flex items-center justify-center space-x-3 hover:text-accent transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              <span className="text-sm">{t('contact.whatsapp')}</span>
-            </button>
+            <div className="flex items-center justify-center space-x-4">
+              <button
+                onClick={() => handleWhatsAppClick(bridPhone)}
+                className="flex items-center space-x-2 hover:text-accent transition-colors"
+              >
+                <Phone className="w-4 h-4" />
+                <span className="text-sm">{brideName}</span>
+              </button>
+              <span className="text-white/40">|</span>
+              <button
+                onClick={() => handleWhatsAppClick(groomPhone)}
+                className="flex items-center space-x-2 hover:text-accent transition-colors"
+              >
+                <Phone className="w-4 h-4" />
+                <span className="text-sm">{groomName}</span>
+              </button>
+            </div>
             <div className="flex justify-center space-x-4">
-              <button
-                onClick={handleInstagramClick}
-                className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110"
-              >
-                <Instagram className="w-4 h-4 text-white" />
-              </button>
-              <button
-                onClick={handleFacebookClick}
-                className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110"
-              >
-                <Facebook className="w-4 h-4 text-white" />
-              </button>
+              {(brideInstagram || groomInstagram) && (
+                <button
+                  onClick={handleInstagramClick}
+                  className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110"
+                >
+                  <Instagram className="w-4 h-4 text-white" />
+                </button>
+              )}
+              {(brideFacebook || groomFacebook) && (
+                <button
+                  onClick={handleFacebookClick}
+                  className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110"
+                >
+                  <Facebook className="w-4 h-4 text-white" />
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Footer bottom */}
-          <div className="border-t border-white/20 pt-8 text-center space-y-2 animation-delay-600">
-            <p className="text-sm text-white/80">
-              {t('copyright')}
-            </p>
-            <p className="text-sm text-white/60">
-              {t('subtitle')}
-            </p>
+          {/* Copyright */}
+          <div className="text-center text-white/60 text-sm animation-delay-600">
+            <p>{t('copyright')}</p>
           </div>
         </div>
       </div>

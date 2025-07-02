@@ -1,14 +1,18 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import Image from 'next/image';
-import { Camera, Heart } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { ChevronLeft, ChevronRight, X, Camera, Heart, Share2 } from 'lucide-react';
+import { useTranslations } from '../../lib/translations';
+import { useIsMobile } from '@/lib/motion';
+import { useAppSelector } from '../../src/store/hooks';
+import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 const Gallery = () => {
-  const t = useTranslations('gallery');
+  const { t } = useTranslations('gallery');
+  const weddingData = useAppSelector(selectCurrentWedding);
   const [isMobile, setIsMobile] = useState(false);
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -24,63 +28,65 @@ const Gallery = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const photos = [
+  // Datos dinámicos con fallbacks
+  const photos = weddingData?.gallery?.length ? weddingData.gallery.map(img => ({
+    src: img.url,
+    alt: img.alt,
+    cols: img.cols || 1,
+    rows: img.rows || 1
+  })) : [
     {
-      src: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      alt: "Quetzalia y Adrián en el parque",
-      cols: 2,
-      rows: 2
+      id: 1,
+      src: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      alt: "Momento romántico de la pareja",
+      title: "Amor verdadero"
     },
     {
-      src: "https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      alt: "Momento romántico",
-      cols: 1,
-      rows: 1
+      id: 2,
+      src: "https://images.unsplash.com/photo-1470219556762-1771e7f9427d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      alt: "Preparativos de la boda",
+      title: "Preparándose para el gran día"
     },
     {
+      id: 3,
+      src: "https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      alt: "Ceremonia de boda",
+      title: "Momento especial"
+    },
+    {
+      id: 4,
+      src: "https://images.unsplash.com/photo-1525258370847-a2d17115dbaa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      alt: "Anillos de matrimonio",
+      title: "Unidos por siempre"
+    },
+    {
+      id: 5,
       src: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      alt: "Caminando juntos",
-      cols: 1,
-      rows: 1
+      alt: "Celebración de boda",
+      title: "Felicidad compartida"
     },
     {
-      src: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      alt: "Atardecer romántico",
-      cols: 1,
-      rows: 2
-    },
-    {
-      src: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      alt: "Riendo juntos",
-      cols: 1,
-      rows: 1
-    },
-    {
-      src: "https://images.unsplash.com/photo-1511988617509-a57c8a288659?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      alt: "Momento íntimo",
-      cols: 1,
-      rows: 1
+      id: 6,
+      src: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      alt: "Recepción de boda",
+      title: "Celebrando juntos"
     }
   ];
+
+  const hashtag = weddingData?.couple.hashtag || t('hashtag');
 
   // Versión sin animaciones para móvil
   if (isMobile) {
     return (
-      <section className="py-20 bg-gradient-to-br from-light via-white to-light">
+      <section className="py-12 bg-gradient-to-br from-light via-white to-light">
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-16">
-            <h2 className="section-title mb-4">{t('title')}</h2>
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <p className="section-subtitle">
               {t('subtitle')}
             </p>
-            
-            {/* Ornamento */}
-            <div className="flex items-center justify-center mt-8 mb-12">
-              <div className="w-16 h-px bg-accent" />
-              <Camera className="mx-4 w-6 h-6 text-accent" />
-              <div className="w-16 h-px bg-accent" />
-            </div>
           </div>
 
           {/* Grid de fotos simplificado para móvil */}
@@ -107,7 +113,6 @@ const Gallery = () => {
           {/* Mensaje especial */}
           <div className="text-center mt-16">
             <div className="bg-white rounded-2xl p-8 shadow-lg max-w-3xl mx-auto">
-              <Heart className="w-12 h-12 mx-auto mb-6 text-accent" />
               <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
                 {t('everyMomentCounts')}
               </h3>
@@ -129,11 +134,11 @@ const Gallery = () => {
                 {t('shareMessage')}
               </h3>
               <p className="opacity-90 mb-6">
-                {t('cameraMessage')} <span className="font-semibold">{t('hashtag')}</span> {t('hashtagPrompt')}
+                {t('cameraMessage')} <span className="font-semibold">{hashtag}</span> {t('hashtagPrompt')}
               </p>
               <div className="flex items-center justify-center space-x-2">
                 <Camera className="w-5 h-5" />
-                <span className="font-semibold">{t('hashtag')}</span>
+                <span className="font-semibold">{hashtag}</span>
               </div>
             </div>
           </div>
@@ -164,7 +169,7 @@ const Gallery = () => {
   };
 
   return (
-    <section ref={ref} className="py-20 bg-gradient-to-br from-light via-white to-light">
+    <section ref={ref} className="py-12 bg-gradient-to-br from-light via-white to-light">
       <div className="section-container">
         <motion.div
           variants={containerVariants}
@@ -173,17 +178,11 @@ const Gallery = () => {
         >
           {/* Título */}
           <motion.div variants={itemVariants} className="text-center mb-16">
-            <h2 className="section-title mb-4">{t('title')}</h2>
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <p className="section-subtitle">
               {t('subtitle')}
             </p>
-            
-            {/* Ornamento */}
-            <div className="flex items-center justify-center mt-8 mb-12">
-              <div className="w-16 h-px bg-accent" />
-              <Camera className="mx-4 w-6 h-6 text-accent" />
-              <div className="w-16 h-px bg-accent" />
-            </div>
           </motion.div>
 
           {/* Grid de fotos */}
@@ -203,16 +202,14 @@ const Gallery = () => {
                     src={photo.src}
                     alt={photo.alt}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    quality={80}
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    quality={60}
+                    loading={index > 4 ? "lazy" : "eager"}
                   />
+                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
                   
-                  {/* Overlay con efecto hover */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  {/* Icono de corazón en hover */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Heart className="w-12 h-12 text-white" fill="currentColor" />
+                    <Camera className="w-8 h-8 text-white" />
                   </div>
                 </motion.div>
               ))}
@@ -220,12 +217,8 @@ const Gallery = () => {
           </div>
 
           {/* Mensaje especial */}
-          <motion.div
-            variants={itemVariants}
-            className="text-center mt-16"
-          >
-            <div className="bg-white rounded-2xl p-8 shadow-elegant max-w-3xl mx-auto">
-              <Heart className="w-12 h-12 mx-auto mb-6 text-accent" />
+          <motion.div variants={itemVariants} className="text-center mt-16">
+            <div className="bg-white rounded-2xl p-8 shadow-lg max-w-3xl mx-auto">
               <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
                 {t('everyMomentCounts')}
               </h3>
@@ -241,20 +234,17 @@ const Gallery = () => {
           </motion.div>
 
           {/* Call to action */}
-          <motion.div
-            variants={itemVariants}
-            className="text-center mt-12"
-          >
+          <motion.div variants={itemVariants} className="text-center mt-12">
             <div className="bg-gradient-primary rounded-2xl p-8 text-white max-w-2xl mx-auto">
               <h3 className="text-xl font-heading font-semibold mb-4">
                 {t('shareMessage')}
               </h3>
               <p className="opacity-90 mb-6">
-                {t('cameraMessage')} <span className="font-semibold">{t('hashtag')}</span> {t('hashtagPrompt')}
+                {t('cameraMessage')} <span className="font-semibold">{hashtag}</span> {t('hashtagPrompt')}
               </p>
               <div className="flex items-center justify-center space-x-2">
                 <Camera className="w-5 h-5" />
-                <span className="font-semibold">{t('hashtag')}</span>
+                <span className="font-semibold">{hashtag}</span>
               </div>
             </div>
           </motion.div>
