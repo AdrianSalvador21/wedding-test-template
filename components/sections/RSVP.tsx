@@ -4,67 +4,110 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, CheckCircle, Users, MessageCircle, Calendar } from 'lucide-react';
+import { Heart, Calendar, Clock, MapPin, Shirt, Send, Check } from 'lucide-react';
+import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
-
-// Schema de validación
-const rsvpSchema = z.object({
-  name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  email: z.string().email('Email inválido'),
-  phone: z.string().min(10, 'Teléfono debe tener al menos 10 dígitos'),
-  attendance: z.enum(['yes', 'no'], {
-    required_error: 'Por favor selecciona si asistirás'
-  }),
-  guests: z.number().min(1).max(10).optional(),
-  dietaryRestrictions: z.string().optional(),
-  message: z.string().optional()
-});
-
-type RSVPForm = z.infer<typeof rsvpSchema>;
+import { useAppSelector } from '../../src/store/hooks';
+import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 const RSVP = () => {
+  const { t } = useTranslations('rsvp');
   const { isMobile, isLoaded } = useIsMobile();
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const weddingData = useAppSelector(selectCurrentWedding);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Datos dinámicos con fallbacks
+  const venue = weddingData?.event.venue;
+  const venueName = venue?.name || t('eventInfo.venue');
+  const venueAddress = venue?.address || t('eventInfo.address');
+  const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
+  const eventTime = weddingData?.event.time || '16:00';
+  const dressCodeStyle = weddingData?.event.dressCode?.style || t('eventInfo.dressCode');
+  const rsvpDeadline = weddingData?.event.rsvpDeadline ? new Date(weddingData.event.rsvpDeadline) : new Date('2025-10-15T23:59:59');
+  const coupleEmail = weddingData?.couple.coupleEmail || 'pareja@email.com';
+
+  // Formatear fecha y hora
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hour24 = parseInt(hours);
+    const ampm = hour24 >= 12 ? 'PM' : 'AM';
+    const hour12 = hour24 % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+  };
+
+  // Schema de validación usando traducciones donde sea posible
+  const rsvpSchema = z.object({
+    name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+    email: z.string().email('Email inválido'),
+    phone: z.string().min(10, 'Teléfono debe tener al menos 10 dígitos'),
+    attendance: z.enum(['yes', 'no']),
+    guests: z.number().min(0).max(5),
+    guestNames: z.string().optional(),
+    dietaryRestrictions: z.string().optional(),
+    song: z.string().optional(),
+    message: z.string().optional(),
+  });
+
+  type RSVPFormData = z.infer<typeof rsvpSchema>;
 
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors }
-  } = useForm<RSVPForm>({
-    resolver: zodResolver(rsvpSchema)
+  } = useForm<RSVPFormData>({
+    resolver: zodResolver(rsvpSchema),
+    defaultValues: {
+      attendance: 'yes',
+      guests: 0
+    }
   });
 
   const attendance = watch('attendance');
+  const guestCount = watch('guests');
 
-  const onSubmit = async (data: RSVPForm) => {
+  const onSubmit = async (data: RSVPFormData) => {
     setIsSubmitting(true);
     
-    // Simular envío del formulario
+    // Simular envío de formulario con datos dinámicos
+    const rsvpData = {
+      ...data,
+      weddingId: weddingData?.id || 'default',
+      eventDate: weddingDate.toISOString(),
+      venue: venueName
+    };
+    
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    console.log('RSVP Data:', data);
-    setIsSubmitted(true);
+    console.log('RSVP Data:', rsvpData);
     setIsSubmitting(false);
+    setIsSubmitted(true);
   };
 
-  // Estado de confirmación enviada
   if (isSubmitted) {
     return (
-      <section id="rsvp" className="py-20 bg-gradient-to-br from-primary via-secondary to-accent">
+      <section className="py-12 bg-gradient-to-br from-light via-white to-light">
         <div className="section-container">
-          <div className="text-center text-white max-w-2xl mx-auto">
-            <CheckCircle className="w-24 h-24 mx-auto mb-8 text-white" />
-            <h2 className="text-4xl md:text-5xl font-heading font-bold mb-6">
-              ¡Gracias por Confirmar!
-            </h2>
-            <p className="text-xl opacity-90 mb-8">
-              Tu confirmación ha sido recibida. Te enviaremos más detalles pronto.
-            </p>
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
-              <p className="text-lg">
-                Esperamos con ansias celebrar contigo este día tan especial.
+          <div className="max-w-md mx-auto text-center">
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Check className="w-8 h-8 text-green-600" />
+              </div>
+              <h2 className="text-2xl font-heading font-semibold text-primary mb-4">
+                {t('success')}
+              </h2>
+              <p className="text-text">
+                ¡Nos vemos el {formatDate(weddingDate)} en {venueName}!
               </p>
             </div>
           </div>
@@ -76,215 +119,202 @@ const RSVP = () => {
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <section id="rsvp" className="py-20 bg-white">
+      <section className="py-12 bg-gradient-to-br from-light via-white to-light">
         <div className="section-container">
           {/* Título */}
-          <div className="text-center mb-16">
-            <h2 className="section-title mb-4">Confirma tu Asistencia</h2>
+          <div className="text-center mb-12">
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <p className="section-subtitle">
-              Por favor confirma si podrás acompañarnos en nuestro día especial
+              {t('description')}
             </p>
             
             {/* Ornamento */}
             <div className="flex items-center justify-center mt-8 mb-12">
               <div className="w-16 h-px bg-accent" />
-              <Calendar className="mx-4 w-6 h-6 text-accent" />
+              <Heart className="mx-4 w-6 h-6 text-accent" />
               <div className="w-16 h-px bg-accent" />
             </div>
           </div>
 
           <div className="max-w-lg mx-auto space-y-8">
-            
             {/* Información del evento */}
-            <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-heading font-semibold text-primary mb-4">
-                Detalles del Evento
+            <div className="bg-white rounded-2xl p-6 shadow-lg">
+              <h3 className="text-xl font-heading font-semibold text-primary mb-4 text-center">
+                {t('eventInfo.title')}
               </h3>
               
               <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-white" />
-                  </div>
+                <div className="flex items-center">
+                  <Calendar className="w-5 h-5 text-accent mr-3" />
+                  <span className="text-text">{formatDate(weddingDate)}</span>
+                </div>
+                <div className="flex items-center">
+                  <Clock className="w-5 h-5 text-accent mr-3" />
+                  <span className="text-text">{formatTime(eventTime)}</span>
+                </div>
+                <div className="flex items-center">
+                  <MapPin className="w-5 h-5 text-accent mr-3" />
                   <div>
-                    <div className="font-semibold text-dark text-sm">Fecha y Hora</div>
-                    <div className="text-text text-sm">21 de Noviembre, 2025 - 4:00 PM</div>
+                    <div className="text-text">{venueName}</div>
+                    <div className="text-sm text-text opacity-70">{venueAddress}</div>
                   </div>
                 </div>
-                
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
-                    <Users className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-dark text-sm">Celebración</div>
-                    <div className="text-text text-sm">Ceremonia, Cóctel, Cena y Baile</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
-                    <MessageCircle className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-dark text-sm">Código de Vestimenta</div>
-                    <div className="text-text text-sm">Formal / Cocktail</div>
-                  </div>
+                <div className="flex items-center">
+                  <Shirt className="w-5 h-5 text-accent mr-3" />
+                  <span className="text-text">{dressCodeStyle}</span>
                 </div>
               </div>
             </div>
 
-            {/* Información Importante */}
-            <div className="bg-gradient-primary rounded-2xl p-6 text-white">
-              <h3 className="text-lg font-heading font-semibold mb-3">
-                Información Importante
-              </h3>
-              <ul className="space-y-2 text-sm opacity-90">
-                <li>• Por favor confirma antes del 15 de octubre</li>
-                <li>• Incluye en tu confirmación cualquier restricción alimentaria</li>
-                <li>• Habrá transporte desde el hotel recomendado</li>
-                <li>• La celebración será al aire libre con opciones bajo techo</li>
-              </ul>
-            </div>
-
             {/* Formulario */}
-            <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-2xl p-6 shadow-lg">
-              <div className="space-y-4">
-                
+            <div className="bg-white rounded-2xl p-6 shadow-lg">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 {/* Nombre */}
                 <div>
-                  <label className="block text-sm font-semibold text-dark mb-2">
-                    Nombre Completo *
+                  <label className="block text-sm font-medium text-dark mb-2">
+                    {t('form.name')} *
                   </label>
                   <input
                     {...register('name')}
                     type="text"
-                    className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    placeholder="Tu nombre completo"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
                   />
                   {errors.name && (
-                    <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+                    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
                   )}
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-semibold text-dark mb-2">
-                    Email *
+                  <label className="block text-sm font-medium text-dark mb-2">
+                    {t('form.email')} *
                   </label>
                   <input
                     {...register('email')}
                     type="email"
-                    className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    placeholder="tu@email.com"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
                   />
                   {errors.email && (
-                    <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
                   )}
                 </div>
 
                 {/* Teléfono */}
                 <div>
-                  <label className="block text-sm font-semibold text-dark mb-2">
-                    Teléfono *
+                  <label className="block text-sm font-medium text-dark mb-2">
+                    {t('form.phone')} *
                   </label>
                   <input
                     {...register('phone')}
                     type="tel"
-                    className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    placeholder="+52 999 999 9999"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
                   />
                   {errors.phone && (
-                    <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
+                    <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
                   )}
                 </div>
 
                 {/* Asistencia */}
                 <div>
-                  <label className="block text-sm font-semibold text-dark mb-3">
-                    ¿Asistirás? *
+                  <label className="block text-sm font-medium text-dark mb-3">
+                    {t('form.attendance')} *
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="cursor-pointer">
+                  <div className="space-y-2">
+                    <label className="flex items-center">
                       <input
                         {...register('attendance')}
                         type="radio"
                         value="yes"
-                        className="sr-only"
+                        className="w-4 h-4 text-accent focus:ring-accent"
                       />
-                      <div className={`p-3 rounded-xl border-2 text-center transition-all ${
-                        attendance === 'yes'
-                          ? 'border-primary bg-primary text-white'
-                          : 'border-border bg-white text-dark hover:border-primary'
-                      }`}>
-                        <div className="text-sm font-semibold">Sí, asistiré</div>
-                      </div>
+                      <span className="ml-3 text-text">{t('form.attendanceOptions.yes')}</span>
                     </label>
-                    <label className="cursor-pointer">
+                    <label className="flex items-center">
                       <input
                         {...register('attendance')}
                         type="radio"
                         value="no"
-                        className="sr-only"
+                        className="w-4 h-4 text-accent focus:ring-accent"
                       />
-                      <div className={`p-3 rounded-xl border-2 text-center transition-all ${
-                        attendance === 'no'
-                          ? 'border-red-500 bg-red-500 text-white'
-                          : 'border-border bg-white text-dark hover:border-red-500'
-                      }`}>
-                        <div className="text-sm font-semibold">No podré asistir</div>
-                      </div>
+                      <span className="ml-3 text-text">{t('form.attendanceOptions.no')}</span>
                     </label>
                   </div>
-                  {errors.attendance && (
-                    <p className="mt-1 text-sm text-red-500">{errors.attendance.message}</p>
-                  )}
                 </div>
 
-                {/* Número de invitados - solo si asiste */}
+                {/* Acompañantes (solo si asiste) */}
                 {attendance === 'yes' && (
                   <div>
-                    <label className="block text-sm font-semibold text-dark mb-2">
-                      ¿Cuántos invitados incluye tu confirmación?
+                    <label className="block text-sm font-medium text-dark mb-2">
+                      {t('form.guests')}
                     </label>
-                    <select
-                      {...register('guests', { valueAsNumber: true })}
-                      className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    >
-                      <option value={1}>Solo yo</option>
-                      <option value={2}>2 personas</option>
-                      <option value={3}>3 personas</option>
-                      <option value={4}>4 personas</option>
-                      <option value={5}>5 personas</option>
-                    </select>
+                    <div className="flex items-center space-x-3">
+                      <input
+                        {...register('guests', { valueAsNumber: true })}
+                        type="number"
+                        min="0"
+                        max="5"
+                        className="w-24 px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-colors text-center"
+                      />
+                      <span className="text-text text-sm">{t('form.guestsHelp')}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Nombres de acompañantes */}
+                {attendance === 'yes' && guestCount > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-dark mb-2">
+                      {t('form.guestNames')}
+                    </label>
+                    <textarea
+                      {...register('guestNames')}
+                      rows={3}
+                      className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none"
+                      placeholder={t('form.guestNamesPlaceholder')}
+                    />
                   </div>
                 )}
 
                 {/* Restricciones alimentarias */}
                 {attendance === 'yes' && (
                   <div>
-                    <label className="block text-sm font-semibold text-dark mb-2">
-                      Restricciones Alimentarias
+                    <label className="block text-sm font-medium text-dark mb-2">
+                      {t('form.dietary')}
                     </label>
                     <textarea
                       {...register('dietaryRestrictions')}
-                      rows={3}
-                      className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
-                      placeholder="¿Alguna alergia o restricción alimentaria?"
+                      rows={2}
+                      className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none"
+                      placeholder={t('form.dietaryPlaceholder')}
                     />
                   </div>
                 )}
 
-                {/* Mensaje */}
+                {/* Canción especial */}
+                {attendance === 'yes' && (
+                  <div>
+                    <label className="block text-sm font-medium text-dark mb-2">
+                      {t('form.song')}
+                    </label>
+                    <input
+                      {...register('song')}
+                      type="text"
+                      className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
+                      placeholder={t('form.songPlaceholder')}
+                    />
+                  </div>
+                )}
+
+                {/* Mensaje especial */}
                 <div>
-                  <label className="block text-sm font-semibold text-dark mb-2">
-                    Mensaje para los Novios
+                  <label className="block text-sm font-medium text-dark mb-2">
+                    {t('form.message')}
                   </label>
                   <textarea
                     {...register('message')}
                     rows={3}
-                    className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
-                    placeholder="Escríbenos un mensaje especial..."
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none"
+                    placeholder={t('form.messagePlaceholder')}
                   />
                 </div>
 
@@ -292,22 +322,33 @@ const RSVP = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-primary text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                  className="w-full bg-gradient-primary text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
                 >
                   {isSubmitting ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Enviando...
-                    </div>
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>{t('form.submitting')}</span>
+                    </>
                   ) : (
-                    <div className="flex items-center justify-center">
-                      <Send className="w-5 h-5 mr-2" />
-                      Confirmar Asistencia
-                    </div>
+                    <>
+                      <Send className="w-5 h-5" />
+                      <span>{t('form.submit')}</span>
+                    </>
                   )}
                 </button>
+              </form>
+            </div>
+
+            {/* Información adicional */}
+            <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 shadow-lg">
+              <h3 className="text-lg font-heading font-semibold text-primary mb-3 text-center">
+                {t('additionalInfo.title')}
+              </h3>
+              <div className="space-y-2 text-center text-text text-sm">
+                <p>{t('additionalInfo.deadline')}: {formatDate(rsvpDeadline)}</p>
+                <p>{t('additionalInfo.questions')}: {coupleEmail}</p>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </section>
@@ -317,13 +358,16 @@ const RSVP = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <section id="rsvp" className="py-20 bg-white">
+      <section id="rsvp" className="py-12 bg-gradient-to-br from-light via-white to-light">
         <div className="section-container">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
             <div className="h-4 bg-gray-200 rounded w-96 mx-auto" />
             <div className="grid lg:grid-cols-2 gap-12">
-              <div className="h-96 bg-gray-200 rounded-2xl" />
+              <div className="space-y-6">
+                <div className="h-48 bg-gray-200 rounded-2xl" />
+                <div className="h-96 bg-gray-200 rounded-2xl" />
+              </div>
               <div className="h-96 bg-gray-200 rounded-2xl" />
             </div>
           </div>
@@ -332,221 +376,235 @@ const RSVP = () => {
     );
   }
 
-  // Versión para desktop con animaciones CSS
+  // Versión para desktop con animaciones
   return (
-    <section id="rsvp" className="py-20 bg-white">
+    <section id="rsvp" className="py-12 bg-gradient-to-br from-light via-white to-light">
       <div className="section-container">
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-16 animation-delay-200">
-            <h2 className="section-title mb-4">Confirma tu Asistencia</h2>
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <p className="section-subtitle">
-              Por favor confirma si podrás acompañarnos en nuestro día especial
+              {t('description')}
             </p>
-            
-            {/* Ornamento */}
-            <div className="flex items-center justify-center mt-8 mb-12">
-              <div className="w-16 h-px bg-accent" />
-              <Calendar className="mx-4 w-6 h-6 text-accent" />
-              <div className="w-16 h-px bg-accent" />
-            </div>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-12">
               
               {/* Información del evento */}
               <div className="space-y-8 animation-delay-400">
-                <div className="bg-gradient-to-br from-light to-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <h3 className="text-2xl font-heading font-semibold text-primary mb-6">
-                    Detalles del Evento
+                
+                {/* Detalles del evento */}
+                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <h3 className="text-2xl font-heading font-semibold text-primary mb-6 text-center">
+                    {t('eventInfo.title')}
                   </h3>
                   
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                        <Calendar className="w-6 h-6 text-white" />
-                      </div>
+                  <div className="space-y-6">
+                    <div className="flex items-center p-4 bg-light rounded-xl">
+                      <Calendar className="w-6 h-6 text-accent mr-4" />
                       <div>
-                        <div className="font-semibold text-dark">Fecha y Hora</div>
-                        <div className="text-text">21 de Noviembre, 2025 - 4:00 PM</div>
+                        <div className="font-medium text-dark">{formatDate(weddingDate)}</div>
+                        <div className="text-sm text-text opacity-70">{t('eventInfo.dateLabel')}</div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
-                        <Users className="w-6 h-6 text-white" />
-                      </div>
+                    <div className="flex items-center p-4 bg-light rounded-xl">
+                      <Clock className="w-6 h-6 text-accent mr-4" />
                       <div>
-                        <div className="font-semibold text-dark">Celebración</div>
-                        <div className="text-text">Ceremonia, Cóctel, Cena y Baile</div>
+                        <div className="font-medium text-dark">{formatTime(eventTime)}</div>
+                        <div className="text-sm text-text opacity-70">{t('eventInfo.timeLabel')}</div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
-                        <MessageCircle className="w-6 h-6 text-white" />
-                      </div>
+                    <div className="flex items-center p-4 bg-light rounded-xl">
+                      <MapPin className="w-6 h-6 text-accent mr-4" />
                       <div>
-                        <div className="font-semibold text-dark">Código de Vestimenta</div>
-                        <div className="text-text">Formal / Cocktail</div>
+                        <div className="font-medium text-dark">{venueName}</div>
+                        <div className="text-sm text-text opacity-70">{venueAddress}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center p-4 bg-light rounded-xl">
+                      <Shirt className="w-6 h-6 text-accent mr-4" />
+                      <div>
+                        <div className="font-medium text-dark">{dressCodeStyle}</div>
+                        <div className="text-sm text-text opacity-70">{t('eventInfo.dressCodeLabel')}</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gradient-primary rounded-2xl p-8 text-white hover:shadow-xl transition-shadow duration-300">
-                  <h3 className="text-xl font-heading font-semibold mb-4">
-                    Información Importante
+                {/* Información adicional */}
+                <div className="bg-gradient-to-br from-light to-white rounded-2xl p-8 shadow-lg">
+                  <h3 className="text-xl font-heading font-semibold text-primary mb-6 text-center">
+                    {t('additionalInfo.title')}
                   </h3>
-                  <ul className="space-y-2 text-sm opacity-90">
-                    <li>• Por favor confirma antes del 15 de octubre</li>
-                    <li>• Incluye en tu confirmación cualquier restricción alimentaria</li>
-                    <li>• Habrá transporte desde el hotel recomendado</li>
-                    <li>• La celebración será al aire libre con opciones bajo techo</li>
-                  </ul>
+                  <div className="space-y-4 text-center">
+                    <div className="p-4 bg-white rounded-xl">
+                      <p className="text-dark font-medium">{t('additionalInfo.deadline')}</p>
+                      <p className="text-accent font-semibold">{formatDate(rsvpDeadline)}</p>
+                    </div>
+                    <div className="p-4 bg-white rounded-xl">
+                      <p className="text-dark font-medium">{t('additionalInfo.questions')}</p>
+                      <p className="text-accent">{coupleEmail}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Formulario */}
               <div className="animation-delay-600">
-                <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="space-y-6">
-                    
-                    {/* Nombre */}
-                    <div>
-                      <label className="block text-sm font-semibold text-dark mb-2">
-                        Nombre Completo *
-                      </label>
-                      <input
-                        {...register('name')}
-                        type="text"
-                        className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                        placeholder="Tu nombre completo"
-                      />
-                      {errors.name && (
-                        <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
-                      )}
+                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                    {/* Información personal */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-dark mb-2">
+                          {t('form.name')} *
+                        </label>
+                        <input
+                          {...register('name')}
+                          type="text"
+                          className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
+                        />
+                        {errors.name && (
+                          <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-dark mb-2">
+                          {t('form.phone')} *
+                        </label>
+                        <input
+                          {...register('phone')}
+                          type="tel"
+                          className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
+                        />
+                        {errors.phone && (
+                          <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+                        )}
+                      </div>
                     </div>
 
                     {/* Email */}
                     <div>
-                      <label className="block text-sm font-semibold text-dark mb-2">
-                        Email *
+                      <label className="block text-sm font-medium text-dark mb-2">
+                        {t('form.email')} *
                       </label>
                       <input
                         {...register('email')}
                         type="email"
-                        className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                        placeholder="tu@email.com"
+                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
                       />
                       {errors.email && (
-                        <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
-                      )}
-                    </div>
-
-                    {/* Teléfono */}
-                    <div>
-                      <label className="block text-sm font-semibold text-dark mb-2">
-                        Teléfono *
-                      </label>
-                      <input
-                        {...register('phone')}
-                        type="tel"
-                        className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                        placeholder="+52 999 999 9999"
-                      />
-                      {errors.phone && (
-                        <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
+                        <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
                       )}
                     </div>
 
                     {/* Asistencia */}
                     <div>
-                      <label className="block text-sm font-semibold text-dark mb-3">
-                        ¿Asistirás? *
+                      <label className="block text-sm font-medium text-dark mb-3">
+                        {t('form.attendance')} *
                       </label>
                       <div className="grid grid-cols-2 gap-4">
-                        <label className="cursor-pointer">
+                        <label className="flex items-center p-4 bg-light rounded-xl hover:bg-accent hover:bg-opacity-10 transition-colors cursor-pointer">
                           <input
                             {...register('attendance')}
                             type="radio"
                             value="yes"
-                            className="sr-only"
+                            className="w-4 h-4 text-accent focus:ring-accent mr-3"
                           />
-                          <div className={`p-4 rounded-xl border-2 text-center transition-all hover:scale-105 ${
-                            attendance === 'yes'
-                              ? 'border-primary bg-primary text-white shadow-lg'
-                              : 'border-border bg-white text-dark hover:border-primary'
-                          }`}>
-                            <div className="font-semibold">Sí, asistiré</div>
-                          </div>
+                          <span className="text-text font-medium">{t('form.attendanceOptions.yes')}</span>
                         </label>
-                        <label className="cursor-pointer">
+                        <label className="flex items-center p-4 bg-light rounded-xl hover:bg-accent hover:bg-opacity-10 transition-colors cursor-pointer">
                           <input
                             {...register('attendance')}
                             type="radio"
                             value="no"
-                            className="sr-only"
+                            className="w-4 h-4 text-accent focus:ring-accent mr-3"
                           />
-                          <div className={`p-4 rounded-xl border-2 text-center transition-all hover:scale-105 ${
-                            attendance === 'no'
-                              ? 'border-red-500 bg-red-500 text-white shadow-lg'
-                              : 'border-border bg-white text-dark hover:border-red-500'
-                          }`}>
-                            <div className="font-semibold">No podré asistir</div>
-                          </div>
+                          <span className="text-text font-medium">{t('form.attendanceOptions.no')}</span>
                         </label>
                       </div>
-                      {errors.attendance && (
-                        <p className="mt-1 text-sm text-red-500">{errors.attendance.message}</p>
-                      )}
                     </div>
 
-                    {/* Número de invitados - solo si asiste */}
+                    {/* Campos condicionales para asistencia */}
                     {attendance === 'yes' && (
-                      <div>
-                        <label className="block text-sm font-semibold text-dark mb-2">
-                          ¿Cuántos invitados incluye tu confirmación?
-                        </label>
-                        <select
-                          {...register('guests', { valueAsNumber: true })}
-                          className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                        >
-                          <option value={1}>Solo yo</option>
-                          <option value={2}>2 personas</option>
-                          <option value={3}>3 personas</option>
-                          <option value={4}>4 personas</option>
-                          <option value={5}>5 personas</option>
-                        </select>
-                      </div>
+                      <>
+                        {/* Acompañantes */}
+                        <div>
+                          <label className="block text-sm font-medium text-dark mb-2">
+                            {t('form.guests')}
+                          </label>
+                          <div className="flex items-center space-x-4">
+                            <input
+                              {...register('guests', { valueAsNumber: true })}
+                              type="number"
+                              min="0"
+                              max="5"
+                              className="w-24 px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-colors text-center"
+                            />
+                            <span className="text-text">{t('form.guestsHelp')}</span>
+                          </div>
+                        </div>
+
+                        {/* Nombres de acompañantes */}
+                        {guestCount > 0 && (
+                          <div>
+                            <label className="block text-sm font-medium text-dark mb-2">
+                              {t('form.guestNames')}
+                            </label>
+                            <textarea
+                              {...register('guestNames')}
+                              rows={3}
+                              className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none"
+                              placeholder={t('form.guestNamesPlaceholder')}
+                            />
+                          </div>
+                        )}
+
+                        {/* Restricciones alimentarias */}
+                        <div>
+                          <label className="block text-sm font-medium text-dark mb-2">
+                            {t('form.dietary')}
+                          </label>
+                          <textarea
+                            {...register('dietaryRestrictions')}
+                            rows={2}
+                            className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none"
+                            placeholder={t('form.dietaryPlaceholder')}
+                          />
+                        </div>
+
+                        {/* Canción especial */}
+                        <div>
+                          <label className="block text-sm font-medium text-dark mb-2">
+                            {t('form.song')}
+                          </label>
+                          <input
+                            {...register('song')}
+                            type="text"
+                            className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
+                            placeholder={t('form.songPlaceholder')}
+                          />
+                        </div>
+                      </>
                     )}
 
-                    {/* Restricciones alimentarias */}
-                    {attendance === 'yes' && (
-                      <div>
-                        <label className="block text-sm font-semibold text-dark mb-2">
-                          Restricciones Alimentarias
-                        </label>
-                        <textarea
-                          {...register('dietaryRestrictions')}
-                          rows={3}
-                          className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
-                          placeholder="¿Alguna alergia o restricción alimentaria?"
-                        />
-                      </div>
-                    )}
-
-                    {/* Mensaje */}
+                    {/* Mensaje especial */}
                     <div>
-                      <label className="block text-sm font-semibold text-dark mb-2">
-                        Mensaje para los Novios
+                      <label className="block text-sm font-medium text-dark mb-2">
+                        {t('form.message')}
                       </label>
                       <textarea
                         {...register('message')}
                         rows={4}
-                        className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
-                        placeholder="Escríbenos un mensaje especial..."
+                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none"
+                        placeholder={t('form.messagePlaceholder')}
                       />
                     </div>
 
@@ -554,22 +612,22 @@ const RSVP = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-gradient-primary text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+                      className="w-full bg-gradient-primary text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3"
                     >
                       {isSubmitting ? (
-                        <div className="flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                          Enviando...
-                        </div>
+                        <>
+                          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>{t('form.submitting')}</span>
+                        </>
                       ) : (
-                        <div className="flex items-center justify-center">
-                          <Send className="w-5 h-5 mr-2" />
-                          Confirmar Asistencia
-                        </div>
+                        <>
+                          <Send className="w-6 h-6" />
+                          <span>{t('form.submit')}</span>
+                        </>
                       )}
                     </button>
-                  </div>
-                </form>
+                  </form>
+                </div>
               </div>
             </div>
           </div>

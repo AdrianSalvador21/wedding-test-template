@@ -1,5 +1,13 @@
+import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+
+// Configuración directa en el middleware
+const intlMiddleware = createMiddleware({
+  locales: ['es', 'en'],
+  defaultLocale: 'es',
+  localePrefix: 'as-needed' // / = español, /en = inglés
+});
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -21,7 +29,8 @@ export function middleware(request: NextRequest) {
     return new NextResponse('Not Found', { status: 404 });
   }
 
-  return NextResponse.next();
+  // Aplicar middleware de internacionalización
+  return intlMiddleware(request);
 }
 
 export const config = {
@@ -35,4 +44,4 @@ export const config = {
      */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
-}; 
+};

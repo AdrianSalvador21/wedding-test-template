@@ -3,318 +3,183 @@
 import React from 'react';
 import Image from 'next/image';
 import { Heart, Star, Home, Sparkles } from 'lucide-react';
-import { useIsMobile } from '@/lib/motion';
+import { useTranslations } from '../../lib/translations';
+import { useAppSelector } from '../../src/store/hooks';
+import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddingSlice';
 
 const About = () => {
-  const { isMobile, isLoaded } = useIsMobile();
+  const { t } = useTranslations('about');
+  const currentWedding = useAppSelector(selectCurrentWedding);
+  const couple = useAppSelector(selectCouple);
 
-  // Versión estática para móvil
-  if (isMobile) {
-    return (
-      <section className="py-20 bg-white">
-        <div className="section-container">
-          {/* Título */}
-          <div className="text-center mb-16">
-            <h2 className="section-title mb-4">Nuestra Historia</h2>
-            <p className="section-subtitle">
-              Cómo comenzó todo y por qué decidimos pasar el resto de nuestras vidas juntos
-            </p>
-          </div>
+  // Datos dinámicos de la boda
+  const specialMoments = currentWedding?.specialMoments || [];
+  const relationshipStats = currentWedding?.relationshipStats;
+  const story = couple?.story || t('story'); // Fallback a traducción si no hay datos
+  const quote = couple?.quote || t('quote'); // Fallback a traducción si no hay datos
 
-          {/* Historia simplificada para móvil */}
-          <div className="space-y-12">
-            
-            {/* Imagen de la pareja */}
-            <div className="relative max-w-md mx-auto">
-              <div className="relative rounded-3xl overflow-hidden shadow-lg">
-                <Image
-                  src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60"
-                  alt="Quetzalia y Adrián juntos"
-                  width={400}
-                  height={500}
-                  className="object-cover"
-                  quality={60}
-                />
-              </div>
-            </div>
-
-            {/* Contenido de la historia */}
-            <div className="space-y-8">
-              
-              {/* Historia principal */}
-              <div className="space-y-6">
-                <div className="flex items-center justify-center space-x-4 mb-6">
-                  <div className="w-12 h-px bg-accent" />
-                  <Heart className="w-6 h-6 text-accent" />
-                  <div className="w-12 h-px bg-accent" />
-                </div>
-
-                <h3 className="text-2xl font-heading font-semibold text-primary mb-6 text-center">
-                  El Comienzo de Nuestro Amor
-                </h3>
-
-                <div className="space-y-4 text-text leading-relaxed">
-                  <p>
-                    Nos conocimos en una tarde de primavera de 2018, cuando el destino nos 
-                    cruzó en el camino de la manera más inesperada. Lo que comenzó como una 
-                    simple conversación, se convirtió en horas de risas, sueños compartidos 
-                    y la certeza de que habíamos encontrado algo especial.
-                  </p>
-
-                  <p>
-                    Desde ese primer encuentro, supimos que nuestras vidas estaban destinadas 
-                    a entrelazarse. Cada día juntos ha sido una nueva aventura, llena de 
-                    momentos que atesoramos en nuestros corazones.
-                  </p>
-
-                  <p className="font-semibold text-primary">
-                    Ahora, después de años de amor, crecimiento y complicidad, 
-                    estamos listos para dar el siguiente paso en nuestro viaje juntos.
-                  </p>
-                </div>
-              </div>
-
-              {/* Estadísticas de la relación */}
-              <div className="grid grid-cols-2 gap-6 pt-8 border-t border-border">
-                <div className="text-center">
-                  <div className="text-3xl font-heading font-bold text-primary mb-2">7</div>
-                  <div className="text-sm font-semibold text-text uppercase tracking-wide">
-                    Años Juntos
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-heading font-bold text-primary mb-2">∞</div>
-                  <div className="text-sm font-semibold text-text uppercase tracking-wide">
-                    Aventuras Vividas
-                  </div>
-                </div>
-              </div>
-
-              {/* Cita especial */}
-              <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 border border-border">
-                <blockquote className="text-lg font-body italic text-center text-primary">
-                  &ldquo;En cada amanecer contigo, descubro una nueva razón para amarte más. 
-                  Eres mi hogar, mi aventura y mi paz.&rdquo;
-                </blockquote>
-                <div className="text-center mt-4">
-                  <div className="w-16 h-px bg-accent mx-auto" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Momentos especiales simplificados */}
-          <div className="mt-20 pt-16 border-t border-border">
-            <h2 className="section-title mb-12">
-              Momentos Especiales
-            </h2>
-            
-            <div className="space-y-6">
-              <div className="text-center bg-white rounded-2xl p-6 shadow-lg h-40 flex flex-col justify-center">
-                <Star className="w-12 h-12 text-accent mx-auto mb-4" />
-                <div className="text-2xl font-heading font-bold text-primary mb-2">2018</div>
-                <div className="text-lg font-semibold text-text mb-3">Nos Conocimos</div>
-                <div className="text-sm text-text opacity-80">
-                  El día que cambió nuestras vidas para siempre
-                </div>
-              </div>
-
-              <div className="text-center bg-white rounded-2xl p-6 shadow-lg h-40 flex flex-col justify-center">
-                <Home className="w-12 h-12 text-accent mx-auto mb-4" />
-                <div className="text-2xl font-heading font-bold text-primary mb-2">2021</div>
-                <div className="text-lg font-semibold text-text mb-3">Vivimos Juntos</div>
-                <div className="text-sm text-text opacity-80">
-                  Decidimos construir nuestro hogar juntos
-                </div>
-              </div>
-
-              <div className="text-center bg-white rounded-2xl p-6 shadow-lg h-40 flex flex-col justify-center">
-                <Sparkles className="w-12 h-12 text-accent mx-auto mb-4" />
-                <div className="text-2xl font-heading font-bold text-primary mb-2">2024</div>
-                <div className="text-lg font-semibold text-text mb-3">La Propuesta</div>
-                <div className="text-sm text-text opacity-80">
-                  El momento perfecto para la pregunta perfecta
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // Loading state
-  if (!isLoaded) {
-    return (
-      <section className="py-20 bg-white">
-        <div className="section-container">
-          <div className="animate-pulse space-y-8">
-            <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
-            <div className="h-4 bg-gray-200 rounded w-96 mx-auto" />
-            <div className="grid lg:grid-cols-2 gap-16">
-              <div className="h-80 bg-gray-200 rounded-3xl" />
-              <div className="space-y-4">
-                <div className="h-6 bg-gray-200 rounded w-3/4" />
-                <div className="h-4 bg-gray-200 rounded w-full" />
-                <div className="h-4 bg-gray-200 rounded w-5/6" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // Versión para desktop con animaciones CSS
   return (
-    <section className="py-20 bg-white">
-      <div className="section-container">
-        <div className="animate-fade-in-up">
-          {/* Título */}
-          <div className="text-center mb-16 animation-delay-200">
-            <h2 className="section-title mb-4">Nuestra Historia</h2>
-            <p className="section-subtitle">
-              Cómo comenzó todo y por qué decidimos pasar el resto de nuestras vidas juntos
-            </p>
-          </div>
+    <section id="about" className="py-12 bg-gray-50">
+      <div className="container mx-auto px-4">
+        {/* Título principal */}
+        <div className="text-center mb-16">
+          <h2 className="section-title text-stone-600 opacity-80 mb-4">
+            {t('title')}
+          </h2>
+          <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            {t('subtitle')}
+          </p>
+        </div>
 
-          {/* Historia en grid */}
-          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-            
-            {/* Imagen de la pareja */}
-            <div className="relative animation-delay-400">
-              <div className="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
+        <div className="max-w-6xl mx-auto">
+          {/* Historia principal - Layout imagen izquierda, contenido derecha */}
+          <div className="grid lg:grid-cols-5 gap-12 items-center mb-16">
+            {/* Imagen de la pareja - 2 columnas */}
+            <div className="lg:col-span-2">
+              <div className="relative overflow-hidden rounded-lg shadow-lg">
                 <Image
-                  src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80"
-                  alt="Quetzalia y Adrián juntos"
+                  src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                  alt={`${couple?.bride.name || 'Novia'} y ${couple?.groom.name || 'Novio'}`}
                   width={600}
                   height={800}
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="object-cover w-full h-full"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                {/* Overlay suave para difuminar */}
+                <div className="absolute inset-0 bg-white bg-opacity-10"></div>
               </div>
-              
-              {/* Decoración flotante */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-accent rounded-full opacity-20 blur-xl" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-primary rounded-full opacity-10 blur-2xl" />
             </div>
 
-            {/* Contenido de la historia */}
-            <div className="space-y-8 animation-delay-600">
-              
-              {/* Historia principal */}
-              <div className="space-y-6">
-                <div className="flex items-center space-x-4 mb-6">
-                  <div className="w-12 h-px bg-accent" />
-                  <Heart className="w-6 h-6 text-accent" />
-                  <div className="w-12 h-px bg-accent" />
-                </div>
-
-                <h3 className="text-2xl md:text-3xl font-heading font-semibold text-primary mb-6">
-                  El Comienzo de Nuestro Amor
+            {/* Contenido de la historia - 3 columnas */}
+            <div className="lg:col-span-3 space-y-8">
+              {/* Título de la sección */}
+              <div className="flex items-center space-x-3">
+                <Heart className="w-6 h-6 text-accent" />
+                <h3 className="text-2xl font-semibold text-gray-600">
+                  {t('specialMoments')}
                 </h3>
+              </div>
 
-                <div className="space-y-4 text-text leading-relaxed">
-                  <p className="text-lg">
-                    Nos conocimos en una tarde de primavera de 2018, cuando el destino nos 
-                    cruzó en el camino de la manera más inesperada. Lo que comenzó como una 
-                    simple conversación, se convirtió en horas de risas, sueños compartidos 
-                    y la certeza de que habíamos encontrado algo especial.
-                  </p>
-
-                  <p className="text-lg">
-                    Desde ese primer encuentro, supimos que nuestras vidas estaban destinadas 
-                    a entrelazarse. Cada día juntos ha sido una nueva aventura, llena de 
-                    momentos que atesoramos en nuestros corazones.
-                  </p>
-
-                  <p className="text-lg font-semibold text-primary">
-                    Ahora, después de años de amor, crecimiento y complicidad, 
-                    estamos listos para dar el siguiente paso en nuestro viaje juntos.
-                  </p>
-                </div>
+              {/* Historia de la pareja */}
+              <div className="space-y-4 text-gray-700 leading-relaxed">
+                <p>
+                  {story}
+                </p>
               </div>
 
               {/* Estadísticas de la relación */}
-              <div className="grid grid-cols-2 gap-6 pt-8 border-t border-border">
+              <div className="grid grid-cols-2 gap-8 pt-6">
                 <div className="text-center">
-                  <div className="text-3xl font-heading font-bold text-primary mb-2">7</div>
-                  <div className="text-sm font-semibold text-text uppercase tracking-wide">
-                    Años Juntos
+                  <div className="text-4xl font-bold text-accent mb-2">
+                    {relationshipStats?.yearsTogther || '6+'}
+                  </div>
+                  <div className="text-sm text-gray-600 uppercase tracking-wide">
+                    {t('stats.years')}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-heading font-bold text-primary mb-2">∞</div>
-                  <div className="text-sm font-semibold text-text uppercase tracking-wide">
-                    Aventuras Vividas
+                  <div className="text-4xl font-bold text-accent mb-2">
+                    ∞
+                  </div>
+                  <div className="text-sm text-gray-600 uppercase tracking-wide">
+                    {t('stats.adventures')}
                   </div>
                 </div>
               </div>
 
-              {/* Cita especial */}
-              <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 border border-border">
-                <blockquote className="text-lg font-body italic text-center text-primary">
-                  &ldquo;En cada amanecer contigo, descubro una nueva razón para amarte más. 
-                  Eres mi hogar, mi aventura y mi paz.&rdquo;
-                </blockquote>
-                <div className="text-center mt-4">
-                  <div className="w-16 h-px bg-accent mx-auto" />
-                </div>
+              {/* Cita romántica */}
+              <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-accent">
+                <p className="text-lg italic text-gray-700 text-center">
+                  {quote}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Línea temporal de momentos especiales */}
-          <div className="mt-20 pt-16 border-t border-border animation-delay-800">
-            <h2 className="section-title mb-12">
-              Momentos Especiales
-            </h2>
-            
-            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="text-center group animation-delay-1000">
-                <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 h-56 flex flex-col justify-center">
-                  <Star className="w-12 h-12 text-accent mx-auto mb-4" />
-                  <div className="text-2xl font-heading font-bold text-primary mb-2">
-                    2018
-                  </div>
-                  <div className="text-lg font-semibold text-text mb-3">
-                    Nos Conocimos
-                  </div>
-                  <div className="text-sm text-text opacity-80 leading-relaxed">
-                    El día que cambió nuestras vidas para siempre
-                  </div>
-                </div>
-              </div>
+          {/* Momentos Especiales */}
+          <div className="mt-20">
+            <h3 className="section-title text-stone-600 opacity-80 text-center mb-4">
+              {t('specialMoments')}
+            </h3>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-12"></div>
 
-              <div className="text-center group animation-delay-1200">
-                <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 h-56 flex flex-col justify-center">
-                  <Home className="w-12 h-12 text-accent mx-auto mb-4" />
-                  <div className="text-2xl font-heading font-bold text-primary mb-2">
-                    2021
-                  </div>
-                  <div className="text-lg font-semibold text-text mb-3">
-                    Vivimos Juntos
-                  </div>
-                  <div className="text-sm text-text opacity-80 leading-relaxed">
-                    Decidimos construir nuestro hogar juntos
-                  </div>
-                </div>
-              </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {specialMoments.length > 0 ? (
+                specialMoments.map((moment, index) => {
+                  // Iconos dinámicos basados en el índice o año
+                  const getIcon = (index: number) => {
+                    switch (index) {
+                      case 0: return <Star className="w-8 h-8 text-accent" />;
+                      case 1: return <Home className="w-8 h-8 text-accent" />;
+                      case 2: return <Sparkles className="w-8 h-8 text-accent" />;
+                      default: return <Heart className="w-8 h-8 text-accent" />;
+                    }
+                  };
 
-              <div className="text-center group animation-delay-1400">
-                <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 h-56 flex flex-col justify-center">
-                  <Sparkles className="w-12 h-12 text-accent mx-auto mb-4" />
-                  <div className="text-2xl font-heading font-bold text-primary mb-2">
-                    2024
+                  return (
+                    <div key={moment.year} className="text-center">
+                      <div className="mb-6">
+                        <div className="w-16 h-16 bg-accent-light rounded-full flex items-center justify-center mx-auto mb-4">
+                          {getIcon(index)}
+                        </div>
+                        <div className="text-2xl font-bold text-accent mb-2">{moment.year}</div>
+                        <h4 className="text-xl font-semibold text-gray-600 mb-3">
+                          {moment.title}
+                        </h4>
+                        <p className="text-gray-600 text-sm">
+                          {moment.description}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                // Fallback a datos estáticos si no hay datos dinámicos
+                <>
+                  <div className="text-center">
+                    <div className="mb-6">
+                      <div className="w-16 h-16 bg-accent-light rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Star className="w-8 h-8 text-accent" />
+                      </div>
+                      <div className="text-2xl font-bold text-accent mb-2">2018</div>
+                      <h4 className="text-xl font-semibold text-gray-600 mb-3">
+                        Primer Encuentro
+                      </h4>
+                      <p className="text-gray-600 text-sm">
+                        Nos conocimos en una cafetería del centro
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-lg font-semibold text-text mb-3">
-                    La Propuesta
+                  <div className="text-center">
+                    <div className="mb-6">
+                      <div className="w-16 h-16 bg-accent-light rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Home className="w-8 h-8 text-accent" />
+                      </div>
+                      <div className="text-2xl font-bold text-accent mb-2">2021</div>
+                      <h4 className="text-xl font-semibold text-gray-600 mb-3">
+                        Nuestra Primera Casa
+                      </h4>
+                      <p className="text-gray-600 text-sm">
+                        Comenzamos a vivir juntos
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-sm text-text opacity-80 leading-relaxed">
-                    El momento perfecto para la pregunta perfecta
+                  <div className="text-center">
+                    <div className="mb-6">
+                      <div className="w-16 h-16 bg-accent-light rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Sparkles className="w-8 h-8 text-accent" />
+                      </div>
+                      <div className="text-2xl font-bold text-accent mb-2">2024</div>
+                      <h4 className="text-xl font-semibold text-gray-600 mb-3">
+                        La Propuesta
+                      </h4>
+                      <p className="text-gray-600 text-sm">
+                        Carlos le pidió matrimonio a María en la playa
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </div>
         </div>

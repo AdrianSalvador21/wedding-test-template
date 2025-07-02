@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslations } from '../../lib/translations';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { useIsMobile } from '@/lib/motion';
+import { useAppSelector } from '../../src/store/hooks';
+import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 interface TimeLeft {
   days: number;
@@ -12,209 +15,164 @@ interface TimeLeft {
 }
 
 const Countdown = () => {
-  const weddingDate = new Date('2025-11-21T18:00:00').getTime();
+  const { t, currentLanguage } = useTranslations('countdown');
+  const weddingData = useAppSelector(selectCurrentWedding);
   
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
+  const [mounted, setMounted] = useState(false);
 
-  const [isEventPassed, setIsEventPassed] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.3
-  });
+  // Memoize the wedding date to avoid recreating it on every render
+  const weddingDate = useMemo(() => {
+    return weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
+  }, [weddingData?.event.date]);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    setMounted(true);
   }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date().getTime();
-      const difference = weddingDate - now;
+      const distance = weddingDate.getTime() - now;
 
-      if (difference > 0) {
+      if (distance > 0) {
         setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000)
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((distance % (1000 * 60)) / 1000)
         });
-        setIsEventPassed(false);
       } else {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        setIsEventPassed(true);
       }
     }, 1000);
 
     return () => clearInterval(timer);
   }, [weddingDate]);
 
-  const timeUnits = [
-    { value: timeLeft.days, label: 'Días' },
-    { value: timeLeft.hours, label: 'Horas' },
-    { value: timeLeft.minutes, label: 'Minutos' },
-    { value: timeLeft.seconds, label: 'Segundos' }
-  ];
-
-  // Versión sin animaciones para móvil
-  if (isMobile) {
+  // Fallback mientras cargan los datos
+  if (!mounted) {
     return (
-      <section className="py-16 bg-white">
-        <div className="section-container">
-          <div className="text-center max-w-4xl mx-auto">
-            {/* Título minimalista */}
-            <h2 className="section-title mb-4">
-              {isEventPassed ? 'Ya nos casamos' : 'Faltan'}
-            </h2>
-
-            <div className="w-16 h-px bg-primary mx-auto mb-12" />
-
-            {/* Contador minimalista */}
-            {!isEventPassed && (
-              <div className="grid grid-cols-2 gap-6 mb-12">
-                {timeUnits.map((unit) => (
-                  <div key={unit.label} className="text-center">
-                    <div className="text-3xl font-heading font-light text-primary mb-2">
-                      {unit.value.toString().padStart(2, '0')}
-                    </div>
-                    <div className="text-sm font-medium text-text uppercase tracking-wide">
-                      {unit.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Fecha simple */}
-            <div className="text-center">
-              <div className="text-lg font-body text-text mb-1">
-                21 de Noviembre, 2025
-              </div>
-              <div className="text-base text-text opacity-75">
-                6:00 PM
-              </div>
+      <section id="countdown" className="py-12 bg-white">
+        <div className="container mx-auto px-4 text-center">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-8" />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl mx-auto">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-gray-100 rounded-lg p-6">
+                  <div className="h-12 bg-gray-200 rounded mb-2" />
+                  <div className="h-4 bg-gray-200 rounded w-16 mx-auto" />
+                </div>
+              ))}
             </div>
-
-            {/* Mensaje para evento pasado */}
-            {isEventPassed && (
-              <div className="text-center">
-                <div className="text-xl font-body text-primary mb-4">
-                  Gracias por acompañarnos
-                </div>
-                <div className="text-base text-text opacity-75">
-                  Su presencia hizo de nuestro día algo inolvidable
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </section>
     );
   }
 
-  // Versión con animaciones para desktop
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.1
-      }
-    }
-  };
+  const isEventPassed = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4 }
-    }
+  // Formatear tiempo dinámico
+  const eventTime = weddingData?.event.time || '16:00';
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hour24 = parseInt(hours);
+    const ampm = hour24 >= 12 ? 'PM' : 'AM';
+    const hour12 = hour24 % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
   };
 
   return (
-    <section ref={ref} className="py-16 bg-white">
-      <div className="section-container">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          className="text-center max-w-4xl mx-auto"
-        >
-          {/* Título minimalista */}
-          <motion.h2 
-            variants={itemVariants}
-            className="section-title mb-4"
-          >
-            {isEventPassed ? 'Ya nos casamos' : 'Faltan'}
-          </motion.h2>
+    <section id="countdown" className="py-12 bg-white">
+      <div className="container mx-auto px-4 text-center">
+        {isEventPassed ? (
+          <div className="max-w-2xl mx-auto">
+            <p className="text-2xl text-accent font-semibold mb-4">{t('eventPassed')}</p>
+            <p className="text-gray-600">{t('thankYou')}</p>
+          </div>
+        ) : (
+          <>
+            {/* Título con línea decorativa */}
+            <div className="mb-12">
+              <h2 className="section-title text-stone-600 opacity-80 mb-4">
+                {t('subtitle')}
+              </h2>
+              <div className="w-16 h-0.5 bg-accent mx-auto"></div>
+            </div>
 
-          <motion.div
-            variants={itemVariants}
-            className="w-16 h-px bg-primary mx-auto mb-12"
-          />
-
-          {/* Contador minimalista */}
-          {!isEventPassed && (
-            <motion.div
-              variants={itemVariants}
-              className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12"
-            >
-              {timeUnits.map((unit) => (
-                <div
-                  key={unit.label}
-                  className="text-center"
-                >
-                  <div className="text-4xl md:text-5xl font-heading font-light text-primary mb-2">
-                    {unit.value.toString().padStart(2, '0')}
-                  </div>
-                  <div className="text-sm font-medium text-text uppercase tracking-wide">
-                    {unit.label}
-                  </div>
+            {/* Números de cuenta regresiva horizontales */}
+            <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 mb-12">
+              {/* Días */}
+              <div className="text-center">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-serif opacity-70">
+                  {String(timeLeft.days).padStart(2, '0')}
                 </div>
-              ))}
-            </motion.div>
-          )}
-
-          {/* Fecha simple */}
-          <motion.div
-            variants={itemVariants}
-            className="text-center"
-          >
-            <div className="text-lg font-body text-text mb-1">
-              21 de Noviembre, 2025
-            </div>
-            <div className="text-base text-text opacity-75">
-              6:00 PM
-            </div>
-          </motion.div>
-
-          {/* Mensaje para evento pasado */}
-          {isEventPassed && (
-            <motion.div
-              variants={itemVariants}
-              className="text-center"
-            >
-              <div className="text-xl font-body text-primary mb-4">
-                Gracias por acompañarnos
+                <div className="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-widest">
+                  {t('days')}
+                </div>
               </div>
-              <div className="text-base text-text opacity-75">
-                Su presencia hizo de nuestro día algo inolvidable
+
+              {/* Separador */}
+              <div className="text-xl sm:text-2xl md:text-3xl text-stone-600 font-light mx-1 opacity-70">:</div>
+
+              {/* Horas */}
+              <div className="text-center">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-serif opacity-70">
+                  {String(timeLeft.hours).padStart(2, '0')}
+                </div>
+                <div className="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-widest">
+                  {t('hours')}
+                </div>
               </div>
-            </motion.div>
-          )}
-        </motion.div>
+
+              {/* Separador */}
+              <div className="text-xl sm:text-2xl md:text-3xl text-stone-600 font-light mx-1 opacity-70">:</div>
+
+              {/* Minutos */}
+              <div className="text-center">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-serif opacity-70">
+                  {String(timeLeft.minutes).padStart(2, '0')}
+                </div>
+                <div className="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-widest">
+                  {t('minutes')}
+                </div>
+              </div>
+
+              {/* Separador */}
+              <div className="text-xl sm:text-2xl md:text-3xl text-stone-600 font-light mx-1 opacity-70">:</div>
+
+              {/* Segundos */}
+              <div className="text-center">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-serif opacity-70">
+                  {String(timeLeft.seconds).padStart(2, '0')}
+                </div>
+                <div className="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-widest">
+                  {t('seconds')}
+                </div>
+              </div>
+            </div>
+
+            {/* Fecha y hora del evento */}
+            <div className="space-y-2">
+              <p className="text-lg md:text-xl font-light text-gray-700">
+                {weddingDate.toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'es-ES', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })}
+              </p>
+              <p className="text-base md:text-lg font-light text-gray-600">
+                {formatTime(eventTime)}
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

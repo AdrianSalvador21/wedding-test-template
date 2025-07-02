@@ -1,59 +1,44 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
+'use client';
 
-export const metadata: Metadata = {
-  title: "Quetzalia & Adrián - Invitación de Boda",
-  description: "Nos casamos el 21 de noviembre de 2025. Acompáñanos en este día tan especial lleno de amor y alegría.",
-  keywords: ["boda", "invitación", "wedding", "Quetzalia", "Adrián", "21 de noviembre", "2025"],
-  authors: [{ name: "Quetzalia & Adrián" }],
-  openGraph: {
-    title: "Quetzalia & Adrián - Invitación de Boda",
-    description: "Nos casamos el 21 de noviembre de 2025. Acompáñanos en este día tan especial.",
-    type: "website",
-    locale: "es_ES",
-    url: "https://quetzalia-adrian-wedding.vercel.app",
-    siteName: "Boda Quetzalia & Adrián",
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=630&q=80",
-        width: 1200,
-        height: 630,
-        alt: "Quetzalia & Adrián - Invitación de Boda",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Quetzalia & Adrián - Invitación de Boda",
-    description: "Nos casamos el 21 de noviembre de 2025. Acompáñanos en este día tan especial.",
-    images: ["https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=630&q=80"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+import './globals.css';
+import { Inter } from 'next/font/google';
+import ReduxProvider from '../src/components/providers/ReduxProvider';
+import { useEffect } from 'react';
+import { useAppDispatch } from '../src/store/hooks';
+import { fetchWeddingData } from '../src/store/slices/weddingSlice';
+import { usePathname } from 'next/navigation';
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-};
+const inter = Inter({ subsets: ['latin'] });
+
+function DataInitializer({ children }: { children: React.ReactNode }) {
+  const dispatch = useAppDispatch();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // Si estamos en la página principal (no en una ruta de wedding específica)
+    // cargamos los datos por defecto
+    if (pathname === '/' || pathname === '/en') {
+      dispatch(fetchWeddingData('maria-carlos-2025'));
+    }
+  }, [dispatch, pathname]);
+
+  return <>{children}</>;
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="es">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      </head>
-      <body className="font-body text-text bg-light antialiased">
-        {children}
+      <body className={inter.className}>
+        <ReduxProvider>
+          <DataInitializer>
+            {children}
+          </DataInitializer>
+        </ReduxProvider>
       </body>
     </html>
   );
-} 
+}
