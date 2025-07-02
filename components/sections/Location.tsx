@@ -9,7 +9,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 const Location = () => {
-  const { t, raw } = useTranslations('location');
+  const { t } = useTranslations('location');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
 
@@ -18,16 +18,35 @@ const Location = () => {
   const venueName = venue?.name || t('subtitle');
   const venueAddress = venue?.address || t('address');
   const venueDescription = venue?.description || t('description');
-  const venueFeatures = venue?.features || raw('facilities.features') as string[];
+  const venueFeatures = venue?.features || [
+    'Jardines exteriores para ceremonia',
+    'Salón principal climatizado', 
+    'Estacionamiento amplio y seguro',
+    'Área de fotos panorámicas',
+    'Coctelera al aire libre',
+    'Música y sonido profesional'
+  ];
   
-  const accommodationOptions = weddingData?.accommodation || raw('accommodation.hotels') as Array<{
-    name: string;
-    distance: string;
-    price: string;
-    phone?: string;
-    website?: string;
-    amenities?: string[];
-  }>;
+  const accommodationOptions = weddingData?.accommodation || [
+    {
+      name: 'Hotel Boutique Central',
+      distance: '5 min del lugar',
+      price: 'Desde $120/noche',
+      phone: '+52 55 1111-2222'
+    },
+    {
+      name: 'Casa de Huéspedes Jardín',
+      distance: '10 min del lugar', 
+      price: 'Desde $80/noche',
+      phone: '+52 55 3333-4444'
+    },
+    {
+      name: 'Hotel Familiar Plaza',
+      distance: '15 min del lugar',
+      price: 'Desde $95/noche',
+      phone: '+52 55 5555-6666'
+    }
+  ];
 
   const handleMapsClick = () => {
     if (venue?.coordinates) {
