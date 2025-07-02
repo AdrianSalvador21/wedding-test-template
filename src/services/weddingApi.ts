@@ -54,7 +54,7 @@ export class WeddingApiService {
   }
 
   // Enviar RSVP
-  static async submitRSVP(rsvpData: RSVPFormData): Promise<ApiResponse<any>> {
+  static async submitRSVP(rsvpData: RSVPFormData): Promise<ApiResponse<{ id: string }>> {
     try {
       if (USE_MOCK_DATA) {
         // Simular delay de envío

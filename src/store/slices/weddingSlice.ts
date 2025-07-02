@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { WeddingData, WeddingState, RSVPFormData, ApiResponse } from '../../types/wedding';
+import { WeddingData, WeddingState, RSVPFormData } from '../../types/wedding';
 import { weddingApi } from '../../services/weddingApi';
+
 
 // Estado inicial
 const initialState: WeddingState = {

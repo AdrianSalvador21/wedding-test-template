@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { Heart, Star, Home, Sparkles } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';

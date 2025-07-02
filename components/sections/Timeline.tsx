@@ -9,7 +9,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 const Timeline = () => {
-  const { t, raw } = useTranslations('timeline');
+  const { t } = useTranslations('timeline');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
 
@@ -18,7 +18,7 @@ const Timeline = () => {
   };
 
   // Mapeo de iconos
-  const iconMap: { [key: string]: any } = {
+  const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
     'MapPin': MapPin,
     'Heart': Heart,
     'Camera': Camera,

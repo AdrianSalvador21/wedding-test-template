@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight, X, Camera, Heart, Share2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import { Camera } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
-import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
@@ -39,37 +38,49 @@ const Gallery = () => {
       id: 1,
       src: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       alt: "Momento romántico de la pareja",
-      title: "Amor verdadero"
+      title: "Amor verdadero",
+      cols: 1,
+      rows: 1
     },
     {
       id: 2,
       src: "https://images.unsplash.com/photo-1470219556762-1771e7f9427d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       alt: "Preparativos de la boda",
-      title: "Preparándose para el gran día"
+      title: "Preparándose para el gran día",
+      cols: 1,
+      rows: 1
     },
     {
       id: 3,
       src: "https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       alt: "Ceremonia de boda",
-      title: "Momento especial"
+      title: "Momento especial",
+      cols: 1,
+      rows: 1
     },
     {
       id: 4,
       src: "https://images.unsplash.com/photo-1525258370847-a2d17115dbaa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       alt: "Anillos de matrimonio",
-      title: "Unidos por siempre"
+      title: "Unidos por siempre",
+      cols: 1,
+      rows: 1
     },
     {
       id: 5,
       src: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       alt: "Celebración de boda",
-      title: "Felicidad compartida"
+      title: "Felicidad compartida",
+      cols: 1,
+      rows: 1
     },
     {
       id: 6,
       src: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       alt: "Recepción de boda",
-      title: "Celebrando juntos"
+      title: "Celebrando juntos",
+      cols: 1,
+      rows: 1
     }
   ];
 

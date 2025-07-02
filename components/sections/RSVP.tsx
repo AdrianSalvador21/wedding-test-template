@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Heart, Calendar, Clock, MapPin, Shirt, Send, Check, Plus, Minus } from 'lucide-react';
+import { Heart, Calendar, Clock, MapPin, Shirt, Send, Check } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 const RSVP = () => {
-  const { t, raw } = useTranslations('rsvp');
+  const { t } = useTranslations('rsvp');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
   const [isSubmitting, setIsSubmitting] = useState(false);

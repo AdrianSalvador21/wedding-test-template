@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { ChevronDown, Heart } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
-import { ChevronDown, Heart, Calendar, MapPin, Languages } from 'lucide-react';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
@@ -12,27 +12,33 @@ const Hero = () => {
   const weddingData = useAppSelector(selectCurrentWedding);
 
   // Datos dinámicos con fallbacks
-  const brideNames = weddingData?.couple.bride.name || t('title').split(' & ')[0] || 'María';
-  const groomNames = weddingData?.couple.groom.name || t('title').split(' & ')[1] || 'Carlos';
+  const brideName = weddingData?.couple.bride.name || 'María';
+  const groomName = weddingData?.couple.groom.name || 'Carlos';
   const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const venueName = weddingData?.event.venue.name || t('location');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const eventTime = weddingData?.event.time || '16:00';
 
-  const formatDate = (date: Date) => {
-    // Mapeo de idiomas a locales
-    const localeMap = {
-      'es': 'es-ES',
-      'en': 'en-US'
-    };
-    
-    return date.toLocaleDateString(localeMap[currentLanguage] || 'es-ES', {
+  // Mapeo de locales para formateo de fechas
+  const localeMap: { [key: string]: string } = {
+    'es': 'es-ES',
+    'en': 'en-US'
+  };
+
+  const locale = localeMap[currentLanguage] || 'es-ES';
+
+  // Formatear fecha según el idioma
+  const formatDate = () => {
+    return weddingDate.toLocaleDateString(locale, {
       weekday: 'long',
-      year: 'numeric',
+      year: 'numeric', 
       month: 'long',
       day: 'numeric'
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(':');
     const hour24 = parseInt(hours);
@@ -71,11 +77,11 @@ const Hero = () => {
             {/* Nombres de la pareja - primer nombre con & */}
             <div className="space-y-4">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-light text-white opacity-75 tracking-wide">
-                {brideNames} <span className="text-stone-300 opacity-80">&</span>
+                {brideName} <span className="text-stone-300 opacity-80">&</span>
               </h1>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-light text-white opacity-75 tracking-wide">
-                {groomNames}
+                {groomName}
               </h1>
             </div>
           </div>
@@ -83,7 +89,7 @@ const Hero = () => {
           {/* Fecha del evento */}
           <div className="mb-8">
             <p className="text-xl md:text-2xl font-light text-white opacity-90">
-              {formatDate(weddingDate)}
+              {formatDate()}
             </p>
           </div>
 

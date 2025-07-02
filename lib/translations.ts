@@ -13,13 +13,13 @@ const messages = {
 };
 
 // Función para obtener un valor anidado usando notación de punto
-function getNestedValue(obj: any, path: string): any {
+function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
   const keys = path.split('.');
-  let current = obj;
+  let current: unknown = obj;
   
   for (const key of keys) {
-    if (current && typeof current === 'object' && key in current) {
-      current = current[key];
+    if (current && typeof current === 'object' && current !== null && key in current) {
+      current = (current as Record<string, unknown>)[key];
     } else {
       return path; // Devuelve la clave original si no encuentra la traducción
     }
@@ -44,14 +44,7 @@ function detectLanguageFromPath(pathname: string): Language {
 
 // Hook para traducciones
 export function useTranslations(namespace: string = '') {
-  let pathname = '/';
-  
-  try {
-    pathname = usePathname() || '/';
-  } catch (error) {
-    // Si usePathname falla, usa español por defecto
-    console.log('usePathname failed, using default language');
-  }
+  const pathname = usePathname() || '/';
   
   const currentLanguage = detectLanguageFromPath(pathname);
   const currentMessages = messages[currentLanguage] || messages['es'];
@@ -66,7 +59,7 @@ export function useTranslations(namespace: string = '') {
       console.log('DEBUG - Resultado:', result);
       console.log('DEBUG - Mensajes disponibles:', Object.keys(currentMessages));
     }
-    return result;
+    return result as string;
   };
   
   const raw = (key: string) => {
@@ -80,7 +73,7 @@ export function useTranslations(namespace: string = '') {
 // Función para usar sin hook (para casos donde no podemos usar hooks)
 export function getTranslation(key: string, language: Language = 'es'): string {
   const currentMessages = messages[language];
-  return getNestedValue(currentMessages, key);
+  return getNestedValue(currentMessages, key) as string;
 }
 
 export { esMessages, enMessages }; 

@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslations } from '../../lib/translations';
-import { motion } from 'framer-motion';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
@@ -17,11 +18,6 @@ const Countdown = () => {
   const { t, currentLanguage } = useTranslations('countdown');
   const weddingData = useAppSelector(selectCurrentWedding);
   
-  // Fecha dinámica de la boda
-  const weddingDate = weddingData?.event.date 
-    ? new Date(weddingData.event.date) 
-    : new Date('2025-11-21T16:00:00');
-  
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -30,31 +26,33 @@ const Countdown = () => {
   });
   const [mounted, setMounted] = useState(false);
 
+  // Memoize the wedding date to avoid recreating it on every render
+  const weddingDate = useMemo(() => {
+    return weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
+  }, [weddingData?.event.date]);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    const calculateTimeLeft = () => {
+    const timer = setInterval(() => {
       const now = new Date().getTime();
-      const difference = weddingDate.getTime() - now;
+      const distance = weddingDate.getTime() - now;
 
-      if (difference > 0) {
+      if (distance > 0) {
         setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000),
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((distance % (1000 * 60)) / 1000)
         });
       } else {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
-    };
+    }, 1000);
 
-    calculateTimeLeft();
-    const interval = setInterval(calculateTimeLeft, 1000);
-
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, [weddingDate]);
 
   // Fallback mientras cargan los datos

@@ -1,27 +1,34 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Shirt, Crown, Gem, X, Leaf, Lightbulb } from 'lucide-react';
+import { Sparkles, Shirt, Crown } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 const DressCode = () => {
-  const { t, raw } = useTranslations('dressCode');
+  const { t } = useTranslations('dressCode');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
 
   // Datos dinámicos con fallbacks
   const dressCodeData = weddingData?.event.dressCode;
-  const dressStyle = dressCodeData?.style || t('subtitle');
-  const dressDescription = dressCodeData?.description || t('description');
-  
-  const ladiesSuggestions = dressCodeData?.recommendations.ladies || raw('ladies.suggestions.items') as string[];
-  const gentlemenSuggestions = dressCodeData?.recommendations.gentlemen || raw('gentlemen.suggestions.items') as string[];
-  
-  const recommendedColors = dressCodeData?.colors.recommended || [];
-  const avoidColors = dressCodeData?.colors.avoid || [];
+  const dressCodeStyle = dressCodeData?.style || t('style.name');
+  const dressCodeDescription = dressCodeData?.description || t('style.description');
+
+  // Recomendaciones dinámicas
+  const menRecommendations = dressCodeData?.recommendations?.gentlemen || [
+    t('men.recommendation1'),
+    t('men.recommendation2'),
+    t('men.recommendation3')
+  ];
+
+  const womenRecommendations = dressCodeData?.recommendations?.ladies || [
+    t('women.recommendation1'),
+    t('women.recommendation2'),
+    t('women.recommendation3')
+  ];
 
   // Versión estática para móvil
   if (isMobile) {
@@ -32,9 +39,9 @@ const DressCode = () => {
           <div className="text-center mb-16">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
-            <div className="text-xl font-medium text-accent mb-6">{dressStyle}</div>
+            <div className="text-xl font-medium text-accent mb-6">{dressCodeStyle}</div>
             <p className="section-subtitle max-w-2xl mx-auto">
-              {dressDescription}
+              {dressCodeDescription}
             </p>
           </div>
 
@@ -59,7 +66,7 @@ const DressCode = () => {
               </div>
               <h4 className="text-lg font-semibold text-gray-800 mb-3">Damas</h4>
               <div className="space-y-1 text-sm text-gray-600">
-                {ladiesSuggestions.slice(0, 3).map((suggestion: string, index: number) => (
+                {womenRecommendations.slice(0, 3).map((suggestion: string, index: number) => (
                   <p key={index}>{suggestion}</p>
                 ))}
               </div>
@@ -72,7 +79,7 @@ const DressCode = () => {
               </div>
               <h4 className="text-lg font-semibold text-gray-800 mb-3">Caballeros</h4>
               <div className="space-y-1 text-sm text-gray-600">
-                {gentlemenSuggestions.slice(0, 3).map((suggestion: string, index: number) => (
+                {menRecommendations.slice(0, 3).map((suggestion: string, index: number) => (
                   <p key={index}>{suggestion}</p>
                 ))}
               </div>
@@ -110,9 +117,9 @@ const DressCode = () => {
           <div className="text-center mb-16 animation-delay-200">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
-            <div className="text-2xl font-medium text-accent mb-6">{dressStyle}</div>
+            <div className="text-2xl font-medium text-accent mb-6">{dressCodeStyle}</div>
             <p className="section-subtitle max-w-2xl mx-auto">
-              {dressDescription}
+              {dressCodeDescription}
             </p>
           </div>
 
@@ -140,7 +147,7 @@ const DressCode = () => {
                 </div>
                 <h4 className="text-lg font-semibold text-gray-800 mb-4">Damas</h4>
                 <div className="space-y-2 text-sm text-gray-600">
-                  {ladiesSuggestions.slice(0, 3).map((suggestion: string, index: number) => (
+                  {womenRecommendations.slice(0, 3).map((suggestion: string, index: number) => (
                     <p key={index}>{suggestion}</p>
                   ))}
                 </div>
@@ -153,7 +160,7 @@ const DressCode = () => {
                 </div>
                 <h4 className="text-lg font-semibold text-gray-800 mb-4">Caballeros</h4>
                 <div className="space-y-2 text-sm text-gray-600">
-                  {gentlemenSuggestions.slice(0, 3).map((suggestion: string, index: number) => (
+                  {menRecommendations.slice(0, 3).map((suggestion: string, index: number) => (
                     <p key={index}>{suggestion}</p>
                   ))}
                 </div>

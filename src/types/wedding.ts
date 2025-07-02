@@ -68,6 +68,11 @@ export interface TimelineEvent {
   description: string;
   icon: string;
   isHighlight?: boolean;
+  location?: string;
+  iconColor?: string;
+  iconBackground?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: unknown;
 }
 
 // Tipos para la galería
@@ -178,5 +183,5 @@ export interface ApiResponse<T> {
 export interface ApiError {
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
 } 

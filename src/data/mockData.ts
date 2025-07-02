@@ -1,4 +1,6 @@
-import { WeddingData, TimelineEvent, GalleryImage, SpecialMoment, AccommodationOption } from '../types/wedding';
+import { WeddingData } from '../types/wedding';
+
+// Datos de prueba para María & Carlos
 
 // Mock data para María & Carlos (ID: maria-carlos-2025)
 export const mockWeddingMariaCarlos: WeddingData = {

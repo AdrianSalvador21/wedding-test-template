@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MapPin, Clock, Car, Phone, Navigation, ExternalLink, Star, Utensils, Wifi, Users } from 'lucide-react';
+import { MapPin, Car, Phone, Navigation, ExternalLink, Star } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
@@ -289,7 +289,7 @@ const Location = () => {
               <div className="animation-delay-600">
                 <div className="bg-gradient-to-br from-light to-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="text-center mb-8">
-                    <Users className="w-16 h-16 mx-auto mb-6 text-accent" />
+                    <MapPin className="w-16 h-16 mx-auto mb-6 text-accent" />
                     <h3 className="text-3xl font-heading font-semibold text-primary mb-4">
                       {t('accommodation.title')}
                     </h3>
