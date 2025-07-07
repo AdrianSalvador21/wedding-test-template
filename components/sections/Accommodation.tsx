@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { MapPin, ExternalLink } from 'lucide-react';
-import { useTranslations } from '../../lib/translations';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
@@ -10,7 +9,6 @@ import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 const Accommodation = () => {
-  const { t } = useTranslations('location');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
 

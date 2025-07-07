@@ -14,7 +14,6 @@ const Gallery = () => {
   const { t } = useTranslations('gallery');
   const weddingData = useAppSelector(selectCurrentWedding);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const { ref, inView } = useInView({
@@ -61,14 +60,7 @@ const Gallery = () => {
 
   const hashtag = weddingData?.couple.hashtag || t('hashtag');
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+
 
   // Autoplay functionality - pausar durante drag
   useEffect(() => {

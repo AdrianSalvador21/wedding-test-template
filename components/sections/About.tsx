@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Heart } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddingSlice';
@@ -14,10 +13,7 @@ const About = () => {
   const couple = useAppSelector(selectCouple);
 
   // Datos dinámicos de la boda
-  const specialMoments = currentWedding?.specialMoments || [];
-  const relationshipStats = currentWedding?.relationshipStats;
   const story = couple?.story || t('story'); // Fallback a traducción si no hay datos
-  const quote = couple?.quote || t('quote'); // Fallback a traducción si no hay datos
 
   return (
     <section 

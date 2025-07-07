@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MapPin, ExternalLink, Church, Music4 } from 'lucide-react';
-import { useTranslations } from '../../lib/translations';
+import { ExternalLink, Church, Music4 } from 'lucide-react';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
@@ -10,7 +9,6 @@ import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 const Location = () => {
-  const { t } = useTranslations('location');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
 
@@ -20,7 +18,7 @@ const Location = () => {
   
 
 
-  const handleMapsClick = (venue: any) => {
+  const handleMapsClick = (venue: { name: string; address: string; coordinates?: { lat: number; lng: number } }) => {
     if (venue?.coordinates) {
       openExternalLink(`https://maps.google.com/maps?q=${venue.coordinates.lat},${venue.coordinates.lng}`);
     } else {

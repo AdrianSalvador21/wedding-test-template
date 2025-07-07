@@ -11,12 +11,12 @@ import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 const Timeline = () => {
   const { t } = useTranslations('timeline');
-  const { isMobile, isLoaded } = useIsMobile();
+  const { isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Mapeo de iconos
-  const iconMap: { [key: string]: any } = {
+  const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
     'MapPin': MapPin,
     'Heart': Heart,
     'Camera': Camera,
@@ -26,7 +26,7 @@ const Timeline = () => {
   };
 
   // Datos dinámicos con fallback
-  const events = weddingData?.timeline?.length ? weddingData.timeline.map((event, index) => ({
+  const events = weddingData?.timeline?.length ? weddingData.timeline.map((event) => ({
     time: event.time,
     title: event.title,
     description: event.description,

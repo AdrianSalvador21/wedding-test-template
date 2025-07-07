@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Heart, Calendar, Clock, MapPin, Shirt, Send, Check, Plus, Minus, ChevronDown } from 'lucide-react';
+import { Heart, Send, Check, ChevronDown } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
@@ -12,7 +12,7 @@ import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 const RSVP = () => {
-  const { t, raw } = useTranslations('rsvp');
+  const { t } = useTranslations('rsvp');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,12 +21,7 @@ const RSVP = () => {
   // Datos dinámicos con fallbacks
   const receptionVenue = weddingData?.event.receptionVenue;
   const venueName = receptionVenue?.name || t('eventInfo.venue');
-  const venueAddress = receptionVenue?.address || t('eventInfo.address');
   const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
-  const eventTime = weddingData?.event.time || '16:00';
-  const dressCodeStyle = weddingData?.event.dressCode?.style || t('eventInfo.dressCode');
-  const rsvpDeadline = weddingData?.event.rsvpDeadline ? new Date(weddingData.event.rsvpDeadline) : new Date('2025-10-15T23:59:59');
-  const coupleEmail = weddingData?.couple.coupleEmail || 'pareja@email.com';
 
   // Formatear fecha y hora
   const formatDate = (date: Date) => {
@@ -36,14 +31,6 @@ const RSVP = () => {
       month: 'long',
       day: 'numeric'
     });
-  };
-
-  const formatTime = (time: string) => {
-    const [hours, minutes] = time.split(':');
-    const hour24 = parseInt(hours);
-    const ampm = hour24 >= 12 ? 'PM' : 'AM';
-    const hour12 = hour24 % 12 || 12;
-    return `${hour12}:${minutes} ${ampm}`;
   };
 
   // Schema de validación simplificado
@@ -61,14 +48,11 @@ const RSVP = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors }
   } = useForm<RSVPFormData>({
     resolver: zodResolver(rsvpSchema),
     mode: 'onChange'
   });
-
-  const attendance = watch('attendance');
 
   const onSubmit = async (data: RSVPFormData) => {
     setIsSubmitting(true);

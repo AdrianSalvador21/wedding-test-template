@@ -7,6 +7,7 @@ import { useAppSelector } from '../src/store/hooks';
 import { selectCurrentWedding } from '../src/store/slices/weddingSlice';
 import { getMockInvitation } from '../src/data/mockInvitations';
 import { getFloralBackgroundStyle } from '../lib/floral-patterns';
+import type { WeddingInvitation } from '../src/types/wedding';
 
 interface InvitationOverlayProps {
   guestId: string;
@@ -17,7 +18,7 @@ interface InvitationOverlayProps {
 const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingId, onClose }) => {
   const [isVisible, setIsVisible] = useState(true);
   const currentWedding = useAppSelector(selectCurrentWedding);
-  const [invitation, setInvitation] = useState<any>(null);
+  const [invitation, setInvitation] = useState<WeddingInvitation | null>(null);
 
   useEffect(() => {
     // Obtener la invitación específica
@@ -159,7 +160,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                   {guest.specialMessage && (
                     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-stone-200/50 shadow-sm max-w-sm mx-auto">
                       <p className="text-sm md:text-base text-stone-600 italic leading-relaxed font-light">
-                        "{guest.specialMessage}"
+                        &ldquo;{guest.specialMessage}&rdquo;
                       </p>
                     </div>
                   )}
