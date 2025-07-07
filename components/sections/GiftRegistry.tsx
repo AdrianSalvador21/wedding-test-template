@@ -33,7 +33,7 @@ export default function GiftRegistry() {
         {/* Título */}
         <div className="text-center mb-12">
           <h2 className="section-title text-stone-600 opacity-80 mb-4">Mesa de Regalos</h2>
-          <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
+          <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
           {giftRegistry.message && (
             <p className="section-subtitle">
               {giftRegistry.message}
@@ -103,7 +103,7 @@ export default function GiftRegistry() {
               {isBankExpanded && (
                 <div className="px-5 pb-5 border-t border-border">
                   {giftRegistry.bankAccount.description && (
-                    <p className="text-text text-center mb-6 mt-4 text-sm">
+                    <p className="text-text font-body text-center mb-6 mt-4 text-sm">
                       {giftRegistry.bankAccount.description}
                     </p>
                   )}
@@ -111,22 +111,22 @@ export default function GiftRegistry() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                       <div>
-                        <p className="text-sm text-text/70">Banco</p>
-                        <p className="font-medium text-dark">{giftRegistry.bankAccount.bankName}</p>
+                        <p className="text-sm font-body text-text/70">Banco</p>
+                        <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.bankName}</p>
                       </div>
                     </div>
                     
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                       <div>
-                        <p className="text-sm text-text/70">Titular</p>
-                        <p className="font-medium text-dark">{giftRegistry.bankAccount.accountName}</p>
+                        <p className="text-sm font-body text-text/70">Titular</p>
+                        <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.accountName}</p>
                       </div>
                     </div>
                     
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                       <div>
-                        <p className="text-sm text-text/70">Número de Cuenta</p>
-                        <p className="font-medium text-dark">{giftRegistry.bankAccount.accountNumber}</p>
+                        <p className="text-sm font-body text-text/70">Número de Cuenta</p>
+                        <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.accountNumber}</p>
                       </div>
                       <button
                         onClick={() => copyToClipboard(giftRegistry.bankAccount?.accountNumber || '', 'account')}
@@ -140,8 +140,8 @@ export default function GiftRegistry() {
                     {giftRegistry.bankAccount.clabe && (
                       <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                         <div>
-                          <p className="text-sm text-text/70">CLABE</p>
-                          <p className="font-medium text-dark">{giftRegistry.bankAccount.clabe}</p>
+                          <p className="text-sm font-body text-text/70">CLABE</p>
+                          <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.clabe}</p>
                         </div>
                         <button
                           onClick={() => copyToClipboard(giftRegistry.bankAccount?.clabe || '', 'clabe')}
@@ -156,7 +156,7 @@ export default function GiftRegistry() {
                   
                   {copiedField && (
                     <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-sm text-green-800 text-center">
+                      <p className="text-sm font-body text-green-800 text-center">
                         {copiedField === 'account' ? 'Número de cuenta' : 'CLABE'} copiado al portapapeles
                       </p>
                     </div>

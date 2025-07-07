@@ -104,13 +104,13 @@ const Footer = () => {
 
             {/* Hashtag */}
             {hashtag && (
-              <p className="text-white/80 text-base font-medium">
+              <p className="text-white/80 text-base font-body font-medium">
                 {hashtag}
               </p>
             )}
 
             {/* Copyright */}
-            <p className="text-white/60 text-xs mt-6">
+            <p className="text-white/60 text-xs font-body mt-6">
               {t('copyright')}
             </p>
           </div>
@@ -160,12 +160,12 @@ const Footer = () => {
               {coupleQuote}
             </p>
 
-            <p className="text-white/90 text-lg font-medium">
+            <p className="text-white/90 text-lg font-body font-medium">
               {t('cta')}
             </p>
 
             {hashtag && (
-              <p className="text-accent text-lg font-medium mt-4">
+              <p className="text-accent text-lg font-body font-medium mt-4">
                 {hashtag}
               </p>
             )}
@@ -178,7 +178,7 @@ const Footer = () => {
               className="flex items-center justify-center space-x-3 hover:text-accent transition-colors"
             >
               <Mail className="w-4 h-4" />
-              <span className="text-sm">{coupleEmail}</span>
+              <span className="text-sm font-body">{coupleEmail}</span>
             </button>
             <div className="flex items-center justify-center space-x-4">
               <button
@@ -186,7 +186,7 @@ const Footer = () => {
                 className="flex items-center space-x-2 hover:text-accent transition-colors"
               >
                 <Phone className="w-4 h-4" />
-                <span className="text-sm">{brideName}</span>
+                <span className="text-sm font-body">{brideName}</span>
               </button>
               <span className="text-white/40">|</span>
               <button
@@ -194,7 +194,7 @@ const Footer = () => {
                 className="flex items-center space-x-2 hover:text-accent transition-colors"
               >
                 <Phone className="w-4 h-4" />
-                <span className="text-sm">{groomName}</span>
+                <span className="text-sm font-body">{groomName}</span>
               </button>
             </div>
             <div className="flex justify-center space-x-4">
@@ -218,7 +218,7 @@ const Footer = () => {
           </div>
 
           {/* Copyright */}
-          <div className="text-center text-white/60 text-sm animation-delay-600">
+          <div className="text-center text-white/60 text-sm font-body animation-delay-600">
             <p>{t('copyright')}</p>
           </div>
         </div>

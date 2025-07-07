@@ -99,8 +99,8 @@ const Timeline = () => {
           {/* Título y descripción */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
-            <p className="section-subtitle">
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <p className="section-subtitle font-body">
               Los horarios son aproximados, ¡queremos que disfrutes sin prisas!
             </p>
           </div>
@@ -141,15 +141,15 @@ const Timeline = () => {
                           {/* Contenido */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center space-x-3 mb-2">
-                              <span className="text-base font-medium text-dark">
+                              <span className="text-base font-medium text-dark font-body">
                                 {event.time}
                               </span>
                               <div className="flex-1 h-px bg-border"></div>
                             </div>
-                            <h4 className="text-sm font-medium text-dark mb-1">
+                            <h4 className="text-sm font-medium text-dark mb-1 font-heading">
                               {event.title}
                             </h4>
-                            <p className="text-xs text-text leading-relaxed">
+                            <p className="text-xs text-text leading-relaxed font-body">
                               {event.description}
                             </p>
                           </div>

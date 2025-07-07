@@ -15,19 +15,16 @@ const Accommodation = () => {
   const accommodationOptions = weddingData?.accommodation || [
     {
       name: 'Hotel Boutique Central',
-      distance: '5 min del lugar',
       price: 'Desde $120/noche',
       phone: '+52 55 1111-2222'
     },
     {
       name: 'Casa de Huéspedes Jardín',
-      distance: '10 min del lugar', 
       price: 'Desde $80/noche',
       phone: '+52 55 3333-4444'
     },
     {
       name: 'Hotel Familiar Plaza',
-      distance: '15 min del lugar',
       price: 'Desde $95/noche',
       phone: '+52 55 5555-6666'
     }
@@ -44,7 +41,7 @@ const Accommodation = () => {
           {/* Título */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">Hospedaje Recomendado</h2>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle">
               Opciones de alojamiento cercanas al evento
             </p>
@@ -62,13 +59,12 @@ const Accommodation = () => {
                           <MapPin className="w-4 h-4 text-accent" />
                         </div>
                         <div>
-                          <h4 className="font-semibold text-dark text-sm">{hotel.name}</h4>
-                          <p className="text-xs text-text opacity-70">{hotel.distance}</p>
+                          <h4 className="font-body font-semibold text-dark text-sm">{hotel.name}</h4>
                         </div>
                       </div>
                       <button
                         onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
-                        className="flex items-center space-x-1 text-accent hover:text-primary transition-colors duration-200 text-sm font-medium px-2 py-1 rounded-md hover:bg-accent hover:bg-opacity-10"
+                        className="flex items-center space-x-1 text-accent hover:text-primary transition-colors duration-200 text-sm font-body font-medium px-2 py-1 rounded-md hover:bg-accent hover:bg-opacity-10"
                       >
                         <ExternalLink className="w-3 h-3" />
                         <span>Ver</span>
@@ -112,7 +108,7 @@ const Accommodation = () => {
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">Hospedaje Recomendado</h2>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle">
               Opciones de alojamiento cercanas al evento
             </p>
@@ -129,7 +125,7 @@ const Accommodation = () => {
                   <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
                     Hoteles Cercanos
                   </h3>
-                  <p className="text-text opacity-80">
+                  <p className="text-text font-body opacity-80">
                     Te recomendamos estos hoteles para tu comodidad
                   </p>
                 </div>
@@ -143,13 +139,12 @@ const Accommodation = () => {
                             <MapPin className="w-6 h-6 text-accent" />
                           </div>
                           <div>
-                            <h4 className="text-lg font-semibold text-primary">{hotel.name}</h4>
-                            <p className="text-text opacity-70">{hotel.distance}</p>
+                            <h4 className="text-lg font-body font-semibold text-primary">{hotel.name}</h4>
                           </div>
                         </div>
                         <button
                           onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
-                          className="flex items-center space-x-2 text-accent hover:text-primary transition-all duration-200 text-sm font-medium px-4 py-2 rounded-lg hover:bg-accent hover:bg-opacity-10 hover:scale-105"
+                          className="flex items-center space-x-2 text-accent hover:text-primary transition-all duration-200 text-sm font-body font-medium px-4 py-2 rounded-lg hover:bg-accent hover:bg-opacity-10 hover:scale-105"
                         >
                           <ExternalLink className="w-4 h-4" />
                           <span>Ver ubicación</span>

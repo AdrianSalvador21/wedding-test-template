@@ -37,7 +37,7 @@ const Location = () => {
           {/* Título */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">Ubicación del Evento</h2>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
           </div>
 
           <div className="max-w-lg mx-auto space-y-8">
@@ -49,10 +49,10 @@ const Location = () => {
                   <h3 className="text-xl font-heading font-semibold text-primary mb-2">
                     Ceremonia Religiosa
                   </h3>
-                  <h4 className="text-lg font-semibold text-dark mb-2">
+                  <h4 className="text-lg font-body font-semibold text-dark mb-2">
                     {ceremonyVenue.name}
                   </h4>
-                  <p className="text-text">{ceremonyVenue.address}</p>
+                  <p className="text-text font-body">{ceremonyVenue.address}</p>
                 </div>
 
 
@@ -60,7 +60,7 @@ const Location = () => {
                 {/* Botón de direcciones */}
                 <button
                   onClick={() => handleMapsClick(ceremonyVenue)}
-                  className="w-full bg-gradient-primary text-white font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                  className="w-full bg-gradient-primary text-white font-body font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
                 >
                   <ExternalLink className="w-5 h-5" />
                   <span>Cómo llegar</span>
@@ -76,10 +76,10 @@ const Location = () => {
                   <h3 className="text-xl font-heading font-semibold text-primary mb-2">
                     Recepción
                   </h3>
-                  <h4 className="text-lg font-semibold text-dark mb-2">
+                  <h4 className="text-lg font-body font-semibold text-dark mb-2">
                     {receptionVenue.name}
                   </h4>
-                  <p className="text-text">{receptionVenue.address}</p>
+                  <p className="text-text font-body">{receptionVenue.address}</p>
                 </div>
 
 
@@ -87,7 +87,7 @@ const Location = () => {
                 {/* Botón de direcciones */}
                 <button
                   onClick={() => handleMapsClick(receptionVenue)}
-                  className="w-full bg-gradient-primary text-white font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                  className="w-full bg-gradient-primary text-white font-body font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
                 >
                   <ExternalLink className="w-5 h-5" />
                   <span>Cómo llegar</span>
@@ -132,7 +132,7 @@ const Location = () => {
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">Ubicación del Evento</h2>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
           </div>
 
           <div className="max-w-4xl mx-auto">
@@ -148,20 +148,20 @@ const Location = () => {
                     <h3 className="text-2xl font-heading font-semibold text-primary mb-2">
                       Ceremonia Religiosa
                     </h3>
-                    <h4 className="text-xl font-semibold text-dark mb-2">
+                    <h4 className="text-xl font-body font-semibold text-dark mb-2">
                       {ceremonyVenue.name}
                     </h4>
-                    <p className="text-text text-lg mb-4">{ceremonyVenue.address}</p>
+                    <p className="text-text font-body text-lg mb-4">{ceremonyVenue.address}</p>
                   </div>
 
                   {/* Botón de direcciones */}
-                  <button
-                    onClick={() => handleMapsClick(ceremonyVenue)}
-                    className="w-full bg-gradient-primary text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3"
-                  >
-                    <ExternalLink className="w-5 h-5" />
-                    <span>Cómo llegar</span>
-                  </button>
+                                      <button
+                      onClick={() => handleMapsClick(ceremonyVenue)}
+                      className="w-full bg-gradient-primary text-white font-body font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                      <span>Cómo llegar</span>
+                    </button>
                 </div>
               )}
 
@@ -173,16 +173,16 @@ const Location = () => {
                     <h3 className="text-2xl font-heading font-semibold text-primary mb-2">
                       Recepción
                     </h3>
-                    <h4 className="text-xl font-semibold text-dark mb-2">
+                    <h4 className="text-xl font-body font-semibold text-dark mb-2">
                       {receptionVenue.name}
                     </h4>
-                    <p className="text-text text-lg mb-4">{receptionVenue.address}</p>
+                    <p className="text-text font-body text-lg mb-4">{receptionVenue.address}</p>
                   </div>
 
                   {/* Botón de direcciones */}
                   <button
                     onClick={() => handleMapsClick(receptionVenue)}
-                    className="w-full bg-gradient-primary text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3"
+                    className="w-full bg-gradient-primary text-white font-body font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3"
                   >
                     <ExternalLink className="w-5 h-5" />
                     <span>Cómo llegar</span>

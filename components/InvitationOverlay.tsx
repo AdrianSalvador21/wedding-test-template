@@ -104,10 +104,10 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                 <div className="text-center pt-4 md:pt-0">
                   {/* Invitation Header */}
                   <div className="mb-6 md:mb-6">
-                    <p className="text-xs md:text-sm uppercase tracking-[0.2em] text-stone-500 mb-3 font-medium">
+                    <p className="text-xs md:text-sm uppercase tracking-[0.2em] text-stone-500 mb-3 font-body font-medium">
                       Invitación Personal
                     </p>
-                    <h1 className="text-lg md:text-xl font-serif text-stone-700 leading-relaxed">
+                    <h1 className="text-lg md:text-xl font-heading text-stone-700 leading-relaxed">
                       Nuestra boda
                     </h1>
                   </div>
@@ -115,11 +115,11 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                   {/* Couple Names */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-center space-x-3 md:space-x-4">
-                      <h2 className="text-2xl md:text-4xl font-serif font-light text-stone-800 leading-tight">
+                      <h2 className="text-2xl md:text-4xl font-heading font-light text-stone-800 leading-tight">
                         {bride.name}
                       </h2>
                       <span className="text-2xl md:text-4xl text-stone-500 font-light">&</span>
-                      <h2 className="text-2xl md:text-4xl font-serif font-light text-stone-800 leading-tight">
+                      <h2 className="text-2xl md:text-4xl font-heading font-light text-stone-800 leading-tight">
                         {groom.name}
                       </h2>
                     </div>
@@ -144,11 +144,11 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                 <div className="space-y-6 md:space-y-6 relative z-10">
                   {/* Guest Info Card con patrón de fondo */}
                   <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-stone-200/50 shadow-sm">
-                    <h3 className="text-xl md:text-2xl font-serif text-stone-800 mb-3">
+                    <h3 className="text-xl md:text-2xl font-heading text-stone-800 mb-3">
                       {guest.name}
                     </h3>
                     
-                    <p className="text-sm text-stone-600 font-medium">
+                    <p className="text-sm text-stone-600 font-body font-medium">
                       {guest.allowedGuests === 1 
                         ? '1 persona' 
                         : `${guest.allowedGuests} personas`
@@ -159,7 +159,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                   {/* Special Message */}
                   {guest.specialMessage && (
                     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-stone-200/50 shadow-sm max-w-sm mx-auto">
-                      <p className="text-sm md:text-base text-stone-600 italic leading-relaxed font-light">
+                      <p className="text-sm md:text-base text-stone-600 italic leading-relaxed font-body font-light">
                         &ldquo;{guest.specialMessage}&rdquo;
                       </p>
                     </div>
@@ -174,7 +174,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleClose}
-                  className="w-full bg-gradient-to-r from-stone-700 to-stone-600 text-white font-semibold py-4 md:py-5 px-8 rounded-2xl shadow-lg hover:shadow-xl hover:from-stone-600 hover:to-stone-500 transition-all duration-300 text-base md:text-lg mb-4"
+                  className="w-full bg-gradient-to-r from-stone-700 to-stone-600 text-white font-body font-semibold py-4 md:py-5 px-8 rounded-2xl shadow-lg hover:shadow-xl hover:from-stone-600 hover:to-stone-500 transition-all duration-300 text-base md:text-lg mb-4"
                 >
                   Abrir Invitación
                 </motion.button>

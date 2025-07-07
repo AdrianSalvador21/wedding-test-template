@@ -84,7 +84,7 @@ const RSVP = () => {
               <h2 className="text-2xl font-heading font-semibold text-primary mb-4">
                 {t('success')}
               </h2>
-              <p className="text-text">
+              <p className="text-text font-body">
                 ¡Nos vemos el {formatDate(weddingDate)} en {venueName}!
               </p>
             </div>
@@ -105,7 +105,7 @@ const RSVP = () => {
           {/* Título */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
-            <p className="section-subtitle">
+            <p className="section-subtitle font-body">
               {t('description')}
             </p>
             
@@ -123,43 +123,43 @@ const RSVP = () => {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 {/* Nombre */}
                 <div>
-                  <label className="block text-sm font-medium text-dark mb-2">
+                  <label className="block text-sm font-body font-medium text-dark mb-2">
                     {t('form.name')} *
                   </label>
                   <input
                     {...register('name')}
                     type="text"
-                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
                   />
                   {errors.name && (
-                    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                    <p className="text-red-500 text-sm font-body mt-1">{errors.name.message}</p>
                   )}
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-dark mb-2">
+                  <label className="block text-sm font-body font-medium text-dark mb-2">
                     {t('form.email')} (opcional)
                   </label>
                   <input
                     {...register('email')}
                     type="email"
-                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
                   />
                   {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                    <p className="text-red-500 text-sm font-body mt-1">{errors.email.message}</p>
                   )}
                 </div>
 
                 {/* Asistencia */}
                 <div>
-                  <label className="block text-sm font-medium text-dark mb-2">
+                  <label className="block text-sm font-body font-medium text-dark mb-2">
                     {t('form.attendance')} *
                   </label>
                   <div className="relative">
                     <select
                       {...register('attendance')}
-                      className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none"
+                      className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none font-body"
                     >
                       <option value=""></option>
                       <option value="yes">{t('form.attendanceOptions.yes')}</option>
@@ -168,20 +168,20 @@ const RSVP = () => {
                     <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                   </div>
                   {errors.attendance && (
-                    <p className="text-red-500 text-sm mt-1">Por favor selecciona una opción</p>
+                    <p className="text-red-500 text-sm font-body mt-1">Por favor selecciona una opción</p>
                   )}
                 </div>
 
                 {/* Mensaje para los novios */}
                 <div>
-                  <label className="block text-sm font-medium text-dark mb-2">
+                  <label className="block text-sm font-body font-medium text-dark mb-2">
                     Mensaje para los novios
                   </label>
                   <textarea
                     {...register('message')}
                     rows={3}
-                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none"
-                    placeholder="Comparte tus buenos deseos..."
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none font-body"
+                    placeholder=""
                   />
                 </div>
 
@@ -189,17 +189,17 @@ const RSVP = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-primary text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
+                  className="w-full bg-gradient-primary text-white font-body font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
                 >
                   {isSubmitting ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>{t('form.submitting')}</span>
+                      <span className="font-body">{t('form.submitting')}</span>
                     </>
                   ) : (
                     <>
                       <Send className="w-5 h-5" />
-                      <span>{t('form.submit')}</span>
+                      <span className="font-body">{t('form.submit')}</span>
                     </>
                   )}
                 </button>
@@ -246,8 +246,8 @@ const RSVP = () => {
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
-            <p className="section-subtitle">
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <p className="section-subtitle font-body">
               {t('description')}
             </p>
           </div>
@@ -259,43 +259,43 @@ const RSVP = () => {
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* Nombre */}
                     <div>
-                      <label className="block text-sm font-medium text-dark mb-2">
+                      <label className="block text-sm font-body font-medium text-dark mb-2">
                         {t('form.name')} *
                       </label>
                       <input
                         {...register('name')}
                         type="text"
-                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
+                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
                       />
                       {errors.name && (
-                        <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                        <p className="text-red-500 text-sm font-body mt-1">{errors.name.message}</p>
                       )}
                     </div>
 
                     {/* Email */}
                     <div>
-                      <label className="block text-sm font-medium text-dark mb-2">
+                      <label className="block text-sm font-body font-medium text-dark mb-2">
                         {t('form.email')} (opcional)
                       </label>
                       <input
                         {...register('email')}
                         type="email"
-                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
+                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
                       />
                       {errors.email && (
-                        <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                        <p className="text-red-500 text-sm font-body mt-1">{errors.email.message}</p>
                       )}
                     </div>
 
                     {/* Asistencia */}
                     <div>
-                      <label className="block text-sm font-medium text-dark mb-2">
+                      <label className="block text-sm font-body font-medium text-dark mb-2">
                         {t('form.attendance')} *
                       </label>
                       <div className="relative">
                         <select
                           {...register('attendance')}
-                          className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none"
+                          className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none font-body"
                         >
                           <option value=""></option>
                           <option value="yes">{t('form.attendanceOptions.yes')}</option>
@@ -304,20 +304,20 @@ const RSVP = () => {
                         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                       </div>
                       {errors.attendance && (
-                        <p className="text-red-500 text-sm mt-1">Por favor selecciona una opción</p>
+                        <p className="text-red-500 text-sm font-body mt-1">Por favor selecciona una opción</p>
                       )}
                     </div>
 
                     {/* Mensaje para los novios */}
                     <div>
-                      <label className="block text-sm font-medium text-dark mb-2">
+                      <label className="block text-sm font-body font-medium text-dark mb-2">
                         Mensaje para los novios
                       </label>
                       <textarea
                         {...register('message')}
                         rows={4}
-                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none"
-                        placeholder="Comparte tus buenos deseos..."
+                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none font-body"
+                        placeholder=""
                       />
                     </div>
 
@@ -325,17 +325,17 @@ const RSVP = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-gradient-primary text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3"
+                      className="w-full bg-gradient-primary text-white font-body font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3"
                     >
                       {isSubmitting ? (
                         <>
                           <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          <span>{t('form.submitting')}</span>
+                          <span className="font-body">{t('form.submitting')}</span>
                         </>
                       ) : (
                         <>
                           <Send className="w-6 h-6" />
-                          <span>{t('form.submit')}</span>
+                          <span className="font-body">{t('form.submit')}</span>
                         </>
                       )}
                     </button>

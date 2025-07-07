@@ -27,7 +27,7 @@ const About = () => {
           <h2 className="section-title text-stone-600 opacity-80 mb-4">
             {t('title')}
           </h2>
-          <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
+          <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
           <p className="section-subtitle text-gray-600">
             {t('subtitle')}
           </p>
@@ -55,7 +55,7 @@ const About = () => {
             <div className="lg:col-span-3 space-y-8">
               {/* Historia de la pareja */}
               <div className="space-y-4 text-gray-700 leading-relaxed text-base">
-                <p>
+                <p className="font-body">
                   {story}
                 </p>
               </div>

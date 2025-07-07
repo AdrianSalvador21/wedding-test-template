@@ -98,8 +98,8 @@ const Countdown = () => {
       <div className="container mx-auto px-4 text-center">
         {isEventPassed ? (
           <div className="max-w-2xl mx-auto">
-            <p className="text-2xl text-accent font-semibold mb-4">{t('eventPassed')}</p>
-            <p className="text-gray-600">{t('thankYou')}</p>
+            <p className="text-2xl text-accent font-body font-semibold mb-4">{t('eventPassed')}</p>
+            <p className="text-gray-600 font-body">{t('thankYou')}</p>
           </div>
         ) : (
           <>
@@ -115,10 +115,10 @@ const Countdown = () => {
             <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 mb-12">
               {/* Días */}
               <div className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-serif opacity-70">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-heading opacity-70">
                   {String(timeLeft.days).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
                   {t('days')}
                 </div>
               </div>
@@ -128,10 +128,10 @@ const Countdown = () => {
 
               {/* Horas */}
               <div className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-serif opacity-70">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-heading opacity-70">
                   {String(timeLeft.hours).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
                   {t('hours')}
                 </div>
               </div>
@@ -141,10 +141,10 @@ const Countdown = () => {
 
               {/* Minutos */}
               <div className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-serif opacity-70">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-heading opacity-70">
                   {String(timeLeft.minutes).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
                   {t('minutes')}
                 </div>
               </div>
@@ -154,10 +154,10 @@ const Countdown = () => {
 
               {/* Segundos */}
               <div className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-serif opacity-70">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-heading opacity-70">
                   {String(timeLeft.seconds).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
                   {t('seconds')}
                 </div>
               </div>
@@ -165,14 +165,14 @@ const Countdown = () => {
 
             {/* Fecha y hora del evento */}
             <div className="space-y-2">
-              <p className="text-lg md:text-xl font-light text-gray-700">
+              <p className="text-lg md:text-xl font-body font-light text-gray-700">
                 {weddingDate.toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'es-ES', {
                   day: 'numeric',
                   month: 'long',
                   year: 'numeric'
                 })}
               </p>
-              <p className="text-base md:text-lg font-light text-gray-600">
+              <p className="text-base md:text-lg font-body font-light text-gray-600">
                 {formatTime(eventTime)}
               </p>
             </div>

@@ -19,8 +19,8 @@ export default {
         border: '#e8ddd4',
       },
       fontFamily: {
-        heading: ['Playfair Display', 'serif'],
-        body: ['Crimson Text', 'serif'],
+        heading: ['Cormorant Garamond', 'serif'],
+        body: ['Montserrat', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #8b7355 0%, #a67c5a 100%)',
