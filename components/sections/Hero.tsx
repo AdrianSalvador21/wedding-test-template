@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, Heart } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
@@ -10,6 +10,40 @@ import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 const Hero = () => {
   const { t, currentLanguage } = useTranslations('hero');
   const weddingData = useAppSelector(selectCurrentWedding);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // Precargar imagen de fondo para evitar layout shift
+    const img = new Image();
+    img.src = 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80';
+    
+    // Solución para iOS viewport height
+    const updateVH = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    // Actualizar en carga inicial
+    updateVH();
+    
+    // Actualizar en resize (throttled)
+    let timeoutId: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateVH, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', updateVH);
+    
+    setIsMounted(true);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', updateVH);
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   // Datos dinámicos con fallbacks
   const brideName = weddingData?.couple.bride.name || 'María';
@@ -48,14 +82,18 @@ const Hero = () => {
   };
 
   return (
-    <section className="hero-section relative min-h-[100vh] md:h-screen flex items-center justify-center text-white overflow-hidden">
+    <section 
+      className="hero-section relative h-[100dvh] flex items-center justify-center text-white overflow-hidden"
+      style={{ minHeight: '100vh' }} // Fallback para navegadores que no soportan dvh
+    >
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <div 
-          className="w-full h-full bg-cover bg-center md:bg-fixed"
+          className="w-full h-full bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: "url('https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
-            minHeight: '100vh'
+            height: '100%',
+            width: '100%'
           }}
         />
         <div className="absolute inset-0 bg-black bg-opacity-40" />
@@ -64,9 +102,9 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={isMounted ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: isMounted ? 0.8 : 0, ease: "easeOut" }}
           className="space-y-12"
         >
           {/* "NUESTRA BODA" */}
@@ -107,8 +145,13 @@ const Hero = () => {
 
             {/* Scroll indicator - abajo del botón */}
             <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              animate={isMounted ? { y: [0, 8, 0] } : { y: 0 }}
+              transition={{ 
+                duration: 2.5, 
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: isMounted ? 1 : 0
+              }}
               className="flex flex-col items-center opacity-70 pt-4"
             >
               <ChevronDown className="w-6 h-6" />
