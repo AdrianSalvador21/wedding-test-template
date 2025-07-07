@@ -36,7 +36,7 @@ const DressCode = () => {
       <section className="py-12 bg-white">
         <div className="section-container">
           {/* Título */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <div className="text-xl font-medium text-accent mb-6">{dressCodeStyle}</div>
@@ -114,7 +114,7 @@ const DressCode = () => {
       <div className="section-container">
         <div className="animate-fade-in-up">
           {/* Título */}
-          <div className="text-center mb-16 animation-delay-200">
+          <div className="text-center mb-12 animation-delay-200">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <div className="text-2xl font-medium text-accent mb-6">{dressCodeStyle}</div>
@@ -127,7 +127,7 @@ const DressCode = () => {
           <div className="max-w-5xl mx-auto">
 
             {/* Grid de sugerencias - 3 columnas */}
-            <div className="grid md:grid-cols-3 gap-8 mb-16 animation-delay-400">
+            <div className="grid md:grid-cols-3 gap-8 mb-12 animation-delay-400">
               
               {/* Estilo general */}
               <div className="text-center bg-gray-50 rounded-2xl p-8">

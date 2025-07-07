@@ -7,6 +7,7 @@ import About from './sections/About';
 import Gallery from './sections/Gallery';
 import Timeline from './sections/Timeline';
 import DressCode from './sections/DressCode';
+import Accommodation from './sections/Accommodation';
 import RSVP from './sections/RSVP';
 import Location from './sections/Location';
 import Footer from './sections/Footer';
@@ -58,12 +59,13 @@ export default function WeddingTemplate() {
     <main className="min-h-screen">
       <Hero />
       <Countdown />
+      <Location />
       <About />
       <Gallery />
       <Timeline />
       <DressCode />
+      <Accommodation />
       <RSVP />
-      <Location />
       <Footer />
     </main>
   );

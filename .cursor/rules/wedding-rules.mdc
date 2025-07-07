@@ -1,0 +1,56 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Cursor Rules – Proyecto Invitaciones de Boda
+1. Código Fuente (src/**/*.{js,jsx,ts,tsx})
+
+## Contexto general
+
+Este proyecto es una aplicación web de invitaciones de boda. El código debe ser claro, mantenible, minimalista y mobile-first. Prioriza componentes funcionales y hooks. Usa inglés para nombres de variables y componentes.
+
+## Manejo de lógica y UI
+
+Evita añadir lógica o componentes innecesarios. Si surge una sugerencia de diseño, comenta con alternativas. Apunta a una UI limpia, accesible y prioriza legibilidad sobre decoración.
+
+## Formularios (RSVP, etc.)
+
+Para los formularios (ejemplo RSVP), incluye validación básica y feedback visual claro.
+
+## Assets
+
+Si sugieres assets (imágenes, iconos), utiliza nombres semánticos y sugiérelos como archivos aparte, pero no los declares dentro de los JS/TSX.
+
+## Estilos
+
+No uses CSS inline. Prefiere CSS Modules, styled-components o Tailwind, según el contexto del archivo.
+
+## Librerías UI
+
+No uses librerías UI pesadas como MUI o AntD, a menos que se pida explícitamente.
+
+2. Estilos (src/styles/**/*.{css,scss})
+Minimalismo y consistencia
+
+Prioriza estilos minimalistas y consistentes con tonos suaves y tipografía elegante. Asegúrate de que todos los elementos tengan suficiente padding y whitespace.
+
+## Accesibilidad
+
+Aplica reglas para contrastes accesibles (WCAG AA).
+
+3. General para el Proyecto (*)
+Contexto global
+El proyecto tiene contexto: 'Aplicación web de invitaciones de boda, líder: Adrián Salvador, código mantenible y UX sobresaliente'. Si se pide explicación, sé técnico pero claro. Sugiere siempre alternativas.
+
+Sugerencias de Uso
+Usa estas reglas al escribir código, sugerir mejoras o documentar decisiones.
+Comparte el contexto básico con cualquier nuevo colaborador o miembro del equipo.
+Puedes añadir ejemplos de código, wireframes, o expandir con reglas para testing y documentación si lo necesitas.
+
+## Codigo
+
+- No cambies funcionalidades a menos que se soliciten explicitamente
+- No cambies el diseño visual si no se solicita explicitamente
+- Cuando se agregue una funcionalidad, lo demas debe seguir trabajando visual y funcionalmente igual a menos que se solicite explicitamente
+- Se debe seguir la linea de diseño visual y del codigo que ya se tiene.

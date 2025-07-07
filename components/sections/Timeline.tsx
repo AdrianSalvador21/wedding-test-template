@@ -9,7 +9,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 
 const Timeline = () => {
-  const { t } = useTranslations('timeline');
+  const { t, raw } = useTranslations('timeline');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
 
@@ -18,7 +18,7 @@ const Timeline = () => {
   };
 
   // Mapeo de iconos
-  const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
+  const iconMap: { [key: string]: any } = {
     'MapPin': MapPin,
     'Heart': Heart,
     'Camera': Camera,
@@ -95,7 +95,7 @@ const Timeline = () => {
     return colors[index % colors.length];
   }
 
-  const venueName = weddingData?.event.venue.name || t('venue');
+  const venueName = weddingData?.event.receptionVenue?.name || t('venue');
 
   // Versión estática para móvil
   if (isMobile) {
@@ -103,7 +103,7 @@ const Timeline = () => {
       <section className="py-12 bg-gradient-to-br from-light via-white to-light">
         <div className="section-container">
           {/* Título */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <p className="section-subtitle">
@@ -154,32 +154,6 @@ const Timeline = () => {
             })}
           </div>
 
-          {/* Información adicional */}
-          <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto text-center">
-            <h3 className="text-xl font-heading font-semibold text-primary mb-4">
-              {t('additionalInfo.title')}
-            </h3>
-            <div className="space-y-3 text-text">
-              <p className="flex items-center justify-center">
-                <MapPin className="w-5 h-5 mr-2 text-accent" />
-                <span>{venueName}</span>
-              </p>
-              <p className="text-sm opacity-80">
-                {t('additionalInfo.arriveEarly')}
-              </p>
-              <p className="text-sm opacity-80">
-                {t('additionalInfo.valetParking')}
-              </p>
-            </div>
-            
-            {/* Botón de ubicación */}
-            <button
-              onClick={handleLocationClick}
-              className="mt-6 bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-6 rounded-full hover:shadow-lg transition-all duration-300 active:scale-95"
-            >
-              {t('additionalInfo.seeLocation')}
-            </button>
-          </div>
         </div>
       </section>
     );
@@ -216,7 +190,7 @@ const Timeline = () => {
       <div className="section-container">
         <div className="animate-fade-in-up">
           {/* Título */}
-          <div className="text-center mb-16 animation-delay-200">
+          <div className="text-center mb-12 animation-delay-200">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <p className="section-subtitle">
@@ -293,32 +267,6 @@ const Timeline = () => {
             </div>
           </div>
 
-          {/* Información adicional */}
-          <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto text-center animation-delay-1600">
-            <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
-              {t('additionalInfo.title')}
-            </h3>
-            <div className="space-y-3 text-text">
-              <p className="flex items-center justify-center">
-                <MapPin className="w-5 h-5 mr-2 text-accent" />
-                <span>{venueName}</span>
-              </p>
-              <p className="text-sm opacity-80">
-                {t('additionalInfo.arriveEarly')}
-              </p>
-              <p className="text-sm opacity-80">
-                {t('additionalInfo.valetParking')}
-              </p>
-            </div>
-            
-            {/* Botón de ubicación */}
-            <button
-              onClick={handleLocationClick}
-              className="mt-6 bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-6 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
-            >
-              {t('additionalInfo.seeLocation')}
-            </button>
-          </div>
         </div>
       </div>
     </section>

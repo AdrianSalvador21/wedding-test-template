@@ -35,7 +35,16 @@ export interface EventInfo {
     time: string;
     duration: number;
   };
-  venue: {
+  ceremonyVenue?: {
+    name: string;
+    address: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
+    description?: string;
+  };
+  receptionVenue: {
     name: string;
     address: string;
     coordinates?: {

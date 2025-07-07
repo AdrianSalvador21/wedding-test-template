@@ -92,7 +92,7 @@ const Gallery = () => {
       <section className="py-12 bg-gradient-to-br from-light via-white to-light">
         <div className="section-container">
           {/* Título */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <p className="section-subtitle">
@@ -121,22 +121,7 @@ const Gallery = () => {
             </div>
           </div>
 
-          {/* Mensaje especial */}
-          <div className="text-center mt-16">
-            <div className="bg-white rounded-2xl p-8 shadow-lg max-w-3xl mx-auto">
-              <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
-                {t('everyMomentCounts')}
-              </h3>
-              <p className="text-text leading-relaxed mb-6">
-                {t('memoryDescription')}
-              </p>
-              <div className="flex items-center justify-center space-x-4">
-                <div className="w-12 h-px bg-accent" />
-                <Camera className="w-6 h-6 text-accent" />
-                <div className="w-12 h-px bg-accent" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Call to action */}
           <div className="text-center mt-12">
@@ -188,7 +173,7 @@ const Gallery = () => {
           animate={inView ? "visible" : "hidden"}
         >
           {/* Título */}
-          <motion.div variants={itemVariants} className="text-center mb-16">
+          <motion.div variants={itemVariants} className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
             <p className="section-subtitle">
@@ -227,22 +212,7 @@ const Gallery = () => {
             </div>
           </div>
 
-          {/* Mensaje especial */}
-          <motion.div variants={itemVariants} className="text-center mt-16">
-            <div className="bg-white rounded-2xl p-8 shadow-lg max-w-3xl mx-auto">
-              <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
-                {t('everyMomentCounts')}
-              </h3>
-              <p className="text-text leading-relaxed mb-6">
-                {t('memoryDescription')}
-              </p>
-              <div className="flex items-center justify-center space-x-4">
-                <div className="w-12 h-px bg-accent" />
-                <Camera className="w-6 h-6 text-accent" />
-                <div className="w-12 h-px bg-accent" />
-              </div>
-            </div>
-          </motion.div>
+
 
           {/* Call to action */}
           <motion.div variants={itemVariants} className="text-center mt-12">

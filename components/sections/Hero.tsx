@@ -16,7 +16,7 @@ const Hero = () => {
   const groomName = weddingData?.couple.groom.name || 'Carlos';
   const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const venueName = weddingData?.event.venue.name || t('location');
+  const venueName = weddingData?.event.receptionVenue?.name || t('location');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const eventTime = weddingData?.event.time || '16:00';
 
@@ -69,7 +69,7 @@ const Hero = () => {
           className="space-y-12"
         >
           {/* "NUESTRA BODA" */}
-          <div className="mb-16">
+          <div className="mb-12">
             <h2 className="text-sm md:text-base font-light tracking-[0.4em] uppercase text-white opacity-80 mb-12">
               {t('ourWedding')}
             </h2>
