@@ -38,7 +38,7 @@ const RSVP = () => {
     name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
     email: z.string().optional(),
     attendance: z.enum(['yes', 'no'], {
-      required_error: 'Por favor selecciona una opción'
+      required_error: t('form.selectOption')
     }),
     message: z.string().optional(),
   });
@@ -168,14 +168,14 @@ const RSVP = () => {
                     <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                   </div>
                   {errors.attendance && (
-                    <p className="text-red-500 text-sm font-body mt-1">Por favor selecciona una opción</p>
+                    <p className="text-red-500 text-sm font-body mt-1">{t('form.selectOption')}</p>
                   )}
                 </div>
 
                 {/* Mensaje para los novios */}
                 <div>
                   <label className="block text-sm font-body font-medium text-dark mb-2">
-                    Mensaje para los novios
+                    {t('form.messageForCouple')}
                   </label>
                   <textarea
                     {...register('message')}
@@ -304,14 +304,14 @@ const RSVP = () => {
                         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                       </div>
                       {errors.attendance && (
-                        <p className="text-red-500 text-sm font-body mt-1">Por favor selecciona una opción</p>
+                        <p className="text-red-500 text-sm font-body mt-1">{t('form.selectOption')}</p>
                       )}
                     </div>
 
                     {/* Mensaje para los novios */}
                     <div>
                       <label className="block text-sm font-body font-medium text-dark mb-2">
-                        Mensaje para los novios
+                        {t('form.messageForCouple')}
                       </label>
                       <textarea
                         {...register('message')}

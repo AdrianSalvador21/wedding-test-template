@@ -7,8 +7,10 @@ import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useTranslations } from '../../lib/translations';
 
 const Location = () => {
+  const { t } = useTranslations('location');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
 
@@ -36,7 +38,7 @@ const Location = () => {
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-12">
-            <h2 className="section-title text-stone-600 opacity-80 mb-4">Ubicación del Evento</h2>
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
           </div>
 
@@ -47,7 +49,7 @@ const Location = () => {
                 <div className="text-center mb-8">
                   <Church className="w-8 h-8 mx-auto mb-4 text-accent" />
                   <h3 className="text-xl font-heading font-semibold text-primary mb-2">
-                    Ceremonia Religiosa
+                    {t('ceremony')}
                   </h3>
                   <h4 className="text-lg font-body font-semibold text-dark mb-2">
                     {ceremonyVenue.name}
@@ -63,7 +65,7 @@ const Location = () => {
                   className="w-full bg-gradient-primary text-white font-body font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
                 >
                   <ExternalLink className="w-5 h-5" />
-                  <span>Cómo llegar</span>
+                  <span>{t('directions')}</span>
                 </button>
               </div>
             )}
@@ -74,7 +76,7 @@ const Location = () => {
                 <div className="text-center mb-8">
                   <Music4 className="w-8 h-8 mx-auto mb-4 text-accent" />
                   <h3 className="text-xl font-heading font-semibold text-primary mb-2">
-                    Recepción
+                    {t('reception')}
                   </h3>
                   <h4 className="text-lg font-body font-semibold text-dark mb-2">
                     {receptionVenue.name}
@@ -90,7 +92,7 @@ const Location = () => {
                   className="w-full bg-gradient-primary text-white font-body font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
                 >
                   <ExternalLink className="w-5 h-5" />
-                  <span>Cómo llegar</span>
+                  <span>{t('directions')}</span>
                 </button>
               </div>
             )}
@@ -131,7 +133,7 @@ const Location = () => {
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
-            <h2 className="section-title text-stone-600 opacity-80 mb-4">Ubicación del Evento</h2>
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
           </div>
 
@@ -146,7 +148,7 @@ const Location = () => {
                   <div className="text-center mb-8">
                     <Church className="w-12 h-12 mx-auto mb-6 text-accent" />
                     <h3 className="text-2xl font-heading font-semibold text-primary mb-2">
-                      Ceremonia Religiosa
+                      {t('ceremony')}
                     </h3>
                     <h4 className="text-xl font-body font-semibold text-dark mb-2">
                       {ceremonyVenue.name}
@@ -160,7 +162,7 @@ const Location = () => {
                       className="w-full bg-gradient-primary text-white font-body font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3"
                     >
                       <ExternalLink className="w-5 h-5" />
-                      <span>Cómo llegar</span>
+                      <span>{t('directions')}</span>
                     </button>
                 </div>
               )}
@@ -171,7 +173,7 @@ const Location = () => {
                   <div className="text-center mb-8">
                     <Music4 className="w-12 h-12 mx-auto mb-6 text-accent" />
                     <h3 className="text-2xl font-heading font-semibold text-primary mb-2">
-                      Recepción
+                      {t('reception')}
                     </h3>
                     <h4 className="text-xl font-body font-semibold text-dark mb-2">
                       {receptionVenue.name}
@@ -185,7 +187,7 @@ const Location = () => {
                     className="w-full bg-gradient-primary text-white font-body font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3"
                   >
                     <ExternalLink className="w-5 h-5" />
-                    <span>Cómo llegar</span>
+                    <span>{t('directions')}</span>
                   </button>
                 </div>
               )}

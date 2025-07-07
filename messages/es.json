@@ -22,7 +22,6 @@
   },
   "about": {
     "title": "Nuestra Historia",
-    "subtitle": "Cómo comenzó todo",
     "story": "Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.",
     "specialMoments": "Momentos Especiales",
     "stats": {
@@ -51,6 +50,8 @@
     "title": "Cronograma del Evento",
     "subtitle": "Programa de eventos",
     "description": "Todo lo que necesitas saber sobre nuestro día especial",
+    "scheduleNote": "Los horarios son aproximados, ¡queremos que disfrutes sin prisas!",
+    "eventSchedule": "Cronograma del Evento",
     "events": {
       "arrival": {
         "time": "15:30",
@@ -192,6 +193,8 @@
       "songPlaceholder": "¿Qué canción te gustaría escuchar?",
       "message": "Mensaje especial",
       "messagePlaceholder": "",
+      "messageForCouple": "Mensaje para los novios",
+      "selectOption": "Por favor selecciona una opción",
       "submit": "Confirmar Asistencia",
       "submitting": "Enviando..."
     },
@@ -215,56 +218,77 @@
     "success": "¡Gracias por confirmar tu asistencia!",
     "error": "Error al enviar. Inténtalo de nuevo."
   },
+  "giftRegistry": {
+    "title": "Mesa de Regalos",
+    "onlineRegistries": "Mesas de Regalos",
+    "bankTransfer": "Transferencia Bancaria",
+    "bank": "Banco",
+    "accountHolder": "Titular",
+    "accountNumber": "Número de Cuenta",
+    "copyAccountNumber": "Copiar número de cuenta",
+    "clabe": "CLABE",
+    "copyClabe": "Copiar CLABE",
+    "accountCopied": "Número de cuenta copiado al portapapeles",
+    "clabeCopied": "CLABE copiado al portapapeles"
+  },
+  "accommodation": {
+    "title": "Hospedaje Recomendado",
+    "subtitle": "Opciones de alojamiento cercanas al evento",
+    "nearbyHotels": "Hoteles Cercanos",
+    "description": "Te recomendamos estos hoteles para tu comodidad",
+    "seeLocation": "Ver ubicación",
+    "view": "Ver"
+  },
   "location": {
-    "title": "Lugar del Evento",
-    "subtitle": "Jardines del Edén",
-    "address": "Av. Principal 123, Ciudad, Estado 12345",
-    "description": "Un lugar mágico donde celebraremos nuestro amor rodeados de naturaleza y elegancia",
-    "mapPlaceholder": "Mapa interactivo del lugar",
-    "directions": {
-      "title": "Cómo llegar",
-      "googleMaps": "Google Maps",
-      "waze": "Waze"
+    "title": "Ubicación del Evento",
+    "ceremony": "Ceremonia Religiosa",
+    "reception": "Recepción",
+    "directions": "Cómo llegar"
+  },
+  "timeline": {
+    "title": "Cronograma del Evento",
+    "subtitle": "Programa de eventos",
+    "description": "Todo lo que necesitas saber sobre nuestro día especial",
+    "scheduleNote": "Los horarios son aproximados, ¡queremos que disfrutes sin prisas!",
+    "eventSchedule": "Cronograma del Evento",
+    "events": {
+      "arrival": {
+        "time": "15:30",
+        "title": "Llegada de Invitados",
+        "description": "Recepción y bienvenida en los jardines"
+      },
+      "ceremony": {
+        "time": "16:00",
+        "title": "Ceremonia Civil",
+        "description": "¡El momento más esperado! Intercambio de votos"
+      },
+      "photos": {
+        "time": "16:45",
+        "title": "Sesión de Fotos",
+        "description": "Fotos con familiares y amigos cercanos"
+      },
+      "cocktail": {
+        "time": "18:00", 
+        "title": "Cóctel de Celebración",
+        "description": "Aperitivos y bebidas mientras preparamos la recepción"
+      },
+      "reception": {
+        "time": "19:30",
+        "title": "Cena y Brindis",
+        "description": "Cena especial con nuestros seres queridos"
+      },
+      "party": {
+        "time": "21:00",
+        "title": "¡A Bailar!",
+        "description": "Música, baile y diversión hasta altas horas"
+      }
     },
-    "facilities": {
-      "title": "Facilidades del Lugar",
-      "features": [
-        "Jardines y espacios al aire libre",
-        "Salón climatizado para 200 personas",
-        "Cocina gourmet profesional",
-        "Sistema de sonido profesional",
-        "Estacionamiento gratuito para 100 autos",
-        "Área especial para fotografías",
-        "Servicio de valet parking disponible",
-        "Acceso para personas con discapacidad"
-      ]
-    },
-    "accommodation": {
-      "title": "Hospedaje Recomendado",
-      "subtitle": "Hoteles cercanos al lugar del evento",
-      "hotels": [
-        {
-          "name": "Hotel Boutique Plaza",
-          "distance": "5 minutos del lugar",
-          "price": "Desde $2,500/noche"
-        },
-        {
-          "name": "Gran Hotel Centro",
-          "distance": "10 minutos del lugar", 
-          "price": "Desde $1,800/noche"
-        },
-        {
-          "name": "Hotel Jardín",
-          "distance": "8 minutos del lugar",
-          "price": "Desde $2,200/noche"
-        }
-      ]
-    },
-    "transport": {
-      "title": "Transporte",
-      "parking": "Estacionamiento gratuito disponible",
-      "uber": "Servicios de Uber/Taxi disponibles",
-      "publicTransport": "Transporte público: Línea 3 - Estación Centro"
+    "venue": "Jardines del Edén, Salón de Eventos",
+    "additionalInfo": {
+      "title": "Información Importante",
+      "arriveEarly": "Te recomendamos llegar 15 minutos antes de cada evento",
+      "valetParking": "Habrá servicio de valet parking disponible",
+      "seeLocation": "Ver Ubicación"
     }
   },
   "footer": {
@@ -285,6 +309,15 @@
     "quote": "\"El amor es la fuerza más poderosa del mundo\"",
     "cta": "¿Tienes preguntas? ¡Contáctanos!",
     "copyright": "Con amor, María & Carlos"
+  },
+  "invitationOverlay": {
+    "personalInvitation": "Invitación Personal",
+    "ourWedding": "Nuestra boda",
+    "guestCount": {
+      "single": "1 persona",
+      "multiple": "{count} personas"
+    },
+    "openInvitation": "Abrir Invitación"
   },
   "common": {
     "loading": "Cargando...",

@@ -4,8 +4,10 @@ import { useWedding } from '../../src/store/hooks';
 import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useTranslations } from '../../lib/translations';
 
 export default function GiftRegistry() {
+  const { t } = useTranslations('giftRegistry');
   const { currentWedding } = useWedding();
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isBankExpanded, setIsBankExpanded] = useState(false);
@@ -32,7 +34,7 @@ export default function GiftRegistry() {
       <div className="section-container">
         {/* Título */}
         <div className="text-center mb-12">
-          <h2 className="section-title text-stone-600 opacity-80 mb-4">Mesa de Regalos</h2>
+          <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
           <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
           {giftRegistry.message && (
             <p className="section-subtitle">
@@ -50,7 +52,7 @@ export default function GiftRegistry() {
                 className="w-full p-5 flex items-center justify-between hover:border-primary/30 transition-colors"
               >
                 <h3 className="text-base font-heading text-dark">
-                  Mesas de Regalos
+                  {t('onlineRegistries')}
                 </h3>
                 {isRegistryExpanded ? (
                   <ChevronUp className="w-5 h-5 text-dark" />
@@ -91,7 +93,7 @@ export default function GiftRegistry() {
                 className="w-full p-5 flex items-center justify-between hover:border-primary/30 transition-colors"
               >
                 <h3 className="text-base font-heading text-dark">
-                  Transferencia Bancaria
+                  {t('bankTransfer')}
                 </h3>
                 {isBankExpanded ? (
                   <ChevronUp className="w-5 h-5 text-dark" />
@@ -111,27 +113,27 @@ export default function GiftRegistry() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                       <div>
-                        <p className="text-sm font-body text-text/70">Banco</p>
+                        <p className="text-sm font-body text-text/70">{t('bank')}</p>
                         <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.bankName}</p>
                       </div>
                     </div>
                     
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                       <div>
-                        <p className="text-sm font-body text-text/70">Titular</p>
+                        <p className="text-sm font-body text-text/70">{t('accountHolder')}</p>
                         <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.accountName}</p>
                       </div>
                     </div>
                     
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                       <div>
-                        <p className="text-sm font-body text-text/70">Número de Cuenta</p>
+                        <p className="text-sm font-body text-text/70">{t('accountNumber')}</p>
                         <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.accountNumber}</p>
                       </div>
                       <button
                         onClick={() => copyToClipboard(giftRegistry.bankAccount?.accountNumber || '', 'account')}
                         className="p-2 text-text/70 hover:text-primary transition-colors"
-                        title="Copiar número de cuenta"
+                        title={t('copyAccountNumber')}
                       >
                         <Copy className="w-4 h-4" />
                       </button>
@@ -140,13 +142,13 @@ export default function GiftRegistry() {
                     {giftRegistry.bankAccount.clabe && (
                       <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                         <div>
-                          <p className="text-sm font-body text-text/70">CLABE</p>
+                          <p className="text-sm font-body text-text/70">{t('clabe')}</p>
                           <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.clabe}</p>
                         </div>
                         <button
                           onClick={() => copyToClipboard(giftRegistry.bankAccount?.clabe || '', 'clabe')}
                           className="p-2 text-text/70 hover:text-primary transition-colors"
-                          title="Copiar CLABE"
+                          title={t('copyClabe')}
                         >
                           <Copy className="w-4 h-4" />
                         </button>
@@ -157,7 +159,7 @@ export default function GiftRegistry() {
                   {copiedField && (
                     <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                       <p className="text-sm font-body text-green-800 text-center">
-                        {copiedField === 'account' ? 'Número de cuenta' : 'CLABE'} copiado al portapapeles
+                        {copiedField === 'account' ? t('accountCopied') : t('clabeCopied')}
                       </p>
                     </div>
                   )}

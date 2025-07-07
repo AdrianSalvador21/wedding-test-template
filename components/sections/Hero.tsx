@@ -48,13 +48,14 @@ const Hero = () => {
   };
 
   return (
-    <section className="hero-section relative h-screen flex items-center justify-center text-white overflow-hidden">
+    <section className="hero-section relative min-h-[100vh] md:h-screen flex items-center justify-center text-white overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <div 
-          className="w-full h-full bg-cover bg-center bg-fixed"
+          className="w-full h-full bg-cover bg-center md:bg-fixed"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')"
+            backgroundImage: "url('https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
+            minHeight: '100vh'
           }}
         />
         <div className="absolute inset-0 bg-black bg-opacity-40" />

@@ -115,7 +115,7 @@ const Countdown = () => {
             <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 mb-12">
               {/* Días */}
               <div className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-heading opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-heading opacity-70">
                   {String(timeLeft.days).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
@@ -124,11 +124,11 @@ const Countdown = () => {
               </div>
 
               {/* Separador */}
-              <div className="text-xl sm:text-2xl md:text-3xl text-stone-600 font-light mx-1 opacity-70">:</div>
+              <div className="text-lg sm:text-xl md:text-2xl text-stone-600 font-light mx-1 opacity-70">:</div>
 
               {/* Horas */}
               <div className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-heading opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-heading opacity-70">
                   {String(timeLeft.hours).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
@@ -137,11 +137,11 @@ const Countdown = () => {
               </div>
 
               {/* Separador */}
-              <div className="text-xl sm:text-2xl md:text-3xl text-stone-600 font-light mx-1 opacity-70">:</div>
+              <div className="text-lg sm:text-xl md:text-2xl text-stone-600 font-light mx-1 opacity-70">:</div>
 
               {/* Minutos */}
               <div className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-heading opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-heading opacity-70">
                   {String(timeLeft.minutes).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
@@ -150,11 +150,11 @@ const Countdown = () => {
               </div>
 
               {/* Separador */}
-              <div className="text-xl sm:text-2xl md:text-3xl text-stone-600 font-light mx-1 opacity-70">:</div>
+              <div className="text-lg sm:text-xl md:text-2xl text-stone-600 font-light mx-1 opacity-70">:</div>
 
               {/* Segundos */}
               <div className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light text-stone-600 mb-2 font-heading opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-heading opacity-70">
                   {String(timeLeft.seconds).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">

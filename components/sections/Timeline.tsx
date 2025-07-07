@@ -101,7 +101,7 @@ const Timeline = () => {
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle font-body">
-              Los horarios son aproximados, ¡queremos que disfrutes sin prisas!
+              {t('scheduleNote')}
             </p>
           </div>
 
@@ -113,7 +113,7 @@ const Timeline = () => {
                 className="w-full p-5 flex items-center justify-between hover:border-primary/30 transition-colors"
               >
                 <h3 className="text-base font-heading text-dark">
-                  Cronograma del Evento
+                  {t('eventSchedule')}
                 </h3>
                 {isExpanded ? (
                   <ChevronUp className="w-5 h-5 text-dark" />

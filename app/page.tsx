@@ -9,6 +9,7 @@ import Timeline from '../components/sections/Timeline';
 import DressCode from '../components/sections/DressCode';
 import RSVP from '../components/sections/RSVP';
 import Location from '../components/sections/Location';
+import GiftRegistry from '../components/sections/GiftRegistry';
 import Footer from '../components/sections/Footer';
 import { useAppDispatch, useAppSelector } from '../src/store/hooks';
 import { selectWeddingInitialized, selectCurrentWedding } from '../src/store/slices/weddingSlice';
@@ -36,6 +37,7 @@ export default function HomePage() {
       <Timeline />
       <DressCode />
       <Location />
+      <GiftRegistry />
       <RSVP />
       <Footer />
     </main>

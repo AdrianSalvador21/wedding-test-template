@@ -22,7 +22,6 @@
   },
   "about": {
     "title": "Our Story",
-    "subtitle": "How it all began",
     "story": "More than 6 years ago, destiny brought us together in a city café. What started as a casual conversation turned into shared laughter, intertwined dreams, and a love that grew day by day. Today, we want to celebrate this unique moment surrounded by the people we love most.",
     "specialMoments": "Special Moments",
     "stats": {
@@ -51,6 +50,8 @@
     "title": "Event Schedule",
     "subtitle": "Event program",
     "description": "Everything you need to know about our special day",
+    "scheduleNote": "Times are approximate, we want you to enjoy without rushing!",
+    "eventSchedule": "Event Schedule",
     "events": {
       "arrival": {
         "time": "3:30 PM",
@@ -192,6 +193,8 @@
       "songPlaceholder": "What song would you like to hear?",
       "message": "Special message",
       "messagePlaceholder": "Share your good wishes...",
+      "messageForCouple": "Message for the couple",
+      "selectOption": "Please select an option",
       "submit": "Confirm Attendance",
       "submitting": "Sending..."
     },
@@ -215,56 +218,77 @@
     "success": "Thank you for confirming your attendance!",
     "error": "Error sending. Please try again."
   },
+  "giftRegistry": {
+    "title": "Gift Registry",
+    "onlineRegistries": "Gift Registries",
+    "bankTransfer": "Bank Transfer",
+    "bank": "Bank",
+    "accountHolder": "Account Holder",
+    "accountNumber": "Account Number",
+    "copyAccountNumber": "Copy account number",
+    "clabe": "CLABE",
+    "copyClabe": "Copy CLABE",
+    "accountCopied": "Account number copied to clipboard",
+    "clabeCopied": "CLABE copied to clipboard"
+  },
+  "accommodation": {
+    "title": "Recommended Accommodation",
+    "subtitle": "Lodging options near the event",
+    "nearbyHotels": "Nearby Hotels",
+    "description": "We recommend these hotels for your comfort",
+    "seeLocation": "See location",
+    "view": "View"
+  },
   "location": {
     "title": "Event Location",
-    "subtitle": "Eden Gardens",
-    "address": "123 Main Ave, City, State 12345",
-    "description": "A beautiful place surrounded by nature, perfect for celebrating our love. With spacious gardens, elegant halls, and spectacular views.",
-    "mapPlaceholder": "Interactive map coming soon",
-    "directions": {
-      "title": "How to get there",
-      "googleMaps": "Open in Google Maps",
-      "waze": "Open in Waze"
+    "ceremony": "Religious Ceremony",
+    "reception": "Reception",
+    "directions": "Get directions"
+  },
+  "timeline": {
+    "title": "Event Schedule",
+    "subtitle": "Event program",
+    "description": "Everything you need to know about our special day",
+    "scheduleNote": "Times are approximate, we want you to enjoy without rushing!",
+    "eventSchedule": "Event Schedule",
+    "events": {
+      "arrival": {
+        "time": "3:30 PM",
+        "title": "Guest Arrival",
+        "description": "Reception and welcome in the gardens"
+      },
+      "ceremony": {
+        "time": "4:00 PM",
+        "title": "Civil Ceremony",
+        "description": "The most awaited moment! Exchange of vows"
+      },
+      "photos": {
+        "time": "4:45 PM",
+        "title": "Photo Session",
+        "description": "Photos with family and close friends"
+      },
+      "cocktail": {
+        "time": "6:00 PM", 
+        "title": "Celebration Cocktail",
+        "description": "Appetizers and drinks while we prepare the reception"
+      },
+      "reception": {
+        "time": "7:30 PM",
+        "title": "Dinner and Toasts",
+        "description": "Special dinner with our loved ones"
+      },
+      "party": {
+        "time": "9:00 PM",
+        "title": "Let's Dance!",
+        "description": "Music, dancing and fun until late hours"
+      }
     },
-    "facilities": {
-      "title": "Venue Facilities",
-      "features": [
-        "Gardens and outdoor spaces",
-        "Air-conditioned hall for 200 people",
-        "Professional gourmet kitchen",
-        "Professional sound system",
-        "Free parking for 100 cars",
-        "Special area for photography",
-        "Valet parking service available",
-        "Wheelchair accessible"
-      ]
-    },
-    "accommodation": {
-      "title": "Recommended Accommodation",
-      "subtitle": "For out-of-town guests",
-      "hotels": [
-        {
-          "name": "Central Boutique Hotel",
-          "distance": "5 min from venue",
-          "price": "From $120/night"
-        },
-        {
-          "name": "Grand Plaza Hotel",
-          "distance": "10 min from venue", 
-          "price": "From $80/night"
-        },
-        {
-          "name": "Garden Hotel",
-          "distance": "8 min from venue",
-          "price": "From $100/night"
-        }
-      ]
-    },
-    "transport": {
-      "title": "Transportation",
-      "parking": "Free parking available",
-      "uber": "Easy access for Uber/Taxi",
-      "publicTransport": "Metro station 2 blocks away"
+    "venue": "Eden Gardens, Event Hall",
+    "additionalInfo": {
+      "title": "Important Information",
+      "arriveEarly": "We recommend arriving 15 minutes before each event",
+      "valetParking": "Valet parking service will be available",
+      "seeLocation": "See Location"
     }
   },
   "footer": {
@@ -285,6 +309,15 @@
     "quote": "\"Love is the most powerful force in the world\"",
     "cta": "Have questions? Contact us!",
     "copyright": "With love, María & Carlos"
+  },
+  "invitationOverlay": {
+    "personalInvitation": "Personal Invitation",
+    "ourWedding": "Our Wedding",
+    "guestCount": {
+      "single": "1 person",
+      "multiple": "{count} people"
+    },
+    "openInvitation": "Open Invitation"
   },
   "common": {
     "loading": "Loading...",
