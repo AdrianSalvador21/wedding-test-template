@@ -22,6 +22,34 @@ function DataInitializer({ children }: { children: React.ReactNode }) {
     }
   }, [dispatch, pathname]);
 
+  // Solución para viewport height en iOS
+  useEffect(() => {
+    const setViewportHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    // Establecer altura inicial
+    setViewportHeight();
+
+    // Actualizar en resize (pero throttled para performance)
+    let resizeTimer: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(setViewportHeight, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', setViewportHeight);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', setViewportHeight);
+      clearTimeout(resizeTimer);
+    };
+  }, []);
+
   return <>{children}</>;
 }
 

@@ -27,13 +27,17 @@ const About = () => {
           <h2 className="section-title text-stone-600 opacity-80 mb-4">
             {t('title')}
           </h2>
-          <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
-          <p className="section-subtitle text-gray-600">
-            {t('subtitle')}
-          </p>
+          <div className="w-16 h-0.5 bg-accent mx-auto"></div>
         </div>
 
         <div className="max-w-6xl mx-auto">
+          {/* Cita romántica */}
+          <div className="text-center mb-16">
+            <blockquote className="text-xl md:text-2xl font-heading italic text-stone-600 leading-relaxed max-w-4xl mx-auto">
+              &ldquo;{couple?.quote || 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.'}&rdquo;
+            </blockquote>
+          </div>
+
           {/* Historia principal - Layout imagen izquierda, contenido derecha */}
           <div className="grid lg:grid-cols-5 gap-12 items-center mb-12">
             {/* Imagen de la pareja - 2 columnas */}

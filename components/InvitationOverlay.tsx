@@ -7,6 +7,7 @@ import { useAppSelector } from '../src/store/hooks';
 import { selectCurrentWedding } from '../src/store/slices/weddingSlice';
 import { getMockInvitation } from '../src/data/mockInvitations';
 import { getFloralBackgroundStyle } from '../lib/floral-patterns';
+import { useTranslations } from '../lib/translations';
 import type { WeddingInvitation } from '../src/types/wedding';
 
 interface InvitationOverlayProps {
@@ -19,6 +20,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
   const [isVisible, setIsVisible] = useState(true);
   const currentWedding = useAppSelector(selectCurrentWedding);
   const [invitation, setInvitation] = useState<WeddingInvitation | null>(null);
+  const { t } = useTranslations('invitationOverlay');
 
   useEffect(() => {
     // Obtener la invitación específica
@@ -105,10 +107,10 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                   {/* Invitation Header */}
                   <div className="mb-6 md:mb-6">
                     <p className="text-xs md:text-sm uppercase tracking-[0.2em] text-stone-500 mb-3 font-body font-medium">
-                      Invitación Personal
+                      {t('personalInvitation')}
                     </p>
                     <h1 className="text-lg md:text-xl font-heading text-stone-700 leading-relaxed">
-                      Nuestra boda
+                      {t('ourWedding')}
                     </h1>
                   </div>
 
@@ -150,8 +152,8 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                     
                     <p className="text-sm text-stone-600 font-body font-medium">
                       {guest.allowedGuests === 1 
-                        ? '1 persona' 
-                        : `${guest.allowedGuests} personas`
+                        ? t('guestCount.single')
+                        : t('guestCount.multiple').replace('{count}', guest.allowedGuests.toString())
                       }
                     </p>
                   </div>
@@ -176,7 +178,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                   onClick={handleClose}
                   className="w-full bg-gradient-to-r from-stone-700 to-stone-600 text-white font-body font-semibold py-4 md:py-5 px-8 rounded-2xl shadow-lg hover:shadow-xl hover:from-stone-600 hover:to-stone-500 transition-all duration-300 text-base md:text-lg mb-4"
                 >
-                  Abrir Invitación
+                  {t('openInvitation')}
                 </motion.button>
 
                 {/* Elegant Footer */}

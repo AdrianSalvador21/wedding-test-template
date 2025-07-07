@@ -7,8 +7,10 @@ import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useTranslations } from '../../lib/translations';
 
 const Accommodation = () => {
+  const { t } = useTranslations('accommodation');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
 
@@ -40,10 +42,10 @@ const Accommodation = () => {
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-12">
-            <h2 className="section-title text-stone-600 opacity-80 mb-4">Hospedaje Recomendado</h2>
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle">
-              Opciones de alojamiento cercanas al evento
+              {t('subtitle')}
             </p>
           </div>
 
@@ -67,7 +69,7 @@ const Accommodation = () => {
                         className="flex items-center space-x-1 text-accent hover:text-primary transition-colors duration-200 text-sm font-body font-medium px-2 py-1 rounded-md hover:bg-accent hover:bg-opacity-10"
                       >
                         <ExternalLink className="w-3 h-3" />
-                        <span>Ver</span>
+                        <span>{t('view')}</span>
                       </button>
                     </div>
                   </div>
@@ -107,10 +109,10 @@ const Accommodation = () => {
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
-            <h2 className="section-title text-stone-600 opacity-80 mb-4">Hospedaje Recomendado</h2>
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle">
-              Opciones de alojamiento cercanas al evento
+              {t('subtitle')}
             </p>
           </div>
 
@@ -123,10 +125,10 @@ const Accommodation = () => {
                     <MapPin className="w-8 h-8 text-accent" />
                   </div>
                   <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
-                    Hoteles Cercanos
+                    {t('nearbyHotels')}
                   </h3>
                   <p className="text-text font-body opacity-80">
-                    Te recomendamos estos hoteles para tu comodidad
+                    {t('description')}
                   </p>
                 </div>
                 
@@ -147,7 +149,7 @@ const Accommodation = () => {
                           className="flex items-center space-x-2 text-accent hover:text-primary transition-all duration-200 text-sm font-body font-medium px-4 py-2 rounded-lg hover:bg-accent hover:bg-opacity-10 hover:scale-105"
                         >
                           <ExternalLink className="w-4 h-4" />
-                          <span>Ver ubicación</span>
+                          <span>{t('seeLocation')}</span>
                         </button>
                       </div>
                     </div>

@@ -3,6 +3,52 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CSS Custom Properties para iOS viewport */
+:root {
+  --vh: 1vh;
+}
+
+/* Solución específica para iOS viewport height */
+@supports (-webkit-touch-callout: none) {
+  .hero-section {
+    height: calc(var(--vh, 1vh) * 100) !important;
+    min-height: calc(var(--vh, 1vh) * 100) !important;
+  }
+}
+
+/* Prevenir layout shift en iOS */
+@media screen and (max-width: 768px) {
+  .hero-section {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    min-height: 640px; /* Fallback mínimo */
+  }
+  
+  /* Evitar background-attachment fixed en móvil */
+  .hero-section .bg-fixed {
+    background-attachment: scroll !important;
+  }
+  
+  /* Prevenir layout shifts adicionales */
+  body {
+    position: relative;
+    overflow-x: hidden;
+  }
+  
+  /* Optimizar imágenes para evitar layout shifts */
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Estabilizar elementos con position absolute/fixed */
+  .hero-section .absolute {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
