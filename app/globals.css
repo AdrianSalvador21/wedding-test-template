@@ -8,12 +8,29 @@
   --vh: 1vh;
 }
 
+/* Prevenir layout shift usando dvh con fallback */
+.hero-section {
+  height: 100vh; /* Fallback */
+  height: 100dvh; /* Dynamic viewport height */
+  min-height: 100vh; /* Fallback adicional */
+  position: relative;
+  overflow: hidden;
+}
+
 /* Solución específica para iOS viewport height */
 @supports (-webkit-touch-callout: none) {
   .hero-section {
     height: calc(var(--vh, 1vh) * 100) !important;
     min-height: calc(var(--vh, 1vh) * 100) !important;
   }
+}
+
+/* Optimización adicional para evitar layout shifts */
+.hero-section * {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 /* Prevenir layout shift en iOS */
