@@ -33,6 +33,24 @@
   -webkit-transform: translateZ(0);
 }
 
+/* Clase específica para el fondo del Hero - sin transformaciones */
+.hero-background-fixed {
+  background-attachment: fixed !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+  will-change: auto !important;
+  position: absolute !important;
+}
+
+/* En móvil, cambiar a scroll para evitar problemas */
+@media screen and (max-width: 768px) {
+  .hero-background-fixed {
+    background-attachment: scroll !important;
+  }
+}
+
 /* Prevenir layout shift en iOS */
 @media screen and (max-width: 768px) {
   .hero-section {

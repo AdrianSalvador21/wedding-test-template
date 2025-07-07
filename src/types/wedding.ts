@@ -164,6 +164,10 @@ export interface WeddingData {
   event: EventInfo;
   timeline: TimelineEvent[];
   gallery: GalleryImage[];
+  heroImage: {
+    url: string;
+    alt: string;
+  };
   specialMoments: SpecialMoment[];
   relationshipStats: RelationshipStats;
   accommodation: AccommodationOption[];
