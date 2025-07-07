@@ -149,7 +149,7 @@ const Gallery = () => {
           transition={{ duration: 0.6 }}
         >
           <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
-          <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
+          <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
           <p className="section-subtitle">
             {t('subtitle')}
           </p>
@@ -247,12 +247,12 @@ const Gallery = () => {
             <h3 className="text-xl font-heading font-semibold mb-4">
               {t('shareMessage')}
             </h3>
-            <p className="opacity-90 mb-6">
+            <p className="opacity-90 mb-6 font-body">
               {t('cameraMessage')} <span className="font-semibold">{hashtag}</span> {t('hashtagPrompt')}
             </p>
             <div className="flex items-center justify-center space-x-2">
               <Camera className="w-5 h-5" />
-              <span className="font-semibold">{hashtag}</span>
+              <span className="font-body font-semibold">{hashtag}</span>
             </div>
           </div>
         </motion.div>
