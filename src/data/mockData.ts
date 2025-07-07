@@ -178,6 +178,10 @@ export const mockWeddingMariaCarlos: WeddingData = {
       rows: 1
     }
   ],
+  heroImage: {
+    url: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+    alt: 'María y Carlos - Imagen principal de boda'
+  },
   specialMoments: [
     {
       year: '2018',
@@ -437,6 +441,10 @@ export const mockWeddingAnaLuis: WeddingData = {
       rows: 1
     }
   ],
+  heroImage: {
+    url: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+    alt: 'Ana y Luis - Imagen principal de boda'
+  },
   specialMoments: [
     {
       year: '2017',

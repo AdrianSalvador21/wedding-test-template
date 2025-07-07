@@ -12,10 +12,24 @@ const Hero = () => {
   const weddingData = useAppSelector(selectCurrentWedding);
   const [isMounted, setIsMounted] = useState(false);
 
+  // Datos dinámicos con fallbacks
+  const brideName = weddingData?.couple.bride.name || 'María';
+  const groomName = weddingData?.couple.groom.name || 'Carlos';
+  const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const venueName = weddingData?.event.receptionVenue?.name || t('location');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const eventTime = weddingData?.event.time || '16:00';
+  
+  // Imagen del Hero desde el servicio
+  const heroImageUrl = weddingData?.heroImage?.url || 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80';
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const heroImageAlt = weddingData?.heroImage?.alt || 'Imagen principal de boda';
+
   useEffect(() => {
     // Precargar imagen de fondo para evitar layout shift
     const img = new Image();
-    img.src = 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80';
+    img.src = heroImageUrl;
     
     // Solución para iOS viewport height
     const updateVH = () => {
@@ -43,16 +57,7 @@ const Hero = () => {
       window.removeEventListener('orientationchange', updateVH);
       clearTimeout(timeoutId);
     };
-  }, []);
-
-  // Datos dinámicos con fallbacks
-  const brideName = weddingData?.couple.bride.name || 'María';
-  const groomName = weddingData?.couple.groom.name || 'Carlos';
-  const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const venueName = weddingData?.event.receptionVenue?.name || t('location');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const eventTime = weddingData?.event.time || '16:00';
+  }, [heroImageUrl]);
 
   // Mapeo de locales para formateo de fechas
   const localeMap: { [key: string]: string } = {
@@ -89,9 +94,9 @@ const Hero = () => {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <div 
-          className="w-full h-full bg-cover bg-center bg-no-repeat"
+          className="w-full h-full bg-cover bg-center bg-no-repeat hero-background-fixed"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
+            backgroundImage: `url('${heroImageUrl}')`,
             height: '100%',
             width: '100%'
           }}
