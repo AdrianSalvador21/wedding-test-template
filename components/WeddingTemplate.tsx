@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useWedding } from '../src/store/hooks';
 import Hero from './sections/Hero';
 import Countdown from './sections/Countdown';
@@ -11,9 +12,15 @@ import Accommodation from './sections/Accommodation';
 import RSVP from './sections/RSVP';
 import Location from './sections/Location';
 import Footer from './sections/Footer';
+import InvitationOverlay from './InvitationOverlay';
 
-export default function WeddingTemplate() {
+interface WeddingTemplateProps {
+  guestId?: string | null;
+}
+
+export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
   const { currentWedding, loading, error, initialized } = useWedding();
+  const [showOverlay, setShowOverlay] = useState(!!guestId);
 
   // Estado de carga
   if (!initialized || loading) {
@@ -67,6 +74,15 @@ export default function WeddingTemplate() {
       <Accommodation />
       <RSVP />
       <Footer />
+      
+      {/* Overlay de invitación personalizada */}
+      {showOverlay && guestId && currentWedding && (
+        <InvitationOverlay
+          guestId={guestId}
+          weddingId={currentWedding.id}
+          onClose={() => setShowOverlay(false)}
+        />
+      )}
     </main>
   );
 }

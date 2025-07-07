@@ -166,6 +166,22 @@ export interface WeddingState {
   initialized: boolean;
 }
 
+// Tipos para información del invitado
+export interface GuestInfo {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  allowedGuests: number; // Número de personas permitidas (incluyendo al invitado principal)
+  guestType: 'family' | 'friends' | 'work' | 'close_family' | 'vip'; // Tipo de invitado
+  table?: string; // Mesa asignada (opcional)
+  specialMessage?: string; // Mensaje personalizado para este invitado
+  dietaryRestrictions?: string[];
+  isConfirmed?: boolean;
+  confirmedGuests?: number;
+  notes?: string; // Notas internas
+}
+
 // Tipos para formularios
 export interface RSVPFormData {
   name: string;
@@ -193,4 +209,12 @@ export interface ApiError {
   code: string;
   message: string;
   details?: unknown;
-} 
+}
+
+// Tipo que combina la información de la boda con la del invitado específico
+export interface WeddingInvitation {
+  wedding: WeddingData;
+  guest: GuestInfo;
+  createdAt: string;
+  updatedAt: string;
+}
