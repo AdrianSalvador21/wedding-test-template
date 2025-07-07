@@ -133,6 +133,30 @@ export interface TransportInfo {
   rideshare: boolean;
 }
 
+// Tipos para mesa de regalos
+export interface GiftRegistryItem {
+  id: string;
+  name: string;
+  url: string;
+  description?: string;
+  logo?: string;
+}
+
+export interface BankAccountInfo {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  clabe?: string;
+  description?: string;
+}
+
+export interface GiftRegistry {
+  enabled: boolean;
+  message?: string;
+  registries: GiftRegistryItem[];
+  bankAccount?: BankAccountInfo;
+}
+
 // Tipo principal que contiene toda la información de la boda
 export interface WeddingData {
   id: string;
@@ -144,6 +168,7 @@ export interface WeddingData {
   relationshipStats: RelationshipStats;
   accommodation: AccommodationOption[];
   transport: TransportInfo;
+  giftRegistry: GiftRegistry;
   theme: {
     primaryColor: string;
     secondaryColor: string;

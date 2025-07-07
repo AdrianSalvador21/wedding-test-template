@@ -42,8 +42,8 @@ const Location = () => {
             {/* Ceremonia */}
             {ceremonyVenue && (
               <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 shadow-lg">
-                <div className="text-center mb-6">
-                  <Church className="w-12 h-12 mx-auto mb-4 text-accent" />
+                <div className="text-center mb-8">
+                  <Church className="w-8 h-8 mx-auto mb-4 text-accent" />
                   <h3 className="text-xl font-heading font-semibold text-primary mb-2">
                     Ceremonia Religiosa
                   </h3>
@@ -53,13 +53,7 @@ const Location = () => {
                   <p className="text-text">{ceremonyVenue.address}</p>
                 </div>
 
-                {/* Mapa placeholder */}
-                <div className="bg-gray-200 rounded-xl h-48 flex items-center justify-center mb-6">
-                  <div className="text-center">
-                    <MapPin className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-                    <p className="text-gray-600 text-sm">Mapa de la ceremonia</p>
-                  </div>
-                </div>
+
 
                 {/* Botón de direcciones */}
                 <button
@@ -75,8 +69,8 @@ const Location = () => {
             {/* Recepción */}
             {receptionVenue && (
               <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 shadow-lg">
-                <div className="text-center mb-6">
-                  <Music4 className="w-12 h-12 mx-auto mb-4 text-accent" />
+                <div className="text-center mb-8">
+                  <Music4 className="w-8 h-8 mx-auto mb-4 text-accent" />
                   <h3 className="text-xl font-heading font-semibold text-primary mb-2">
                     Recepción
                   </h3>
@@ -86,13 +80,7 @@ const Location = () => {
                   <p className="text-text">{receptionVenue.address}</p>
                 </div>
 
-                {/* Mapa placeholder */}
-                <div className="bg-gray-200 rounded-xl h-48 flex items-center justify-center mb-6">
-                  <div className="text-center">
-                    <MapPin className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-                    <p className="text-gray-600 text-sm">Mapa de la recepción</p>
-                  </div>
-                </div>
+
 
                 {/* Botón de direcciones */}
                 <button
@@ -115,7 +103,7 @@ const Location = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <section id="location" className="py-12 bg-gradient-to-br from-light via-white to-light">
+      <section id="location" className="py-12 bg-white">
         <div className="section-container">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
@@ -132,7 +120,7 @@ const Location = () => {
 
   // Versión para desktop con animaciones CSS
   return (
-    <section id="location" className="py-12 bg-gradient-to-br from-light via-white to-light">
+    <section id="location" className="py-12 bg-white">
       <div className="section-container">
         <div className="animate-fade-in-up">
           {/* Título */}
@@ -150,7 +138,7 @@ const Location = () => {
               {ceremonyVenue && (
                 <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="text-center mb-8">
-                    <Church className="w-16 h-16 mx-auto mb-6 text-accent" />
+                    <Church className="w-12 h-12 mx-auto mb-6 text-accent" />
                     <h3 className="text-2xl font-heading font-semibold text-primary mb-2">
                       Ceremonia Religiosa
                     </h3>
@@ -175,7 +163,7 @@ const Location = () => {
               {receptionVenue && (
                 <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="text-center mb-8">
-                    <Music4 className="w-16 h-16 mx-auto mb-6 text-accent" />
+                    <Music4 className="w-12 h-12 mx-auto mb-6 text-accent" />
                     <h3 className="text-2xl font-heading font-semibold text-primary mb-2">
                       Recepción
                     </h3>

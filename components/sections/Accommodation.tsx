@@ -37,7 +37,7 @@ const Accommodation = () => {
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <section className="py-12 bg-gradient-to-br from-light via-white to-light">
+      <section className="py-12 bg-white">
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-12">
@@ -85,7 +85,7 @@ const Accommodation = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <section className="py-12 bg-gradient-to-br from-light via-white to-light">
+      <section className="py-12 bg-white">
         <div className="section-container">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
@@ -101,7 +101,7 @@ const Accommodation = () => {
 
   // Versión para desktop con animaciones CSS
   return (
-    <section className="py-12 bg-gradient-to-br from-light via-white to-light">
+    <section className="py-12 bg-white">
       <div className="section-container">
         <div className="animate-fade-in-up">
           {/* Título */}

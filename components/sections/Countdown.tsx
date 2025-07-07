@@ -58,7 +58,7 @@ const Countdown = () => {
   // Fallback mientras cargan los datos
   if (!mounted) {
     return (
-      <section id="countdown" className="py-12 bg-white">
+      <section id="countdown" className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-8" />
@@ -89,7 +89,7 @@ const Countdown = () => {
   };
 
   return (
-    <section id="countdown" className="py-12 bg-white">
+    <section id="countdown" className="py-12 bg-gray-50">
       <div className="container mx-auto px-4 text-center">
         {isEventPassed ? (
           <div className="max-w-2xl mx-auto">

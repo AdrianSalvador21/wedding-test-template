@@ -8,6 +8,7 @@ import About from './sections/About';
 import Gallery from './sections/Gallery';
 import Timeline from './sections/Timeline';
 import DressCode from './sections/DressCode';
+import GiftRegistry from './sections/GiftRegistry';
 import Accommodation from './sections/Accommodation';
 import RSVP from './sections/RSVP';
 import Location from './sections/Location';
@@ -71,6 +72,7 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
       <Gallery />
       <Timeline />
       <DressCode />
+      <GiftRegistry />
       <Accommodation />
       <RSVP />
       <Footer />

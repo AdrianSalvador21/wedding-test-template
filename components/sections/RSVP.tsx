@@ -89,7 +89,7 @@ const RSVP = () => {
 
   if (isSubmitted) {
     return (
-      <section className="py-12 bg-gradient-to-br from-light via-white to-light">
+      <section className="py-12 bg-gray-50">
         <div className="section-container">
           <div className="max-w-md mx-auto text-center">
             <div className="bg-white rounded-2xl p-8 shadow-lg">
@@ -112,7 +112,7 @@ const RSVP = () => {
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <section className="py-12 bg-gradient-to-br from-light via-white to-light">
+      <section className="py-12 bg-gray-50">
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-12">
@@ -228,7 +228,7 @@ const RSVP = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <section id="rsvp" className="py-12 bg-gradient-to-br from-light via-white to-light">
+      <section id="rsvp" className="py-12 bg-gray-50">
         <div className="section-container">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
@@ -248,7 +248,7 @@ const RSVP = () => {
 
   // Versión para desktop con animaciones
   return (
-    <section id="rsvp" className="py-12 bg-gradient-to-br from-light via-white to-light">
+    <section id="rsvp" className="py-12 bg-gray-50">
       <div className="section-container">
         <div className="animate-fade-in-up">
           {/* Título */}

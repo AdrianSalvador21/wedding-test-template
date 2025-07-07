@@ -1,0 +1,167 @@
+'use client';
+
+import { useWedding } from '../../src/store/hooks';
+import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
+
+export default function GiftRegistry() {
+  const { currentWedding } = useWedding();
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [isBankExpanded, setIsBankExpanded] = useState(false);
+  const [isRegistryExpanded, setIsRegistryExpanded] = useState(false);
+
+  if (!currentWedding?.giftRegistry?.enabled) {
+    return null;
+  }
+
+  const { giftRegistry } = currentWedding;
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  return (
+    <section id="gift-registry" className="py-12 bg-gray-50 mb-12">
+      <div className="section-container">
+        {/* Título */}
+        <div className="text-center mb-12">
+          <h2 className="section-title text-stone-600 opacity-80 mb-4">Mesa de Regalos</h2>
+          <div className="w-16 h-0.5 bg-accent mx-auto mb-4"></div>
+          {giftRegistry.message && (
+            <p className="section-subtitle">
+              {giftRegistry.message}
+            </p>
+          )}
+        </div>
+
+        {/* Mesas de Regalos Online */}
+        {giftRegistry.registries.length > 0 && (
+          <div className="mb-6 max-w-2xl mx-auto">
+            <div className="bg-white border border-border rounded-lg">
+              <button
+                onClick={() => setIsRegistryExpanded(!isRegistryExpanded)}
+                className="w-full p-5 flex items-center justify-between hover:border-primary/30 transition-colors"
+              >
+                <h3 className="text-base font-heading text-dark">
+                  Mesas de Regalos
+                </h3>
+                {isRegistryExpanded ? (
+                  <ChevronUp className="w-5 h-5 text-dark" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-dark" />
+                )}
+              </button>
+              
+              {isRegistryExpanded && (
+                <div className="px-5 pb-5 border-t border-border">
+                  <div className="grid gap-3 md:grid-cols-2 mt-4">
+                    {giftRegistry.registries.map((registry) => (
+                      <a
+                        key={registry.id}
+                        href={registry.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-gray-50 border border-border rounded-lg p-4 text-center hover:border-primary/30 transition-colors duration-300 block"
+                      >
+                        <h4 className="text-base font-heading text-dark hover:text-primary transition-colors">
+                          {registry.name}
+                        </h4>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+                {/* Cuenta Bancaria */}
+        {giftRegistry.bankAccount && (
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white border border-border rounded-lg">
+              <button
+                onClick={() => setIsBankExpanded(!isBankExpanded)}
+                className="w-full p-5 flex items-center justify-between hover:border-primary/30 transition-colors"
+              >
+                <h3 className="text-base font-heading text-dark">
+                  Transferencia Bancaria
+                </h3>
+                {isBankExpanded ? (
+                  <ChevronUp className="w-5 h-5 text-dark" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-dark" />
+                )}
+              </button>
+              
+              {isBankExpanded && (
+                <div className="px-5 pb-5 border-t border-border">
+                  {giftRegistry.bankAccount.description && (
+                    <p className="text-text text-center mb-6 mt-4 text-sm">
+                      {giftRegistry.bankAccount.description}
+                    </p>
+                  )}
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="text-sm text-text/70">Banco</p>
+                        <p className="font-medium text-dark">{giftRegistry.bankAccount.bankName}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="text-sm text-text/70">Titular</p>
+                        <p className="font-medium text-dark">{giftRegistry.bankAccount.accountName}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="text-sm text-text/70">Número de Cuenta</p>
+                        <p className="font-medium text-dark">{giftRegistry.bankAccount.accountNumber}</p>
+                      </div>
+                      <button
+                        onClick={() => copyToClipboard(giftRegistry.bankAccount?.accountNumber || '', 'account')}
+                        className="p-2 text-text/70 hover:text-primary transition-colors"
+                        title="Copiar número de cuenta"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    {giftRegistry.bankAccount.clabe && (
+                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="text-sm text-text/70">CLABE</p>
+                          <p className="font-medium text-dark">{giftRegistry.bankAccount.clabe}</p>
+                        </div>
+                        <button
+                          onClick={() => copyToClipboard(giftRegistry.bankAccount?.clabe || '', 'clabe')}
+                          className="p-2 text-text/70 hover:text-primary transition-colors"
+                          title="Copiar CLABE"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {copiedField && (
+                    <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-sm text-green-800 text-center">
+                        {copiedField === 'account' ? 'Número de cuenta' : 'CLABE'} copiado al portapapeles
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+} 

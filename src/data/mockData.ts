@@ -230,6 +230,37 @@ export const mockWeddingMariaCarlos: WeddingData = {
     publicTransport: 'Estación de metro a 2 cuadras',
     rideshare: true
   },
+  giftRegistry: {
+    enabled: true,
+    message: 'Tu presencia es nuestro regalo más valioso, pero si deseas hacernos un obsequio, hemos preparado algunas opciones:',
+    registries: [
+      {
+        id: 'liverpool',
+        name: 'Liverpool',
+        url: 'https://mesaderegalos.liverpool.com.mx/milistaderegalos/123456789',
+        description: 'Mesa de regalos en Liverpool con todo lo que necesitamos para nuestro hogar'
+      },
+      {
+        id: 'amazon',
+        name: 'Amazon',
+        url: 'https://www.amazon.com.mx/hz/wishlist/ls/2ABCDEFGHIJKL',
+        description: 'Lista de deseos en Amazon con productos prácticos para nuestra nueva vida juntos'
+      },
+      {
+        id: 'palacio',
+        name: 'El Palacio de Hierro',
+        url: 'https://www.elpalaciodehierro.com/mesa-de-regalos/maria-carlos-2025',
+        description: 'Mesa de regalos con artículos elegantes y de calidad'
+      }
+    ],
+    bankAccount: {
+      bankName: 'Banco BBVA',
+      accountName: 'María Elena González',
+      accountNumber: '1234567890',
+      clabe: '012345678901234567',
+      description: 'También puedes contribuir directamente a nuestra cuenta bancaria'
+    }
+  },
   theme: {
     primaryColor: '#8b7355',
     secondaryColor: '#a67c5a',
@@ -448,6 +479,37 @@ export const mockWeddingAnaLuis: WeddingData = {
     },
     publicTransport: 'Autobús desde la ciudad cada hora',
     rideshare: false
+  },
+  giftRegistry: {
+    enabled: true,
+    message: 'Tu presencia es nuestro regalo más preciado, pero si deseas contribuir a nuestro futuro juntos:',
+    registries: [
+      {
+        id: 'coppel',
+        name: 'Coppel',
+        url: 'https://www.coppel.com/mesa-de-regalos/ana-luis-2025',
+        description: 'Mesa de regalos en Coppel con productos para el hogar'
+      },
+      {
+        id: 'elektra',
+        name: 'Elektra',
+        url: 'https://www.elektra.com.mx/mesa-de-regalos/654321',
+        description: 'Lista de electrodomésticos y productos tecnológicos'
+      },
+      {
+        id: 'sears',
+        name: 'Sears',
+        url: 'https://www.sears.com.mx/mesa-de-regalos/ana-luis-2025',
+        description: 'Mesa de regalos con artículos de hogar y decoración'
+      }
+    ],
+    bankAccount: {
+      bankName: 'Banco Santander',
+      accountName: 'Ana Sofía Martínez',
+      accountNumber: '0987654321',
+      clabe: '987654321012345678',
+      description: 'También puedes hacer tu aportación directamente a nuestra cuenta'
+    }
   },
   theme: {
     primaryColor: '#8b5a2b',
