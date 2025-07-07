@@ -48,23 +48,23 @@ body {
 
   .section-title {
     @apply font-heading font-semibold text-stone-600 opacity-80 text-center;
-    font-size: 1.75rem; /* 28px */
+    font-size: 1.5rem; /* 24px */
   }
 
   @media (min-width: 768px) {
     .section-title {
-      font-size: 2.125rem; /* 34px */
+      font-size: 1.875rem; /* 30px */
     }
   }
 
   @media (min-width: 1024px) {
     .section-title {
-      font-size: 2.875rem; /* 46px */
+      font-size: 2.25rem; /* 36px */
     }
   }
 
   .section-subtitle {
-    @apply text-lg md:text-xl text-text text-center max-w-3xl mx-auto leading-relaxed;
+    @apply text-base md:text-lg text-text text-center max-w-3xl mx-auto leading-relaxed;
   }
 
   .btn-primary {

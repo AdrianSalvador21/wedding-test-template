@@ -35,7 +35,16 @@ export interface EventInfo {
     time: string;
     duration: number;
   };
-  venue: {
+  ceremonyVenue?: {
+    name: string;
+    address: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
+    description?: string;
+  };
+  receptionVenue: {
     name: string;
     address: string;
     coordinates?: {
@@ -124,6 +133,30 @@ export interface TransportInfo {
   rideshare: boolean;
 }
 
+// Tipos para mesa de regalos
+export interface GiftRegistryItem {
+  id: string;
+  name: string;
+  url: string;
+  description?: string;
+  logo?: string;
+}
+
+export interface BankAccountInfo {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  clabe?: string;
+  description?: string;
+}
+
+export interface GiftRegistry {
+  enabled: boolean;
+  message?: string;
+  registries: GiftRegistryItem[];
+  bankAccount?: BankAccountInfo;
+}
+
 // Tipo principal que contiene toda la información de la boda
 export interface WeddingData {
   id: string;
@@ -135,6 +168,7 @@ export interface WeddingData {
   relationshipStats: RelationshipStats;
   accommodation: AccommodationOption[];
   transport: TransportInfo;
+  giftRegistry: GiftRegistry;
   theme: {
     primaryColor: string;
     secondaryColor: string;
@@ -155,6 +189,22 @@ export interface WeddingState {
   loading: boolean;
   error: string | null;
   initialized: boolean;
+}
+
+// Tipos para información del invitado
+export interface GuestInfo {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  allowedGuests: number; // Número de personas permitidas (incluyendo al invitado principal)
+  guestType: 'family' | 'friends' | 'work' | 'close_family' | 'vip'; // Tipo de invitado
+  table?: string; // Mesa asignada (opcional)
+  specialMessage?: string; // Mensaje personalizado para este invitado
+  dietaryRestrictions?: string[];
+  isConfirmed?: boolean;
+  confirmedGuests?: number;
+  notes?: string; // Notas internas
 }
 
 // Tipos para formularios
@@ -184,4 +234,12 @@ export interface ApiError {
   code: string;
   message: string;
   details?: unknown;
-} 
+}
+
+// Tipo que combina la información de la boda con la del invitado específico
+export interface WeddingInvitation {
+  wedding: WeddingData;
+  guest: GuestInfo;
+  createdAt: string;
+  updatedAt: string;
+}

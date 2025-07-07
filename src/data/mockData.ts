@@ -7,7 +7,7 @@ export const mockWeddingMariaCarlos: WeddingData = {
   id: 'maria-carlos-2025',
   couple: {
     bride: {
-      name: 'Quetzalia',
+      name: 'Maria',
       fullName: 'María Elena González',
       phone: '+52 55 1234-5678',
       email: 'maria@email.com',
@@ -15,7 +15,7 @@ export const mockWeddingMariaCarlos: WeddingData = {
       facebook: 'maria.gonzalez'
     },
     groom: {
-      name: 'Adrián',
+      name: 'Juan',
       fullName: 'Carlos Antonio Rodríguez',
       phone: '+52 55 8765-4321',
       email: 'carlos@email.com',
@@ -39,7 +39,16 @@ export const mockWeddingMariaCarlos: WeddingData = {
       time: '19:30',
       duration: 360
     },
-    venue: {
+    ceremonyVenue: {
+      name: 'Iglesia del Sagrado Corazón',
+      address: 'Calle de los Santos 456, Ciudad, Estado 12345',
+      coordinates: {
+        lat: 19.4290,
+        lng: -99.1285
+      },
+      description: 'Hermosa iglesia con arquitectura colonial donde celebraremos nuestra ceremonia religiosa'
+    },
+    receptionVenue: {
       name: 'Jardines del Edén',
       address: 'Av. Principal 123, Ciudad, Estado 12345',
       coordinates: {
@@ -48,7 +57,7 @@ export const mockWeddingMariaCarlos: WeddingData = {
       },
       description: 'Un hermoso lugar rodeado de naturaleza, perfecto para celebrar nuestro amor. Con amplios jardines, salones elegantes y vistas espectaculares.',
       features: [
-        'Jardines exteriores para ceremonia',
+        'Jardines exteriores para cóctel',
         'Salón principal climatizado',
         'Estacionamiento amplio y seguro',
         'Área de fotos panorámicas',
@@ -221,6 +230,37 @@ export const mockWeddingMariaCarlos: WeddingData = {
     publicTransport: 'Estación de metro a 2 cuadras',
     rideshare: true
   },
+  giftRegistry: {
+    enabled: true,
+    message: 'Tu presencia es nuestro regalo más valioso, pero si deseas hacernos un obsequio, hemos preparado algunas opciones:',
+    registries: [
+      {
+        id: 'liverpool',
+        name: 'Liverpool',
+        url: 'https://mesaderegalos.liverpool.com.mx/milistaderegalos/123456789',
+        description: 'Mesa de regalos en Liverpool con todo lo que necesitamos para nuestro hogar'
+      },
+      {
+        id: 'amazon',
+        name: 'Amazon',
+        url: 'https://www.amazon.com.mx/hz/wishlist/ls/2ABCDEFGHIJKL',
+        description: 'Lista de deseos en Amazon con productos prácticos para nuestra nueva vida juntos'
+      },
+      {
+        id: 'palacio',
+        name: 'El Palacio de Hierro',
+        url: 'https://www.elpalaciodehierro.com/mesa-de-regalos/maria-carlos-2025',
+        description: 'Mesa de regalos con artículos elegantes y de calidad'
+      }
+    ],
+    bankAccount: {
+      bankName: 'Banco BBVA',
+      accountName: 'María Elena González',
+      accountNumber: '1234567890',
+      clabe: '012345678901234567',
+      description: 'También puedes contribuir directamente a nuestra cuenta bancaria'
+    }
+  },
   theme: {
     primaryColor: '#8b7355',
     secondaryColor: '#a67c5a',
@@ -272,7 +312,16 @@ export const mockWeddingAnaLuis: WeddingData = {
       time: '20:00',
       duration: 300
     },
-    venue: {
+    ceremonyVenue: {
+      name: 'Capilla San Francisco',
+      address: 'Plaza Principal s/n, Pueblo Mágico, Estado 54321',
+      coordinates: {
+        lat: 20.5920,
+        lng: -100.3850
+      },
+      description: 'Hermosa capilla colonial del siglo XVIII con arquitectura tradicional mexicana'
+    },
+    receptionVenue: {
       name: 'Hacienda San Miguel',
       address: 'Carretera Nacional Km 25, Pueblo Mágico, Estado 54321',
       coordinates: {
@@ -281,12 +330,12 @@ export const mockWeddingAnaLuis: WeddingData = {
       },
       description: 'Una hermosa hacienda colonial con arquitectura tradicional mexicana, rodeada de viñedos y jardines botánicos.',
       features: [
-        'Capilla colonial para ceremonia',
         'Salón de baile con vigas de madera',
         'Jardines con fuente central',
         'Viñedos como backdrop',
         'Terraza panorámica',
-        'Cava de vinos'
+        'Cava de vinos',
+        'Área de cóctel al aire libre'
       ]
     },
     dressCode: {
@@ -430,6 +479,37 @@ export const mockWeddingAnaLuis: WeddingData = {
     },
     publicTransport: 'Autobús desde la ciudad cada hora',
     rideshare: false
+  },
+  giftRegistry: {
+    enabled: true,
+    message: 'Tu presencia es nuestro regalo más preciado, pero si deseas contribuir a nuestro futuro juntos:',
+    registries: [
+      {
+        id: 'coppel',
+        name: 'Coppel',
+        url: 'https://www.coppel.com/mesa-de-regalos/ana-luis-2025',
+        description: 'Mesa de regalos en Coppel con productos para el hogar'
+      },
+      {
+        id: 'elektra',
+        name: 'Elektra',
+        url: 'https://www.elektra.com.mx/mesa-de-regalos/654321',
+        description: 'Lista de electrodomésticos y productos tecnológicos'
+      },
+      {
+        id: 'sears',
+        name: 'Sears',
+        url: 'https://www.sears.com.mx/mesa-de-regalos/ana-luis-2025',
+        description: 'Mesa de regalos con artículos de hogar y decoración'
+      }
+    ],
+    bankAccount: {
+      bankName: 'Banco Santander',
+      accountName: 'Ana Sofía Martínez',
+      accountNumber: '0987654321',
+      clabe: '987654321012345678',
+      description: 'También puedes hacer tu aportación directamente a nuestra cuenta'
+    }
   },
   theme: {
     primaryColor: '#8b5a2b',

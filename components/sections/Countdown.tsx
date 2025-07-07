@@ -6,6 +6,7 @@ import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
+import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 interface TimeLeft {
   days: number;
@@ -58,7 +59,7 @@ const Countdown = () => {
   // Fallback mientras cargan los datos
   if (!mounted) {
     return (
-      <section id="countdown" className="py-12 bg-white">
+      <section id="countdown" className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-8" />
@@ -89,7 +90,11 @@ const Countdown = () => {
   };
 
   return (
-    <section id="countdown" className="py-12 bg-white">
+    <section 
+      id="countdown" 
+      className="py-12 bg-gray-50 relative overflow-hidden"
+      style={getFloralBackgroundStyle(1, '200px')}
+    >
       <div className="container mx-auto px-4 text-center">
         {isEventPassed ? (
           <div className="max-w-2xl mx-auto">

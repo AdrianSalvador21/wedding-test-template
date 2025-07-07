@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useWedding } from '../src/store/hooks';
 import Hero from './sections/Hero';
 import Countdown from './sections/Countdown';
@@ -7,12 +8,20 @@ import About from './sections/About';
 import Gallery from './sections/Gallery';
 import Timeline from './sections/Timeline';
 import DressCode from './sections/DressCode';
+import GiftRegistry from './sections/GiftRegistry';
+import Accommodation from './sections/Accommodation';
 import RSVP from './sections/RSVP';
 import Location from './sections/Location';
 import Footer from './sections/Footer';
+import InvitationOverlay from './InvitationOverlay';
 
-export default function WeddingTemplate() {
+interface WeddingTemplateProps {
+  guestId?: string | null;
+}
+
+export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
   const { currentWedding, loading, error, initialized } = useWedding();
+  const [showOverlay, setShowOverlay] = useState(!!guestId);
 
   // Estado de carga
   if (!initialized || loading) {
@@ -58,13 +67,24 @@ export default function WeddingTemplate() {
     <main className="min-h-screen">
       <Hero />
       <Countdown />
+      <Location />
       <About />
       <Gallery />
       <Timeline />
       <DressCode />
+      <GiftRegistry />
+      <Accommodation />
       <RSVP />
-      <Location />
       <Footer />
+      
+      {/* Overlay de invitación personalizada */}
+      {showOverlay && guestId && currentWedding && (
+        <InvitationOverlay
+          guestId={guestId}
+          weddingId={currentWedding.id}
+          onClose={() => setShowOverlay(false)}
+        />
+      )}
     </main>
   );
 }

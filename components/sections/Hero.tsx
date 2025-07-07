@@ -16,7 +16,7 @@ const Hero = () => {
   const groomName = weddingData?.couple.groom.name || 'Carlos';
   const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const venueName = weddingData?.event.venue.name || t('location');
+  const venueName = weddingData?.event.receptionVenue?.name || t('location');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const eventTime = weddingData?.event.time || '16:00';
 
@@ -69,18 +69,18 @@ const Hero = () => {
           className="space-y-12"
         >
           {/* "NUESTRA BODA" */}
-          <div className="mb-16">
-            <h2 className="text-sm md:text-base font-light tracking-[0.4em] uppercase text-white opacity-80 mb-12">
+          <div className="mb-12">
+            <h2 className="text-xs md:text-sm font-light tracking-[0.4em] uppercase text-white opacity-80 mb-12">
               {t('ourWedding')}
             </h2>
             
             {/* Nombres de la pareja - primer nombre con & */}
             <div className="space-y-4">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-light text-white opacity-75 tracking-wide">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-light text-white opacity-75 tracking-wide">
                 {brideName} <span className="text-stone-300 opacity-80">&</span>
               </h1>
               
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-light text-white opacity-75 tracking-wide">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-light text-white opacity-75 tracking-wide">
                 {groomName}
               </h1>
             </div>
@@ -88,7 +88,7 @@ const Hero = () => {
 
           {/* Fecha del evento */}
           <div className="mb-8">
-            <p className="text-xl md:text-2xl font-light text-white opacity-90">
+            <p className="text-lg md:text-xl font-light text-white opacity-90">
               {formatDate()}
             </p>
           </div>
@@ -99,7 +99,7 @@ const Hero = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-stone-400 bg-opacity-70 text-white font-medium py-3.5 px-8 md:py-4 md:px-12 rounded-full text-lg md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white border-opacity-30"
+              className="bg-stone-400 bg-opacity-70 text-white font-medium py-3 px-8 md:py-3.5 md:px-10 rounded-full text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white border-opacity-30"
             >
               {t('cta')}
             </motion.button>
