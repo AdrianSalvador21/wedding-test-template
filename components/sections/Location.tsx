@@ -7,6 +7,7 @@ import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
+import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 const Location = () => {
   const { t } = useTranslations('location');
@@ -30,7 +31,10 @@ const Location = () => {
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <section className="py-12 bg-white">
+      <section 
+        className="py-12 bg-white relative overflow-hidden"
+        style={getFloralBackgroundStyle(2, '240px')}
+      >
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-12">
@@ -120,7 +124,11 @@ const Location = () => {
 
   // Versión para desktop con animaciones CSS
   return (
-    <section id="location" className="py-12 bg-white">
+    <section 
+      id="location" 
+      className="py-12 bg-white relative overflow-hidden"
+      style={getFloralBackgroundStyle(2, '240px')}
+    >
       <div className="section-container">
         <div className="animate-fade-in-up">
           {/* Título */}

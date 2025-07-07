@@ -6,6 +6,7 @@ import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
+import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 interface TimeLeft {
   days: number;
@@ -89,7 +90,11 @@ const Countdown = () => {
   };
 
   return (
-    <section id="countdown" className="py-12 bg-gray-50">
+    <section 
+      id="countdown" 
+      className="py-12 bg-gray-50 relative overflow-hidden"
+      style={getFloralBackgroundStyle(1, '200px')}
+    >
       <div className="container mx-auto px-4 text-center">
         {isEventPassed ? (
           <div className="max-w-2xl mx-auto">

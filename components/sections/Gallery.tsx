@@ -8,6 +8,7 @@ import { Camera, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
+import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 const Gallery = () => {
   const { t } = useTranslations('gallery');
@@ -142,7 +143,11 @@ const Gallery = () => {
   };
 
   return (
-    <section ref={ref} className="py-12 bg-white">
+    <section 
+      ref={ref} 
+      className="py-12 bg-white relative overflow-hidden"
+      style={getFloralBackgroundStyle(2, '240px')}
+    >
       <div className="section-container">
         {/* Título */}
         <motion.div 

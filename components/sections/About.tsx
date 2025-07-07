@@ -6,6 +6,7 @@ import { Heart } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddingSlice';
+import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 const About = () => {
   const { t } = useTranslations('about');
@@ -19,10 +20,14 @@ const About = () => {
   const quote = couple?.quote || t('quote'); // Fallback a traducción si no hay datos
 
   return (
-    <section id="about" className="py-12 bg-gray-50">
+    <section 
+      id="about" 
+      className="py-12 bg-gray-50 relative overflow-hidden"
+      style={getFloralBackgroundStyle(1, '200px')}
+    >
       <div className="container mx-auto px-4">
         {/* Título principal */}
-                  <div className="text-center mb-12">
+        <div className="text-center mb-12">
           <h2 className="section-title text-stone-600 opacity-80 mb-4">
             {t('title')}
           </h2>
@@ -39,7 +44,7 @@ const About = () => {
             <div className="lg:col-span-2">
               <div className="relative overflow-hidden rounded-lg shadow-lg">
                 <Image
-                  src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                  src={currentWedding?.gallery?.[0]?.url || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"}
                   alt={`${couple?.bride.name || 'Novia'} y ${couple?.groom.name || 'Novio'}`}
                   width={600}
                   height={800}
@@ -52,22 +57,14 @@ const About = () => {
 
             {/* Contenido de la historia - 3 columnas */}
             <div className="lg:col-span-3 space-y-8">
-
-
               {/* Historia de la pareja */}
               <div className="space-y-4 text-gray-700 leading-relaxed text-base">
                 <p>
                   {story}
                 </p>
               </div>
-
-
-
-
             </div>
           </div>
-
-
         </div>
       </div>
     </section>

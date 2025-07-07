@@ -6,6 +6,7 @@ import { Heart, X } from 'lucide-react';
 import { useAppSelector } from '../src/store/hooks';
 import { selectCurrentWedding } from '../src/store/slices/weddingSlice';
 import { getMockInvitation } from '../src/data/mockInvitations';
+import { getFloralBackgroundStyle } from '../lib/floral-patterns';
 
 interface InvitationOverlayProps {
   guestId: string;
@@ -130,11 +131,18 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                 </div>
               </div>
 
-              {/* Guest Information - Flexible middle section */}
-              <div className="flex-1 flex flex-col justify-center px-6 md:px-10 py-8 md:py-8 text-center bg-gradient-to-b from-white to-stone-50">
-                <div className="space-y-6 md:space-y-6">
-                  {/* Guest Info - Sin card */}
-                  <div className="text-center">
+              {/* Guest Information - Con patrón floral sutil */}
+              <div 
+                className="flex-1 flex flex-col justify-center px-6 md:px-10 py-8 md:py-8 text-center bg-gradient-to-b from-white to-stone-50 relative overflow-hidden"
+                style={{
+                  ...getFloralBackgroundStyle(4, '120px'),
+                  // Debug temporal - puedes ver que se está aplicando
+                  // border: '2px solid red',
+                }}
+              >
+                <div className="space-y-6 md:space-y-6 relative z-10">
+                  {/* Guest Info Card con patrón de fondo */}
+                  <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-stone-200/50 shadow-sm">
                     <h3 className="text-xl md:text-2xl font-serif text-stone-800 mb-3">
                       {guest.name}
                     </h3>
@@ -149,7 +157,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
 
                   {/* Special Message */}
                   {guest.specialMessage && (
-                    <div className="bg-stone-50 rounded-2xl p-6 border border-stone-200 shadow-sm max-w-sm mx-auto">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-stone-200/50 shadow-sm max-w-sm mx-auto">
                       <p className="text-sm md:text-base text-stone-600 italic leading-relaxed font-light">
                         "{guest.specialMessage}"
                       </p>

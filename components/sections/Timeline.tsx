@@ -7,6 +7,7 @@ import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
+import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 const Timeline = () => {
   const { t } = useTranslations('timeline');
@@ -84,7 +85,10 @@ const Timeline = () => {
   }
 
   return (
-    <section className="py-12 bg-gray-50 mb-12">
+    <section 
+      className="py-12 bg-gray-50 mb-12 relative overflow-hidden"
+      style={getFloralBackgroundStyle(3, '160px')}
+    >
       <div className="section-container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

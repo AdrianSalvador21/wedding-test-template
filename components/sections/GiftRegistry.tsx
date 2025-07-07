@@ -3,6 +3,7 @@
 import { useWedding } from '../../src/store/hooks';
 import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
+import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 export default function GiftRegistry() {
   const { currentWedding } = useWedding();
@@ -23,7 +24,11 @@ export default function GiftRegistry() {
   };
 
   return (
-    <section id="gift-registry" className="py-12 bg-gray-50 mb-12">
+    <section 
+      id="gift-registry" 
+      className="py-12 bg-gray-50 mb-12 relative overflow-hidden"
+      style={getFloralBackgroundStyle(1, '200px')}
+    >
       <div className="section-container">
         {/* Título */}
         <div className="text-center mb-12">

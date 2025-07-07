@@ -9,6 +9,7 @@ import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
+import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 const RSVP = () => {
   const { t, raw } = useTranslations('rsvp');
@@ -112,7 +113,10 @@ const RSVP = () => {
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <section className="py-12 bg-gray-50">
+      <section 
+        className="py-12 bg-gray-50 relative overflow-hidden"
+        style={getFloralBackgroundStyle(3, '160px')}
+      >
         <div className="section-container">
           {/* Título */}
           <div className="text-center mb-12">
@@ -248,7 +252,11 @@ const RSVP = () => {
 
   // Versión para desktop con animaciones
   return (
-    <section id="rsvp" className="py-12 bg-gray-50">
+    <section 
+      id="rsvp" 
+      className="py-12 bg-gray-50 relative overflow-hidden"
+      style={getFloralBackgroundStyle(3, '160px')}
+    >
       <div className="section-container">
         <div className="animate-fade-in-up">
           {/* Título */}
