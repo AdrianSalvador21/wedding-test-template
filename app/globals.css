@@ -56,6 +56,11 @@
     display: none !important;
   }
   
+  /* Ocultar también el contenedor de la imagen */
+  .hero-section > div:first-child {
+    display: none !important;
+  }
+  
   /* Usar background-image en el contenedor Hero */
   .hero-section {
     position: relative !important;
@@ -67,6 +72,26 @@
     /* Prevenir cualquier transform */
     transform: none !important;
     -webkit-transform: none !important;
+    /* Agregar overlay directamente */
+    background-blend-mode: darken;
+  }
+  
+  /* Crear overlay como pseudo-elemento */
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+  }
+  
+  /* Asegurar que el contenido esté encima */
+  .hero-section > div:last-child {
+    position: relative;
+    z-index: 2;
   }
 }
 
@@ -77,12 +102,19 @@
       display: none !important;
     }
     
+    .hero-section > div:first-child {
+      display: none !important;
+    }
+    
     .hero-section {
       background-attachment: scroll !important;
       /* Forzar que no haya transformaciones */
       transform: translate3d(0, 0, 0) !important;
       -webkit-transform: translate3d(0, 0, 0) !important;
       will-change: auto !important;
+      /* Asegurar que el background funcione en iOS */
+      -webkit-background-size: cover !important;
+      background-size: cover !important;
     }
   }
 }
