@@ -28,7 +28,7 @@ const Hero = () => {
 
   useEffect(() => {
     // Precargar imagen de fondo para evitar layout shift
-    const img = new Image();
+    const img = document.createElement('img');
     img.src = heroImageUrl;
     
     // Solución para iOS viewport height
@@ -92,16 +92,13 @@ const Hero = () => {
       style={{ minHeight: '100vh' }} // Fallback para navegadores que no soportan dvh
     >
       {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <div 
-          className="w-full h-full bg-cover bg-center bg-no-repeat hero-background-fixed"
-          style={{
-            backgroundImage: `url('${heroImageUrl}')`,
-            height: '100%',
-            width: '100%'
-          }}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <img
+          src={heroImageUrl}
+          alt={heroImageAlt}
+          className="hero-background-image"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-40" />
+        <div className="absolute inset-0 bg-black bg-opacity-40 z-10" />
       </div>
 
       {/* Content */}

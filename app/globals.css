@@ -33,21 +33,66 @@
   -webkit-transform: translateZ(0);
 }
 
-/* Clase específica para el fondo del Hero - sin transformaciones */
-.hero-background-fixed {
-  background-attachment: fixed !important;
+/* Clase específica para la imagen de fondo del Hero */
+.hero-background-image {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  z-index: -1 !important;
   transform: none !important;
   -webkit-transform: none !important;
   backface-visibility: visible !important;
   -webkit-backface-visibility: visible !important;
   will-change: auto !important;
-  position: absolute !important;
+  /* Evitar cualquier transformación o animación */
+  transition: none !important;
+  animation: none !important;
+  /* Importante: evitar que se redimensione */
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 100vw !important;
+  min-height: 100vh !important;
 }
 
-/* En móvil, cambiar a scroll para evitar problemas */
+/* Solución específica para móvil - usar position absolute en lugar de fixed */
 @media screen and (max-width: 768px) {
-  .hero-background-fixed {
-    background-attachment: scroll !important;
+  .hero-background-image {
+    position: absolute !important;
+    height: calc(var(--vh, 1vh) * 100) !important;
+    min-height: 100vh !important;
+    max-height: none !important;
+    /* Asegurar que cubra toda la pantalla sin scroll */
+    top: 0 !important;
+    left: 0 !important;
+    /* Evitar cualquier efecto de iOS */
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    transform: translate3d(0, 0, 0) !important;
+    /* Forzar aceleración de hardware sin efectos */
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+  }
+  
+  /* Hacer que el contenedor del hero tenga position relative */
+  .hero-section {
+    position: relative !important;
+    /* Evitar overflow en móvil */
+    overflow: hidden !important;
+  }
+}
+
+/* Específico para Safari iOS */
+@supports (-webkit-touch-callout: none) {
+  .hero-background-image {
+    position: absolute !important;
+    height: calc(var(--vh, 1vh) * 100) !important;
+    min-height: 100vh !important;
+    /* Forzar que no cambie de tamaño */
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    transform: translate3d(0, 0, 0) !important;
   }
 }
 
