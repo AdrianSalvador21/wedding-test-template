@@ -157,9 +157,15 @@ const Hero = () => {
     <section 
       className="hero-section relative flex items-center justify-center text-white overflow-hidden"
       style={{ 
-        // Usar altura fija calculada para evitar redimensionamiento
-        height: fixedHeight ? `${fixedHeight}px` : '100vh',
-        minHeight: fixedHeight ? `${fixedHeight}px` : '100vh',
+        // Chrome iOS: usar altura fija absoluta para evitar redimensionamiento
+        ...(isChromeIOS ? {
+          height: '100vh',
+          minHeight: '100vh',
+          maxHeight: '100vh'
+        } : {
+          height: fixedHeight ? `${fixedHeight}px` : '100vh',
+          minHeight: fixedHeight ? `${fixedHeight}px` : '100vh'
+        }),
         // Solo aplicar background-image en desktop
         ...(isMobile ? {} : { backgroundImage: `url(${heroImageUrl})` })
       }}
