@@ -86,6 +86,14 @@ const Hero = () => {
     return `${hour12}:${minutes} ${ampm}`;
   };
 
+  // Debug para móvil
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('🖼️ Debug Hero - URL imagen:', heroImageUrl);
+      console.log('📱 Es móvil?', window.innerWidth <= 768);
+    }
+  }, [heroImageUrl]);
+
   return (
     <section 
       className="hero-section relative h-[100dvh] flex items-center justify-center text-white overflow-hidden"
