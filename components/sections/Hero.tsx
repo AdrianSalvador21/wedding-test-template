@@ -28,6 +28,35 @@ const Hero = () => {
 
   // Estado para la altura fija
   const [fixedHeight, setFixedHeight] = useState<number | null>(null);
+  
+  // Detectar si es móvil y tipo de navegador
+  const [isMobile, setIsMobile] = useState(false);
+  const [isChromeIOS, setIsChromeIOS] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Detectar Chrome en iOS específicamente
+    const detectChromeIOS = () => {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isChrome = /CriOS/.test(navigator.userAgent) || /Chrome/.test(navigator.userAgent);
+      const isChromeIOSDetected = isIOS && isChrome;
+      setIsChromeIOS(isChromeIOSDetected);
+      console.log('🔍 Navegador detectado:', {
+        isIOS,
+        isChrome,
+        isChromeIOS: isChromeIOSDetected
+      });
+    };
+    
+    checkMobile();
+    detectChromeIOS();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     // Precargar imagen de fondo para evitar layout shift
@@ -38,7 +67,16 @@ const Hero = () => {
     const setFixedViewportHeight = () => {
       const currentHeight = window.innerHeight;
       console.log('🔒 Fijando altura Hero a:', currentHeight + 'px');
-      setFixedHeight(currentHeight);
+      
+      // Para Chrome iOS, usar una altura aún más conservadora
+      if (isChromeIOS) {
+        // Usar la altura mínima del viewport para evitar redimensionamiento
+        const conservativeHeight = Math.min(currentHeight, 640);
+        setFixedHeight(conservativeHeight);
+        console.log('🤖 Chrome iOS detectado - Altura conservadora:', conservativeHeight + 'px');
+      } else {
+        setFixedHeight(currentHeight);
+      }
       
       // También setear la variable CSS como backup
       const vh = currentHeight * 0.01;
@@ -62,7 +100,21 @@ const Hero = () => {
     return () => {
       window.removeEventListener('orientationchange', handleOrientationChange);
     };
-  }, [heroImageUrl]);
+  }, [heroImageUrl, isChromeIOS]);
+
+  // Agregar clase CSS para Chrome iOS
+  useEffect(() => {
+    if (isChromeIOS) {
+      document.body.classList.add('chrome-ios');
+      console.log('🎯 Clase chrome-ios agregada al body');
+    } else {
+      document.body.classList.remove('chrome-ios');
+    }
+    
+    return () => {
+      document.body.classList.remove('chrome-ios');
+    };
+  }, [isChromeIOS]);
 
   // Mapeo de locales para formateo de fechas
   const localeMap: { [key: string]: string } = {
@@ -97,22 +149,9 @@ const Hero = () => {
       console.log('🖼️ Debug Hero - URL imagen:', heroImageUrl);
       console.log('📱 Es móvil?', window.innerWidth <= 768);
       console.log('📏 Altura fija calculada:', fixedHeight ? `${fixedHeight}px` : 'Calculando...');
+      console.log('🤖 Es Chrome iOS?', isChromeIOS);
     }
-  }, [heroImageUrl, fixedHeight]);
-
-  // Detectar si es móvil
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  }, [heroImageUrl, fixedHeight, isChromeIOS]);
 
   return (
     <section 
