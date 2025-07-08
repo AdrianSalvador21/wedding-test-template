@@ -22,7 +22,7 @@ const About = () => {
       style={getFloralBackgroundStyle(1, '200px')}
     >
       <div className="container mx-auto px-4">
-        {/* Título principal */}
+        {/* Título principal - manteniendo estilo original */}
         <div className="text-center mb-12">
           <h2 className="section-title text-stone-600 opacity-80 mb-4">
             {t('title')}
@@ -31,37 +31,43 @@ const About = () => {
         </div>
 
         <div className="max-w-6xl mx-auto">
-          {/* Cita romántica */}
+          {/* Cita romántica - centrada y elegante */}
           <div className="text-center mb-16">
             <blockquote className="text-xl md:text-2xl font-heading italic text-stone-600 leading-relaxed max-w-4xl mx-auto">
               &ldquo;{couple?.quote || 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.'}&rdquo;
             </blockquote>
           </div>
 
-          {/* Historia principal - Layout imagen izquierda, contenido derecha */}
-          <div className="grid lg:grid-cols-5 gap-12 items-center mb-12">
-            {/* Imagen de la pareja - 2 columnas */}
-            <div className="lg:col-span-2">
-              <div className="relative overflow-hidden rounded-lg shadow-lg">
+          {/* Layout mejorado: imagen más prominente sin overlay molesto */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            {/* Imagen de la pareja - SIN overlay blanco */}
+            <div className="order-2 lg:order-1">
+              <div className="relative overflow-hidden rounded-lg shadow-lg group">
                 <Image
-                  src={currentWedding?.gallery?.[0]?.url || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"}
+                  src={currentWedding?.gallery?.[0]?.url || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
                   alt={`${couple?.bride.name || 'Novia'} y ${couple?.groom.name || 'Novio'}`}
-                  width={600}
-                  height={800}
-                  className="object-cover w-full h-full"
+                  width={800}
+                  height={1000}
+                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                 />
-                {/* Overlay suave para difuminar */}
-                <div className="absolute inset-0 bg-white bg-opacity-10"></div>
+                {/* Solo una sombra sutil interior para darle profundidad */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
               </div>
             </div>
 
-            {/* Contenido de la historia - 3 columnas */}
-            <div className="lg:col-span-3 space-y-8">
-              {/* Historia de la pareja */}
-              <div className="space-y-4 text-gray-700 leading-relaxed text-base">
+            {/* Contenido de la historia - mejor spacing */}
+            <div className="order-1 lg:order-2 space-y-6">
+              <div className="space-y-4 text-gray-700 leading-relaxed text-base lg:text-lg">
                 <p className="font-body">
                   {story}
                 </p>
+              </div>
+              
+              {/* Elemento decorativo sutil */}
+              <div className="flex items-center space-x-3 pt-4">
+                <div className="w-12 h-0.5 bg-accent"></div>
+                <div className="w-2 h-2 bg-accent rounded-full"></div>
+                <div className="w-12 h-0.5 bg-accent"></div>
               </div>
             </div>
           </div>
