@@ -107,14 +107,19 @@ const Hero = () => {
     if (isChromeIOS) {
       document.body.classList.add('chrome-ios');
       console.log('🎯 Clase chrome-ios agregada al body');
+      
+      // Pasar la imagen al CSS usando CSS custom property
+      document.documentElement.style.setProperty('--hero-bg-image', `url(${heroImageUrl})`);
     } else {
       document.body.classList.remove('chrome-ios');
+      document.documentElement.style.removeProperty('--hero-bg-image');
     }
     
     return () => {
       document.body.classList.remove('chrome-ios');
+      document.documentElement.style.removeProperty('--hero-bg-image');
     };
-  }, [isChromeIOS]);
+  }, [isChromeIOS, heroImageUrl]);
 
   // Mapeo de locales para formateo de fechas
   const localeMap: { [key: string]: string } = {
@@ -157,17 +162,17 @@ const Hero = () => {
     <section 
       className="hero-section relative flex items-center justify-center text-white overflow-hidden"
       style={{ 
-        // Chrome iOS: usar altura fija absoluta para evitar redimensionamiento
+        // Chrome iOS: usar altura fija en píxeles para evitar redimensionamiento
         ...(isChromeIOS ? {
-          height: '100vh',
-          minHeight: '100vh',
-          maxHeight: '100vh'
+          height: '812px',  // Altura fija típica de iPhone
+          minHeight: '812px',
+          maxHeight: '812px'
         } : {
           height: fixedHeight ? `${fixedHeight}px` : '100vh',
           minHeight: fixedHeight ? `${fixedHeight}px` : '100vh'
         }),
-        // Solo aplicar background-image en desktop
-        ...(isMobile ? {} : { backgroundImage: `url(${heroImageUrl})` })
+        // Solo aplicar background-image en desktop (NO en móvil ni Chrome iOS)
+        ...(!isMobile && !isChromeIOS ? { backgroundImage: `url(${heroImageUrl})` } : {})
       }}
     >
       {/* Background Image - Solo visible en desktop */}
