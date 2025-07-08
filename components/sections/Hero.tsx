@@ -89,9 +89,12 @@ const Hero = () => {
   return (
     <section 
       className="hero-section relative h-[100dvh] flex items-center justify-center text-white overflow-hidden"
-      style={{ minHeight: '100vh' }} // Fallback para navegadores que no soportan dvh
+      style={{ 
+        minHeight: '100vh', // Fallback para navegadores que no soportan dvh
+        backgroundImage: `url(${heroImageUrl})` // Para móvil - el CSS ocultará la img y usará esto
+      }}
     >
-      {/* Background Image */}
+      {/* Background Image - Solo visible en desktop */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img
           src={heroImageUrl}
