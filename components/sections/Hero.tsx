@@ -94,12 +94,27 @@ const Hero = () => {
     }
   }, [heroImageUrl]);
 
+  // Detectar si es móvil
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <section 
       className="hero-section relative h-[100dvh] flex items-center justify-center text-white overflow-hidden"
       style={{ 
         minHeight: '100vh', // Fallback para navegadores que no soportan dvh
-        backgroundImage: `url(${heroImageUrl})` // Para móvil - el CSS ocultará la img y usará esto
+        // Solo aplicar background-image en desktop
+        ...(isMobile ? {} : { backgroundImage: `url(${heroImageUrl})` })
       }}
     >
       {/* Background Image - Solo visible en desktop */}

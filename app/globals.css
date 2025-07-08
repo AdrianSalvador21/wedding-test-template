@@ -49,77 +49,99 @@
   }
 }
 
-/* Mobile: Background estático sin parallax */
+/* Mobile: Imagen completamente estática en el flujo del documento */
 @media screen and (max-width: 768px) {
-  /* Ocultar la imagen <img> en móvil */
-  .hero-background-image {
-    display: none !important;
-  }
-  
-  /* Ocultar también el contenedor de la imagen */
-  .hero-section > div:first-child {
-    display: none !important;
-  }
-  
-  /* Usar background-image en el contenedor Hero */
+  /* Cambiar completamente la estructura para móvil */
   .hero-section {
     position: relative !important;
     overflow: hidden !important;
-    background-attachment: scroll !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    /* Prevenir cualquier transform */
+    /* SIN background-image */
+    background: none !important;
+    /* Forzar estabilidad */
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    will-change: auto !important;
+  }
+  
+  /* La imagen <img> será estática en el flujo normal */
+  .hero-background-image {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    z-index: 0 !important;
+    /* CRÍTICO: Sin transforms, sin fixed, solo absolute estático */
     transform: none !important;
     -webkit-transform: none !important;
-    /* Agregar overlay directamente */
-    background-blend-mode: darken;
+    will-change: auto !important;
+    /* Forzar que no se redimensione nunca */
+    min-width: 100% !important;
+    min-height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
   }
   
-  /* Crear overlay como pseudo-elemento */
-  .hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 1;
+  /* Overlay estático */
+  .hero-section > div:first-child > div:last-child {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    z-index: 1 !important;
   }
   
-  /* Asegurar que el contenido esté encima */
+  /* Contenido principal */
   .hero-section > div:last-child {
-    position: relative;
-    z-index: 2;
+    position: relative !important;
+    z-index: 2 !important;
+  }
+  
+  /* Forzar que el contenedor NO use background */
+  .hero-section[style*="background-image"] {
+    background-image: none !important;
   }
 }
 
 /* Específico para iOS Safari y Chrome */
 @supports (-webkit-touch-callout: none) {
   @media screen and (max-width: 768px) {
-    .hero-background-image {
-      display: none !important;
-    }
-    
-    .hero-section > div:first-child {
-      display: none !important;
-    }
-    
     .hero-section {
-      background-attachment: scroll !important;
-      /* Forzar que no haya transformaciones */
+      /* Forzar estabilidad total en iOS */
       transform: translate3d(0, 0, 0) !important;
       -webkit-transform: translate3d(0, 0, 0) !important;
       will-change: auto !important;
-      /* Asegurar que el background funcione en iOS */
-      -webkit-background-size: cover !important;
-      background-size: cover !important;
+      /* NO background-image en iOS */
+      background: none !important;
+      background-image: none !important;
+    }
+    
+    .hero-background-image {
+      /* Imagen completamente estática en iOS */
+      position: absolute !important;
+      transform: none !important;
+      -webkit-transform: none !important;
+      -webkit-backface-visibility: hidden !important;
+      backface-visibility: hidden !important;
+      /* Forzar que mantenga su tamaño */
+      width: 100% !important;
+      height: 100% !important;
+      min-width: 100% !important;
+      min-height: 100% !important;
+    }
+    
+    /* Eliminar cualquier background-image inline en iOS */
+    .hero-section[style] {
+      background-image: none !important;
     }
   }
 }
 
-/* Prevenir layout shift en iOS */
+/* Prevenir layout shift en iOS - SIMPLIFICADO */
 @media screen and (max-width: 768px) {
   .hero-section {
     height: 100vh;
@@ -127,28 +149,10 @@
     min-height: 640px; /* Fallback mínimo */
   }
   
-  /* Evitar background-attachment fixed en móvil */
-  .hero-section .bg-fixed {
-    background-attachment: scroll !important;
-  }
-  
-  /* Prevenir layout shifts adicionales */
+  /* Prevenir layout shifts en body */
   body {
     position: relative;
     overflow-x: hidden;
-  }
-  
-  /* Optimizar imágenes para evitar layout shifts */
-  img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-  }
-  
-  /* Estabilizar elementos con position absolute/fixed */
-  .hero-section .absolute {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
   }
 }
 
@@ -166,27 +170,11 @@ body {
   scroll-behavior: smooth;
 }
 
-/* Optimizaciones para móvil */
+/* Optimizaciones para móvil - SIMPLIFICADO */
 @media (max-width: 768px) {
-  * {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-  }
-  
   html, body {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: auto; /* Cambiar a auto en móvil para mejor rendimiento */
-  }
-  
-  /* Reducir animaciones en móvil */
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
   }
 }
 
