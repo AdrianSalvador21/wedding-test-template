@@ -26,36 +26,41 @@ const Hero = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const heroImageAlt = weddingData?.heroImage?.alt || 'Imagen principal de boda';
 
+  // Estado para la altura fija
+  const [fixedHeight, setFixedHeight] = useState<number | null>(null);
+
   useEffect(() => {
     // Precargar imagen de fondo para evitar layout shift
     const img = document.createElement('img');
     img.src = heroImageUrl;
     
-    // Solución para iOS viewport height
-    const updateVH = () => {
-      const vh = window.innerHeight * 0.01;
+    // SOLUCIÓN: Calcular altura UNA SOLA VEZ y fijarla
+    const setFixedViewportHeight = () => {
+      const currentHeight = window.innerHeight;
+      console.log('🔒 Fijando altura Hero a:', currentHeight + 'px');
+      setFixedHeight(currentHeight);
+      
+      // También setear la variable CSS como backup
+      const vh = currentHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
-    // Actualizar en carga inicial
-    updateVH();
+    // Calcular altura solo una vez al montar
+    setFixedViewportHeight();
     
-    // Actualizar en resize (throttled)
-    let timeoutId: NodeJS.Timeout;
-    const handleResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(updateVH, 100);
+    // Solo recalcular en cambio de orientación (no en scroll)
+    const handleOrientationChange = () => {
+      setTimeout(() => {
+        setFixedViewportHeight();
+      }, 100);
     };
 
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', updateVH);
+    window.addEventListener('orientationchange', handleOrientationChange);
     
     setIsMounted(true);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', updateVH);
-      clearTimeout(timeoutId);
+      window.removeEventListener('orientationchange', handleOrientationChange);
     };
   }, [heroImageUrl]);
 
@@ -91,8 +96,9 @@ const Hero = () => {
     if (typeof window !== 'undefined') {
       console.log('🖼️ Debug Hero - URL imagen:', heroImageUrl);
       console.log('📱 Es móvil?', window.innerWidth <= 768);
+      console.log('📏 Altura fija calculada:', fixedHeight ? `${fixedHeight}px` : 'Calculando...');
     }
-  }, [heroImageUrl]);
+  }, [heroImageUrl, fixedHeight]);
 
   // Detectar si es móvil
   const [isMobile, setIsMobile] = useState(false);
@@ -110,9 +116,11 @@ const Hero = () => {
 
   return (
     <section 
-      className="hero-section relative h-[100dvh] flex items-center justify-center text-white overflow-hidden"
+      className="hero-section relative flex items-center justify-center text-white overflow-hidden"
       style={{ 
-        minHeight: '100vh', // Fallback para navegadores que no soportan dvh
+        // Usar altura fija calculada para evitar redimensionamiento
+        height: fixedHeight ? `${fixedHeight}px` : '100vh',
+        minHeight: fixedHeight ? `${fixedHeight}px` : '100vh',
         // Solo aplicar background-image en desktop
         ...(isMobile ? {} : { backgroundImage: `url(${heroImageUrl})` })
       }}

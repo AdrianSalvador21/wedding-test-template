@@ -8,20 +8,19 @@
   --vh: 1vh;
 }
 
-/* Prevenir layout shift usando dvh con fallback */
+/* Hero con altura fija - NO usa unidades dinámicas que causan redimensionamiento */
 .hero-section {
-  height: 100vh; /* Fallback */
-  height: 100dvh; /* Dynamic viewport height */
-  min-height: 100vh; /* Fallback adicional */
   position: relative;
   overflow: hidden;
+  /* La altura se setea via inline styles para evitar redimensionamiento */
 }
 
-/* Solución específica para iOS viewport height */
+/* Asegurar que en iOS también use altura fija */
 @supports (-webkit-touch-callout: none) {
   .hero-section {
-    height: calc(var(--vh, 1vh) * 100) !important;
-    min-height: calc(var(--vh, 1vh) * 100) !important;
+    /* NO forzar alturas dinámicas - usar las del inline style */
+    height: inherit !important;
+    min-height: inherit !important;
   }
 }
 
@@ -141,12 +140,11 @@
   }
 }
 
-/* Prevenir layout shift en iOS - SIMPLIFICADO */
+/* Prevenir layout shift en iOS - ALTURA FIJA */
 @media screen and (max-width: 768px) {
   .hero-section {
-    height: 100vh;
-    height: calc(var(--vh, 1vh) * 100);
-    min-height: 640px; /* Fallback mínimo */
+    /* NO usar unidades dinámicas - solo altura fija del inline style */
+    min-height: 640px; /* Fallback mínimo en caso de problemas */
   }
   
   /* Prevenir layout shifts en body */
