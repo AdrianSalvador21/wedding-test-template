@@ -194,20 +194,27 @@ const Hero = () => {
           className="space-y-12"
         >
           {/* "NUESTRA BODA" */}
-          <div className="mb-12">
-            <h2 className="text-xs md:text-sm font-body font-light tracking-[0.4em] uppercase text-white opacity-80 mb-12">
+          <div className="mb-8">
+            <h2 className="text-xs md:text-sm font-body font-light tracking-[0.4em] uppercase text-white opacity-80 mb-8">
               {t('ourWedding')}
             </h2>
             
-            {/* Nombres de la pareja - primer nombre con & */}
-            <div className="space-y-4">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-light text-white opacity-75 tracking-wide">
-                {brideName} <span className="text-stone-300 opacity-80">&</span>
-              </h1>
+            {/* Nombres de la pareja - en línea con & decorativo */}
+            <div className="flex flex-col items-center space-y-4">
+              {/* Línea decorativa superior */}
+              <div className="w-24 h-px bg-white bg-opacity-40"></div>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-light text-white opacity-75 tracking-wide">
+              {/* Nombres en una línea */}
+              <h1 className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl font-heading font-semibold text-white tracking-wide leading-tight">
+                {brideName}
+                <span className="text-3xl md:text-6xl lg:text-7xl xl:text-8xl text-stone-200 opacity-80 mx-4 md:mx-6 font-serif italic">
+                  &
+                </span>
                 {groomName}
               </h1>
+              
+              {/* Línea decorativa inferior */}
+              <div className="w-24 h-px bg-white bg-opacity-40"></div>
             </div>
           </div>
 
@@ -223,7 +230,7 @@ const Hero = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth' })}
               className="bg-stone-400 bg-opacity-70 text-white font-body font-medium py-3 px-8 md:py-3.5 md:px-10 rounded-full text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white border-opacity-30"
             >
               {t('cta')}
