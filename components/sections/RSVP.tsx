@@ -74,7 +74,7 @@ const RSVP = () => {
 
   if (isSubmitted) {
     return (
-      <section className="bg-gray-50">
+      <section id="rsvp" className="bg-gray-50">
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           <div className="max-w-md mx-auto text-center">
             <div className="bg-white rounded-2xl p-8 shadow-lg">
@@ -98,6 +98,7 @@ const RSVP = () => {
   if (isMobile) {
     return (
       <section 
+        id="rsvp"
         className="bg-gray-50 relative overflow-hidden"
         style={getFloralBackgroundStyle(3, '160px')}
               >
