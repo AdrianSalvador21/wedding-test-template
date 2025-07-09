@@ -73,8 +73,8 @@ const Timeline = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <section className="py-12 bg-gray-50">
-        <div className="section-container">
+      <section className="bg-gray-50">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
             <div className="h-4 bg-gray-200 rounded w-96 mx-auto" />
@@ -86,10 +86,10 @@ const Timeline = () => {
 
   return (
     <section 
-      className="py-12 bg-gray-50 mb-12 relative overflow-hidden"
+      className="bg-gray-50 mb-12 relative overflow-hidden"
       style={getFloralBackgroundStyle(3, '160px')}
-    >
-      <div className="section-container">
+          >
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ const Timeline = () => {
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="w-full p-5 flex items-center justify-between hover:border-primary/30 transition-colors"
               >
-                <h3 className="text-base font-heading text-dark">
+                <h3 className="text-base font-body text-dark">
                   {t('eventSchedule')}
                 </h3>
                 {isExpanded ? (
@@ -146,7 +146,7 @@ const Timeline = () => {
                               </span>
                               <div className="flex-1 h-px bg-border"></div>
                             </div>
-                            <h4 className="text-sm font-medium text-dark mb-1 font-heading">
+                            <h4 className="text-sm font-medium text-dark mb-1 font-body">
                               {event.title}
                             </h4>
                             <p className="text-xs text-text leading-relaxed font-body">

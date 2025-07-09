@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ExternalLink, Church, Music4 } from 'lucide-react';
+import { ExternalLink, MapPin } from 'lucide-react';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
@@ -15,89 +15,83 @@ const Location = () => {
   const weddingData = useAppSelector(selectCurrentWedding);
 
   // Datos dinámicos con fallbacks
-  const ceremonyVenue = weddingData?.event.ceremonyVenue;
-  const receptionVenue = weddingData?.event.receptionVenue;
+  const ceremonyVenue = weddingData?.event.ceremonyVenue?.name || t('ceremony.venue');
+  const ceremonyAddress = weddingData?.event.ceremonyVenue?.address || t('ceremony.address');
+  const ceremonyMapsUrl = weddingData?.event.ceremonyVenue?.coordinates 
+    ? `https://maps.google.com/maps?q=${weddingData.event.ceremonyVenue.coordinates.lat},${weddingData.event.ceremonyVenue.coordinates.lng}`
+    : `https://maps.google.com/maps?q=${encodeURIComponent(ceremonyVenue + ' ' + ceremonyAddress)}`;
   
-
-
-  const handleMapsClick = (venue: { name: string; address: string; coordinates?: { lat: number; lng: number } }) => {
-    if (venue?.coordinates) {
-      openExternalLink(`https://maps.google.com/maps?q=${venue.coordinates.lat},${venue.coordinates.lng}`);
-    } else {
-      openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(venue?.name + ' ' + venue?.address)}`);
-    }
-  };
+  const receptionVenue = weddingData?.event.receptionVenue?.name || t('reception.venue');
+  const receptionAddress = weddingData?.event.receptionVenue?.address || t('reception.address');
+  const receptionMapsUrl = weddingData?.event.receptionVenue?.coordinates 
+    ? `https://maps.google.com/maps?q=${weddingData.event.receptionVenue.coordinates.lat},${weddingData.event.receptionVenue.coordinates.lng}`
+    : `https://maps.google.com/maps?q=${encodeURIComponent(receptionVenue + ' ' + receptionAddress)}`;
 
   // Versión estática para móvil
   if (isMobile) {
     return (
       <section 
-        className="py-12 bg-white relative overflow-hidden"
-        style={getFloralBackgroundStyle(2, '240px')}
+        className="bg-white relative overflow-hidden"
+        style={{
+          ...getFloralBackgroundStyle(2, '400px'),
+          backgroundPosition: '-288px -321px',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '387px 953px'
+        }}
       >
-        <div className="section-container">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           {/* Título */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <div className="w-16 h-0.5 bg-accent mx-auto"></div>
           </div>
 
-          <div className="max-w-lg mx-auto space-y-8">
+          {/* Ubicaciones */}
+          <div className="max-w-4xl mx-auto space-y-12">
             {/* Ceremonia */}
-            {ceremonyVenue && (
-              <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 shadow-lg">
-                <div className="text-center mb-8">
-                  <Church className="w-8 h-8 mx-auto mb-4 text-accent" />
-                  <h3 className="text-xl font-heading font-semibold text-primary mb-2">
-                    {t('ceremony')}
-                  </h3>
-                  <h4 className="text-lg font-body font-semibold text-dark mb-2">
-                    {ceremonyVenue.name}
-                  </h4>
-                  <p className="text-text font-body">{ceremonyVenue.address}</p>
-                </div>
-
-
-
-                {/* Botón de direcciones */}
-                <button
-                  onClick={() => handleMapsClick(ceremonyVenue)}
-                  className="w-full bg-gradient-primary text-white font-body font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
-                >
-                  <ExternalLink className="w-5 h-5" />
-                  <span>{t('directions')}</span>
-                </button>
+            <div className="text-center">
+              <div className="flex justify-center items-center mb-6">
+                <h3 className="text-lg md:text-xl font-body font-medium text-stone-600">{t('ceremony')}</h3>
               </div>
-            )}
+              <div className="space-y-2 mb-6">
+                <p className="text-base md:text-lg font-body font-semibold text-stone-700">{ceremonyVenue}</p>
+                <p className="text-sm md:text-base text-gray-600 font-body">{ceremonyAddress}</p>
+              </div>
+              <button 
+                onClick={() => openExternalLink(ceremonyMapsUrl)}
+                className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                {t('directions')}
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </button>
+            </div>
+
+            {/* Separador */}
+            <div className="flex items-center justify-center">
+              <div className="w-8 h-0.5 bg-accent"></div>
+              <div className="w-2 h-2 bg-accent rounded-full mx-4"></div>
+              <div className="w-8 h-0.5 bg-accent"></div>
+            </div>
 
             {/* Recepción */}
-            {receptionVenue && (
-              <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 shadow-lg">
-                <div className="text-center mb-8">
-                  <Music4 className="w-8 h-8 mx-auto mb-4 text-accent" />
-                  <h3 className="text-xl font-heading font-semibold text-primary mb-2">
-                    {t('reception')}
-                  </h3>
-                  <h4 className="text-lg font-body font-semibold text-dark mb-2">
-                    {receptionVenue.name}
-                  </h4>
-                  <p className="text-text font-body">{receptionVenue.address}</p>
-                </div>
-
-
-
-                {/* Botón de direcciones */}
-                <button
-                  onClick={() => handleMapsClick(receptionVenue)}
-                  className="w-full bg-gradient-primary text-white font-body font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
-                >
-                  <ExternalLink className="w-5 h-5" />
-                  <span>{t('directions')}</span>
-                </button>
+            <div className="text-center">
+              <div className="flex justify-center items-center mb-6">
+                <h3 className="text-lg md:text-xl font-body font-medium text-stone-600">{t('reception')}</h3>
               </div>
-            )}
-
-
+              <div className="space-y-2 mb-6">
+                <p className="text-base md:text-lg font-body font-semibold text-stone-700">{receptionVenue}</p>
+                <p className="text-sm md:text-base text-gray-600 font-body">{receptionAddress}</p>
+              </div>
+              <button 
+                onClick={() => openExternalLink(receptionMapsUrl)}
+                className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                {t('directions')}
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -107,14 +101,13 @@ const Location = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <section id="location" className="py-12 bg-white">
-        <div className="section-container">
+      <section className="bg-white">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
-            <div className="h-4 bg-gray-200 rounded w-96 mx-auto" />
-            <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              <div className="h-64 bg-gray-200 rounded-2xl" />
-              <div className="h-64 bg-gray-200 rounded-2xl" />
+            <div className="space-y-6">
+              <div className="h-6 bg-gray-200 rounded w-48 mx-auto" />
+              <div className="h-4 bg-gray-200 rounded w-64 mx-auto" />
             </div>
           </div>
         </div>
@@ -126,71 +119,67 @@ const Location = () => {
   return (
     <section 
       id="location" 
-      className="py-12 bg-white relative overflow-hidden"
-      style={getFloralBackgroundStyle(2, '240px')}
+      className="bg-white relative overflow-hidden"
+      style={{
+        ...getFloralBackgroundStyle(2, '400px'),
+        backgroundPosition: '-288px -321px',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '387px 953px'
+      }}
     >
-      <div className="section-container">
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <div className="w-16 h-0.5 bg-accent mx-auto"></div>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            
-            {/* Información del lugar */}
-            <div className="grid lg:grid-cols-2 gap-8 animation-delay-400">
-              
-              {/* Ceremonia */}
-              {ceremonyVenue && (
-                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="text-center mb-8">
-                    <Church className="w-12 h-12 mx-auto mb-6 text-accent" />
-                    <h3 className="text-2xl font-heading font-semibold text-primary mb-2">
-                      {t('ceremony')}
-                    </h3>
-                    <h4 className="text-xl font-body font-semibold text-dark mb-2">
-                      {ceremonyVenue.name}
-                    </h4>
-                    <p className="text-text font-body text-lg mb-4">{ceremonyVenue.address}</p>
-                  </div>
+          {/* Ubicaciones */}
+          <div className="max-w-4xl mx-auto space-y-12 animation-delay-400">
+            {/* Ceremonia */}
+            <div className="text-center">
+              <div className="flex justify-center items-center mb-6">
+                <h3 className="text-lg md:text-xl font-body font-medium text-stone-600">{t('ceremony')}</h3>
+              </div>
+              <div className="space-y-2 mb-6">
+                <p className="text-base md:text-lg font-body font-semibold text-stone-700">{ceremonyVenue}</p>
+                <p className="text-sm md:text-base text-gray-600 font-body">{ceremonyAddress}</p>
+              </div>
+              <button 
+                onClick={() => openExternalLink(ceremonyMapsUrl)}
+                className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                {t('directions')}
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </button>
+            </div>
 
-                  {/* Botón de direcciones */}
-                                      <button
-                      onClick={() => handleMapsClick(ceremonyVenue)}
-                      className="w-full bg-gradient-primary text-white font-body font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                      <span>{t('directions')}</span>
-                    </button>
-                </div>
-              )}
+            {/* Separador */}
+            <div className="flex items-center justify-center">
+              <div className="w-8 h-0.5 bg-accent"></div>
+              <div className="w-2 h-2 bg-accent rounded-full mx-4"></div>
+              <div className="w-8 h-0.5 bg-accent"></div>
+            </div>
 
-              {/* Recepción */}
-              {receptionVenue && (
-                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="text-center mb-8">
-                    <Music4 className="w-12 h-12 mx-auto mb-6 text-accent" />
-                    <h3 className="text-2xl font-heading font-semibold text-primary mb-2">
-                      {t('reception')}
-                    </h3>
-                    <h4 className="text-xl font-body font-semibold text-dark mb-2">
-                      {receptionVenue.name}
-                    </h4>
-                    <p className="text-text font-body text-lg mb-4">{receptionVenue.address}</p>
-                  </div>
-
-                  {/* Botón de direcciones */}
-                  <button
-                    onClick={() => handleMapsClick(receptionVenue)}
-                    className="w-full bg-gradient-primary text-white font-body font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3"
-                  >
-                    <ExternalLink className="w-5 h-5" />
-                    <span>{t('directions')}</span>
-                  </button>
-                </div>
-              )}
+            {/* Recepción */}
+            <div className="text-center">
+              <div className="flex justify-center items-center mb-6">
+                <h3 className="text-lg md:text-xl font-body font-medium text-stone-600">{t('reception')}</h3>
+              </div>
+              <div className="space-y-2 mb-6">
+                <p className="text-base md:text-lg font-body font-semibold text-stone-700">{receptionVenue}</p>
+                <p className="text-sm md:text-base text-gray-600 font-body">{receptionAddress}</p>
+              </div>
+              <button 
+                onClick={() => openExternalLink(receptionMapsUrl)}
+                className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                {t('directions')}
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </button>
             </div>
           </div>
         </div>

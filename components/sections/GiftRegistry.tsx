@@ -31,7 +31,7 @@ export default function GiftRegistry() {
       className="py-12 bg-gray-50 mb-12 relative overflow-hidden"
       style={getFloralBackgroundStyle(1, '200px')}
     >
-      <div className="section-container">
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         {/* Título */}
         <div className="text-center mb-12">
           <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
@@ -51,7 +51,7 @@ export default function GiftRegistry() {
                 onClick={() => setIsRegistryExpanded(!isRegistryExpanded)}
                 className="w-full p-5 flex items-center justify-between hover:border-primary/30 transition-colors"
               >
-                <h3 className="text-base font-heading text-dark">
+                <h3 className="text-base font-body text-dark">
                   {t('onlineRegistries')}
                 </h3>
                 {isRegistryExpanded ? (
@@ -72,7 +72,7 @@ export default function GiftRegistry() {
                         rel="noopener noreferrer"
                         className="bg-gray-50 border border-border rounded-lg p-4 text-center hover:border-primary/30 transition-colors duration-300 block"
                       >
-                        <h4 className="text-base font-heading text-dark hover:text-primary transition-colors">
+                        <h4 className="text-base font-body text-dark hover:text-primary transition-colors">
                           {registry.name}
                         </h4>
                       </a>
@@ -92,7 +92,7 @@ export default function GiftRegistry() {
                 onClick={() => setIsBankExpanded(!isBankExpanded)}
                 className="w-full p-5 flex items-center justify-between hover:border-primary/30 transition-colors"
               >
-                <h3 className="text-base font-heading text-dark">
+                <h3 className="text-base font-body text-dark">
                   {t('bankTransfer')}
                 </h3>
                 {isBankExpanded ? (

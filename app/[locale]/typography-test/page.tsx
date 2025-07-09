@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 const TypographyTest = () => {
   const [selectedHeadingFont, setSelectedHeadingFont] = useState('Playfair Display');
-  const [selectedBodyFont, setSelectedBodyFont] = useState('Montserrat');
+  const [selectedBodyFont, setSelectedBodyFont] = useState('Lora');
 
   // Fuentes organizadas por categorías según la investigación
   const serifFonts = [
@@ -19,6 +19,12 @@ const TypographyTest = () => {
     { name: 'Great Vibes', class: 'font-great-vibes', import: 'https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap', category: 'Script Sofisticada' },
     { name: 'Dancing Script', class: 'font-dancing', import: 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&display=swap', category: 'Script Contemporánea' },
     { name: 'Satisfy', class: 'font-satisfy', import: 'https://fonts.googleapis.com/css2?family=Satisfy&display=swap', category: 'Script Ligera' },
+    { name: 'Playfair Display Italic', class: 'font-playfair-italic', import: 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,600;1,700&display=swap', category: 'Serif Cursiva Clásica' },
+    { name: 'Cormorant Garamond Italic', class: 'font-cormorant-italic', import: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,600;1,700&display=swap', category: 'Serif Cursiva Sofisticada' },
+    { name: 'EB Garamond Italic', class: 'font-eb-garamond-italic', import: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@1,400;1,600;1,700&display=swap', category: 'Serif Cursiva Editorial' },
+    { name: 'Lora Italic', class: 'font-lora-italic', import: 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,400;1,600;1,700&display=swap', category: 'Serif Cursiva Elegante' },
+    { name: 'Marcellus Italic', class: 'font-marcellus-italic', import: 'https://fonts.googleapis.com/css2?family=Marcellus&display=swap', category: 'Serif Cursiva Clásica' },
+    { name: 'Cinzel Decorative', class: 'font-cinzel-decorative', import: 'https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap', category: 'Serif Decorativa Ceremonial' },
   ];
 
   const sansSerifFonts = [
@@ -43,7 +49,7 @@ const TypographyTest = () => {
     { 
       name: 'Clásica Balanceada', 
       heading: 'Playfair Display', 
-      body: 'Montserrat',
+      body: 'Lora',
       description: 'Muy balanceada, funciona en casi todo dispositivo'
     },
     { 
@@ -69,6 +75,30 @@ const TypographyTest = () => {
       heading: 'Cormorant Garamond', 
       body: 'Lora',
       description: 'Máxima elegancia con legibilidad'
+    },
+    { 
+      name: 'Cursiva Clásica', 
+      heading: 'Playfair Display Italic', 
+      body: 'Lora',
+      description: 'Elegancia clásica con cursiva sofisticada'
+    },
+    { 
+      name: 'Editorial Europea', 
+      heading: 'EB Garamond Italic', 
+      body: 'Lora',
+      description: 'Inspiración editorial con gran porte y formalidad'
+    },
+    { 
+      name: 'Lujo Contemporáneo', 
+      heading: 'Cormorant Garamond Italic', 
+      body: 'Quicksand',
+      description: 'Sofisticación con toques de tradición y lujo'
+    },
+    { 
+      name: 'Ceremonial Formal', 
+      heading: 'Cinzel Decorative', 
+      body: 'Merriweather',
+      description: 'Formal y ceremonial, ideal para eventos especiales'
     }
   ];
 
@@ -98,6 +128,12 @@ const TypographyTest = () => {
         .font-great-vibes { font-family: 'Great Vibes', cursive; }
         .font-dancing { font-family: 'Dancing Script', cursive; }
         .font-satisfy { font-family: 'Satisfy', cursive; }
+        .font-playfair-italic { font-family: 'Playfair Display', serif; font-style: italic; }
+        .font-cormorant-italic { font-family: 'Cormorant Garamond', serif; font-style: italic; }
+        .font-eb-garamond-italic { font-family: 'EB Garamond', serif; font-style: italic; }
+        .font-lora-italic { font-family: 'Lora', serif; font-style: italic; }
+        .font-marcellus-italic { font-family: 'Marcellus', serif; font-style: italic; }
+        .font-cinzel-decorative { font-family: 'Cinzel Decorative', serif; }
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
         .font-poppins { font-family: 'Poppins', sans-serif; }
@@ -158,7 +194,7 @@ const TypographyTest = () => {
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label="Script/Caligráficas">
+                <optgroup label="Script/Caligráficas y Cursivas">
                   {scriptFonts.map((font) => (
                     <option key={font.name} value={font.name}>
                       {font.name} ({font.category})

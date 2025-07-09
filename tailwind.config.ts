@@ -20,7 +20,7 @@ export default {
       },
       fontFamily: {
         heading: ['Cormorant Garamond', 'serif'],
-        body: ['Montserrat', 'sans-serif'],
+        body: ['Lora', 'serif'],
       },
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #8b7355 0%, #a67c5a 100%)',

@@ -59,8 +59,8 @@ const Footer = () => {
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <footer className="bg-gradient-to-br from-primary via-secondary to-accent text-white py-12">
-        <div className="section-container">
+      <footer className="bg-gradient-to-br from-primary via-secondary to-accent text-white ">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-8 sm:">
           <div className="text-center space-y-6 max-w-sm mx-auto">
             {/* Nombres de la pareja */}
             <div>
@@ -122,8 +122,8 @@ const Footer = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <footer className="bg-primary text-white py-16">
-        <div className="section-container">
+      <footer className="bg-primary text-white ">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-8 sm:">
           <div className="animate-pulse space-y-8 max-w-4xl mx-auto">
             <div className="h-8 bg-white/20 rounded w-64 mx-auto" />
             <div className="h-4 bg-white/20 rounded w-96 mx-auto" />
@@ -140,8 +140,8 @@ const Footer = () => {
 
   // Versión para desktop con animaciones CSS
   return (
-    <footer className="bg-primary text-white py-16">
-      <div className="section-container">
+    <footer className="bg-primary text-white ">
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-8 sm:">
         <div className="max-w-4xl mx-auto">
           
           {/* Contenido principal minimalista */}

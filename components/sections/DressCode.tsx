@@ -5,6 +5,7 @@ import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
+import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
 
 const DressCode = () => {
   const { t } = useTranslations('dressCode');
@@ -19,8 +20,14 @@ const DressCode = () => {
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <section className="py-12 bg-white">
-        <div className="section-container">
+      <section 
+        className="bg-white relative overflow-hidden"
+        style={{
+          ...getFloralBackgroundStyle(4, '400px'),
+          backgroundSize: '506px 260px'
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           {/* Título */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
@@ -38,8 +45,8 @@ const DressCode = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <section className="py-12 bg-white">
-        <div className="section-container">
+      <section className="bg-white">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
             <div className="h-4 bg-gray-200 rounded w-96 mx-auto" />
@@ -51,8 +58,14 @@ const DressCode = () => {
 
   // Versión para desktop con animaciones
   return (
-    <section className="py-12 bg-white">
-      <div className="section-container">
+    <section 
+      className="bg-white relative overflow-hidden"
+      style={{
+        ...getFloralBackgroundStyle(4, '400px'),
+        backgroundSize: '506px 260px'
+      }}
+          >
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
