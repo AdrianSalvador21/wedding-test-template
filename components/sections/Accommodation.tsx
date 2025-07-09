@@ -36,10 +36,15 @@ const Accommodation = () => {
   if (isMobile) {
     return (
       <section 
-        className="py-12 bg-white relative overflow-hidden"
-        style={getFloralBackgroundStyle(2, '240px')}
+        className="bg-white relative overflow-hidden"
+        style={{
+          ...getFloralBackgroundStyle(2, '240px'),
+          backgroundSize: '400px 500px',
+          backgroundRepeat: 'repeat',
+          backgroundPosition: '-304px -136px'
+        }}
       >
-        <div className="section-container">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           {/* Título */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
@@ -49,33 +54,26 @@ const Accommodation = () => {
             </p>
           </div>
 
-          <div className="max-w-lg mx-auto">
-            {/* Hospedaje */}
-            <div className="bg-gradient-to-br from-light to-white rounded-2xl p-6 shadow-lg">
-              <div className="space-y-3">
-                {accommodationOptions.map((hotel, index) => (
-                  <div key={index} className="bg-white rounded-xl p-4 border border-border hover:border-accent hover:shadow-md transition-all duration-200 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-accent bg-opacity-10 rounded-lg flex items-center justify-center group-hover:bg-opacity-20 transition-colors duration-200">
-                          <MapPin className="w-4 h-4 text-accent" />
-                        </div>
-                        <div>
-                          <h4 className="font-body font-semibold text-dark text-sm">{hotel.name}</h4>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
-                        className="flex items-center space-x-1 text-accent hover:text-primary transition-colors duration-200 text-sm font-body font-medium px-2 py-1 rounded-md hover:bg-accent hover:bg-opacity-10"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        <span>{t('view')}</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
+          <div className="max-w-lg mx-auto space-y-4">
+            {/* Lista de hoteles sin cards */}
+            {accommodationOptions.map((hotel, index) => (
+              <div key={index} className="py-2 px-4">
+                <div className="flex items-center justify-center mb-4">
+                  <h4 className="text-base md:text-lg font-body font-semibold text-stone-700">{hotel.name}</h4>
+                </div>
+                
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
+                    className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+                  >
+                    <MapPin className="w-4 h-4 mr-2" />
+                    {t('seeLocation')}
+                    <ExternalLink className="w-4 h-4 ml-2" />
+                  </button>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -85,8 +83,8 @@ const Accommodation = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <section className="py-12 bg-white">
-        <div className="section-container">
+      <section className="bg-white">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
             <div className="h-4 bg-gray-200 rounded w-96 mx-auto" />
@@ -102,10 +100,15 @@ const Accommodation = () => {
   // Versión para desktop con animaciones CSS
   return (
     <section 
-      className="py-12 bg-white relative overflow-hidden"
-      style={getFloralBackgroundStyle(2, '240px')}
-    >
-      <div className="section-container">
+      className="bg-white relative overflow-hidden"
+      style={{
+        ...getFloralBackgroundStyle(2, '240px'),
+        backgroundSize: '400px 500px',
+        backgroundRepeat: 'repeat',
+        backgroundPosition: '-304px -136px'
+      }}
+          >
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
@@ -117,44 +120,37 @@ const Accommodation = () => {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            {/* Hospedaje recomendado */}
+            {/* Hoteles recomendados - diseño limpio */}
             <div className="animation-delay-400">
-              <div className="bg-gradient-to-br from-light to-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <div className="text-center mb-8">
-                  <div className="w-16 h-16 bg-accent bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <MapPin className="w-8 h-8 text-accent" />
-                  </div>
-                  <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
-                    {t('nearbyHotels')}
-                  </h3>
-                  <p className="text-text font-body opacity-80">
-                    {t('description')}
-                  </p>
-                </div>
-                
-                <div className="space-y-4">
-                  {accommodationOptions.map((hotel, index) => (
-                    <div key={index} className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-border hover:border-accent group">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-accent bg-opacity-10 rounded-xl flex items-center justify-center group-hover:bg-opacity-20 transition-all duration-200">
-                            <MapPin className="w-6 h-6 text-accent" />
-                          </div>
-                          <div>
-                            <h4 className="text-lg font-body font-semibold text-primary">{hotel.name}</h4>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
-                          className="flex items-center space-x-2 text-accent hover:text-primary transition-all duration-200 text-sm font-body font-medium px-4 py-2 rounded-lg hover:bg-accent hover:bg-opacity-10 hover:scale-105"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                          <span>{t('seeLocation')}</span>
-                        </button>
-                      </div>
+              <div className="text-center mb-12">
+                <MapPin className="w-12 h-12 mx-auto mb-6 text-accent" />
+                <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
+                  {t('nearbyHotels')}
+                </h3>
+                <p className="text-text font-body opacity-80">
+                  {t('description')}
+                </p>
+              </div>
+              
+              <div className="grid md:grid-cols-3 gap-4">
+                {accommodationOptions.map((hotel, index) => (
+                  <div key={index} className="py-2 px-4">
+                    <div className="flex items-center justify-center mb-4">
+                      <h4 className="text-base md:text-lg font-body font-semibold text-stone-700">{hotel.name}</h4>
                     </div>
-                  ))}
-                </div>
+                    
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
+                        className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+                      >
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {t('seeLocation')}
+                        <ExternalLink className="w-4 h-4 ml-2" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

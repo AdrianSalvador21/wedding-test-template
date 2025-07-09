@@ -137,10 +137,15 @@ const Gallery = () => {
   return (
     <section 
       ref={ref} 
-      className="py-12 bg-white relative overflow-hidden"
-      style={getFloralBackgroundStyle(2, '240px')}
+      className="bg-white relative overflow-hidden"
+      style={{
+        ...getFloralBackgroundStyle(2, '240px'),
+        backgroundSize: '585px 401px',
+        backgroundRepeat: 'repeat',
+        backgroundPosition: '166% 11%'
+      }}
     >
-      <div className="section-container">
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         {/* Título */}
         <motion.div 
           className="text-center mb-12"

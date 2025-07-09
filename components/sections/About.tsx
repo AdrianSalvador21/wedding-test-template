@@ -18,10 +18,13 @@ const About = () => {
   return (
     <section 
       id="about" 
-      className="py-12 bg-gray-50 relative overflow-hidden"
-      style={getFloralBackgroundStyle(1, '200px')}
+      className="bg-gray-50 relative overflow-hidden"
+      style={{
+        ...getFloralBackgroundStyle(1, '200px'),
+        backgroundSize: '1273px 845px'
+      }}
     >
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         {/* Título principal - manteniendo estilo original */}
         <div className="text-center mb-12">
           <h2 className="section-title text-stone-600 opacity-80 mb-4">

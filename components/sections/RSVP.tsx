@@ -74,8 +74,8 @@ const RSVP = () => {
 
   if (isSubmitted) {
     return (
-      <section className="py-12 bg-gray-50">
-        <div className="section-container">
+      <section className="bg-gray-50">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           <div className="max-w-md mx-auto text-center">
             <div className="bg-white rounded-2xl p-8 shadow-lg">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -98,10 +98,10 @@ const RSVP = () => {
   if (isMobile) {
     return (
       <section 
-        className="py-12 bg-gray-50 relative overflow-hidden"
+        className="bg-gray-50 relative overflow-hidden"
         style={getFloralBackgroundStyle(3, '160px')}
-      >
-        <div className="section-container">
+              >
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           {/* Título */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
@@ -216,8 +216,8 @@ const RSVP = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <section id="rsvp" className="py-12 bg-gray-50">
-        <div className="section-container">
+      <section id="rsvp" className="bg-gray-50">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
             <div className="h-4 bg-gray-200 rounded w-96 mx-auto" />
@@ -238,10 +238,10 @@ const RSVP = () => {
   return (
     <section 
       id="rsvp" 
-      className="py-12 bg-gray-50 relative overflow-hidden"
+      className="bg-gray-50 relative overflow-hidden"
       style={getFloralBackgroundStyle(3, '160px')}
-    >
-      <div className="section-container">
+          >
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">

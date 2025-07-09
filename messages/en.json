@@ -13,8 +13,8 @@
     "subtitle": "Time remaining",
     "days": "Days",
     "hours": "Hours",
-    "minutes": "Minutes",
-    "seconds": "Seconds",
+    "minutes": "Min",
+    "seconds": "Sec",
     "eventPassed": "The event has ended!",
     "thankYou": "Thank you for joining us on this special day",
     "date": "Date",
@@ -42,7 +42,7 @@
     "hashtag": "#OurWedding2024",
     "everyMomentCounts": "Every Moment Counts",
     "memoryDescription": "These are just some of the memories we've created together. Each photo tells a story, each smile reflects our love, and each moment has led us to this special day.",
-    "cameraMessage": "Don't forget to bring your camera and capture the special moments of our day. Use the hashtag",
+    "cameraMessage": "Use the hashtag",
     "hashtagPrompt": "so we can see all the photos.",
     "caption": "Special moments captured in time"
   },
@@ -243,7 +243,11 @@
     "title": "Event Location",
     "ceremony": "Religious Ceremony",
     "reception": "Reception",
-    "directions": "Get directions"
+    "directions": "See location",
+    "ceremony.venue": "St. Joseph Church",
+    "ceremony.address": "456 Central Ave, Downtown",
+    "reception.venue": "Eden Gardens",
+    "reception.address": "123 Main Ave, City"
   },
   "timeline": {
     "title": "Event Schedule",

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useAppSelector } from '../src/store/hooks';
 import { selectCurrentWedding } from '../src/store/slices/weddingSlice';
 import { getMockInvitation } from '../src/data/mockInvitations';
@@ -95,62 +95,34 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
               <X className="w-4 h-4" />
             </button>
 
-            {/* Invitation Card */}
-            <div className="bg-white shadow-2xl rounded-none md:rounded-3xl overflow-hidden border-0 md:border md:border-gray-200 h-screen md:h-auto flex flex-col">
-              {/* Elegant Header */}
-              <div className="relative bg-gradient-to-b from-stone-100 to-stone-50 p-6 pt-8 md:p-10 flex-shrink-0">
-                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 hidden md:block">
-                  <div className="w-12 h-0.5 bg-stone-300"></div>
-                </div>
-                
-                <div className="text-center pt-4 md:pt-0">
-                  {/* Invitation Header */}
-                  <div className="mb-6 md:mb-6">
-                    <p className="text-xs md:text-sm uppercase tracking-[0.2em] text-stone-500 mb-3 font-body font-medium">
-                      {t('personalInvitation')}
-                    </p>
-                    <h1 className="text-lg md:text-xl font-heading text-stone-700 leading-relaxed">
-                      {t('ourWedding')}
-                    </h1>
-                  </div>
-
+            {/* Invitation Card - Fondo completo */}
+            <div 
+              className="h-screen md:h-auto flex flex-col justify-center items-center p-6 md:p-8 relative overflow-hidden"
+              style={{
+                ...getFloralBackgroundStyle(5, '500px'),
+                backgroundColor: '#f8f6f3'
+              }}
+            >
+              {/* Card Interna Centrada */}
+              <div className="bg-white shadow-2xl rounded-3xl overflow-hidden border border-gray-100 max-w-xs mx-auto w-full">
+                {/* Header Simple */}
+                <div className="relative bg-gradient-to-b from-stone-50 to-white p-6 pt-8 text-center">
                   {/* Couple Names */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-center space-x-3 md:space-x-4">
-                      <h2 className="text-2xl md:text-4xl font-heading font-light text-stone-800 leading-tight">
-                        {bride.name}
-                      </h2>
-                      <span className="text-2xl md:text-4xl text-stone-500 font-light">&</span>
-                      <h2 className="text-2xl md:text-4xl font-heading font-light text-stone-800 leading-tight">
-                        {groom.name}
-                      </h2>
-                    </div>
-                    <div className="flex items-center justify-center space-x-4">
-                      <div className="w-8 h-px bg-stone-300"></div>
-                      <Heart className="w-4 h-4 text-stone-400" />
-                      <div className="w-8 h-px bg-stone-300"></div>
-                    </div>
-                  </div>
+                  <h1 className="text-xl font-heading text-stone-800 leading-tight mb-4">
+                    {bride.name} & {groom.name}
+                  </h1>
+                  
+                  <div className="w-16 h-px bg-stone-300 mx-auto"></div>
                 </div>
-              </div>
 
-              {/* Guest Information - Con patrón floral sutil */}
-              <div 
-                className="flex-1 flex flex-col justify-center px-6 md:px-10 py-8 md:py-8 text-center bg-gradient-to-b from-white to-stone-50 relative overflow-hidden"
-                style={{
-                  ...getFloralBackgroundStyle(4, '120px'),
-                  // Debug temporal - puedes ver que se está aplicando
-                  // border: '2px solid red',
-                }}
-              >
-                <div className="space-y-6 md:space-y-6 relative z-10">
-                  {/* Guest Info Card con patrón de fondo */}
-                  <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-stone-200/50 shadow-sm">
-                    <h3 className="text-xl md:text-2xl font-heading text-stone-800 mb-3">
+                {/* Invitation Info */}
+                <div className="px-6 py-6 text-center space-y-6">
+                  <div>
+                    <h3 className="text-xl font-heading text-stone-800 mb-2">
                       {guest.name}
                     </h3>
                     
-                    <p className="text-sm text-stone-600 font-body font-medium">
+                    <p className="text-base text-stone-600 font-body">
                       {guest.allowedGuests === 1 
                         ? t('guestCount.single')
                         : t('guestCount.multiple').replace('{count}', guest.allowedGuests.toString())
@@ -160,32 +132,62 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
 
                   {/* Special Message */}
                   {guest.specialMessage && (
-                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-stone-200/50 shadow-sm max-w-sm mx-auto">
-                      <p className="text-sm md:text-base text-stone-600 italic leading-relaxed font-body font-light">
+                    <div className="bg-stone-50 rounded-2xl p-4">
+                      <p className="text-sm text-stone-600 italic leading-relaxed font-body">
                         &ldquo;{guest.specialMessage}&rdquo;
                       </p>
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Fixed Bottom Section */}
-              <div className="flex-shrink-0 px-6 md:px-10 py-8 md:py-8 text-center bg-stone-50">
-                {/* CTA Button */}
-                <motion.button
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleClose}
-                  className="w-full bg-gradient-to-r from-stone-700 to-stone-600 text-white font-body font-semibold py-4 md:py-5 px-8 rounded-2xl shadow-lg hover:shadow-xl hover:from-stone-600 hover:to-stone-500 transition-all duration-300 text-base md:text-lg mb-4"
+                {/* Button */}
+                <div className="px-6 pb-0">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleClose}
+                    className="w-full bg-stone-600 text-white font-body font-medium py-3 px-6 rounded-xl hover:bg-stone-700 transition-all duration-300 text-sm tracking-wide"
+                  >
+                    {t('openInvitation')}
+                  </motion.button>
+                </div>
+
+                {/* Decorative Detail Below Button */}
+                <div className="px-6 py-3 flex items-center justify-center">
+                  <div className="flex items-center justify-center w-full max-w-24">
+                    {/* Left Line */}
+                    <div className="flex-1 h-px bg-stone-300 opacity-50"></div>
+                    
+                    {/* Heart Icon */}
+                    <div className="mx-3">
+                      <svg 
+                        width="10" 
+                        height="10" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        className="text-stone-400"
+                      >
+                        <path 
+                          d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" 
+                          fill="currentColor"
+                          opacity="0.4"
+                        />
+                      </svg>
+                    </div>
+                    
+                    {/* Right Line */}
+                    <div className="flex-1 h-px bg-stone-300 opacity-50"></div>
+                  </div>
+                </div>
+
+                {/* Decorative Footer */}
+                <div 
+                  className="h-8 bg-gradient-to-b from-white to-stone-50 relative overflow-hidden"
+                  style={{
+                    ...getFloralBackgroundStyle(4, '60px'),
+                  }}
                 >
-                  {t('openInvitation')}
-                </motion.button>
-
-                {/* Elegant Footer */}
-                <div className="flex items-center justify-center space-x-3">
-                  <div className="w-12 h-px bg-stone-300"></div>
-                  <Heart className="w-3 h-3 text-stone-400" />
-                  <div className="w-12 h-px bg-stone-300"></div>
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-px bg-stone-200"></div>
                 </div>
               </div>
             </div>

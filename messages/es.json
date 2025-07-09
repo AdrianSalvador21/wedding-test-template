@@ -13,8 +13,8 @@
     "subtitle": "Faltan",
     "days": "Días",
     "hours": "Horas", 
-    "minutes": "Minutos",
-    "seconds": "Segundos",
+    "minutes": "Min",
+    "seconds": "Seg",
     "eventPassed": "¡El evento ha terminado!",
     "thankYou": "Gracias por acompañarnos en este día tan especial",
     "date": "Fecha",
@@ -43,7 +43,7 @@
     "everyMomentCounts": "Cada Momento Cuenta",
     "memoryDescription": "Estas son solo algunas de las memorias que hemos creado juntos. Cada foto cuenta una historia, cada sonrisa refleja nuestro amor, y cada momento nos ha llevado hasta este día especial.",
     "shareMessage": "¡Comparte nuestros momentos!",
-    "cameraMessage": "No olvides traer tu cámara y capturar los momentos especiales de nuestro día. Usa el hashtag",
+    "cameraMessage": "Usa el hashtag",
     "hashtagPrompt": "para que podamos ver todas las fotos."
   },
   "timeline": {
@@ -243,7 +243,11 @@
     "title": "Ubicación del Evento",
     "ceremony": "Ceremonia Religiosa",
     "reception": "Recepción",
-    "directions": "Cómo llegar"
+    "directions": "Ver ubicación",
+    "ceremony.venue": "Iglesia San José",
+    "ceremony.address": "Av. Central 456, Centro",
+    "reception.venue": "Jardines del Edén",
+    "reception.address": "Av. Principal 123, Ciudad"
   },
   "timeline": {
     "title": "Cronograma del Evento",

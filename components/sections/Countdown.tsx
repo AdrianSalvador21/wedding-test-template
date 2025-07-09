@@ -59,8 +59,8 @@ const Countdown = () => {
   // Fallback mientras cargan los datos
   if (!mounted) {
     return (
-      <section id="countdown" className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4 text-center">
+      <section id="countdown" className="bg-gray-50">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 text-center py-12">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-8" />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl mx-auto">
@@ -92,10 +92,13 @@ const Countdown = () => {
   return (
     <section 
       id="countdown" 
-      className="py-12 bg-gray-50 relative overflow-hidden"
-      style={getFloralBackgroundStyle(1, '200px')}
-    >
-      <div className="container mx-auto px-4 text-center">
+      className="bg-gray-50 relative overflow-hidden"
+      style={{
+        ...getFloralBackgroundStyle(1, '200px'),
+        backgroundSize: '1388px 909px'
+      }}
+          >
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 text-center py-12">
         {isEventPassed ? (
           <div className="max-w-2xl mx-auto">
             <p className="text-2xl text-accent font-body font-semibold mb-4">{t('eventPassed')}</p>
@@ -112,52 +115,52 @@ const Countdown = () => {
             </div>
 
             {/* Números de cuenta regresiva horizontales */}
-            <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 mb-12">
+            <div className="flex justify-center items-center sm:gap-4 md:gap-6 mb-12">
               {/* Días */}
               <div className="text-center">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-heading opacity-70">
+                <div className="text-xl sm:text-2xl md:text-3xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.days).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
                   {t('days')}
                 </div>
               </div>
 
               {/* Separador */}
-              <div className="text-lg sm:text-xl md:text-2xl text-stone-600 font-light mx-1 opacity-70">:</div>
+              <div className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70">:</div>
 
               {/* Horas */}
               <div className="text-center">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-heading opacity-70">
+                <div className="text-xl sm:text-2xl md:text-3xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.hours).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
                   {t('hours')}
                 </div>
               </div>
 
               {/* Separador */}
-              <div className="text-lg sm:text-xl md:text-2xl text-stone-600 font-light mx-1 opacity-70">:</div>
+              <div className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70">:</div>
 
               {/* Minutos */}
               <div className="text-center">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-heading opacity-70">
+                <div className="text-xl sm:text-2xl md:text-3xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.minutes).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
                   {t('minutes')}
                 </div>
               </div>
 
               {/* Separador */}
-              <div className="text-lg sm:text-xl md:text-2xl text-stone-600 font-light mx-1 opacity-70">:</div>
+              <div className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70">:</div>
 
               {/* Segundos */}
               <div className="text-center">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-heading opacity-70">
+                <div className="text-xl sm:text-2xl md:text-3xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.seconds).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-body font-medium text-gray-600 uppercase tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
                   {t('seconds')}
                 </div>
               </div>
