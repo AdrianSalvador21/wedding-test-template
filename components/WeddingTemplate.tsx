@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useWedding } from '../src/store/hooks';
+import { useTranslations } from '../lib/translations';
 import Hero from './sections/Hero';
 import Countdown from './sections/Countdown';
 import About from './sections/About';
@@ -10,6 +11,7 @@ import Timeline from './sections/Timeline';
 import DressCode from './sections/DressCode';
 import GiftRegistry from './sections/GiftRegistry';
 import Accommodation from './sections/Accommodation';
+import AdultOnlyEvent from './sections/AdultOnlyEvent';
 import RSVP from './sections/RSVP';
 import Location from './sections/Location';
 import Footer from './sections/Footer';
@@ -21,6 +23,7 @@ interface WeddingTemplateProps {
 
 export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
   const { currentWedding, loading, error, initialized } = useWedding();
+  const { t } = useTranslations('template');
   const [showOverlay, setShowOverlay] = useState(!!guestId);
 
   // Estado de carga
@@ -29,7 +32,7 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
       <div className="min-h-screen flex items-center justify-center bg-primary-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-primary-800 font-medium">Cargando invitación...</p>
+          <p className="text-primary-800 font-medium">{t('loading')}</p>
         </div>
       </div>
     );
@@ -47,15 +50,15 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
               </svg>
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Invitación no encontrada</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('notFound')}</h2>
           <p className="text-gray-600 mb-6">
-            {error || 'No pudimos encontrar esta invitación. Verifica que el enlace sea correcto.'}
+            {error || t('notFoundMessage')}
           </p>
           <button 
             onClick={() => window.location.reload()} 
             className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors"
           >
-            Intentar de nuevo
+            {t('tryAgain')}
           </button>
         </div>
       </div>
@@ -74,6 +77,7 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
       <DressCode />
       <GiftRegistry />
       <Accommodation />
+      <AdultOnlyEvent />
       <RSVP />
       <Footer />
       

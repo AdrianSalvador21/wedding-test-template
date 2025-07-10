@@ -247,13 +247,13 @@ body {
 
   @media (min-width: 768px) {
     .section-title {
-      font-size: 1.875rem; /* 30px */
+      font-size: 2.5rem; /* 40px */
     }
   }
 
   @media (min-width: 1024px) {
     .section-title {
-      font-size: 2.25rem; /* 36px */
+      font-size: 3rem; /* 48px */
     }
   }
 

@@ -173,7 +173,7 @@
   "rsvp": {
     "title": "RSVP",
     "subtitle": "We want to celebrate with you!",
-    "description": "Please confirm your attendance before October 15th, 2025. Your presence will make this day even more special.",
+    "description": "Please confirm your attendance. Your presence will make this day even more special.",
     "form": {
       "name": "Full name",
       "email": "Email address",
@@ -238,6 +238,10 @@
     "description": "We recommend these hotels for your comfort",
     "seeLocation": "See location",
     "view": "View"
+  },
+  "adultOnlyEvent": {
+    "title": "Adults Only",
+    "description": "While we love the little ones in our family, we have decided that our celebration will be adults-only. We hope you can join us for this special night to create unique memories together."
   },
   "location": {
     "title": "Event Location",
@@ -335,5 +339,12 @@
     "edit": "Edit",
     "delete": "Delete",
     "confirm": "Confirm"
+  },
+  "template": {
+    "loading": "Loading invitation...",
+    "notFound": "Invitation not found",
+    "notFoundMessage": "We couldn't find this invitation. Please verify that the link is correct.",
+    "tryAgain": "Try again",
+    "seeYouThere": "See you on {date} at {venue}!"
   }
 } 

@@ -157,6 +157,12 @@ export interface GiftRegistry {
   bankAccount?: BankAccountInfo;
 }
 
+// Tipos para evento solo adultos
+export interface AdultOnlyEvent {
+  enabled: boolean;
+  message?: string;
+}
+
 // Tipo principal que contiene toda la información de la boda
 export interface WeddingData {
   id: string;
@@ -173,6 +179,7 @@ export interface WeddingData {
   accommodation: AccommodationOption[];
   transport: TransportInfo;
   giftRegistry: GiftRegistry;
+  adultOnlyEvent: AdultOnlyEvent;
   theme: {
     primaryColor: string;
     secondaryColor: string;

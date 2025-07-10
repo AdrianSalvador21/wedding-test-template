@@ -173,7 +173,7 @@
   "rsvp": {
     "title": "Confirmar Asistencia",
     "subtitle": "¡Queremos celebrar contigo!",
-    "description": "Por favor confirma tu asistencia antes del 15 de octubre de 2025. Tu presencia hará que este día sea aún más especial.",
+    "description": "Por favor confirma tu asistencia. Tu presencia hará que este día sea aún más especial.",
     "form": {
       "name": "Nombre completo",
       "email": "Correo electrónico",
@@ -238,6 +238,10 @@
     "description": "Te recomendamos estos hoteles para tu comodidad",
     "seeLocation": "Ver ubicación",
     "view": "Ver"
+  },
+  "adultOnlyEvent": {
+    "title": "Solo Adultos",
+    "description": "Aunque adoramos a los pequeños de la familia, hemos decidido que nuestra celebración sea solo para adultos. Esperamos que puedan acompañarnos en esta noche especial para crear recuerdos únicos juntos."
   },
   "location": {
     "title": "Ubicación del Evento",
@@ -335,5 +339,12 @@
     "edit": "Editar",
     "delete": "Eliminar",
     "confirm": "Confirmar"
+  },
+  "template": {
+    "loading": "Cargando invitación...",
+    "notFound": "Invitación no encontrada",
+    "notFoundMessage": "No pudimos encontrar esta invitación. Verifica que el enlace sea correcto.",
+    "tryAgain": "Intentar de nuevo",
+    "seeYouThere": "¡Nos vemos el {date} en {venue}!"
   }
 } 

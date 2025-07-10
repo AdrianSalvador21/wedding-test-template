@@ -265,6 +265,10 @@ export const mockWeddingMariaCarlos: WeddingData = {
       description: 'También puedes contribuir directamente a nuestra cuenta bancaria'
     }
   },
+  adultOnlyEvent: {
+    enabled: true,
+    message: 'Aunque adoramos a los pequeños de la familia, hemos decidido que nuestra celebración sea solo para adultos. Esperamos que puedan acompañarnos en esta noche especial.'
+  },
   theme: {
     primaryColor: '#8b7355',
     secondaryColor: '#a67c5a',
@@ -518,6 +522,9 @@ export const mockWeddingAnaLuis: WeddingData = {
       clabe: '987654321012345678',
       description: 'También puedes hacer tu aportación directamente a nuestra cuenta'
     }
+  },
+  adultOnlyEvent: {
+    enabled: false
   },
   theme: {
     primaryColor: '#8b5a2b',
