@@ -175,9 +175,18 @@ const Countdown = () => {
                   year: 'numeric'
                 })}
               </p>
-              <p className="text-base md:text-lg font-body font-light text-gray-600">
-                {formatTime(eventTime)}
-              </p>
+              {(() => {
+                // Lógica de prioridad: ceremonia religiosa > recepción > tiempo genérico
+                const ceremonyTime = weddingData?.event.ceremony?.time;
+                const receptionTime = weddingData?.event.reception?.time;
+                const displayTime = ceremonyTime || receptionTime || eventTime;
+                
+                return displayTime ? (
+                  <p className="text-base md:text-lg font-body font-light text-gray-600">
+                    {formatTime(displayTime)}
+                  </p>
+                ) : null;
+              })()}
             </div>
           </>
         )}

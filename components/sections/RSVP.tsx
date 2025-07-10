@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Heart, Send, Check, ChevronDown } from 'lucide-react';
+import { Send, Check, ChevronDown } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
@@ -74,8 +74,20 @@ const RSVP = () => {
 
   if (isSubmitted) {
     return (
-      <section id="rsvp" className="bg-gray-50">
+      <section 
+        id="rsvp" 
+        className="bg-gray-50 relative overflow-hidden"
+        style={getFloralBackgroundStyle(3, '160px')}
+      >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
+          {/* Título */}
+          <div className="text-center mb-12">
+            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
+            <p className="section-subtitle font-body">
+              {t('description')}
+            </p>
+          </div>
+
           <div className="max-w-md mx-auto text-center">
             <div className="bg-white rounded-2xl p-8 shadow-lg">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -85,7 +97,7 @@ const RSVP = () => {
                 {t('success')}
               </h2>
               <p className="text-text font-body">
-                ¡Nos vemos el {formatDate(weddingDate)} en {venueName}!
+                {t('seeYouThere').replace('{date}', formatDate(weddingDate)).replace('{venue}', venueName)}
               </p>
             </div>
           </div>
@@ -109,13 +121,6 @@ const RSVP = () => {
             <p className="section-subtitle font-body">
               {t('description')}
             </p>
-            
-            {/* Ornamento */}
-            <div className="flex items-center justify-center mt-8 mb-12">
-              <div className="w-16 h-px bg-accent" />
-              <Heart className="mx-4 w-6 h-6 text-accent" />
-              <div className="w-16 h-px bg-accent" />
-            </div>
           </div>
 
           <div className="max-w-lg mx-auto space-y-8">
@@ -190,7 +195,7 @@ const RSVP = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-primary text-white font-body font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
+                  className="w-full bg-gradient-primary text-white font-body font-medium py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -247,7 +252,6 @@ const RSVP = () => {
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle font-body">
               {t('description')}
             </p>
@@ -326,7 +330,7 @@ const RSVP = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-gradient-primary text-white font-body font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3"
+                      className="w-full bg-gradient-primary text-white font-body font-medium py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3"
                     >
                       {isSubmitting ? (
                         <>

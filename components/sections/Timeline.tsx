@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Clock, MapPin, Heart, Camera, Music, Utensils, ChevronDown, ChevronUp } from 'lucide-react';
+import { Clock, MapPin, Users, Calendar, Star, Circle, Sparkles, Gift, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
@@ -15,58 +15,56 @@ const Timeline = () => {
   const weddingData = useAppSelector(selectCurrentWedding);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Mapeo de iconos
-  const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
-    'MapPin': MapPin,
-    'Heart': Heart,
-    'Camera': Camera,
-    'Utensils': Utensils,
-    'Music': Music,
-    'Clock': Clock
+  // Pool de iconos genéricos neutros
+  const iconPool = [Clock, Users, Calendar, Star, Circle, MapPin, Sparkles, Gift];
+
+  // Función para asignar icono por índice
+  const getIconByIndex = (index: number) => {
+    return iconPool[index % iconPool.length];
   };
 
   // Datos dinámicos con fallback
-  const events = weddingData?.timeline?.length ? weddingData.timeline.map((event) => ({
+  const events = weddingData?.timeline?.length ? weddingData.timeline.map((event, index) => ({
     time: event.time,
     title: event.title,
     description: event.description,
-    icon: iconMap[event.icon] || MapPin
+    icon: getIconByIndex(index)
   })) : [
     {
       time: t('events.arrival.time'),
       title: t('events.arrival.title'),
       description: t('events.arrival.description'),
-      icon: MapPin
+      icon: getIconByIndex(0)
     },
     {
       time: t('events.ceremony.time'),
       title: t('events.ceremony.title'),
       description: t('events.ceremony.description'),
-      icon: Heart
+      icon: getIconByIndex(1)
     },
     {
       time: t('events.photos.time'),
       title: t('events.photos.title'),
       description: t('events.photos.description'),
-      icon: Camera
+      icon: getIconByIndex(2)
     },
     {
       time: t('events.cocktail.time'),
       title: t('events.cocktail.title'),
       description: t('events.cocktail.description'),
-      icon: Utensils
+      icon: getIconByIndex(3)
     },
     {
       time: t('events.reception.time'),
       title: t('events.reception.title'),
       description: t('events.reception.description'),
-      icon: Utensils
+      icon: getIconByIndex(4)
     },
     {
       time: t('events.party.time'),
       title: t('events.party.title'),
       description: t('events.party.description'),
-      icon: Music
+      icon: getIconByIndex(5)
     }
   ];
 
