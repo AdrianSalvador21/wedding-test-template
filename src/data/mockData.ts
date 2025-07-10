@@ -270,11 +270,7 @@ export const mockWeddingMariaCarlos: WeddingData = {
     message: 'Aunque adoramos a los pequeños de la familia, hemos decidido que nuestra celebración sea solo para adultos. Esperamos que puedan acompañarnos en esta noche especial.'
   },
   theme: {
-    primaryColor: '#8b7355',
-    secondaryColor: '#a67c5a',
-    accentColor: '#d4af8c',
-    fontPrimary: 'Playfair Display',
-    fontSecondary: 'Crimson Text'
+    id: 'classic'
   },
   languages: ['es', 'en'],
   defaultLanguage: 'es',
@@ -527,11 +523,7 @@ export const mockWeddingAnaLuis: WeddingData = {
     enabled: false
   },
   theme: {
-    primaryColor: '#8b5a2b',
-    secondaryColor: '#dda15e',
-    accentColor: '#f4e4bc',
-    fontPrimary: 'Playfair Display',
-    fontSecondary: 'Lora'
+    id: 'modern'
   },
   languages: ['es', 'en'],
   defaultLanguage: 'es',

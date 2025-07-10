@@ -1,0 +1,155 @@
+import { WeddingTheme, getTheme, classicTheme, ThemeId } from './themes';
+import { WeddingData } from '../src/types/wedding';
+
+// Función para crear un tema completo basado en los datos del servicio
+export const createWeddingTheme = (weddingData: WeddingData): WeddingTheme => {
+  const { theme } = weddingData;
+  
+  // Obtener el tema predefinido basado en el ID
+  if (['classic', 'romantic', 'modern', 'elegant'].includes(theme.id)) {
+    return getTheme(theme.id as ThemeId);
+  }
+  
+  // Si el ID no es reconocido, usar el tema classic como fallback
+  console.warn(`Tema desconocido: ${theme.id}. Usando tema classic como fallback.`);
+  return getTheme('classic');
+};
+
+// Función para generar Google Fonts URL basado en un tema
+export const generateGoogleFontsUrl = (theme: WeddingTheme): string => {
+  const fonts = [];
+  
+  if (theme.fonts.heading.family !== 'serif' && theme.fonts.heading.family !== 'sans-serif') {
+    const headingWeights = theme.fonts.heading.weights?.join(';') || '400;600;700';
+    fonts.push(`${theme.fonts.heading.family.replace(' ', '+')}:wght@${headingWeights}`);
+  }
+  
+  if (theme.fonts.body.family !== 'serif' && theme.fonts.body.family !== 'sans-serif' && 
+      theme.fonts.body.family !== theme.fonts.heading.family) {
+    const bodyWeights = theme.fonts.body.weights?.join(';') || '400;600;700';
+    fonts.push(`${theme.fonts.body.family.replace(' ', '+')}:wght@${bodyWeights}`);
+  }
+  
+  if (fonts.length === 0) return '';
+  
+  return `https://fonts.googleapis.com/css2?${fonts.map(font => `family=${font}`).join('&')}&display=swap`;
+};
+
+// Función para validar un tema
+export const validateTheme = (theme: Partial<WeddingTheme>): boolean => {
+  const required = ['id', 'name', 'colors', 'fonts', 'typography', 'shadows'];
+  
+  return required.every(field => theme[field as keyof WeddingTheme] !== undefined);
+};
+
+// Función para obtener colores de contraste
+export const getContrastColor = (hexColor: string): '#ffffff' | '#000000' => {
+  // Convertir hex a RGB
+  const r = parseInt(hexColor.slice(1, 3), 16);
+  const g = parseInt(hexColor.slice(3, 5), 16);
+  const b = parseInt(hexColor.slice(5, 7), 16);
+  
+  // Calcular luminancia
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  
+  return luminance > 0.5 ? '#000000' : '#ffffff';
+};
+
+// Función para crear un patrón de color hex con opacidad
+export const hexWithOpacity = (hex: string, opacity: number): string => {
+  const alpha = Math.round(opacity * 255);
+  return `${hex}${alpha.toString(16).padStart(2, '0')}`;
+};
+
+// Función para generar tema desde colores básicos
+export const generateThemeFromColors = (
+  primaryColor: string,
+  secondaryColor: string,
+  accentColor: string,
+  name: string = 'Custom Theme'
+): WeddingTheme => {
+  return {
+    id: 'custom',
+    name,
+    colors: {
+      primary: primaryColor,
+      secondary: secondaryColor,
+      accent: accentColor,
+      light: '#fafafa',
+      dark: '#1a1a1a',
+      text: '#333333',
+      border: '#e0e0e0',
+      background: '#ffffff',
+      muted: '#f5f5f5',
+      success: '#10b981',
+      warning: '#f59e0b',
+      error: '#ef4444',
+    },
+    gradients: {
+      primary: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`,
+      overlay: `linear-gradient(135deg, ${primaryColor}e6 0%, ${secondaryColor}cc 50%, ${accentColor}b3 100%)`,
+      background: 'linear-gradient(to bottom, #fafafa 0%, #f5f5f5 100%)',
+      accent: `linear-gradient(135deg, ${accentColor} 0%, ${secondaryColor} 100%)`,
+    },
+    fonts: {
+      heading: {
+        family: 'Playfair Display',
+        weights: [400, 600, 700],
+        fallback: 'serif',
+      },
+      body: {
+        family: 'Source Sans Pro',
+        weights: [400, 600, 700],
+        fallback: 'sans-serif',
+      },
+    },
+    typography: {
+      heroTitle: {
+        mobile: 'text-4xl',
+        desktop: 'text-7xl lg:text-8xl xl:text-9xl',
+      },
+      sectionTitle: {
+        mobile: 'text-2xl',
+        desktop: 'text-4xl lg:text-5xl',
+      },
+      subtitle: {
+        mobile: 'text-lg',
+        desktop: 'text-xl lg:text-2xl',
+      },
+      body: {
+        mobile: 'text-base',
+        desktop: 'text-lg',
+      },
+    },
+    shadows: {
+      sm: `0 4px 20px ${primaryColor}1a`,
+      md: `0 8px 30px ${primaryColor}26`,
+      lg: `0 12px 40px ${primaryColor}33`,
+      xl: `0 20px 60px ${primaryColor}40`,
+    },
+    patterns: {
+      primary: 'custom-pattern-1',
+      secondary: 'custom-pattern-2',
+      accent: 'custom-pattern-3',
+      subtle: 'custom-pattern-4',
+    },
+    spacing: {
+      section: {
+        mobile: 'py-12 px-8',
+        desktop: 'py-16 px-12',
+      },
+      container: {
+        mobile: 'px-6',
+        desktop: 'px-8',
+      },
+    },
+    effects: {
+      blur: 'backdrop-blur-sm',
+      opacity: {
+        light: 0.7,
+        medium: 0.8,
+        heavy: 0.9,
+      },
+    },
+  };
+}; 
