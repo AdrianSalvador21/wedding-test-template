@@ -69,6 +69,9 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
 
   // Crear tema basado en los datos del servicio
   const weddingTheme = createWeddingTheme(currentWedding);
+  
+  // Debug: mostrar tema creado
+  console.log('🎨 Tema creado para boda:', currentWedding.id, 'tema:', weddingTheme.id, weddingTheme.name);
 
   // Renderizar la invitación completa
   return (

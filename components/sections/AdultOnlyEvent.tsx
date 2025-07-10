@@ -4,11 +4,12 @@ import React from 'react';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useThemePatterns } from '../../lib/theme-context';
 
 const AdultOnlyEvent = () => {
   const { t } = useTranslations('adultOnlyEvent');
   const weddingData = useAppSelector(selectCurrentWedding);
+  const { getBackgroundStyle } = useThemePatterns();
 
   // Si no está habilitado, no mostrar la sección
   if (!weddingData?.adultOnlyEvent?.enabled) {
@@ -21,7 +22,7 @@ const AdultOnlyEvent = () => {
   return (
     <section 
       className="bg-gray-50 relative overflow-hidden"
-      style={getFloralBackgroundStyle(2, '180px')}
+      style={getBackgroundStyle(2, '180px')}
     >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         {/* Título */}

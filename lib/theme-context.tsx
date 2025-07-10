@@ -1,7 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { WeddingTheme, ThemeId, getTheme, generateThemeCSS, classicTheme } from './themes';
+import { WeddingTheme, ThemeId, getTheme, generateThemeCSS } from './themes';
+import { getThemeBackgroundStyle } from './theme-utils';
 
 interface ThemeContextType {
   currentTheme: WeddingTheme;
@@ -43,14 +44,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Aplicar tema personalizado del servicio si existe
-  useEffect(() => {
-    if (weddingTheme) {
-      setCurrentTheme(weddingTheme);
-      applyTheme(weddingTheme);
-    }
-  }, [weddingTheme]);
-
   // Función para aplicar un tema
   const applyTheme = (theme: WeddingTheme) => {
     const css = generateThemeCSS(theme);
@@ -69,6 +62,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     
     // Cargar Google Fonts si es necesario
     loadGoogleFonts(theme);
+    
+    // Debug: mostrar tema aplicado
+    console.log('🎨 Tema aplicado:', theme.id, theme.name);
   };
 
   // Función para cargar Google Fonts
@@ -102,10 +98,17 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     return isMobile ? mobileValue : desktopValue;
   };
 
-  // Aplicar tema inicial al montar
+  // Aplicar tema personalizado del servicio si existe, sino el inicial
   useEffect(() => {
-    applyTheme(currentTheme);
-  }, []);
+    if (weddingTheme) {
+      console.log('🎯 Aplicando tema personalizado:', weddingTheme.id, weddingTheme.name);
+      setCurrentTheme(weddingTheme);
+      applyTheme(weddingTheme);
+    } else {
+      console.log('🎨 Aplicando tema inicial:', currentTheme.id, currentTheme.name);
+      applyTheme(currentTheme);
+    }
+  }, [weddingTheme, currentTheme]);
 
   const contextValue: ThemeContextType = {
     currentTheme,
@@ -209,5 +212,17 @@ export const getThemeUtilities = (theme: WeddingTheme) => {
       lg: theme.shadows.lg,
       xl: theme.shadows.xl,
     },
+  };
+};
+
+// Hook para obtener patrones de fondo según el tema actual
+export const useThemePatterns = () => {
+  const { currentTheme } = useTheme();
+  
+  return {
+    getBackgroundStyle: (patternNumber: number | string, size: string = '400px') => {
+      return getThemeBackgroundStyle(currentTheme.id, patternNumber, size);
+    },
+    currentThemeId: currentTheme.id,
   };
 }; 

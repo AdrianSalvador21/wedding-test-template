@@ -6,7 +6,7 @@ import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useThemePatterns } from '../../lib/theme-context';
 
 interface TimeLeft {
   days: number;
@@ -18,6 +18,7 @@ interface TimeLeft {
 const Countdown = () => {
   const { t, currentLanguage } = useTranslations('countdown');
   const weddingData = useAppSelector(selectCurrentWedding);
+  const { getBackgroundStyle } = useThemePatterns();
   
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
@@ -94,7 +95,7 @@ const Countdown = () => {
       id="countdown" 
       className="bg-gray-50 relative overflow-hidden"
       style={{
-        ...getFloralBackgroundStyle(1, '200px'),
+        ...getBackgroundStyle(1, '200px'),
         backgroundSize: '1388px 909px'
       }}
           >

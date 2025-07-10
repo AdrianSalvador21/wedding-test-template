@@ -7,11 +7,13 @@ import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
+import { useTheme } from '../../lib/theme-context';
 
 const Footer = () => {
   const { t } = useTranslations('footer');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
+  const { currentTheme } = useTheme();
 
   // Datos dinámicos con fallbacks
   const couple = weddingData?.couple;
@@ -26,6 +28,13 @@ const Footer = () => {
   const coupleEmail = couple?.coupleEmail || 'maria.carlos@email.com';
   const coupleQuote = couple?.quote || t('quote');
   const hashtag = couple?.hashtag || '#MaríaYCarlos2025';
+
+  // Clases condicionales basadas en el tema
+  const isLuxuryTheme = currentTheme.id === 'luxury';
+  const footerBgClass = isLuxuryTheme ? 'footer-theme-bg' : 'bg-gradient-to-br from-primary via-secondary to-accent';
+  const footerTextClass = isLuxuryTheme ? 'footer-theme-text' : 'text-white';
+  const footerAccentClass = isLuxuryTheme ? 'footer-theme-accent' : 'text-accent';
+  const hoverClass = isLuxuryTheme ? 'hover-theme-accent' : 'hover:text-accent';
 
   const handleInstagramClick = () => {
     if (brideInstagram) {
@@ -59,7 +68,7 @@ const Footer = () => {
   // Versión estática para móvil
   if (isMobile) {
     return (
-      <footer className="bg-gradient-to-br from-primary via-secondary to-accent text-white ">
+      <footer className={`${footerBgClass} ${footerTextClass}`}>
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-8 sm:">
           <div className="text-center space-y-6 max-w-sm mx-auto">
             {/* Nombres de la pareja */}
@@ -122,7 +131,7 @@ const Footer = () => {
   // Loading state
   if (!isLoaded) {
     return (
-      <footer className="bg-primary text-white ">
+      <footer className={`${footerBgClass} ${footerTextClass}`}>
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-8 sm:">
           <div className="animate-pulse space-y-8 max-w-4xl mx-auto">
             <div className="h-8 bg-white/20 rounded w-64 mx-auto" />
@@ -140,7 +149,7 @@ const Footer = () => {
 
   // Versión para desktop con animaciones CSS
   return (
-    <footer className="bg-primary text-white ">
+    <footer className={`${footerBgClass} ${footerTextClass}`}>
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-8 sm:">
         <div className="max-w-4xl mx-auto">
           
@@ -151,9 +160,9 @@ const Footer = () => {
             </h3>
             
             <div className="flex items-center justify-center space-x-4 mb-6">
-              <div className="w-12 h-px bg-accent opacity-60"></div>
-              <Heart className="w-5 h-5 text-accent" />
-              <div className="w-12 h-px bg-accent opacity-60"></div>
+              <div className={`w-12 h-px ${isLuxuryTheme ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
+              <Heart className={`w-5 h-5 ${footerAccentClass}`} />
+              <div className={`w-12 h-px ${isLuxuryTheme ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
             </div>
 
             <p className="text-white/80 font-body mb-8 max-w-md mx-auto italic">
@@ -165,7 +174,7 @@ const Footer = () => {
             </p>
 
             {hashtag && (
-              <p className="text-accent text-lg font-body font-medium mt-4">
+              <p className={`${footerAccentClass} text-lg font-body font-medium mt-4`}>
                 {hashtag}
               </p>
             )}
@@ -175,7 +184,7 @@ const Footer = () => {
           <div className="grid md:grid-cols-3 gap-8 text-center mb-12 animation-delay-400">
             <button
               onClick={handleEmailClick}
-              className="flex items-center justify-center space-x-3 hover:text-accent transition-colors"
+              className={`flex items-center justify-center space-x-3 ${hoverClass} transition-colors`}
             >
               <Mail className="w-4 h-4" />
               <span className="text-sm font-body">{coupleEmail}</span>
@@ -183,7 +192,7 @@ const Footer = () => {
             <div className="flex items-center justify-center space-x-4">
               <button
                 onClick={() => handleWhatsAppClick(bridPhone)}
-                className="flex items-center space-x-2 hover:text-accent transition-colors"
+                className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
               >
                 <Phone className="w-4 h-4" />
                 <span className="text-sm font-body">{brideName}</span>
@@ -191,7 +200,7 @@ const Footer = () => {
               <span className="text-white/40">|</span>
               <button
                 onClick={() => handleWhatsAppClick(groomPhone)}
-                className="flex items-center space-x-2 hover:text-accent transition-colors"
+                className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
               >
                 <Phone className="w-4 h-4" />
                 <span className="text-sm font-body">{groomName}</span>

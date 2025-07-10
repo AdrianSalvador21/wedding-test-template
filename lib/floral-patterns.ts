@@ -355,11 +355,209 @@ export const getFloralBackgroundStyle = (patternNumber: 1 | 2 | 3 | 4 | 5, size:
   };
 };
 
+// Patrones geométricos luxury para el tema Luxury Navy
+export const luxuryPatterns = {
+  // Patrón geométrico 1: Hexágonos elegantes
+  luxuryGeometric1: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="luxuryPattern1" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+      <!-- Hexágono principal -->
+      <g transform="translate(60,60)">
+        <polygon points="0,-20 17.32,-10 17.32,10 0,20 -17.32,10 -17.32,-10" 
+                 fill="none" 
+                 stroke="#1e3a8a" 
+                 stroke-width="0.5" 
+                 opacity="0.08"/>
+        <polygon points="0,-15 12.99,-7.5 12.99,7.5 0,15 -12.99,7.5 -12.99,-7.5" 
+                 fill="none" 
+                 stroke="#3b82f6" 
+                 stroke-width="0.3" 
+                 opacity="0.06"/>
+        <polygon points="0,-10 8.66,-5 8.66,5 0,10 -8.66,5 -8.66,-5" 
+                 fill="#f59e0b" 
+                 opacity="0.03"/>
+      </g>
+      
+      <!-- Hexágonos esquinas -->
+      <g transform="translate(0,0)">
+        <polygon points="0,-12 10.39,-6 10.39,6 0,12 -10.39,6 -10.39,-6" 
+                 fill="none" 
+                 stroke="#1e3a8a" 
+                 stroke-width="0.3" 
+                 opacity="0.06"/>
+      </g>
+      
+      <g transform="translate(120,0)">
+        <polygon points="0,-12 10.39,-6 10.39,6 0,12 -10.39,6 -10.39,-6" 
+                 fill="none" 
+                 stroke="#1e3a8a" 
+                 stroke-width="0.3" 
+                 opacity="0.06"/>
+      </g>
+      
+      <g transform="translate(60,120)">
+        <polygon points="0,-12 10.39,-6 10.39,6 0,12 -10.39,6 -10.39,-6" 
+                 fill="none" 
+                 stroke="#1e3a8a" 
+                 stroke-width="0.3" 
+                 opacity="0.06"/>
+      </g>
+      
+      <!-- Detalles dorados -->
+      <circle cx="30" cy="30" r="1.5" fill="#f59e0b" opacity="0.08"/>
+      <circle cx="90" cy="30" r="1.5" fill="#f59e0b" opacity="0.08"/>
+      <circle cx="30" cy="90" r="1.5" fill="#f59e0b" opacity="0.08"/>
+      <circle cx="90" cy="90" r="1.5" fill="#f59e0b" opacity="0.08"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#luxuryPattern1)"/>
+</svg>
+  `)}`,
+
+  // Patrón geométrico 2: Líneas diagonales elegantes
+  luxuryGeometric2: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="luxuryPattern2" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <!-- Líneas diagonales principales -->
+      <line x1="0" y1="0" x2="80" y2="80" stroke="#1e3a8a" stroke-width="0.5" opacity="0.06"/>
+      <line x1="0" y1="20" x2="80" y2="100" stroke="#1e3a8a" stroke-width="0.5" opacity="0.06"/>
+      <line x1="0" y1="40" x2="80" y2="120" stroke="#1e3a8a" stroke-width="0.5" opacity="0.06"/>
+      <line x1="0" y1="60" x2="80" y2="140" stroke="#1e3a8a" stroke-width="0.5" opacity="0.06"/>
+      <line x1="0" y1="80" x2="80" y2="160" stroke="#1e3a8a" stroke-width="0.5" opacity="0.06"/>
+      
+      <!-- Líneas diagonales secundarias -->
+      <line x1="0" y1="10" x2="80" y2="90" stroke="#3b82f6" stroke-width="0.3" opacity="0.04"/>
+      <line x1="0" y1="30" x2="80" y2="110" stroke="#3b82f6" stroke-width="0.3" opacity="0.04"/>
+      <line x1="0" y1="50" x2="80" y2="130" stroke="#3b82f6" stroke-width="0.3" opacity="0.04"/>
+      <line x1="0" y1="70" x2="80" y2="150" stroke="#3b82f6" stroke-width="0.3" opacity="0.04"/>
+      
+      <!-- Detalles dorados -->
+      <circle cx="20" cy="20" r="1" fill="#f59e0b" opacity="0.08"/>
+      <circle cx="60" cy="20" r="1" fill="#f59e0b" opacity="0.08"/>
+      <circle cx="20" cy="60" r="1" fill="#f59e0b" opacity="0.08"/>
+      <circle cx="60" cy="60" r="1" fill="#f59e0b" opacity="0.08"/>
+      
+      <!-- Líneas de acento -->
+      <line x1="40" y1="0" x2="40" y2="80" stroke="#f59e0b" stroke-width="0.2" opacity="0.05"/>
+      <line x1="0" y1="40" x2="80" y2="40" stroke="#f59e0b" stroke-width="0.2" opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#luxuryPattern2)"/>
+</svg>
+  `)}`,
+
+  // Patrón ornamental 1: Ornamentos clásicos
+  luxuryOrnate1: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="luxuryPattern3" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- Ornamento central -->
+      <g transform="translate(50,50)">
+        <!-- Cruz ornamental -->
+        <path d="M-15,0 L-5,-3 L0,-8 L5,-3 L15,0 L5,3 L0,8 L-5,3 Z" 
+              fill="#1e3a8a" 
+              opacity="0.08"/>
+        <path d="M-10,0 L-3,-2 L0,-5 L3,-2 L10,0 L3,2 L0,5 L-3,2 Z" 
+              fill="#f59e0b" 
+              opacity="0.06"/>
+        
+        <!-- Círculos concéntricos -->
+        <circle cx="0" cy="0" r="12" fill="none" stroke="#3b82f6" stroke-width="0.5" opacity="0.05"/>
+        <circle cx="0" cy="0" r="8" fill="none" stroke="#1e3a8a" stroke-width="0.3" opacity="0.06"/>
+        <circle cx="0" cy="0" r="4" fill="#f59e0b" opacity="0.04"/>
+        
+        <!-- Detalles en los extremos -->
+        <circle cx="20" cy="0" r="2" fill="#3b82f6" opacity="0.06"/>
+        <circle cx="-20" cy="0" r="2" fill="#3b82f6" opacity="0.06"/>
+        <circle cx="0" cy="20" r="2" fill="#3b82f6" opacity="0.06"/>
+        <circle cx="0" cy="-20" r="2" fill="#3b82f6" opacity="0.06"/>
+      </g>
+      
+      <!-- Ornamentos esquinas -->
+      <g transform="translate(0,0)">
+        <path d="M0,0 L8,0 L8,8 L0,8 Z" fill="none" stroke="#1e3a8a" stroke-width="0.3" opacity="0.04"/>
+        <circle cx="4" cy="4" r="1.5" fill="#f59e0b" opacity="0.05"/>
+      </g>
+      
+      <g transform="translate(100,0)">
+        <path d="M0,0 L-8,0 L-8,8 L0,8 Z" fill="none" stroke="#1e3a8a" stroke-width="0.3" opacity="0.04"/>
+        <circle cx="-4" cy="4" r="1.5" fill="#f59e0b" opacity="0.05"/>
+      </g>
+      
+      <g transform="translate(0,100)">
+        <path d="M0,0 L8,0 L8,-8 L0,-8 Z" fill="none" stroke="#1e3a8a" stroke-width="0.3" opacity="0.04"/>
+        <circle cx="4" cy="-4" r="1.5" fill="#f59e0b" opacity="0.05"/>
+      </g>
+      
+      <g transform="translate(100,100)">
+        <path d="M0,0 L-8,0 L-8,-8 L0,-8 Z" fill="none" stroke="#1e3a8a" stroke-width="0.3" opacity="0.04"/>
+        <circle cx="-4" cy="-4" r="1.5" fill="#f59e0b" opacity="0.05"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#luxuryPattern3)"/>
+</svg>
+  `)}`,
+
+  // Patrón sutil 1: Puntos elegantes
+  luxurySubtle1: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="luxuryPattern4" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <!-- Puntos principales -->
+      <circle cx="30" cy="30" r="2" fill="#1e3a8a" opacity="0.06"/>
+      <circle cx="30" cy="30" r="1" fill="#f59e0b" opacity="0.08"/>
+      
+      <!-- Puntos secundarios -->
+      <circle cx="15" cy="15" r="1" fill="#3b82f6" opacity="0.04"/>
+      <circle cx="45" cy="15" r="1" fill="#3b82f6" opacity="0.04"/>
+      <circle cx="15" cy="45" r="1" fill="#3b82f6" opacity="0.04"/>
+      <circle cx="45" cy="45" r="1" fill="#3b82f6" opacity="0.04"/>
+      
+      <!-- Puntos terciarios -->
+      <circle cx="0" cy="0" r="0.5" fill="#1e3a8a" opacity="0.03"/>
+      <circle cx="60" cy="0" r="0.5" fill="#1e3a8a" opacity="0.03"/>
+      <circle cx="0" cy="60" r="0.5" fill="#1e3a8a" opacity="0.03"/>
+      <circle cx="60" cy="60" r="0.5" fill="#1e3a8a" opacity="0.03"/>
+      
+      <!-- Líneas sutiles -->
+      <line x1="30" y1="20" x2="30" y2="40" stroke="#f59e0b" stroke-width="0.2" opacity="0.03"/>
+      <line x1="20" y1="30" x2="40" y2="30" stroke="#f59e0b" stroke-width="0.2" opacity="0.03"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#luxuryPattern4)"/>
+</svg>
+  `)}`,
+};
+
+// Función para obtener patrones luxury
+export const getLuxuryPattern = (patternName: string) => {
+  const patternMap: Record<string, string> = {
+    'luxury-geometric-1': luxuryPatterns.luxuryGeometric1,
+    'luxury-geometric-2': luxuryPatterns.luxuryGeometric2,
+    'luxury-ornate-1': luxuryPatterns.luxuryOrnate1,
+    'luxury-subtle-1': luxuryPatterns.luxurySubtle1,
+  };
+  
+  return patternMap[patternName] || floralPatterns.pattern1;
+};
+
+// Función para obtener estilos de fondo para patrones luxury
+export const getLuxuryBackgroundStyle = (patternName: string, size: string = '400px') => {
+  const pattern = getLuxuryPattern(patternName);
+  
+  return {
+    backgroundImage: `url('${pattern}')`,
+    backgroundSize: size,
+    backgroundRepeat: 'repeat',
+    backgroundPosition: '0% 0%',
+  };
+};
+
 // Función de prueba para verificar que los patrones funcionan
 export const testPattern = () => {
-  console.log('Pattern 1 length:', floralPatterns.pattern1.length);
-  console.log('Pattern 2 length:', floralPatterns.pattern2.length);
-  console.log('Pattern 3 length:', floralPatterns.pattern3.length);
-  console.log('Pattern 4 length:', floralPatterns.pattern4.length);
-  console.log('Pattern 5 length:', floralPatterns.pattern5.length);
+  console.log('Patrones florales cargados:', Object.keys(floralPatterns));
+  console.log('Patrones luxury cargados:', Object.keys(luxuryPatterns));
 }; 

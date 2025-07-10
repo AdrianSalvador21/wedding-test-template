@@ -427,12 +427,99 @@ export const elegantTheme: WeddingTheme = {
   },
 };
 
+// Tema Luxury Champagne
+export const luxuryTheme: WeddingTheme = {
+  id: 'luxury',
+  name: 'Luxury Champagne',
+  colors: {
+    primary: '#8b7d6b',     // Bronce champagne elegante
+    secondary: '#a69788',   // Champagne suave
+    accent: '#c8b99c',      // Champagne claro
+    light: '#faf9f7',       // Champagne muy claro
+    dark: '#6b5d4f',        // Marrón sofisticado
+    text: '#5a4f45',        // Marrón cálido oscuro
+    border: '#e6ddd4',      // Beige claro
+    background: '#ffffff',   // Blanco puro
+    muted: '#f7f5f2',       // Beige muy claro
+    success: '#7c8471',     // Verde sage
+    warning: '#b8860b',     // Dorado sutil
+    error: '#a0522d',       // Sienna elegante
+  },
+  gradients: {
+    primary: 'linear-gradient(135deg, #8b7d6b 0%, #a69788 100%)',
+    overlay: 'linear-gradient(135deg, rgba(139, 125, 107, 0.9) 0%, rgba(166, 151, 136, 0.8) 50%, rgba(200, 185, 156, 0.7) 100%)',
+    background: 'linear-gradient(to bottom, #faf9f7 0%, #f7f5f2 100%)',
+    accent: 'linear-gradient(135deg, #c8b99c 0%, #b8a687 100%)',
+  },
+  fonts: {
+    heading: {
+      family: 'Playfair Display',
+      weights: [400, 600, 700],
+      fallback: 'serif',
+    },
+    body: {
+      family: 'Inter',
+      weights: [400, 500, 600],
+      fallback: 'sans-serif',
+    },
+  },
+  typography: {
+    heroTitle: {
+      mobile: 'text-4xl',
+      desktop: 'text-7xl lg:text-8xl xl:text-9xl',
+    },
+    sectionTitle: {
+      mobile: 'text-3xl',
+      desktop: 'text-5xl lg:text-6xl',
+    },
+    subtitle: {
+      mobile: 'text-xl',
+      desktop: 'text-2xl lg:text-3xl',
+    },
+    body: {
+      mobile: 'text-base',
+      desktop: 'text-lg',
+    },
+  },
+  shadows: {
+    sm: '0 4px 20px rgba(139, 125, 107, 0.1)',
+    md: '0 8px 30px rgba(139, 125, 107, 0.15)',
+    lg: '0 12px 40px rgba(139, 125, 107, 0.2)',
+    xl: '0 20px 60px rgba(139, 125, 107, 0.25)',
+  },
+  patterns: {
+    primary: 'luxury-geometric-1',
+    secondary: 'luxury-geometric-2',
+    accent: 'luxury-ornate-1',
+    subtle: 'luxury-subtle-1',
+  },
+  spacing: {
+    section: {
+      mobile: 'py-14 px-8',
+      desktop: 'py-18 px-12',
+    },
+    container: {
+      mobile: 'px-6',
+      desktop: 'px-10',
+    },
+  },
+  effects: {
+    blur: 'backdrop-blur-lg',
+    opacity: {
+      light: 0.8,
+      medium: 0.9,
+      heavy: 0.95,
+    },
+  },
+};
+
 // Colección de temas disponibles
 export const availableThemes = {
   classic: classicTheme,
   romantic: romanticTheme,
   modern: modernTheme,
   elegant: elegantTheme,
+  luxury: luxuryTheme,
 } as const;
 
 export type ThemeId = keyof typeof availableThemes;

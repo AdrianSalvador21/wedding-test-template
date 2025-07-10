@@ -1,12 +1,14 @@
-import { WeddingTheme, getTheme, classicTheme, ThemeId } from './themes';
+import { WeddingTheme, getTheme, ThemeId } from './themes';
 import { WeddingData } from '../src/types/wedding';
+import { getFloralBackgroundStyle } from './floral-patterns';
+import { getLuxuryBackgroundStyle } from './floral-patterns';
 
 // Función para crear un tema completo basado en los datos del servicio
 export const createWeddingTheme = (weddingData: WeddingData): WeddingTheme => {
   const { theme } = weddingData;
   
   // Obtener el tema predefinido basado en el ID
-  if (['classic', 'romantic', 'modern', 'elegant'].includes(theme.id)) {
+  if (['classic', 'romantic', 'modern', 'elegant', 'luxury'].includes(theme.id)) {
     return getTheme(theme.id as ThemeId);
   }
   
@@ -152,4 +154,36 @@ export const generateThemeFromColors = (
       },
     },
   };
+};
+
+// Función universal para obtener patrones de fondo según el tema
+export const getThemeBackgroundStyle = (
+  themeId: string | undefined,
+  patternNumber: number | string,
+  size: string = '400px'
+) => {
+  // Si es el tema luxury, usar patrones luxury
+  if (themeId === 'luxury') {
+    // Mapear números de patrón a nombres de patrones luxury
+    const luxuryPatternMap: Record<number, string> = {
+      1: 'luxury-geometric-1',
+      2: 'luxury-geometric-2',
+      3: 'luxury-ornate-1',
+      4: 'luxury-subtle-1',
+      5: 'luxury-geometric-1', // Repetir para más variedad
+    };
+    
+    const patternName = typeof patternNumber === 'number' 
+      ? luxuryPatternMap[patternNumber] || 'luxury-geometric-1'
+      : patternNumber;
+    
+    return getLuxuryBackgroundStyle(patternName, size);
+  }
+  
+  // Para todos los demás temas, usar patrones florales
+  const floralPatternNumber = typeof patternNumber === 'string' 
+    ? parseInt(patternNumber) || 1
+    : patternNumber;
+  
+  return getFloralBackgroundStyle(floralPatternNumber as 1 | 2 | 3 | 4 | 5, size);
 }; 

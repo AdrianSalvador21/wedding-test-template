@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 import { useAppSelector } from '../src/store/hooks';
 import { selectCurrentWedding } from '../src/store/slices/weddingSlice';
 import { getMockInvitation } from '../src/data/mockInvitations';
-import { getFloralBackgroundStyle } from '../lib/floral-patterns';
+import { useThemePatterns, useTheme } from '../lib/theme-context';
 import { useTranslations } from '../lib/translations';
 import type { WeddingInvitation } from '../src/types/wedding';
 
@@ -21,6 +21,14 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
   const currentWedding = useAppSelector(selectCurrentWedding);
   const [invitation, setInvitation] = useState<WeddingInvitation | null>(null);
   const { t } = useTranslations('invitationOverlay');
+  const { getBackgroundStyle } = useThemePatterns();
+  const { currentTheme } = useTheme();
+
+  // Clases condicionales basadas en el tema
+  const isLuxuryTheme = currentTheme.id === 'luxury';
+  const buttonClasses = isLuxuryTheme 
+    ? 'w-full btn-theme-primary font-body font-medium py-3 px-6 rounded-xl transition-all duration-300 text-sm tracking-wide'
+    : 'w-full bg-stone-600 text-white font-body font-medium py-3 px-6 rounded-xl hover:bg-stone-700 transition-all duration-300 text-sm tracking-wide';
 
   useEffect(() => {
     // Obtener la invitación específica
@@ -99,7 +107,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
             <div 
               className="h-screen md:h-auto flex flex-col justify-center items-center p-6 md:p-8 relative overflow-hidden"
               style={{
-                ...getFloralBackgroundStyle(5, '500px'),
+                ...getBackgroundStyle(5, '500px'),
                 backgroundColor: '#f8f6f3'
               }}
             >
@@ -146,7 +154,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleClose}
-                    className="w-full bg-stone-600 text-white font-body font-medium py-3 px-6 rounded-xl hover:bg-stone-700 transition-all duration-300 text-sm tracking-wide"
+                    className={buttonClasses}
                   >
                     {t('openInvitation')}
                   </motion.button>
@@ -184,7 +192,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                 <div 
                   className="h-8 bg-gradient-to-b from-white to-stone-50 relative overflow-hidden"
                   style={{
-                    ...getFloralBackgroundStyle(4, '60px'),
+                    ...getBackgroundStyle(4, '60px'),
                   }}
                 >
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-px bg-stone-200"></div>

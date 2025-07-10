@@ -3,12 +3,13 @@
 import { useWedding } from '../../src/store/hooks';
 import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
-import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
 
 export default function GiftRegistry() {
   const { t } = useTranslations('giftRegistry');
   const { currentWedding } = useWedding();
+  const { getBackgroundStyle } = useThemePatterns();
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isBankExpanded, setIsBankExpanded] = useState(false);
   const [isRegistryExpanded, setIsRegistryExpanded] = useState(false);
@@ -29,7 +30,7 @@ export default function GiftRegistry() {
     <section 
       id="gift-registry" 
       className="py-12 bg-gray-50 mb-12 relative overflow-hidden"
-      style={getFloralBackgroundStyle(1, '200px')}
+      style={getBackgroundStyle(1, '200px')}
     >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         {/* Título */}

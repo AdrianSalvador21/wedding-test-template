@@ -1,5 +1,5 @@
 import { WeddingInvitation, GuestInfo } from '../types/wedding';
-import { mockWeddingMariaCarlos, mockWeddingAnaLuis } from './mockData';
+import { mockWeddingMariaCarlos, mockWeddingAnaLuis, mockWeddingLuxury } from './mockData';
 
 // Mocks de invitados para María & Carlos
 export const mockGuestsMariaCarlos: GuestInfo[] = [
@@ -121,6 +121,87 @@ export const mockGuestsAnaLuis: GuestInfo[] = [
   }
 ];
 
+// Mocks de invitados para Isabella & Alexander (tema luxury)
+export const mockGuestsLuxury: GuestInfo[] = [
+  {
+    id: 'guest-201',
+    name: 'Victoria Montecarlo',
+    email: 'victoria.montecarlo@email.com',
+    phone: '+52 646 200-3000',
+    allowedGuests: 2,
+    guestType: 'close_family',
+    table: 'Mesa VIP',
+    specialMessage: 'Victoria, vuestra elegancia y sofisticación han sido una inspiración constante. Será un honor teneros en nuestro día especial.',
+    isConfirmed: false,
+    notes: 'Madrina de Isabella - Familia VIP'
+  },
+  {
+    id: 'guest-202',
+    name: 'Maximilian von Habsburg',
+    email: 'max.habsburg@email.com',
+    phone: '+52 646 200-3001',
+    allowedGuests: 2,
+    guestType: 'close_family',
+    table: 'Mesa VIP',
+    specialMessage: 'Maximilian, vuestra amistad desde París ha sido invaluable. Esperamos celebrar juntos esta nueva etapa.',
+    isConfirmed: true,
+    confirmedGuests: 2,
+    notes: 'Padrino de Alexander - Amigo de París'
+  },
+  {
+    id: 'guest-203',
+    name: 'Alejandro Vega',
+    email: 'alejandro.vega@email.com',
+    phone: '+52 646 200-3002',
+    allowedGuests: 1,
+    guestType: 'friends',
+    table: 'Mesa 3',
+    specialMessage: 'Alejandro, vuestra presencia añadirá distinción a nuestra celebración. ¡Os esperamos con gran expectación!',
+    isConfirmed: false,
+    notes: 'Amigo común - Empresario'
+  },
+  {
+    id: 'guest-204',
+    name: 'Familia Rossi',
+    email: 'famiglia.rossi@email.com',
+    phone: '+52 646 200-3003',
+    allowedGuests: 4,
+    guestType: 'family',
+    table: 'Mesa 1',
+    specialMessage: 'Querida famiglia, vuestro amor y tradiciones italianas han enriquecido nuestra historia. ¡Será mágico teneros con nosotros!',
+    dietaryRestrictions: ['sin lactosa'],
+    isConfirmed: true,
+    confirmedGuests: 4,
+    notes: 'Familia italiana de Isabella'
+  },
+  {
+    id: 'guest-205',
+    name: 'Dr. Catherine Morrison',
+    email: 'catherine.morrison@email.com',
+    phone: '+52 646 200-3004',
+    allowedGuests: 2,
+    guestType: 'work',
+    table: 'Mesa 5',
+    specialMessage: 'Dr. Morrison, vuestra mentoría ha sido fundamental en nuestro crecimiento profesional. Será un privilegio teneros en nuestra boda.',
+    isConfirmed: false,
+    notes: 'Mentora académica - Profesora de la Sorbona'
+  },
+  {
+    id: 'guest-206',
+    name: 'Conde Eduardo de Braganza',
+    email: 'conde.braganza@email.com',
+    phone: '+52 646 200-3005',
+    allowedGuests: 2,
+    guestType: 'vip',
+    table: 'Mesa Principal',
+    specialMessage: 'Estimado Conde, vuestra amistad y sabiduría han sido una bendición. Esperamos que honréis nuestra celebración con vuestra presencia.',
+    dietaryRestrictions: ['vegetariano'],
+    isConfirmed: true,
+    confirmedGuests: 2,
+    notes: 'Invitado VIP - Aristocracia europea'
+  }
+];
+
 // Mocks de invitaciones completas
 export const mockInvitationMariaCarlos: WeddingInvitation[] = mockGuestsMariaCarlos.map(guest => ({
   wedding: mockWeddingMariaCarlos,
@@ -136,10 +217,18 @@ export const mockInvitationAnaLuis: WeddingInvitation[] = mockGuestsAnaLuis.map(
   updatedAt: '2025-01-01T00:00:00.000Z'
 }));
 
+export const mockInvitationLuxury: WeddingInvitation[] = mockGuestsLuxury.map(guest => ({
+  wedding: mockWeddingLuxury,
+  guest,
+  createdAt: '2025-01-01T00:00:00.000Z',
+  updatedAt: '2025-01-01T00:00:00.000Z'
+}));
+
 // Mapa de invitaciones disponibles
 export const mockInvitations: Record<string, WeddingInvitation[]> = {
   'maria-carlos-2025': mockInvitationMariaCarlos,
-  'ana-luis-2025': mockInvitationAnaLuis
+  'ana-luis-2025': mockInvitationAnaLuis,
+  'isabella-alexander-2025': mockInvitationLuxury
 };
 
 // Función para obtener invitación específica

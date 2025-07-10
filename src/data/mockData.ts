@@ -532,10 +532,281 @@ export const mockWeddingAnaLuis: WeddingData = {
   updatedAt: '2025-01-01T00:00:00.000Z'
 };
 
+// Mock wedding con tema Luxury Navy
+export const mockWeddingLuxury: WeddingData = {
+  id: 'isabella-alexander-2025',
+  couple: {
+    bride: {
+      name: 'Isabella',
+      fullName: 'Isabella Victoria Rossi',
+      phone: '+52 646 100-2000',
+      email: 'isabella@example.com'
+    },
+    groom: {
+      name: 'Alexander',
+      fullName: 'Alexander James Montgomery',
+      phone: '+52 646 100-2001',
+      email: 'alexander@example.com'
+    },
+    coupleEmail: 'isabella.alexander@example.com',
+    hashtag: '#IsabellaAndAlexander2025',
+    story: 'Isabella y Alexander se conocieron en París durante un intercambio académico en la Sorbona. Cinco años después, con carreras consolidadas en diferentes continentes, decidieron que el amor no conoce fronteras. Su historia es de elegancia, sofisticación y una conexión que trasciende océanos.',
+    quote: 'El amor no conoce fronteras'
+  },
+  event: {
+    weddingId: 'isabella-alexander-2025',
+    date: '2025-09-20T18:00:00.000Z',
+    time: '18:00',
+    ceremony: {
+      time: '18:00',
+      duration: 45
+    },
+    reception: {
+      time: '20:00',
+      duration: 300
+    },
+    ceremonyVenue: {
+      name: 'Château de la Vigne - Capilla',
+      address: 'Carretera Valle de Guadalupe Km 95, Ensenada, Baja California 22750',
+      coordinates: {
+        lat: 32.1456,
+        lng: -116.8765
+      },
+      description: 'Capilla gótica del Château con arquitectura francesa y elegancia contemporánea.'
+    },
+    receptionVenue: {
+      name: 'Château de la Vigne',
+      address: 'Carretera Valle de Guadalupe Km 95, Ensenada, Baja California 22750',
+      coordinates: {
+        lat: 32.1456,
+        lng: -116.8765
+      },
+      description: 'Un château privado con viñedos y vista al valle, arquitectura francesa y elegancia contemporánea.',
+      features: ['Viñedos privados', 'Capilla gótica', 'Jardines franceses', 'Terraza panorámica', 'Bodega de vinos']
+    },
+    dressCode: {
+      style: 'Formal Elegance',
+      description: 'Elegancia formal con toques de sofisticación europea. Paleta de azul marino, dorado y tonos neutros.',
+      recommendations: {
+        ladies: [
+          'Vestidos largos en tonos azul marino, dorado suave o champagne',
+          'Cocktail dress elegante con accesorios dorados',
+          'Evitar blanco, marfil y colores muy llamativos',
+          'Zapatos elegantes, preferiblemente con suela blanda para los jardines'
+        ],
+        gentlemen: [
+          'Smoking o traje formal en azul marino o negro',
+          'Corbata o corbatín en tonos dorados o azul',
+          'Camisa blanca de vestir',
+          'Zapatos de vestir en cuero negro o marrón'
+        ]
+      },
+      colors: {
+        recommended: ['#1e3a8a', '#3b82f6', '#f59e0b', '#fbbf24', '#f8fafc', '#334155'],
+        avoid: ['#ffffff', '#f8f8ff', '#ff69b4', '#00ff00']
+      }
+    },
+    rsvpDeadline: '2025-08-15T23:59:59.000Z'
+  },
+  timeline: [
+    {
+      id: 'arrival',
+      time: '17:30',
+      title: 'Llegada y Recepción',
+      description: 'Recibimiento con champagne y vista a los viñedos',
+      icon: 'Users'
+    },
+    {
+      id: 'ceremony',
+      time: '18:00',
+      title: 'Ceremonia Civil',
+      description: 'Unión en la capilla gótica del Château',
+      icon: 'Heart',
+      isHighlight: true
+    },
+    {
+      id: 'cocktail',
+      time: '18:30',
+      title: 'Cocktail Hour',
+      description: 'Canapés gourmet y cata de vinos en la terraza',
+      icon: 'Wine'
+    },
+    {
+      id: 'photos',
+      time: '19:30',
+      title: 'Sesión de Fotos',
+      description: 'Golden hour en los jardines franceses',
+      icon: 'Camera'
+    },
+    {
+      id: 'dinner',
+      time: '20:00',
+      title: 'Cena de Gala',
+      description: 'Menú degustación francés-mexicano de 7 tiempos',
+      icon: 'Utensils'
+    },
+    {
+      id: 'speeches',
+      time: '21:30',
+      title: 'Brindis y Palabras',
+      description: 'Momento íntimo con familia y amigos',
+      icon: 'MessageCircle'
+    },
+    {
+      id: 'party',
+      time: '22:30',
+      title: 'Celebración',
+      description: 'Baile con orquesta y DJ hasta el amanecer',
+      icon: 'Music'
+    }
+  ],
+  gallery: [
+    {
+      id: 'engagement1',
+      url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      alt: 'Isabella y Alexander en París',
+      cols: 2,
+      rows: 1
+    },
+    {
+      id: 'engagement2',
+      url: 'https://images.unsplash.com/photo-1504473220234-f8c7e2bd2d30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      alt: 'Momento elegante',
+      cols: 1,
+      rows: 2
+    },
+    {
+      id: 'engagement3',
+      url: 'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      alt: 'Sofisticación natural',
+      cols: 1,
+      rows: 1
+    },
+    {
+      id: 'engagement4',
+      url: 'https://images.unsplash.com/photo-1475968098848-1b9c4e8c2c1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      alt: 'Elegancia europea',
+      cols: 1,
+      rows: 1
+    },
+    {
+      id: 'engagement5',
+      url: 'https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      alt: 'Momento íntimo',
+      cols: 1,
+      rows: 1
+    },
+    {
+      id: 'engagement6',
+      url: 'https://images.unsplash.com/photo-1464691110742-1353c4b1cda8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      alt: 'Caminando juntos',
+      cols: 1,
+      rows: 1
+    }
+  ],
+  heroImage: {
+    url: 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+    alt: 'Isabella y Alexander - Una historia de elegancia'
+  },
+  specialMoments: [
+    {
+      year: '2019',
+      title: 'París, La Sorbona',
+      description: 'Primer encuentro durante el intercambio académico'
+    },
+    {
+      year: '2021',
+      title: 'Graduación Conjunta',
+      description: 'Maestría en Arte y Negocios Internacionales'
+    },
+    {
+      year: '2023',
+      title: 'Versailles',
+      description: 'Alexander propuso en los jardines del palacio'
+    },
+    {
+      year: '2024',
+      title: 'Proyecto Conjunto',
+      description: 'Fundación de la ONG educativa "Bridges of Knowledge"'
+    }
+  ],
+  relationshipStats: {
+    yearsTogther: 6,
+    adventures: 89,
+    memories: 3247,
+    dreams: 25
+  },
+  accommodation: [
+    {
+      name: 'Château de la Vigne - Suites',
+      distance: 'En el mismo lugar',
+      price: 'Desde $400/noche',
+      phone: '+52 646 123-4567',
+      amenities: ['Suites de lujo', 'Spa privado', 'Servicio de conserjería', 'Desayuno gourmet']
+    },
+    {
+      name: 'Hotel Boutique Valle',
+      distance: '15 min del lugar',
+      price: 'Desde $250/noche',
+      phone: '+52 646 234-5678',
+      amenities: ['Vista a viñedos', 'Piscina', 'Restaurant premiado']
+    }
+  ],
+  transport: {
+    parking: true,
+    valetParking: true,
+    shuttleService: {
+      available: true,
+      pickupPoints: ['Aeropuerto de Tijuana', 'Hotel Boutique Valle', 'Centro de Ensenada'],
+      schedule: ['16:00', '16:30', '17:00']
+    },
+    publicTransport: 'Servicio de transporte privado disponible',
+    rideshare: true
+  },
+  giftRegistry: {
+    enabled: true,
+    message: 'Vuestra presencia es el regalo más valioso. Si deseáis contribuir a nuestro futuro juntos:',
+    registries: [
+      {
+        id: 'palacio',
+        name: 'El Palacio de Hierro',
+        url: 'https://www.elpalaciodehierro.com/mesa-de-regalos/isabella-alexander-2025',
+        description: 'Mesa de regalos premium con artículos de lujo para el hogar'
+      },
+      {
+        id: 'liverpool',
+        name: 'Liverpool',
+        url: 'https://www.liverpool.com.mx/mesa-de-regalos/luxury-2025',
+        description: 'Selección curada de productos de alta gama'
+      }
+    ],
+    bankAccount: {
+      bankName: 'Banco Santander Private Banking',
+      accountName: 'Isabella V. Rossi',
+      accountNumber: '1234567890',
+      clabe: '123456789012345678',
+      description: 'También podéis hacer vuestra aportación directamente'
+    }
+  },
+  adultOnlyEvent: {
+    enabled: true,
+    message: 'Para mantener la elegancia y sofisticación de la velada, hemos decidido que sea un evento solo para adultos. Agradecemos vuestra comprensión.'
+  },
+  theme: {
+    id: 'luxury'
+  },
+  languages: ['es', 'en'],
+  defaultLanguage: 'es',
+  isActive: true,
+  createdAt: '2025-01-01T00:00:00.000Z',
+  updatedAt: '2025-01-01T00:00:00.000Z'
+};
+
 // Mapa de bodas disponibles para desarrollo
 export const mockWeddings: Record<string, WeddingData> = {
   'maria-carlos-2025': mockWeddingMariaCarlos,
-  'ana-luis-2025': mockWeddingAnaLuis
+  'ana-luis-2025': mockWeddingAnaLuis,
+  'isabella-alexander-2025': mockWeddingLuxury
 };
 
 // Función para obtener datos mock

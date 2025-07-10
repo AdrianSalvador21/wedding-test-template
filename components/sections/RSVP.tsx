@@ -9,12 +9,13 @@ import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useThemePatterns } from '../../lib/theme-context';
 
 const RSVP = () => {
   const { t } = useTranslations('rsvp');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
+  const { getBackgroundStyle } = useThemePatterns();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -77,7 +78,7 @@ const RSVP = () => {
       <section 
         id="rsvp" 
         className="bg-gray-50 relative overflow-hidden"
-        style={getFloralBackgroundStyle(3, '160px')}
+        style={getBackgroundStyle(3, '160px')}
       >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           {/* Título */}
@@ -112,7 +113,7 @@ const RSVP = () => {
       <section 
         id="rsvp"
         className="bg-gray-50 relative overflow-hidden"
-        style={getFloralBackgroundStyle(3, '160px')}
+        style={getBackgroundStyle(3, '160px')}
               >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           {/* Título */}
@@ -245,7 +246,7 @@ const RSVP = () => {
     <section 
       id="rsvp" 
       className="bg-gray-50 relative overflow-hidden"
-      style={getFloralBackgroundStyle(3, '160px')}
+      style={getBackgroundStyle(3, '160px')}
           >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         <div className="animate-fade-in-up">
