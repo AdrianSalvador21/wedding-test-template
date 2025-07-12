@@ -14,6 +14,8 @@ import Footer from '../components/sections/Footer';
 import { useAppDispatch, useAppSelector } from '../src/store/hooks';
 import { selectWeddingInitialized, selectCurrentWedding } from '../src/store/slices/weddingSlice';
 import { mockWeddingMariaCarlos } from '../src/data/mockData';
+import { ThemeProvider } from '../lib/theme-context';
+import { createWeddingTheme } from '../lib/theme-utils';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
@@ -28,18 +30,23 @@ export default function HomePage() {
     }
   }, [dispatch, isInitialized, currentWedding]);
 
+  // Crear tema para la página raíz usando los datos mock
+  const weddingTheme = createWeddingTheme(currentWedding || mockWeddingMariaCarlos);
+
   return (
-    <main>
-      <Hero />
-      <Countdown />
-      <About />
-      <Gallery />
-      <Timeline />
-      <DressCode />
-      <Location />
-      <GiftRegistry />
-      <RSVP />
-      <Footer />
-    </main>
+    <ThemeProvider weddingTheme={weddingTheme}>
+      <main>
+        <Hero />
+        <Countdown />
+        <About />
+        <Gallery />
+        <Timeline />
+        <DressCode />
+        <Location />
+        <GiftRegistry />
+        <RSVP />
+        <Footer />
+      </main>
+    </ThemeProvider>
   );
 } 

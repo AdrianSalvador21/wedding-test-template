@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
 import { useAppDispatch } from '../src/store/hooks';
 import { fetchWeddingData } from '../src/store/slices/weddingSlice';
 import WeddingTemplate from './WeddingTemplate';
