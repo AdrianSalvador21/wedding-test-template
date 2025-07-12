@@ -2,13 +2,15 @@ import { WeddingTheme, getTheme, ThemeId } from './themes';
 import { WeddingData } from '../src/types/wedding';
 import { getFloralBackgroundStyle } from './floral-patterns';
 import { getLuxuryBackgroundStyle } from './floral-patterns';
+import { getPremiumBackgroundStyle } from './floral-patterns';
+import { getCorporateBackgroundStyle } from './floral-patterns';
 
 // Función para crear un tema completo basado en los datos del servicio
 export const createWeddingTheme = (weddingData: WeddingData): WeddingTheme => {
   const { theme } = weddingData;
   
   // Obtener el tema predefinido basado en el ID
-  if (['classic', 'romantic', 'modern', 'elegant', 'luxury'].includes(theme.id)) {
+  if (['classic', 'romantic', 'modern', 'elegant', 'luxury', 'premium', 'corporate'].includes(theme.id)) {
     return getTheme(theme.id as ThemeId);
   }
   
@@ -178,6 +180,42 @@ export const getThemeBackgroundStyle = (
       : patternNumber;
     
     return getLuxuryBackgroundStyle(patternName, size);
+  }
+  
+  // Si es el tema premium, usar patrones premium
+  if (themeId === 'premium') {
+    // Mapear números de patrón a nombres de patrones premium
+    const premiumPatternMap: Record<number, string> = {
+      1: 'premium-floral-1',
+      2: 'premium-floral-2',
+      3: 'premium-ornate-1',
+      4: 'premium-subtle-1',
+      5: 'premium-floral-1', // Repetir para más variedad
+    };
+    
+    const patternName = typeof patternNumber === 'number' 
+      ? premiumPatternMap[patternNumber] || 'premium-floral-1'
+      : patternNumber;
+    
+    return getPremiumBackgroundStyle(patternName, size);
+  }
+
+  // Si es el tema corporate, usar patrones corporate
+  if (themeId === 'corporate') {
+    // Mapear números de patrón a nombres de patrones corporate
+    const corporatePatternMap: Record<number, string> = {
+      1: 'corporate-geometric-1',
+      2: 'corporate-geometric-2',
+      3: 'corporate-minimal-1',
+      4: 'corporate-subtle-1',
+      5: 'corporate-geometric-1', // Repetir para más variedad
+    };
+    
+    const patternName = typeof patternNumber === 'number' 
+      ? corporatePatternMap[patternNumber] || 'corporate-geometric-1'
+      : patternNumber;
+    
+    return getCorporateBackgroundStyle(patternName, size);
   }
   
   // Para todos los demás temas, usar patrones florales

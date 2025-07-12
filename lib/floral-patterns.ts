@@ -556,7 +556,483 @@ export const getLuxuryBackgroundStyle = (patternName: string, size: string = '40
   };
 };
 
-// Función de prueba para verificar que los patrones funcionan
+// Patrones premium con colores rose gold y burgundy
+export const premiumPatterns = {
+  'premium-floral-1': `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="premiumFloral1" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+      <!-- Rama principal elegante -->
+      <g transform="translate(10,30)">
+        <path d="M0 0 Q12 -2 24 0 Q36 3 48 6 Q60 8 72 10" 
+              stroke="#a08060" 
+              stroke-width="0.8" 
+              fill="none" 
+              opacity="0.12"/>
+        
+        <!-- Hojas rose gold -->
+        <ellipse cx="8" cy="-1" rx="1.5" ry="4" fill="#a08060" opacity="0.08" transform="rotate(15 8 -1)"/>
+        <ellipse cx="16" cy="0" rx="1.6" ry="4.5" fill="#c9b49a" opacity="0.08" transform="rotate(25 16 0)"/>
+        <ellipse cx="24" cy="1" rx="1.7" ry="5" fill="#a08060" opacity="0.10" transform="rotate(35 24 1)"/>
+        <ellipse cx="32" cy="3" rx="1.6" ry="4.8" fill="#c9b49a" opacity="0.09" transform="rotate(40 32 3)"/>
+        <ellipse cx="40" cy="5" rx="1.5" ry="4.5" fill="#a08060" opacity="0.08" transform="rotate(45 40 5)"/>
+        <ellipse cx="48" cy="6" rx="1.4" ry="4.2" fill="#c9b49a" opacity="0.07" transform="rotate(50 48 6)"/>
+        <ellipse cx="56" cy="7" rx="1.3" ry="4" fill="#a08060" opacity="0.07" transform="rotate(55 56 7)"/>
+        <ellipse cx="64" cy="8" rx="1.2" ry="3.8" fill="#c9b49a" opacity="0.06" transform="rotate(60 64 8)"/>
+        
+        <!-- Flores burgundy pequeñas -->
+        <circle cx="12" cy="1" r="0.8" fill="#b8a687" opacity="0.07"/>
+        <circle cx="28" cy="4" r="0.8" fill="#b8a687" opacity="0.07"/>
+        <circle cx="44" cy="6" r="0.8" fill="#b8a687" opacity="0.07"/>
+        <circle cx="60" cy="8" r="0.8" fill="#b8a687" opacity="0.07"/>
+        
+        <!-- Pétalos alrededor de las flores -->
+        <ellipse cx="11" cy="0" rx="0.4" ry="1.2" fill="#b8a687" opacity="0.05" transform="rotate(0 11 0)"/>
+        <ellipse cx="13" cy="0" rx="0.4" ry="1.2" fill="#b8a687" opacity="0.05" transform="rotate(60 13 0)"/>
+        <ellipse cx="12" cy="2" rx="0.4" ry="1.2" fill="#b8a687" opacity="0.05" transform="rotate(120 12 2)"/>
+        
+        <ellipse cx="27" cy="3" rx="0.4" ry="1.2" fill="#b8a687" opacity="0.05" transform="rotate(0 27 3)"/>
+        <ellipse cx="29" cy="3" rx="0.4" ry="1.2" fill="#b8a687" opacity="0.05" transform="rotate(60 29 3)"/>
+        <ellipse cx="28" cy="5" rx="0.4" ry="1.2" fill="#b8a687" opacity="0.05" transform="rotate(120 28 5)"/>
+        
+        <!-- Detalles en esquinas -->
+        <circle cx="-10" cy="1" r="0.5" fill="#b8a687" opacity="0.06"/>
+        <circle cx="-22" cy="3" r="0.5" fill="#b8a687" opacity="0.06"/>
+        <circle cx="-34" cy="5" r="0.5" fill="#b8a687" opacity="0.06"/>
+      </g>
+      
+      <!-- Rama secundaria -->
+      <g transform="translate(90,80)">
+        <path d="M0 0 Q-8 -1 -16 1 Q-24 3 -32 4 Q-40 5 -48 6" 
+              stroke="#a08060" 
+              stroke-width="0.6" 
+              fill="none" 
+              opacity="0.10"/>
+        
+        <!-- Hojas menores -->
+        <ellipse cx="-6" cy="0" rx="1.0" ry="2.5" fill="#a08060" opacity="0.06" transform="rotate(-15 -6 0)"/>
+        <ellipse cx="-12" cy="1" rx="1.1" ry="2.8" fill="#c9b49a" opacity="0.06" transform="rotate(-25 -12 1)"/>
+        <ellipse cx="-18" cy="2" rx="1.0" ry="2.5" fill="#a08060" opacity="0.06" transform="rotate(-35 -18 2)"/>
+        <ellipse cx="-24" cy="3" rx="0.9" ry="2.2" fill="#c9b49a" opacity="0.05" transform="rotate(-45 -24 3)"/>
+        <ellipse cx="-30" cy="4" rx="0.8" ry="2" fill="#a08060" opacity="0.05" transform="rotate(-55 -30 4)"/>
+        <ellipse cx="-36" cy="5" rx="0.7" ry="1.8" fill="#c9b49a" opacity="0.04" transform="rotate(-60 -36 5)"/>
+        
+        <!-- Pequeñas flores -->
+        <circle cx="-10" cy="1" r="0.5" fill="#b8a687" opacity="0.06"/>
+        <circle cx="-22" cy="3" r="0.5" fill="#b8a687" opacity="0.06"/>
+        <circle cx="-34" cy="5" r="0.5" fill="#b8a687" opacity="0.06"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#premiumFloral1)"/>
+</svg>
+  `)}`,
+
+  'premium-floral-2': `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="premiumFloral2" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
+      <!-- Composición central elegante -->
+      <g transform="translate(70,70)">
+        <!-- Tallos en cruz -->
+        <path d="M0 0 Q-15 -2 -30 -4 Q-45 -6 -60 -8" 
+              stroke="#a08060" 
+              stroke-width="0.7" 
+              fill="none" 
+              opacity="0.10"/>
+        <path d="M0 0 Q15 -2 30 -4 Q45 -6 60 -8" 
+              stroke="#a08060" 
+              stroke-width="0.7" 
+              fill="none" 
+              opacity="0.10"/>
+        <path d="M0 0 Q-2 -15 -4 -30 Q-6 -45 -8 -60" 
+              stroke="#a08060" 
+              stroke-width="0.7" 
+              fill="none" 
+              opacity="0.10"/>
+        <path d="M0 0 Q2 15 4 30 Q6 45 8 60" 
+              stroke="#a08060" 
+              stroke-width="0.7" 
+              fill="none" 
+              opacity="0.10"/>
+        
+        <!-- Hojas en cada dirección -->
+        <!-- Izquierda -->
+        <ellipse cx="-10" cy="-1" rx="1.3" ry="3.5" fill="#a08060" opacity="0.07" transform="rotate(-10 -10 -1)"/>
+        <ellipse cx="-20" cy="-2" rx="1.4" ry="4" fill="#c9b49a" opacity="0.07" transform="rotate(-15 -20 -2)"/>
+        <ellipse cx="-30" cy="-3" rx="1.5" ry="4.5" fill="#a08060" opacity="0.08" transform="rotate(-20 -30 -3)"/>
+        <ellipse cx="-40" cy="-4" rx="1.4" ry="4.2" fill="#c9b49a" opacity="0.07" transform="rotate(-25 -40 -4)"/>
+        <ellipse cx="-50" cy="-6" rx="1.3" ry="3.8" fill="#a08060" opacity="0.06" transform="rotate(-30 -50 -6)"/>
+        
+        <!-- Derecha -->
+        <ellipse cx="10" cy="-1" rx="1.3" ry="3.5" fill="#a08060" opacity="0.07" transform="rotate(10 10 -1)"/>
+        <ellipse cx="20" cy="-2" rx="1.4" ry="4" fill="#c9b49a" opacity="0.07" transform="rotate(15 20 -2)"/>
+        <ellipse cx="30" cy="-3" rx="1.5" ry="4.5" fill="#a08060" opacity="0.08" transform="rotate(20 30 -3)"/>
+        <ellipse cx="40" cy="-4" rx="1.4" ry="4.2" fill="#c9b49a" opacity="0.07" transform="rotate(25 40 -4)"/>
+        <ellipse cx="50" cy="-6" rx="1.3" ry="3.8" fill="#a08060" opacity="0.06" transform="rotate(30 50 -6)"/>
+        
+        <!-- Arriba -->
+        <ellipse cx="-1" cy="-10" rx="3.5" ry="1.3" fill="#a08060" opacity="0.07" transform="rotate(-80 -1 -10)"/>
+        <ellipse cx="-2" cy="-20" rx="4" ry="1.4" fill="#c9b49a" opacity="0.07" transform="rotate(-75 -2 -20)"/>
+        <ellipse cx="-3" cy="-30" rx="4.5" ry="1.5" fill="#a08060" opacity="0.08" transform="rotate(-70 -3 -30)"/>
+        <ellipse cx="-4" cy="-40" rx="4.2" ry="1.4" fill="#c9b49a" opacity="0.07" transform="rotate(-65 -4 -40)"/>
+        <ellipse cx="-6" cy="-50" rx="3.8" ry="1.3" fill="#a08060" opacity="0.06" transform="rotate(-60 -6 -50)"/>
+        
+        <!-- Abajo -->
+        <ellipse cx="1" cy="10" rx="3.5" ry="1.3" fill="#a08060" opacity="0.07" transform="rotate(80 1 10)"/>
+        <ellipse cx="2" cy="20" rx="4" ry="1.4" fill="#c9b49a" opacity="0.07" transform="rotate(75 2 20)"/>
+        <ellipse cx="3" cy="30" rx="4.5" ry="1.5" fill="#a08060" opacity="0.08" transform="rotate(70 3 30)"/>
+        <ellipse cx="4" cy="40" rx="4.2" ry="1.4" fill="#c9b49a" opacity="0.07" transform="rotate(65 4 40)"/>
+        <ellipse cx="6" cy="50" rx="3.8" ry="1.3" fill="#a08060" opacity="0.06" transform="rotate(60 6 50)"/>
+        
+        <!-- Flores centrales -->
+        <circle cx="0" cy="0" r="1.5" fill="#b8a687" opacity="0.08"/>
+        <circle cx="-25" cy="-3" r="1" fill="#b8a687" opacity="0.06"/>
+        <circle cx="25" cy="-3" r="1" fill="#b8a687" opacity="0.06"/>
+        <circle cx="-3" cy="-25" r="1" fill="#b8a687" opacity="0.06"/>
+        <circle cx="3" cy="25" r="1" fill="#b8a687" opacity="0.06"/>
+        
+        <!-- Detalles ornamentales -->
+        <circle cx="-15" cy="-1" r="0.3" fill="#c9b49a" opacity="0.05"/>
+        <circle cx="15" cy="-1" r="0.3" fill="#c9b49a" opacity="0.05"/>
+        <circle cx="-1" cy="-15" r="0.3" fill="#c9b49a" opacity="0.05"/>
+        <circle cx="1" cy="15" r="0.3" fill="#c9b49a" opacity="0.05"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#premiumFloral2)"/>
+</svg>
+  `)}`,
+
+  'premium-ornate-1': `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="premiumOrnate1" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- Patrón ornamental elegante -->
+      <g transform="translate(50,50)">
+        <!-- Círculo central -->
+        <circle cx="0" cy="0" r="2" fill="#b8a687" opacity="0.08"/>
+        
+        <!-- Ornamentos en cruz -->
+        <path d="M0 -8 Q-1 -12 0 -16 Q1 -12 0 -8" 
+              fill="#a08060" 
+              opacity="0.06"/>
+        <path d="M0 8 Q-1 12 0 16 Q1 12 0 8" 
+              fill="#a08060" 
+              opacity="0.06"/>
+        <path d="M-8 0 Q-12 -1 -16 0 Q-12 1 -8 0" 
+              fill="#a08060" 
+              opacity="0.06"/>
+        <path d="M8 0 Q12 -1 16 0 Q12 1 8 0" 
+              fill="#a08060" 
+              opacity="0.06"/>
+        
+        <!-- Ornamentos diagonales -->
+        <path d="M-6 -6 Q-8 -8 -10 -10 Q-8 -8 -6 -6" 
+              fill="#c9b49a" 
+              opacity="0.05"/>
+        <path d="M6 -6 Q8 -8 10 -10 Q8 -8 6 -6" 
+              fill="#c9b49a" 
+              opacity="0.05"/>
+        <path d="M-6 6 Q-8 8 -10 10 Q-8 8 -6 6" 
+              fill="#c9b49a" 
+              opacity="0.05"/>
+        <path d="M6 6 Q8 8 10 10 Q8 8 6 6" 
+              fill="#c9b49a" 
+              opacity="0.05"/>
+        
+        <!-- Pequeños círculos decorativos -->
+        <circle cx="0" cy="-12" r="0.8" fill="#b8a687" opacity="0.06"/>
+        <circle cx="0" cy="12" r="0.8" fill="#b8a687" opacity="0.06"/>
+        <circle cx="-12" cy="0" r="0.8" fill="#b8a687" opacity="0.06"/>
+        <circle cx="12" cy="0" r="0.8" fill="#b8a687" opacity="0.06"/>
+        
+        <!-- Detalles menores -->
+        <circle cx="-8" cy="-8" r="0.4" fill="#c9b49a" opacity="0.04"/>
+        <circle cx="8" cy="-8" r="0.4" fill="#c9b49a" opacity="0.04"/>
+        <circle cx="-8" cy="8" r="0.4" fill="#c9b49a" opacity="0.04"/>
+        <circle cx="8" cy="8" r="0.4" fill="#c9b49a" opacity="0.04"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#premiumOrnate1)"/>
+</svg>
+  `)}`,
+
+  'premium-subtle-1': `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="premiumSubtle1" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <!-- Patrón sutil con puntos y líneas -->
+      <g opacity="0.04">
+        <!-- Puntos dispersos -->
+        <circle cx="20" cy="20" r="0.5" fill="#a08060"/>
+        <circle cx="60" cy="20" r="0.5" fill="#c9b49a"/>
+        <circle cx="20" cy="60" r="0.5" fill="#b8a687"/>
+        <circle cx="60" cy="60" r="0.5" fill="#a08060"/>
+        <circle cx="40" cy="40" r="0.8" fill="#c9b49a"/>
+        
+        <!-- Líneas sutiles -->
+        <line x1="20" y1="20" x2="25" y2="25" stroke="#a08060" stroke-width="0.3"/>
+        <line x1="60" y1="20" x2="55" y2="25" stroke="#c9b49a" stroke-width="0.3"/>
+        <line x1="20" y1="60" x2="25" y2="55" stroke="#b8a687" stroke-width="0.3"/>
+        <line x1="60" y1="60" x2="55" y2="55" stroke="#a08060" stroke-width="0.3"/>
+        
+        <!-- Pequeños ornamentos -->
+        <circle cx="10" cy="40" r="0.3" fill="#c9b49a"/>
+        <circle cx="70" cy="40" r="0.3" fill="#b8a687"/>
+        <circle cx="40" cy="10" r="0.3" fill="#a08060"/>
+        <circle cx="40" cy="70" r="0.3" fill="#c9b49a"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#premiumSubtle1)"/>
+</svg>
+  `)}`,
+};
+
+export const getPremiumPattern = (patternName: string) => {
+  return premiumPatterns[patternName as keyof typeof premiumPatterns] || premiumPatterns['premium-subtle-1'];
+};
+
+export const getPremiumBackgroundStyle = (patternName: string, size: string = '300px') => {
+  const pattern = getPremiumPattern(patternName);
+  return {
+    backgroundImage: `url("${pattern}")`,
+    backgroundSize: size,
+    backgroundRepeat: 'repeat',
+    backgroundPosition: '0% 0%',
+  };
+};
+
+// Patrones corporativos profesionales con diseños geométricos limpios
+export const corporatePatterns = {
+  'corporate-geometric-1': `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="corporateGeometric1" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- Diseño geométrico corporativo -->
+      <g transform="translate(50,50)">
+        <!-- Cuadrado central -->
+        <rect x="-15" y="-15" width="30" height="30" 
+              fill="none" 
+              stroke="#4a5568" 
+              stroke-width="0.8" 
+              opacity="0.12"/>
+        <rect x="-10" y="-10" width="20" height="20" 
+              fill="none" 
+              stroke="#718096" 
+              stroke-width="0.6" 
+              opacity="0.10"/>
+        <rect x="-5" y="-5" width="10" height="10" 
+              fill="#2d3748" 
+              opacity="0.08"/>
+        
+        <!-- Líneas conectoras -->
+        <line x1="-25" y1="0" x2="-15" y2="0" stroke="#4a5568" stroke-width="0.5" opacity="0.08"/>
+        <line x1="15" y1="0" x2="25" y2="0" stroke="#4a5568" stroke-width="0.5" opacity="0.08"/>
+        <line x1="0" y1="-25" x2="0" y2="-15" stroke="#4a5568" stroke-width="0.5" opacity="0.08"/>
+        <line x1="0" y1="15" x2="0" y2="25" stroke="#4a5568" stroke-width="0.5" opacity="0.08"/>
+        
+        <!-- Puntos de conexión -->
+        <circle cx="-25" cy="0" r="1.5" fill="#718096" opacity="0.10"/>
+        <circle cx="25" cy="0" r="1.5" fill="#718096" opacity="0.10"/>
+        <circle cx="0" cy="-25" r="1.5" fill="#718096" opacity="0.10"/>
+        <circle cx="0" cy="25" r="1.5" fill="#718096" opacity="0.10"/>
+      </g>
+      
+      <!-- Elementos en esquinas -->
+      <g transform="translate(0,0)">
+        <rect x="0" y="0" width="8" height="8" fill="none" stroke="#2d3748" stroke-width="0.4" opacity="0.06"/>
+        <circle cx="4" cy="4" r="1" fill="#4a5568" opacity="0.08"/>
+      </g>
+      
+      <g transform="translate(100,0)">
+        <rect x="-8" y="0" width="8" height="8" fill="none" stroke="#2d3748" stroke-width="0.4" opacity="0.06"/>
+        <circle cx="-4" cy="4" r="1" fill="#4a5568" opacity="0.08"/>
+      </g>
+      
+      <g transform="translate(0,100)">
+        <rect x="0" y="-8" width="8" height="8" fill="none" stroke="#2d3748" stroke-width="0.4" opacity="0.06"/>
+        <circle cx="4" cy="-4" r="1" fill="#4a5568" opacity="0.08"/>
+      </g>
+      
+      <g transform="translate(100,100)">
+        <rect x="-8" y="-8" width="8" height="8" fill="none" stroke="#2d3748" stroke-width="0.4" opacity="0.06"/>
+        <circle cx="-4" cy="-4" r="1" fill="#4a5568" opacity="0.08"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#corporateGeometric1)"/>
+</svg>
+  `)}`,
+
+  'corporate-geometric-2': `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="corporateGeometric2" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+      <!-- Patrón de rombos corporativos -->
+      <g transform="translate(60,60)">
+        <!-- Rombo principal -->
+        <polygon points="0,-20 20,0 0,20 -20,0" 
+                 fill="none" 
+                 stroke="#4a5568" 
+                 stroke-width="0.8" 
+                 opacity="0.12"/>
+        <polygon points="0,-15 15,0 0,15 -15,0" 
+                 fill="none" 
+                 stroke="#718096" 
+                 stroke-width="0.6" 
+                 opacity="0.10"/>
+        <polygon points="0,-8 8,0 0,8 -8,0" 
+                 fill="#2d3748" 
+                 opacity="0.08"/>
+        
+        <!-- Líneas de conexión -->
+        <line x1="-30" y1="-30" x2="-20" y2="-20" stroke="#718096" stroke-width="0.4" opacity="0.06"/>
+        <line x1="30" y1="-30" x2="20" y2="-20" stroke="#718096" stroke-width="0.4" opacity="0.06"/>
+        <line x1="-30" y1="30" x2="-20" y2="20" stroke="#718096" stroke-width="0.4" opacity="0.06"/>
+        <line x1="30" y1="30" x2="20" y2="20" stroke="#718096" stroke-width="0.4" opacity="0.06"/>
+        
+        <!-- Puntos de anclaje -->
+        <circle cx="-30" cy="-30" r="1" fill="#4a5568" opacity="0.08"/>
+        <circle cx="30" cy="-30" r="1" fill="#4a5568" opacity="0.08"/>
+        <circle cx="-30" cy="30" r="1" fill="#4a5568" opacity="0.08"/>
+        <circle cx="30" cy="30" r="1" fill="#4a5568" opacity="0.08"/>
+      </g>
+      
+      <!-- Rombos secundarios -->
+      <g transform="translate(30,30)">
+        <polygon points="0,-8 8,0 0,8 -8,0" 
+                 fill="none" 
+                 stroke="#2d3748" 
+                 stroke-width="0.4" 
+                 opacity="0.06"/>
+        <circle cx="0" cy="0" r="1.5" fill="#718096" opacity="0.06"/>
+      </g>
+      
+      <g transform="translate(90,30)">
+        <polygon points="0,-8 8,0 0,8 -8,0" 
+                 fill="none" 
+                 stroke="#2d3748" 
+                 stroke-width="0.4" 
+                 opacity="0.06"/>
+        <circle cx="0" cy="0" r="1.5" fill="#718096" opacity="0.06"/>
+      </g>
+      
+      <g transform="translate(30,90)">
+        <polygon points="0,-8 8,0 0,8 -8,0" 
+                 fill="none" 
+                 stroke="#2d3748" 
+                 stroke-width="0.4" 
+                 opacity="0.06"/>
+        <circle cx="0" cy="0" r="1.5" fill="#718096" opacity="0.06"/>
+      </g>
+      
+      <g transform="translate(90,90)">
+        <polygon points="0,-8 8,0 0,8 -8,0" 
+                 fill="none" 
+                 stroke="#2d3748" 
+                 stroke-width="0.4" 
+                 opacity="0.06"/>
+        <circle cx="0" cy="0" r="1.5" fill="#718096" opacity="0.06"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#corporateGeometric2)"/>
+</svg>
+  `)}`,
+
+  'corporate-minimal-1': `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="corporateMinimal1" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <!-- Diseño minimalista corporativo -->
+      <g transform="translate(40,40)">
+        <!-- Cruz minimalista -->
+        <line x1="-20" y1="0" x2="20" y2="0" stroke="#4a5568" stroke-width="0.6" opacity="0.08"/>
+        <line x1="0" y1="-20" x2="0" y2="20" stroke="#4a5568" stroke-width="0.6" opacity="0.08"/>
+        
+        <!-- Círculo central -->
+        <circle cx="0" cy="0" r="3" fill="none" stroke="#718096" stroke-width="0.5" opacity="0.10"/>
+        <circle cx="0" cy="0" r="1.5" fill="#2d3748" opacity="0.08"/>
+        
+        <!-- Puntos de intersección -->
+        <circle cx="-15" cy="0" r="0.8" fill="#4a5568" opacity="0.06"/>
+        <circle cx="15" cy="0" r="0.8" fill="#4a5568" opacity="0.06"/>
+        <circle cx="0" cy="-15" r="0.8" fill="#4a5568" opacity="0.06"/>
+        <circle cx="0" cy="15" r="0.8" fill="#4a5568" opacity="0.06"/>
+      </g>
+      
+      <!-- Elementos esquinas -->
+      <circle cx="10" cy="10" r="0.5" fill="#718096" opacity="0.05"/>
+      <circle cx="70" cy="10" r="0.5" fill="#718096" opacity="0.05"/>
+      <circle cx="10" cy="70" r="0.5" fill="#718096" opacity="0.05"/>
+      <circle cx="70" cy="70" r="0.5" fill="#718096" opacity="0.05"/>
+      
+      <!-- Líneas sutiles -->
+      <line x1="20" y1="20" x2="25" y2="25" stroke="#2d3748" stroke-width="0.3" opacity="0.04"/>
+      <line x1="60" y1="20" x2="55" y2="25" stroke="#2d3748" stroke-width="0.3" opacity="0.04"/>
+      <line x1="20" y1="60" x2="25" y2="55" stroke="#2d3748" stroke-width="0.3" opacity="0.04"/>
+      <line x1="60" y1="60" x2="55" y2="55" stroke="#2d3748" stroke-width="0.3" opacity="0.04"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#corporateMinimal1)"/>
+</svg>
+  `)}`,
+
+  'corporate-subtle-1': `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="corporateSubtle1" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <!-- Patrón sutil corporativo -->
+      <g opacity="0.05">
+        <!-- Puntos organizados -->
+        <circle cx="15" cy="15" r="0.8" fill="#4a5568"/>
+        <circle cx="45" cy="15" r="0.8" fill="#718096"/>
+        <circle cx="15" cy="45" r="0.8" fill="#2d3748"/>
+        <circle cx="45" cy="45" r="0.8" fill="#4a5568"/>
+        <circle cx="30" cy="30" r="1.2" fill="#718096"/>
+        
+        <!-- Líneas conectoras sutiles -->
+        <line x1="15" y1="15" x2="20" y2="20" stroke="#4a5568" stroke-width="0.4"/>
+        <line x1="45" y1="15" x2="40" y2="20" stroke="#718096" stroke-width="0.4"/>
+        <line x1="15" y1="45" x2="20" y2="40" stroke="#2d3748" stroke-width="0.4"/>
+        <line x1="45" y1="45" x2="40" y2="40" stroke="#4a5568" stroke-width="0.4"/>
+        
+        <!-- Grid sutil -->
+        <line x1="30" y1="10" x2="30" y2="15" stroke="#718096" stroke-width="0.2"/>
+        <line x1="30" y1="45" x2="30" y2="50" stroke="#718096" stroke-width="0.2"/>
+        <line x1="10" y1="30" x2="15" y2="30" stroke="#718096" stroke-width="0.2"/>
+        <line x1="45" y1="30" x2="50" y2="30" stroke="#718096" stroke-width="0.2"/>
+        
+        <!-- Puntos de grid -->
+        <circle cx="0" cy="0" r="0.3" fill="#2d3748"/>
+        <circle cx="60" cy="0" r="0.3" fill="#2d3748"/>
+        <circle cx="0" cy="60" r="0.3" fill="#2d3748"/>
+        <circle cx="60" cy="60" r="0.3" fill="#2d3748"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#corporateSubtle1)"/>
+</svg>
+  `)}`,
+};
+
+export const getCorporatePattern = (patternName: string) => {
+  return corporatePatterns[patternName as keyof typeof corporatePatterns] || corporatePatterns['corporate-subtle-1'];
+};
+
+export const getCorporateBackgroundStyle = (patternName: string, size: string = '300px') => {
+  const pattern = getCorporatePattern(patternName);
+  return {
+    backgroundImage: `url("${pattern}")`,
+    backgroundSize: size,
+    backgroundRepeat: 'repeat',
+    backgroundPosition: '0% 0%',
+  };
+};
+
 export const testPattern = () => {
   console.log('Patrones florales cargados:', Object.keys(floralPatterns));
   console.log('Patrones luxury cargados:', Object.keys(luxuryPatterns));

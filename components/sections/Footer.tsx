@@ -31,10 +31,14 @@ const Footer = () => {
 
   // Clases condicionales basadas en el tema
   const isLuxuryTheme = currentTheme.id === 'luxury';
-  const footerBgClass = isLuxuryTheme ? 'footer-theme-bg' : 'bg-gradient-to-br from-primary via-secondary to-accent';
-  const footerTextClass = isLuxuryTheme ? 'footer-theme-text' : 'text-white';
-  const footerAccentClass = isLuxuryTheme ? 'footer-theme-accent' : 'text-accent';
-  const hoverClass = isLuxuryTheme ? 'hover-theme-accent' : 'hover:text-accent';
+  const isPremiumTheme = currentTheme.id === 'premium';
+  const isCorporateTheme = currentTheme.id === 'corporate';
+  const isThemeWithCustomColors = isLuxuryTheme || isPremiumTheme || isCorporateTheme;
+  
+  const footerBgClass = isThemeWithCustomColors ? 'footer-theme-bg' : 'bg-gradient-to-br from-primary via-secondary to-accent';
+  const footerTextClass = isThemeWithCustomColors ? 'footer-theme-text' : 'text-white';
+  const footerAccentClass = isThemeWithCustomColors ? 'footer-theme-accent' : 'text-accent';
+  const hoverClass = isThemeWithCustomColors ? 'hover-theme-accent' : 'hover:text-accent';
 
   const handleInstagramClick = () => {
     if (brideInstagram) {

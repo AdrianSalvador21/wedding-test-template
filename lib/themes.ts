@@ -513,6 +513,178 @@ export const luxuryTheme: WeddingTheme = {
   },
 };
 
+// Tema Premium Rose Gold
+export const premiumTheme: WeddingTheme = {
+  id: 'premium',
+  name: 'Premium Rose Gold',
+  colors: {
+    primary: '#a08060',        // Champagne dorado suave y elegante
+    secondary: '#c9b49a',      // Beige rosado muy suave
+    accent: '#b8a687',         // Champagne dorado intermedio (más cálido y armonioso)
+    light: '#fdf9f7',          // Blush muy claro
+    dark: '#5d4a52',           // Marrón rosado oscuro
+    text: '#4a3d42',           // Marrón cálido oscuro
+    border: '#e8ddd4',         // Beige claro
+    background: '#ffffff',      // Blanco puro
+    muted: '#f9f5f2',          // Beige casi blanco
+    success: '#7a8471',        // Verde sage suave
+    warning: '#c9b49a',        // Champagne suave
+    error: '#b8a687',          // Champagne dorado para error (más suave)
+  },
+  gradients: {
+    primary: 'linear-gradient(135deg, #a08060 0%, #c9b49a 100%)',
+    overlay: 'linear-gradient(135deg, rgba(160, 128, 96, 0.85) 0%, rgba(201, 180, 154, 0.75) 50%, rgba(184, 166, 135, 0.65) 100%)',
+    background: 'linear-gradient(to bottom, #fdf9f7 0%, #f9f5f2 100%)',
+    accent: 'linear-gradient(135deg, #b8a687 0%, #c9b49a 100%)',
+  },
+  fonts: {
+    heading: {
+      family: 'Cormorant Garamond',
+      weights: [400, 600, 700],
+      fallback: 'serif',
+    },
+    body: {
+      family: 'Crimson Text',
+      weights: [400, 600, 700],
+      fallback: 'serif',
+    },
+  },
+  typography: {
+    heroTitle: {
+      mobile: 'text-4xl',
+      desktop: 'text-8xl lg:text-9xl xl:text-10xl',
+    },
+    sectionTitle: {
+      mobile: 'text-3xl',
+      desktop: 'text-5xl lg:text-6xl',
+    },
+    subtitle: {
+      mobile: 'text-xl',
+      desktop: 'text-2xl lg:text-3xl',
+    },
+    body: {
+      mobile: 'text-base',
+      desktop: 'text-lg',
+    },
+  },
+  shadows: {
+    sm: '0 4px 20px rgba(160, 128, 96, 0.12)',
+    md: '0 8px 30px rgba(160, 128, 96, 0.18)',
+    lg: '0 12px 40px rgba(160, 128, 96, 0.24)',
+    xl: '0 20px 60px rgba(160, 128, 96, 0.30)',
+  },
+  patterns: {
+    primary: 'premium-floral-1',
+    secondary: 'premium-floral-2',
+    accent: 'premium-ornate-1',
+    subtle: 'premium-subtle-1',
+  },
+  spacing: {
+    section: {
+      mobile: 'py-16 px-8',
+      desktop: 'py-20 px-12',
+    },
+    container: {
+      mobile: 'px-6',
+      desktop: 'px-10',
+    },
+  },
+  effects: {
+    blur: 'backdrop-blur-xl',
+    opacity: {
+      light: 0.85,
+      medium: 0.92,
+      heavy: 0.98,
+    },
+  },
+};
+
+// Tema Corporate Professional
+export const corporateTheme: WeddingTheme = {
+  id: 'corporate',
+  name: 'Corporate Professional',
+  colors: {
+    primary: '#4a5568',        // Gris azulado profesional
+    secondary: '#718096',      // Gris medio corporativo
+    accent: '#6b7280',         // Gris suave profesional
+    light: '#f7fafc',          // Gris muy claro
+    dark: '#1a202c',           // Gris muy oscuro
+    text: '#2d3748',           // Gris oscuro para texto
+    border: '#e2e8f0',         // Gris claro para bordes
+    background: '#ffffff',      // Blanco puro
+    muted: '#f7fafc',          // Gris muy claro
+    success: '#38a169',        // Verde corporativo
+    warning: '#d69e2e',        // Amarillo corporativo
+    error: '#e53e3e',          // Rojo corporativo
+  },
+  gradients: {
+    primary: 'linear-gradient(135deg, #4a5568 0%, #718096 100%)',
+    overlay: 'linear-gradient(135deg, rgba(74, 85, 104, 0.95) 0%, rgba(113, 128, 150, 0.9) 50%, rgba(45, 55, 72, 0.85) 100%)',
+    background: 'linear-gradient(to bottom, #f7fafc 0%, #edf2f7 100%)',
+    accent: 'linear-gradient(135deg, #6b7280 0%, #4a5568 100%)',
+  },
+  fonts: {
+    heading: {
+      family: 'Inter',
+      weights: [400, 600, 700],
+      fallback: 'sans-serif',
+    },
+    body: {
+      family: 'Source Sans Pro',
+      weights: [400, 600, 700],
+      fallback: 'sans-serif',
+    },
+  },
+  typography: {
+    heroTitle: {
+      mobile: 'text-4xl',
+      desktop: 'text-7xl lg:text-8xl xl:text-9xl',
+    },
+    sectionTitle: {
+      mobile: 'text-3xl',
+      desktop: 'text-5xl lg:text-6xl',
+    },
+    subtitle: {
+      mobile: 'text-xl',
+      desktop: 'text-2xl lg:text-3xl',
+    },
+    body: {
+      mobile: 'text-base',
+      desktop: 'text-lg',
+    },
+  },
+  shadows: {
+    sm: '0 4px 20px rgba(74, 85, 104, 0.15)',
+    md: '0 8px 30px rgba(74, 85, 104, 0.20)',
+    lg: '0 12px 40px rgba(74, 85, 104, 0.25)',
+    xl: '0 20px 60px rgba(74, 85, 104, 0.30)',
+  },
+  patterns: {
+    primary: 'corporate-geometric-1',
+    secondary: 'corporate-geometric-2',
+    accent: 'corporate-minimal-1',
+    subtle: 'corporate-subtle-1',
+  },
+  spacing: {
+    section: {
+      mobile: 'py-16 px-8',
+      desktop: 'py-20 px-12',
+    },
+    container: {
+      mobile: 'px-6',
+      desktop: 'px-10',
+    },
+  },
+  effects: {
+    blur: 'backdrop-blur-md',
+    opacity: {
+      light: 0.90,
+      medium: 0.95,
+      heavy: 0.98,
+    },
+  },
+};
+
 // Colección de temas disponibles
 export const availableThemes = {
   classic: classicTheme,
@@ -520,6 +692,8 @@ export const availableThemes = {
   modern: modernTheme,
   elegant: elegantTheme,
   luxury: luxuryTheme,
+  premium: premiumTheme,
+  corporate: corporateTheme,
 } as const;
 
 export type ThemeId = keyof typeof availableThemes;

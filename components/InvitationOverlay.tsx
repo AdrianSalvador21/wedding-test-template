@@ -26,9 +26,13 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
 
   // Clases condicionales basadas en el tema
   const isLuxuryTheme = currentTheme.id === 'luxury';
-  const buttonClasses = isLuxuryTheme 
+  const isPremiumTheme = currentTheme.id === 'premium';
+  const isCorporateTheme = currentTheme.id === 'corporate';
+  const isThemeWithCustomColors = isLuxuryTheme || isPremiumTheme || isCorporateTheme;
+  
+  const buttonClass = isThemeWithCustomColors 
     ? 'w-full btn-theme-primary font-body font-medium py-3 px-6 rounded-xl transition-all duration-300 text-sm tracking-wide'
-    : 'w-full bg-stone-600 text-white font-body font-medium py-3 px-6 rounded-xl hover:bg-stone-700 transition-all duration-300 text-sm tracking-wide';
+    : 'w-full bg-stone-600 hover:bg-stone-700 text-white font-body font-medium py-3 px-6 rounded-xl transition-all duration-300 text-sm tracking-wide';
 
   useEffect(() => {
     // Obtener la invitación específica
@@ -154,7 +158,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleClose}
-                    className={buttonClasses}
+                    className={buttonClass}
                   >
                     {t('openInvitation')}
                   </motion.button>
