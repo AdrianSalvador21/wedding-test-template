@@ -1,0 +1,98 @@
+{
+  "id": "maria-carlos-2025",
+  "couple": {
+    "bride": {
+      "name": "María",
+      "fullName": "María Elena González",
+      "phone": "+52 55 1234-5678",
+      "email": "maria@email.com"
+    },
+    "groom": {
+      "name": "Carlos",
+      "fullName": "Carlos Alberto Rodríguez",
+      "phone": "+52 55 8765-4321",
+      "email": "carlos@email.com"
+    },
+    "coupleEmail": "maria.carlos@email.com",
+    "hashtag": "#MariaYCarlos2025",
+    "story": "Nos conocimos en la universidad hace 6 años...",
+    "quote": "Juntos somos infinitos."
+  },
+  "event": {
+    "weddingId": "maria-carlos-2025",
+    "date": "2025-06-14T18:00:00.000Z",
+    "time": "18:00",
+    "ceremony": {
+      "time": "18:00",
+      "duration": 45
+    },
+    "reception": {
+      "time": "19:30",
+      "duration": 360
+    },
+    "receptionVenue": {
+      "name": "Hacienda Los Rosales",
+      "address": "Carretera Federal México-Cuernavaca Km 32, Estado de México",
+      "description": "Una hermosa hacienda colonial...",
+      "features": ["Jardín", "Salón", "Terraza"]
+    },
+    "dressCode": {
+      "style": "Formal",
+      "description": "Vestimenta elegante para celebrar nuestra unión"
+    },
+    "rsvpDeadline": "2025-05-14T23:59:59.000Z"
+  },
+  "timeline": [
+    {
+      "id": "ceremony",
+      "time": "18:00",
+      "title": "Ceremonia",
+      "description": "Ceremonia religiosa en la capilla",
+      "icon": "Heart"
+    },
+    {
+      "id": "reception",
+      "time": "19:30",
+      "title": "Recepción",
+      "description": "Cena y fiesta",
+      "icon": "Music"
+    }
+  ],
+  "gallery": [
+    {
+      "id": "photo1",
+      "url": "https://example.com/photo1.jpg",
+      "alt": "María y Carlos",
+      "cols": 2,
+      "rows": 1
+    }
+  ],
+  "heroImage": {
+    "url": "https://example.com/hero.jpg",
+    "alt": "María y Carlos - Imagen principal"
+  },
+  "giftRegistry": {
+    "enabled": true,
+    "message": "Tu presencia es nuestro regalo más preciado...",
+    "registries": [
+      {
+        "id": "liverpool",
+        "name": "Liverpool",
+        "url": "https://liverpool.com.mx/mesa-de-regalos/maria-carlos-2025",
+        "description": "Mesa de regalos en Liverpool"
+      }
+    ]
+  },
+  "adultOnlyEvent": {
+    "enabled": true,
+    "message": "Evento solo para adultos"
+  },
+  "theme": {
+    "id": "classic"
+  },
+  "languages": ["es", "en"],
+  "defaultLanguage": "es",
+  "isActive": true,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "updatedAt": "2025-01-01T00:00:00.000Z"
+} 

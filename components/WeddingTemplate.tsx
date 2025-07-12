@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useWedding } from '../src/store/hooks';
 import { useTranslations } from '../lib/translations';
+import { ThemeProvider } from '../lib/theme-context';
+import { createWeddingTheme } from '../lib/theme-utils';
 import Hero from './sections/Hero';
 import Countdown from './sections/Countdown';
 import About from './sections/About';
@@ -65,30 +67,38 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
     );
   }
 
+  // Crear tema basado en los datos del servicio
+  const weddingTheme = createWeddingTheme(currentWedding);
+  
+  // Debug: mostrar tema creado
+  console.log('🎨 Tema creado para boda:', currentWedding.id, 'tema:', weddingTheme.id, weddingTheme.name);
+
   // Renderizar la invitación completa
   return (
-    <main className="min-h-screen">
-      <Hero />
-      <Countdown />
-      <Location />
-      <About />
-      <Gallery />
-      <Timeline />
-      <DressCode />
-      <GiftRegistry />
-      <Accommodation />
-      <AdultOnlyEvent />
-      <RSVP />
-      <Footer />
-      
-      {/* Overlay de invitación personalizada */}
-      {showOverlay && guestId && currentWedding && (
-        <InvitationOverlay
-          guestId={guestId}
-          weddingId={currentWedding.id}
-          onClose={() => setShowOverlay(false)}
-        />
-      )}
-    </main>
+    <ThemeProvider weddingTheme={weddingTheme}>
+      <main className="min-h-screen">
+        <Hero />
+        <Countdown />
+        <Location />
+        <About />
+        <Gallery />
+        <Timeline />
+        <DressCode />
+        <GiftRegistry />
+        <Accommodation />
+        <AdultOnlyEvent />
+        <RSVP />
+        <Footer />
+        
+        {/* Overlay de invitación personalizada */}
+        {showOverlay && guestId && currentWedding && (
+          <InvitationOverlay
+            guestId={guestId}
+            weddingId={currentWedding.id}
+            onClose={() => setShowOverlay(false)}
+          />
+        )}
+      </main>
+    </ThemeProvider>
   );
 }

@@ -7,12 +7,13 @@ import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useThemePatterns } from '../../lib/theme-context';
 
 const Timeline = () => {
   const { t } = useTranslations('timeline');
   const { isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
+  const { getBackgroundStyle } = useThemePatterns();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Pool de iconos genéricos neutros
@@ -85,7 +86,7 @@ const Timeline = () => {
   return (
     <section 
       className="bg-gray-50 mb-12 relative overflow-hidden"
-      style={getFloralBackgroundStyle(3, '160px')}
+      style={getBackgroundStyle(3, '160px')}
           >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         <motion.div

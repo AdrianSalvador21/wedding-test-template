@@ -8,7 +8,7 @@ import { Camera, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useThemePatterns } from '../../lib/theme-context';
 
 const Gallery = () => {
   const { t } = useTranslations('gallery');
@@ -16,6 +16,7 @@ const Gallery = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
+  const { getBackgroundStyle } = useThemePatterns();
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.2
@@ -139,7 +140,7 @@ const Gallery = () => {
       ref={ref} 
       className="bg-white relative overflow-hidden"
       style={{
-        ...getFloralBackgroundStyle(2, '240px'),
+        ...getBackgroundStyle(2, '240px'),
         backgroundSize: '585px 401px',
         backgroundRepeat: 'repeat',
         backgroundPosition: '166% 11%'

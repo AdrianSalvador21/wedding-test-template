@@ -5,12 +5,13 @@ import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useThemePatterns } from '../../lib/theme-context';
 
 const DressCode = () => {
   const { t } = useTranslations('dressCode');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
+  const { getBackgroundStyle } = useThemePatterns();
 
   // Datos dinámicos con fallbacks
   const dressCodeData = weddingData?.event.dressCode;
@@ -23,7 +24,7 @@ const DressCode = () => {
       <section 
         className="bg-white relative overflow-hidden"
         style={{
-          ...getFloralBackgroundStyle(4, '400px'),
+          ...getBackgroundStyle(4, '400px'),
           backgroundSize: '506px 260px'
         }}
       >
@@ -57,13 +58,13 @@ const DressCode = () => {
   }
 
   // Versión para desktop con animaciones
-  return (
-    <section 
-      className="bg-white relative overflow-hidden"
-      style={{
-        ...getFloralBackgroundStyle(4, '400px'),
-        backgroundSize: '506px 260px'
-      }}
+      return (
+      <section 
+        className="bg-white relative overflow-hidden"
+        style={{
+          ...getBackgroundStyle(4, '400px'),
+          backgroundSize: '506px 260px'
+        }}
           >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         <div className="animate-fade-in-up">

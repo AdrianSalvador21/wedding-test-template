@@ -6,13 +6,14 @@ import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
 
 const Location = () => {
   const { t } = useTranslations('location');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
+  const { getBackgroundStyle } = useThemePatterns();
 
   // Datos dinámicos con fallbacks
   const ceremonyVenue = weddingData?.event.ceremonyVenue?.name || t('ceremony.venue');
@@ -33,7 +34,7 @@ const Location = () => {
       <section 
         className="bg-white relative overflow-hidden"
         style={{
-          ...getFloralBackgroundStyle(2, '400px'),
+          ...getBackgroundStyle(2, '400px'),
           backgroundPosition: '-288px -321px',
           backgroundRepeat: 'no-repeat',
           backgroundSize: '387px 953px'
@@ -121,7 +122,7 @@ const Location = () => {
       id="location" 
       className="bg-white relative overflow-hidden"
       style={{
-        ...getFloralBackgroundStyle(2, '400px'),
+        ...getBackgroundStyle(2, '400px'),
         backgroundPosition: '-288px -321px',
         backgroundRepeat: 'no-repeat',
         backgroundSize: '387px 953px'
@@ -130,13 +131,13 @@ const Location = () => {
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         <div className="animate-fade-in-up">
           {/* Título */}
-          <div className="text-center mb-12 animation-delay-200">
+          <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto"></div>
           </div>
 
           {/* Ubicaciones */}
-          <div className="max-w-4xl mx-auto space-y-12 animation-delay-400">
+          <div className="max-w-4xl mx-auto space-y-12">
             {/* Ceremonia */}
             <div className="text-center">
               <div className="flex justify-center items-center mb-6">

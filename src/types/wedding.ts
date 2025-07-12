@@ -181,11 +181,7 @@ export interface WeddingData {
   giftRegistry: GiftRegistry;
   adultOnlyEvent: AdultOnlyEvent;
   theme: {
-    primaryColor: string;
-    secondaryColor: string;
-    accentColor: string;
-    fontPrimary: string;
-    fontSecondary: string;
+    id: string; // ID del tema predefinido ('classic', 'romantic', 'modern', 'elegant')
   };
   languages: string[];
   defaultLanguage: string;

@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
-  title: "María & Carlos - Invitación de Boda",
-  description: "Nos casamos el 21 de noviembre de 2025. Acompáñanos en este día tan especial.",
-  keywords: ["boda", "invitación", "wedding", "María", "Carlos", "21 de noviembre", "2025"],
-  authors: [{ name: "María & Carlos" }],
+  title: "Invitación de Boda Digital",
+  description: "Una experiencia digital única para celebrar momentos especiales. Diseño elegante y personalizado para tu día perfecto.",
+  keywords: ["boda", "invitación digital", "wedding", "celebración", "amor", "matrimonio"],
+  authors: [{ name: "Wedding Invitations" }],
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
   },
 };
 

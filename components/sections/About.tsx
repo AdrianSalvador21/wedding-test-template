@@ -5,12 +5,13 @@ import Image from 'next/image';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddingSlice';
-import { getFloralBackgroundStyle } from '../../lib/floral-patterns';
+import { useThemePatterns } from '../../lib/theme-context';
 
 const About = () => {
   const { t } = useTranslations('about');
   const currentWedding = useAppSelector(selectCurrentWedding);
   const couple = useAppSelector(selectCouple);
+  const { getBackgroundStyle } = useThemePatterns();
 
   // Datos dinámicos de la boda
   const story = couple?.story || t('story'); // Fallback a traducción si no hay datos
@@ -20,7 +21,7 @@ const About = () => {
       id="about" 
       className="bg-gray-50 relative overflow-hidden"
       style={{
-        ...getFloralBackgroundStyle(1, '200px'),
+        ...getBackgroundStyle(1, '200px'),
         backgroundSize: '1273px 845px'
       }}
     >
