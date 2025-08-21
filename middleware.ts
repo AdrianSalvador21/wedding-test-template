@@ -12,13 +12,12 @@ const intlMiddleware = createMiddleware({
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Manejar requests de Chrome DevTools y herramientas de desarrollo
-  if (pathname.startsWith('/.well-known/')) {
-    return NextResponse.next();
-  }
-
-  // Manejar otros requests problemáticos comunes
-  if (pathname === '/favicon.ico') {
+  // Excluir assets estáticos - IMPORTANTE para que las imágenes funcionen
+  if (pathname.startsWith('/assets/') || 
+      pathname.startsWith('/.well-known/') ||
+      pathname === '/favicon.ico' ||
+      pathname.startsWith('/robots.txt') ||
+      pathname.startsWith('/sitemap.xml')) {
     return NextResponse.next();
   }
 
@@ -41,7 +40,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - assets (public assets like images)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|assets).*)',
   ],
 };
