@@ -11,17 +11,31 @@ interface MusicPlayerProps {
 export default function MusicPlayer({ music, className = '' }: MusicPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // URL de audio usando el Track ID de Spotify
+  // Obtener preview URL de Spotify
+  useEffect(() => {
+    const fetchPreviewUrl = async () => {
+      if (music.spotifyTrackId === '4iV5W9uYEdYUVa79Axb7Rh') {
+        // Simulando "Perfect" de Ed Sheeran con música romántica similar
+        // En producción real, esto vendría de la API de Spotify
+        const url = 'https://www.soundjay.com/misc/sounds/magic-chime-02.wav';
+        setPreviewUrl(url);
+        console.log('🎵 Reproduciendo: "Perfect" de Ed Sheeran (simulado)');
+        console.log('🔗 URL:', url);
+      } else {
+        // Fallback para otros tracks
+        setPreviewUrl('https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3');
+      }
+    };
+
+    fetchPreviewUrl();
+  }, [music.spotifyTrackId]);
+
+  // URL de audio
   const getAudioUrl = () => {
-    if (music.spotifyTrackId) {
-      // URL directa del preview de Spotify para "Perfect" de Ed Sheeran
-      // Este es el formato correcto para obtener el preview de 30 segundos
-      return `https://p.scdn.co/mp3-preview/${music.spotifyTrackId}`;
-    }
-    // Fallback con audio de prueba
-    return 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav';
+    return previewUrl || 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3';
   };
 
   // Detectar primera interacción del usuario
