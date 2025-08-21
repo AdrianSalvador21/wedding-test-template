@@ -195,7 +195,7 @@ const Hero = () => {
         >
           {/* "NUESTRA BODA" */}
           <div className="mb-8">
-            <h2 className="text-xs md:text-sm font-body font-light tracking-[0.4em] uppercase text-white opacity-80 mb-8">
+            <h2 className="text-xs md:text-sm font-body font-light tracking-[0.4em] uppercase text-white opacity-80 mb-2">
               {t('ourWedding')}
             </h2>
             

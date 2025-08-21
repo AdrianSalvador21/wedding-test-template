@@ -163,6 +163,19 @@ export interface AdultOnlyEvent {
   message?: string;
 }
 
+// Configuración de música de fondo
+export interface MusicConfig {
+  enabled: boolean;
+  spotifyTrackId?: string;
+  spotifyPlaylistId?: string;
+  title?: string;
+  artist?: string;
+  autoplay?: boolean;
+  volume?: number; // 0-1
+  showControls?: boolean;
+  startTime?: number; // Tiempo de inicio en segundos
+}
+
 // Tipo principal que contiene toda la información de la boda
 export interface WeddingData {
   id: string;
@@ -180,6 +193,7 @@ export interface WeddingData {
   transport: TransportInfo;
   giftRegistry: GiftRegistry;
   adultOnlyEvent: AdultOnlyEvent;
+  music?: MusicConfig;
   theme: {
     id: string; // ID del tema predefinido ('classic', 'romantic', 'modern', 'elegant')
   };

@@ -18,6 +18,7 @@ import RSVP from './sections/RSVP';
 import Location from './sections/Location';
 import Footer from './sections/Footer';
 import InvitationOverlay from './InvitationOverlay';
+import MusicPlayer from './MusicPlayer';
 
 interface WeddingTemplateProps {
   guestId?: string | null;
@@ -97,6 +98,11 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
             weddingId={currentWedding.id}
             onClose={() => setShowOverlay(false)}
           />
+        )}
+
+        {/* Reproductor de música de fondo */}
+        {currentWedding.music && (
+          <MusicPlayer music={currentWedding.music} />
         )}
       </main>
     </ThemeProvider>

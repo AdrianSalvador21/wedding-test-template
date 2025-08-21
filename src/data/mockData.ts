@@ -1083,6 +1083,321 @@ export const mockWeddingPremium: WeddingData = {
   updatedAt: '2025-01-01T00:00:00.000Z'
 };
 
+// Mock data para Friends Test (ID: friends-test) - Tema Classic (igual que María & Carlos)
+export const mockWeddingFriendsTest: WeddingData = {
+  id: 'friends-test',
+  couple: {
+    bride: {
+      name: 'Maria',
+      fullName: 'María Elena González',
+      phone: '+52 55 1234-5678',
+      email: 'maria@email.com',
+      instagram: '@maria_gonzalez',
+      facebook: 'maria.gonzalez'
+    },
+    groom: {
+      name: 'Carlos',
+      fullName: 'Carlos Antonio Rodríguez',
+      phone: '+52 55 8765-4321',
+      email: 'carlos@email.com',
+      instagram: '@carlos_rodriguez',
+      facebook: 'carlos.rodriguez'
+    },
+    coupleEmail: 'maria.carlos@email.com',
+    hashtag: '#MaríaYCarlos2025',
+    story: 'Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.',
+    quote: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.'
+  },
+  event: {
+    weddingId: 'friends-test',
+    date: '2025-11-21T16:00:00.000Z',
+    time: '16:00',
+    ceremony: {
+      time: '16:00',
+      duration: 45
+    },
+    reception: {
+      time: '19:30',
+      duration: 360
+    },
+    ceremonyVenue: {
+      name: 'Iglesia del Sagrado Corazón',
+      address: 'Calle de los Santos 456, Ciudad, Estado 12345',
+      coordinates: {
+        lat: 19.4290,
+        lng: -99.1285
+      },
+      description: 'Hermosa iglesia con arquitectura colonial donde celebraremos nuestra ceremonia religiosa'
+    },
+    receptionVenue: {
+      name: 'Jardines del Edén',
+      address: 'Av. Principal 123, Ciudad, Estado 12345',
+      coordinates: {
+        lat: 19.4326,
+        lng: -99.1332
+      },
+      description: 'Un hermoso lugar rodeado de naturaleza, perfecto para celebrar nuestro amor. Con amplios jardines, salones elegantes y vistas espectaculares.',
+      features: [
+        'Jardines exteriores para cóctel',
+        'Salón principal climatizado',
+        'Estacionamiento amplio y seguro',
+        'Área de fotos panorámicas',
+        'Coctelera al aire libre',
+        'Música y sonido profesional'
+      ]
+    },
+    dressCode: {
+      style: 'Formal / Cocktail',
+      description: 'Queremos que te sientas elegante y cómodo en nuestra celebración',
+      recommendations: {
+        ladies: [
+          'Vestidos midi o largos elegantes',
+          'Conjuntos de falda y blusa sofisticados',
+          'Pantalones de vestir con blusa elegante',
+          'Vestidos cóctel o de fiesta'
+        ],
+        gentlemen: [
+          'Traje completo (saco y pantalón)',
+          'Pantalón de vestir con camisa y saco',
+          'Camisa de vestir (corbata opcional)',
+          'Zapatos de vestir formales'
+        ]
+      },
+      colors: {
+        recommended: ['#8b7355', '#a67c5a', '#d4af8c', '#2c3e50', '#8e44ad', '#27ae60'],
+        avoid: ['#ffffff', '#f8f8ff', '#ff0000', '#00ff00']
+      }
+    },
+    rsvpDeadline: '2025-10-15T23:59:59.000Z'
+  },
+  timeline: [
+    {
+      id: 'arrival',
+      time: '15:30',
+      title: 'Llegada de Invitados',
+      description: 'Recepción y bienvenida en los jardines',
+      icon: 'MapPin'
+    },
+    {
+      id: 'ceremony',
+      time: '16:00',
+      title: 'Ceremonia Civil',
+      description: '¡El momento más esperado! Intercambio de votos',
+      icon: 'Heart',
+      isHighlight: true
+    },
+    {
+      id: 'photos',
+      time: '16:45',
+      title: 'Sesión de Fotos',
+      description: 'Fotos con familiares y amigos cercanos',
+      icon: 'Camera'
+    },
+    {
+      id: 'cocktail',
+      time: '18:00',
+      title: 'Cóctel de Celebración',
+      description: 'Aperitivos y bebidas mientras preparamos la recepción',
+      icon: 'Utensils'
+    },
+    {
+      id: 'reception',
+      time: '19:30',
+      title: 'Cena y Brindis',
+      description: 'Cena especial con nuestros seres queridos',
+      icon: 'Utensils'
+    },
+    {
+      id: 'party',
+      time: '21:00',
+      title: '¡A Bailar!',
+      description: 'Música, baile y diversión hasta altas horas',
+      icon: 'Music'
+    }
+  ],
+  gallery: [
+    {
+      id: 'friends1',
+      url: '/assets/friends/03.jpeg',
+      alt: 'María y Carlos - Momento especial con amigos',
+      cols: 2,
+      rows: 2
+    },
+    {
+      id: 'friends2',
+      url: '/assets/friends/02.jpeg',
+      alt: 'Celebración con amigos',
+      cols: 1,
+      rows: 1
+    },
+    {
+      id: 'friends3',
+      url: '/assets/friends/03.jpeg',
+      alt: 'Momentos divertidos',
+      cols: 1,
+      rows: 1
+    },
+    {
+      id: 'friends4',
+      url: '/assets/friends/04.jpeg',
+      alt: 'Risas compartidas',
+      cols: 1,
+      rows: 2
+    },
+    {
+      id: 'friends5',
+      url: '/assets/friends/05.jpeg',
+      alt: 'Aventuras juntos',
+      cols: 1,
+      rows: 1
+    },
+    {
+      id: 'friends6',
+      url: '/assets/friends/06.jpeg',
+      alt: 'Recuerdos inolvidables',
+      cols: 1,
+      rows: 1
+    },
+    {
+      id: 'friends7',
+      url: '/assets/friends/07.jpeg',
+      alt: 'Momentos de felicidad',
+      cols: 2,
+      rows: 1
+    },
+    {
+      id: 'friends8',
+      url: '/assets/friends/08.jpeg',
+      alt: 'Diversión con amigos',
+      cols: 1,
+      rows: 1
+    },
+    {
+      id: 'friends9',
+      url: '/assets/friends/09.jpeg',
+      alt: 'Sonrisas sinceras',
+      cols: 1,
+      rows: 2
+    },
+    {
+      id: 'friends10',
+      url: '/assets/friends/10.jpeg',
+      alt: 'Amistad verdadera',
+      cols: 1,
+      rows: 1
+    }
+  ],
+  heroImage: {
+    url: '/assets/friends/011.jpg',
+    alt: 'María y Carlos - Friends Test - Imagen principal de boda'
+  },
+  specialMoments: [
+    {
+      year: '2018',
+      title: 'Primer Encuentro',
+      description: 'Nos conocimos en una cafetería del centro'
+    },
+    {
+      year: '2021',
+      title: 'Nuestra Primera Casa',
+      description: 'Comenzamos a vivir juntos'
+    },
+    {
+      year: '2024',
+      title: 'La Propuesta',
+      description: 'Carlos le pidió matrimonio a María en la playa'
+    }
+  ],
+  relationshipStats: {
+    yearsTogther: 6,
+    adventures: 47,
+    memories: 1250,
+    dreams: 8
+  },
+  accommodation: [
+    {
+      name: 'Hotel Boutique Central',
+      distance: '5 min del lugar',
+      price: 'Desde $120/noche',
+      phone: '+52 55 1111-2222',
+      website: 'www.hotelboutiquecentral.com',
+      amenities: ['WiFi gratuito', 'Desayuno incluido', 'Estacionamiento']
+    },
+    {
+      name: 'Gran Hotel Plaza',
+      distance: '10 min del lugar',
+      price: 'Desde $80/noche',
+      phone: '+52 55 3333-4444',
+      website: 'www.granhotelplaza.com',
+      amenities: ['WiFi gratuito', 'Gimnasio', 'Piscina']
+    }
+  ],
+  transport: {
+    parking: true,
+    valetParking: true,
+    shuttleService: {
+      available: true,
+      pickupPoints: ['Hotel Boutique Central', 'Gran Hotel Plaza'],
+      schedule: ['15:00', '15:15', '15:30']
+    },
+    publicTransport: 'Estación de metro a 2 cuadras',
+    rideshare: true
+  },
+  giftRegistry: {
+    enabled: true,
+    message: 'Tu presencia es nuestro regalo más valioso, pero si deseas hacernos un obsequio, hemos preparado algunas opciones:',
+    registries: [
+      {
+        id: 'liverpool',
+        name: 'Liverpool',
+        url: 'https://mesaderegalos.liverpool.com.mx/milistaderegalos/123456789',
+        description: 'Mesa de regalos en Liverpool con todo lo que necesitamos para nuestro hogar'
+      },
+      {
+        id: 'amazon',
+        name: 'Amazon',
+        url: 'https://www.amazon.com.mx/hz/wishlist/ls/2ABCDEFGHIJKL',
+        description: 'Lista de deseos en Amazon con productos prácticos para nuestra nueva vida juntos'
+      },
+      {
+        id: 'palacio',
+        name: 'El Palacio de Hierro',
+        url: 'https://www.elpalaciodehierro.com/mesa-de-regalos/maria-carlos-2025',
+        description: 'Mesa de regalos con artículos elegantes y de calidad'
+      }
+    ],
+    bankAccount: {
+      bankName: 'Banco BBVA',
+      accountName: 'María Elena González',
+      accountNumber: '1234567890',
+      clabe: '012345678901234567',
+      description: 'También puedes contribuir directamente a nuestra cuenta bancaria'
+    }
+  },
+  adultOnlyEvent: {
+    enabled: true,
+    message: 'Aunque adoramos a los pequeños de la familia, hemos decidido que nuestra celebración sea solo para adultos. Esperamos que puedan acompañarnos en esta noche especial.'
+  },
+  music: {
+    enabled: true,
+    spotifyTrackId: '4iV5W9uYEdYUVa79Axb7Rh', // "Perfect" by Ed Sheeran - ID original
+    title: 'Perfect',
+    artist: 'Ed Sheeran',
+    autoplay: true,
+    volume: 0.3,
+    showControls: false, // Volver a modo minimalista
+    startTime: 0
+  },
+  theme: {
+    id: 'classic'
+  },
+  languages: ['es', 'en'],
+  defaultLanguage: 'es',
+  isActive: true,
+  createdAt: '2025-01-01T00:00:00.000Z',
+  updatedAt: '2025-01-01T00:00:00.000Z'
+};
+
 // Mock data para Roberto & Patricia (ID: roberto-patricia-2025) - Tema Corporate
 export const mockWeddingCorporate: WeddingData = {
   id: 'roberto-patricia-2025',
@@ -1370,7 +1685,8 @@ export const mockWeddings: Record<string, WeddingData> = {
   'ana-luis-2025': mockWeddingAnaLuis,
   'isabella-alexander-2025': mockWeddingLuxury,
   'valentina-sebastian-2025': mockWeddingPremium,
-  'roberto-patricia-2025': mockWeddingCorporate
+  'roberto-patricia-2025': mockWeddingCorporate,
+  'friends-test': mockWeddingFriendsTest
 };
 
 // Función para obtener datos mock

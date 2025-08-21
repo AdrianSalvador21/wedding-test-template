@@ -1,5 +1,5 @@
 import { WeddingInvitation, GuestInfo } from '../types/wedding';
-import { mockWeddingMariaCarlos, mockWeddingAnaLuis, mockWeddingLuxury, mockWeddingPremium, mockWeddingCorporate } from './mockData';
+import { mockWeddingMariaCarlos, mockWeddingAnaLuis, mockWeddingLuxury, mockWeddingPremium, mockWeddingCorporate, mockWeddingFriendsTest } from './mockData';
 
 // Mocks de invitados para María & Carlos
 export const mockGuestsMariaCarlos: GuestInfo[] = [
@@ -283,6 +283,47 @@ export const mockGuestsPremium: GuestInfo[] = [
   }
 ];
 
+// Invitados para Friends Test (mismo formato que María & Carlos)
+export const mockGuestsFriendsTest: GuestInfo[] = [
+  {
+    id: 'guest-001',
+    name: 'Ana Patricia López',
+    email: 'ana.lopez@email.com',
+    phone: '+52 55 1111-2222',
+    allowedGuests: 2,
+    guestType: 'close_family',
+    table: 'Mesa 1',
+    specialMessage: 'Querida Ana, como madrina de María, tu presencia es fundamental en este día tan especial. ¡Te esperamos con mucho amor!',
+    isConfirmed: false,
+    notes: 'Madrina de la novia'
+  },
+  {
+    id: 'guest-002',
+    name: 'Roberto Martínez',
+    email: 'roberto.martinez@email.com',
+    allowedGuests: 1,
+    guestType: 'friends',
+    table: 'Mesa 5',
+    specialMessage: 'Roberto, tu amistad ha sido invaluable para nosotros. ¡Será un honor tenerte en nuestra boda!',
+    isConfirmed: true,
+    confirmedGuests: 1,
+    notes: 'Amigo de la universidad'
+  },
+  {
+    id: 'guest-003',
+    name: 'Familia Rodríguez',
+    email: 'familia.rodriguez@email.com',
+    phone: '+52 55 3333-4444',
+    allowedGuests: 4,
+    guestType: 'family',
+    table: 'Mesa 2',
+    specialMessage: 'Querida familia, su amor y apoyo han sido fundamentales en nuestro camino. ¡Los esperamos con los brazos abiertos!',
+    dietaryRestrictions: ['vegetariano'],
+    isConfirmed: false,
+    notes: 'Familia del novio - incluye abuelos'
+  }
+];
+
 // Invitados para Roberto & Patricia (Corporate Theme)
 export const mockGuestsCorporate: GuestInfo[] = [
   {
@@ -371,6 +412,7 @@ export const guestsByWedding: Record<string, GuestInfo[]> = {
   'isabella-alexander-2025': mockGuestsLuxury,
   'valentina-sebastian-2025': mockGuestsPremium,
   'roberto-patricia-2025': mockGuestsCorporate,
+  'friends-test': mockGuestsFriendsTest,
 };
 
 // Mocks de invitaciones completas
@@ -409,13 +451,21 @@ export const mockInvitationCorporate: WeddingInvitation[] = mockGuestsCorporate.
   updatedAt: '2025-01-01T00:00:00.000Z'
 }));
 
+export const mockInvitationFriendsTest: WeddingInvitation[] = mockGuestsFriendsTest.map(guest => ({
+  wedding: mockWeddingFriendsTest,
+  guest,
+  createdAt: '2025-01-01T00:00:00.000Z',
+  updatedAt: '2025-01-01T00:00:00.000Z'
+}));
+
 // Mapa de invitaciones disponibles
 export const mockInvitations: Record<string, WeddingInvitation[]> = {
   'maria-carlos-2025': mockInvitationMariaCarlos,
   'ana-luis-2025': mockInvitationAnaLuis,
   'isabella-alexander-2025': mockInvitationLuxury,
   'valentina-sebastian-2025': mockInvitationPremium,
-  'roberto-patricia-2025': mockInvitationCorporate
+  'roberto-patricia-2025': mockInvitationCorporate,
+  'friends-test': mockInvitationFriendsTest
 };
 
 // Función para obtener invitación específica
