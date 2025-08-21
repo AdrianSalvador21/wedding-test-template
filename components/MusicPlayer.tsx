@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { MusicConfig } from '../src/types/wedding';
+import { spotifyApi } from '../src/services/spotifyApi';
 
 interface MusicPlayerProps {
   music: MusicConfig;
@@ -14,24 +15,40 @@ export default function MusicPlayer({ music, className = '' }: MusicPlayerProps)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Obtener preview URL de Spotify
+  // Obtener preview URL real de Spotify
   useEffect(() => {
     const fetchPreviewUrl = async () => {
-      if (music.spotifyTrackId === '4iV5W9uYEdYUVa79Axb7Rh') {
-        // Simulando "Perfect" de Ed Sheeran con música romántica similar
-        // En producción real, esto vendría de la API de Spotify
-        const url = 'https://www.soundjay.com/misc/sounds/magic-chime-02.wav';
-        setPreviewUrl(url);
-        console.log('🎵 Reproduciendo: "Perfect" de Ed Sheeran (simulado)');
-        console.log('🔗 URL:', url);
-      } else {
-        // Fallback para otros tracks
+      if (!music.spotifyTrackId) {
+        setPreviewUrl('https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3');
+        return;
+      }
+
+      try {
+        console.log('🎵 Obteniendo preview de Spotify para:', music.title, 'by', music.artist);
+        console.log('🔗 Track ID:', music.spotifyTrackId);
+        
+        // Usar la API real de Spotify para obtener el preview URL
+        const response = await spotifyApi.getTrack(music.spotifyTrackId);
+        
+        if (response.success && response.data && response.data.preview_url) {
+          setPreviewUrl(response.data.preview_url);
+          console.log('✅ Preview URL obtenido de Spotify:', response.data.preview_url);
+          console.log('🎵 Reproduciendo:', response.data.name, 'by', response.data.artists[0]?.name);
+        } else {
+          console.warn('⚠️ No hay preview disponible para este track en Spotify');
+          console.warn('⚠️ Respuesta de Spotify:', response);
+          // Fallback con audio de prueba
+          setPreviewUrl('https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3');
+        }
+      } catch (error) {
+        console.error('❌ Error obteniendo preview de Spotify:', error);
+        // Fallback en caso de error
         setPreviewUrl('https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3');
       }
     };
 
     fetchPreviewUrl();
-  }, [music.spotifyTrackId]);
+  }, [music.spotifyTrackId, music.title, music.artist]);
 
   // URL de audio
   const getAudioUrl = () => {

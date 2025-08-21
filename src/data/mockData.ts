@@ -1380,7 +1380,7 @@ export const mockWeddingFriendsTest: WeddingData = {
   },
   music: {
     enabled: true,
-    spotifyTrackId: '4iV5W9uYEdYUVa79Axb7Rh', // "Perfect" by Ed Sheeran - ID original
+    spotifyTrackId: '1HNkqx9Ahdgi1Ixy2xkKkL', // "Perfect" by Ed Sheeran - ID correcto
     title: 'Perfect',
     artist: 'Ed Sheeran',
     autoplay: true,
