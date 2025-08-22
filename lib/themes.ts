@@ -125,8 +125,8 @@ export const classicTheme: WeddingTheme = {
       desktop: 'text-7xl lg:text-8xl xl:text-9xl',
     },
     sectionTitle: {
-      mobile: 'text-2xl',
-      desktop: 'text-4xl lg:text-5xl',
+      mobile: 'text-[26px]',
+      desktop: 'text-[26px]',
     },
     subtitle: {
       mobile: 'text-lg',
@@ -211,8 +211,8 @@ export const romanticTheme: WeddingTheme = {
       desktop: 'text-6xl lg:text-7xl xl:text-8xl',
     },
     sectionTitle: {
-      mobile: 'text-2xl',
-      desktop: 'text-3xl lg:text-4xl',
+      mobile: 'text-[26px]',
+      desktop: 'text-[26px]',
     },
     subtitle: {
       mobile: 'text-lg',
@@ -297,8 +297,8 @@ export const modernTheme: WeddingTheme = {
       desktop: 'text-5xl lg:text-6xl xl:text-7xl',
     },
     sectionTitle: {
-      mobile: 'text-xl',
-      desktop: 'text-2xl lg:text-3xl',
+      mobile: 'text-[26px]',
+      desktop: 'text-[26px]',
     },
     subtitle: {
       mobile: 'text-base',
@@ -383,8 +383,8 @@ export const elegantTheme: WeddingTheme = {
       desktop: 'text-8xl lg:text-9xl',
     },
     sectionTitle: {
-      mobile: 'text-3xl',
-      desktop: 'text-5xl lg:text-6xl',
+      mobile: 'text-[26px]',
+      desktop: 'text-[26px]',
     },
     subtitle: {
       mobile: 'text-xl',
@@ -469,8 +469,8 @@ export const luxuryTheme: WeddingTheme = {
       desktop: 'text-7xl lg:text-8xl xl:text-9xl',
     },
     sectionTitle: {
-      mobile: 'text-3xl',
-      desktop: 'text-5xl lg:text-6xl',
+      mobile: 'text-[26px]',
+      desktop: 'text-[26px]',
     },
     subtitle: {
       mobile: 'text-xl',
@@ -555,8 +555,8 @@ export const premiumTheme: WeddingTheme = {
       desktop: 'text-8xl lg:text-9xl xl:text-10xl',
     },
     sectionTitle: {
-      mobile: 'text-3xl',
-      desktop: 'text-5xl lg:text-6xl',
+      mobile: 'text-[26px]',
+      desktop: 'text-[26px]',
     },
     subtitle: {
       mobile: 'text-xl',
@@ -641,8 +641,8 @@ export const corporateTheme: WeddingTheme = {
       desktop: 'text-7xl lg:text-8xl xl:text-9xl',
     },
     sectionTitle: {
-      mobile: 'text-3xl',
-      desktop: 'text-5xl lg:text-6xl',
+      mobile: 'text-[26px]',
+      desktop: 'text-[26px]',
     },
     subtitle: {
       mobile: 'text-xl',

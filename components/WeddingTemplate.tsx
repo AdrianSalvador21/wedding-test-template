@@ -14,6 +14,7 @@ import DressCode from './sections/DressCode';
 import GiftRegistry from './sections/GiftRegistry';
 import Accommodation from './sections/Accommodation';
 import AdultOnlyEvent from './sections/AdultOnlyEvent';
+import RecommendedPlaces from './sections/RecommendedPlaces';
 import RSVP from './sections/RSVP';
 import Location from './sections/Location';
 import Footer from './sections/Footer';
@@ -88,6 +89,7 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
         <GiftRegistry />
         <Accommodation />
         <AdultOnlyEvent />
+        <RecommendedPlaces />
         <RSVP />
         <Footer />
         

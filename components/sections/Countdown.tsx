@@ -109,7 +109,7 @@ const Countdown = () => {
           <>
             {/* Título con línea decorativa */}
             <div className="mb-12">
-              <h2 className="section-title text-stone-600 opacity-80 mb-4">
+              <h2 className="section-title text-stone-600 opacity-90 mb-4">
                 {t('subtitle')}
               </h2>
               <div className="w-16 h-0.5 bg-accent mx-auto"></div>

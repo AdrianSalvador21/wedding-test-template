@@ -1231,25 +1231,11 @@ export const mockWeddingFriendsTest: WeddingData = {
       rows: 1
     },
     {
-      id: 'friends3',
-      url: '/assets/friends/03.jpeg',
-      alt: 'Momentos divertidos',
-      cols: 1,
-      rows: 1
-    },
-    {
       id: 'friends4',
       url: '/assets/friends/04.jpeg',
       alt: 'Risas compartidas',
       cols: 1,
       rows: 2
-    },
-    {
-      id: 'friends5',
-      url: '/assets/friends/05.jpeg',
-      alt: 'Aventuras juntos',
-      cols: 1,
-      rows: 1
     },
     {
       id: 'friends6',
@@ -1279,13 +1265,6 @@ export const mockWeddingFriendsTest: WeddingData = {
       cols: 1,
       rows: 2
     },
-    {
-      id: 'friends10',
-      url: '/assets/friends/10.jpeg',
-      alt: 'Amistad verdadera',
-      cols: 1,
-      rows: 1
-    }
   ],
   heroImage: {
     url: '/assets/friends/011.jpg',
@@ -1380,13 +1359,103 @@ export const mockWeddingFriendsTest: WeddingData = {
   },
   music: {
     enabled: true,
-    spotifyTrackId: '4iV5W9uYEdYUVa79Axb7Rh', // "Perfect" by Ed Sheeran - ID original
+    fileName: 'perfect-ed.mp3', // Archivo MP3 local en /assets/music/
+    spotifyTrackId: '0tgVpDi06FyKpA1z0VMD4v', // "Perfect" by Ed Sheeran
     title: 'Perfect',
     artist: 'Ed Sheeran',
     autoplay: true,
     volume: 0.3,
-    showControls: false, // Volver a modo minimalista
-    startTime: 0
+    showControls: false,
+    startTime: 0,
+    useRealSpotify: false // false = usa archivo local, true = intenta preview real
+  },
+  recommendedPlaces: {
+    enabled: true,
+    title: 'Lugares Recomendados',
+    subtitle: 'Guía especial de lugares para nuestros invitados',
+    places: [
+      // Hospedaje
+      {
+        id: 'hotel-boutique-colonial',
+        name: 'Hotel Boutique Casa Colonial',
+        category: 'hospedaje',
+        description: 'Hotel elegante en el centro histórico, perfecto para una estancia romántica',
+        address: 'Av. Principal 456, Centro Histórico, Ciudad de México',
+        distance: '2.5 km del evento',
+        priceRange: '$$$',
+        phone: '+52 55 1234-5678',
+        website: 'www.casacolonial.com',
+        coordinates: { lat: 19.4326, lng: -99.1332 }
+      },
+      {
+        id: 'hotel-plaza-central',
+        name: 'Hotel Plaza Central',
+        category: 'hospedaje',
+        description: 'Hotel moderno con excelente ubicación y servicios completos',
+        address: 'Plaza Central 123, Zona Rosa, Ciudad de México',
+        distance: '3.8 km del evento',
+        priceRange: '$$',
+        phone: '+52 55 2345-6789',
+        website: 'www.plazacentral.com',
+        coordinates: { lat: 19.4284, lng: -99.1276 }
+      },
+      // Restaurantes
+      {
+        id: 'restaurante-tradicion',
+        name: 'Restaurante Tradición Mexicana',
+        category: 'restaurante',
+        description: 'Auténtica cocina mexicana en un ambiente tradicional y acogedor',
+        address: 'Calle de los Sabores 789, Centro, Ciudad de México',
+        distance: '1.2 km del evento',
+        priceRange: '$$',
+        phone: '+52 55 3456-7890',
+        coordinates: { lat: 19.4320, lng: -99.1340 }
+      },
+      {
+        id: 'cafe-colonial',
+        name: 'Café Colonial',
+        category: 'restaurante',
+        description: 'Perfecto para desayunos y comidas ligeras con café de especialidad',
+        address: 'Av. Reforma 234, Juárez, Ciudad de México',
+        distance: '2.1 km del evento',
+        priceRange: '$',
+        phone: '+52 55 4567-8901',
+        coordinates: { lat: 19.4338, lng: -99.1398 }
+      },
+      // Atracciones
+      {
+        id: 'museo-arte-colonial',
+        name: 'Museo de Arte Colonial',
+        category: 'atraccion',
+        description: 'Impresionante colección de arte colonial mexicano en edificio histórico',
+        address: 'Plaza de la Cultura 567, Centro Histórico, Ciudad de México',
+        distance: '1.8 km del evento',
+        phone: '+52 55 5678-9012',
+        website: 'www.museoartecolonial.mx',
+        coordinates: { lat: 19.4351, lng: -99.1311 }
+      },
+      {
+        id: 'parque-alameda',
+        name: 'Parque Alameda Central',
+        category: 'atraccion',
+        description: 'Hermoso parque histórico, ideal para paseos románticos y fotografías',
+        address: 'Alameda Central, Centro Histórico, Ciudad de México',
+        distance: '2.3 km del evento',
+        coordinates: { lat: 19.4365, lng: -99.1426 }
+      },
+      // Transporte
+      {
+        id: 'aeropuerto-internacional',
+        name: 'Aeropuerto Internacional Benito Juárez',
+        category: 'transporte',
+        description: 'Principal aeropuerto de la ciudad. Recomendamos taxi o Uber para llegar',
+        address: 'Av. Capitán Carlos León S/N, Peñón de los Baños, Ciudad de México',
+        distance: '25 km del evento (45-60 min en taxi)',
+        phone: '+52 55 2482-2424',
+        website: 'www.aicm.com.mx',
+        coordinates: { lat: 19.4363, lng: -99.0721 }
+      }
+    ]
   },
   theme: {
     id: 'classic'

@@ -168,12 +168,39 @@ export interface MusicConfig {
   enabled: boolean;
   spotifyTrackId?: string;
   spotifyPlaylistId?: string;
+  fileName?: string; // Nombre del archivo MP3 en /assets/music/
   title?: string;
   artist?: string;
   autoplay?: boolean;
   volume?: number; // 0-1
   showControls?: boolean;
   startTime?: number; // Tiempo de inicio en segundos
+  useRealSpotify?: boolean; // true = intenta preview real, false = audio demo
+}
+
+// Lugar recomendado para invitados
+export interface RecommendedPlace {
+  id: string;
+  name: string;
+  category: 'hospedaje' | 'restaurante' | 'atraccion' | 'transporte';
+  description: string;
+  address: string;
+  distance?: string; // ej: "2.5 km del evento"
+  priceRange?: '$' | '$$' | '$$$';
+  phone?: string;
+  website?: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+}
+
+// Configuración de lugares recomendados
+export interface RecommendedPlacesConfig {
+  enabled: boolean;
+  title?: string;
+  subtitle?: string;
+  places: RecommendedPlace[];
 }
 
 // Tipo principal que contiene toda la información de la boda
@@ -194,6 +221,7 @@ export interface WeddingData {
   giftRegistry: GiftRegistry;
   adultOnlyEvent: AdultOnlyEvent;
   music?: MusicConfig;
+  recommendedPlaces?: RecommendedPlacesConfig;
   theme: {
     id: string; // ID del tema predefinido ('classic', 'romantic', 'modern', 'elegant')
   };

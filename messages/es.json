@@ -21,7 +21,7 @@
     "time": "Hora"
   },
   "about": {
-    "title": "Nuestra Historia",
+    "title": "Nuestra historia",
     "story": "Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.",
     "specialMoments": "Momentos Especiales",
     "stats": {
@@ -47,7 +47,7 @@
     "hashtagPrompt": "para que podamos ver todas las fotos."
   },
   "timeline": {
-    "title": "Cronograma del Evento",
+    "title": "Cronograma del evento",
     "subtitle": "Programa de eventos",
     "description": "Todo lo que necesitas saber sobre nuestro día especial",
     "scheduleNote": "Los horarios son aproximados, ¡queremos que disfrutes sin prisas!",
@@ -93,7 +93,7 @@
     }
   },
   "dressCode": {
-    "title": "Código de Vestimenta",
+    "title": "Código de vestimenta",
     "subtitle": "Formal / Cocktail",
     "description": "Queremos que te sientas elegante y cómodo en nuestra celebración",
     "mainMessage": "Invitamos a nuestros queridos invitados a vestirse con elegancia. Piensa en una celebración sofisticada al aire libre con toques de jardín.",
@@ -171,7 +171,7 @@
     }
   },
   "rsvp": {
-    "title": "Confirmar Asistencia",
+    "title": "Confirmar asistencia",
     "subtitle": "¡Queremos celebrar contigo!",
     "description": "Por favor confirma tu asistencia. Tu presencia hará que este día sea aún más especial.",
     "form": {
@@ -199,7 +199,7 @@
       "submitting": "Enviando..."
     },
     "eventInfo": {
-      "title": "Información del Evento",
+      "title": "Información del evento",
       "date": "Fecha: 21 de Noviembre, 2025",
       "dateLabel": "Fecha del evento",
       "time": "Hora: 4:00 PM - 2:00 AM",
@@ -210,7 +210,7 @@
       "dressCodeLabel": "Código de vestimenta"
     },
     "additionalInfo": {
-      "title": "Información Adicional",
+      "title": "Información adicional",
       "deadline": "Fecha límite para confirmar",
       "questions": "¿Tienes preguntas? Contáctanos"
     },
@@ -219,7 +219,7 @@
     "error": "Error al enviar. Inténtalo de nuevo."
   },
   "giftRegistry": {
-    "title": "Mesa de Regalos",
+    "title": "Mesa de regalos",
     "onlineRegistries": "Mesas de Regalos",
     "bankTransfer": "Transferencia Bancaria",
     "bank": "Banco",
@@ -232,7 +232,7 @@
     "clabeCopied": "CLABE copiado al portapapeles"
   },
   "accommodation": {
-    "title": "Hospedaje Recomendado",
+    "title": "Hospedaje recomendado",
     "subtitle": "Opciones de alojamiento cercanas al evento",
     "nearbyHotels": "Hoteles Cercanos",
     "description": "Te recomendamos estos hoteles para tu comodidad",
@@ -244,7 +244,7 @@
     "description": "Aunque adoramos a los pequeños de la familia, hemos decidido que nuestra celebración sea solo para adultos. Esperamos que puedan acompañarnos en esta noche especial para crear recuerdos únicos juntos."
   },
   "location": {
-    "title": "Ubicación del Evento",
+    "title": "Ubicación del evento",
     "ceremony": "Ceremonia Religiosa",
     "reception": "Recepción",
     "directions": "Ver ubicación",
@@ -254,11 +254,11 @@
     "reception.address": "Av. Principal 123, Ciudad"
   },
   "timeline": {
-    "title": "Cronograma del Evento",
+    "title": "Cronograma del evento",
     "subtitle": "Programa de eventos",
     "description": "Todo lo que necesitas saber sobre nuestro día especial",
     "scheduleNote": "Los horarios son aproximados, ¡queremos que disfrutes sin prisas!",
-    "eventSchedule": "Cronograma del Evento",
+    "eventSchedule": "Cronograma del evento",
     "events": {
       "arrival": {
         "time": "15:30",

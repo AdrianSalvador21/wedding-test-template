@@ -154,7 +154,7 @@ const Gallery = () => {
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
+          <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
           <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
           <p className="section-subtitle">
             {t('subtitle')}
@@ -166,7 +166,7 @@ const Gallery = () => {
           <div className="relative">
             {/* Main Carousel */}
             <div className="relative overflow-hidden rounded-3xl shadow-xl">
-              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[480px]">
+              <div className="relative h-96 sm:h-80 md:h-96 lg:h-[480px]">
                 <AnimatePresence initial={false} custom={direction}>
                   <motion.div
                     key={currentIndex}
