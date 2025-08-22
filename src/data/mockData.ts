@@ -23,7 +23,7 @@ export const mockWeddingMariaCarlos: WeddingData = {
       facebook: 'carlos.rodriguez'
     },
     coupleEmail: 'maria.carlos@email.com',
-    hashtag: '#MaríaYCarlos2025',
+    hashtag: '#Núriban&Juan2025',
     story: 'Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.',
     quote: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.'
   },
@@ -1088,7 +1088,7 @@ export const mockWeddingFriendsTest: WeddingData = {
   id: 'friends-test',
   couple: {
     bride: {
-      name: 'Maria',
+      name: 'Núriban',
       fullName: 'María Elena González',
       phone: '+52 55 1234-5678',
       email: 'maria@email.com',
@@ -1096,7 +1096,7 @@ export const mockWeddingFriendsTest: WeddingData = {
       facebook: 'maria.gonzalez'
     },
     groom: {
-      name: 'Carlos',
+      name: 'Juan',
       fullName: 'Carlos Antonio Rodríguez',
       phone: '+52 55 8765-4321',
       email: 'carlos@email.com',
@@ -1104,9 +1104,10 @@ export const mockWeddingFriendsTest: WeddingData = {
       facebook: 'carlos.rodriguez'
     },
     coupleEmail: 'maria.carlos@email.com',
-    hashtag: '#MaríaYCarlos2025',
+    hashtag: '#NúribanYJuan2025',
     story: 'Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.',
-    quote: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.'
+    quote: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.',
+    image: '/assets/friends/gallery-04.jpg' // Imagen específica para About
   },
   event: {
     weddingId: 'friends-test',
@@ -1217,22 +1218,22 @@ export const mockWeddingFriendsTest: WeddingData = {
   ],
   gallery: [
     {
-      id: 'friends1',
-      url: '/assets/friends/03.jpeg',
-      alt: 'María y Carlos - Momento especial con amigos',
-      cols: 2,
-      rows: 2
-    },
-    {
       id: 'friends2',
-      url: '/assets/friends/02.jpeg',
+      url: '/assets/friends/gallery-03.jpg',
       alt: 'Celebración con amigos',
       cols: 1,
       rows: 1
     },
     {
+      id: 'friends1',
+      url: '/assets/friends/20.jpeg',
+      alt: 'María y Carlos - Momento especial con amigos',
+      cols: 2,
+      rows: 2
+    },
+    {
       id: 'friends4',
-      url: '/assets/friends/04.jpeg',
+      url: '/assets/friends/gallery-02.jpg',
       alt: 'Risas compartidas',
       cols: 1,
       rows: 2
@@ -1253,21 +1254,21 @@ export const mockWeddingFriendsTest: WeddingData = {
     },
     {
       id: 'friends8',
-      url: '/assets/friends/08.jpeg',
+      url: '/assets/friends/gallery-01.jpg',
       alt: 'Diversión con amigos',
       cols: 1,
       rows: 1
     },
     {
       id: 'friends9',
-      url: '/assets/friends/09.jpeg',
+      url: '/assets/friends/13.jpeg',
       alt: 'Sonrisas sinceras',
       cols: 1,
       rows: 2
     },
   ],
   heroImage: {
-    url: '/assets/friends/011.jpg',
+    url: '/assets/friends/hero.jpg',
     alt: 'María y Carlos - Friends Test - Imagen principal de boda'
   },
   specialMoments: [
@@ -1387,30 +1388,7 @@ export const mockWeddingFriendsTest: WeddingData = {
         website: 'www.casacolonial.com',
         coordinates: { lat: 19.4326, lng: -99.1332 }
       },
-      {
-        id: 'hotel-plaza-central',
-        name: 'Hotel Plaza Central',
-        category: 'hospedaje',
-        description: 'Hotel moderno con excelente ubicación y servicios completos',
-        address: 'Plaza Central 123, Zona Rosa, Ciudad de México',
-        distance: '3.8 km del evento',
-        priceRange: '$$',
-        phone: '+52 55 2345-6789',
-        website: 'www.plazacentral.com',
-        coordinates: { lat: 19.4284, lng: -99.1276 }
-      },
       // Restaurantes
-      {
-        id: 'restaurante-tradicion',
-        name: 'Restaurante Tradición Mexicana',
-        category: 'restaurante',
-        description: 'Auténtica cocina mexicana en un ambiente tradicional y acogedor',
-        address: 'Calle de los Sabores 789, Centro, Ciudad de México',
-        distance: '1.2 km del evento',
-        priceRange: '$$',
-        phone: '+52 55 3456-7890',
-        coordinates: { lat: 19.4320, lng: -99.1340 }
-      },
       {
         id: 'cafe-colonial',
         name: 'Café Colonial',
@@ -1434,27 +1412,6 @@ export const mockWeddingFriendsTest: WeddingData = {
         website: 'www.museoartecolonial.mx',
         coordinates: { lat: 19.4351, lng: -99.1311 }
       },
-      {
-        id: 'parque-alameda',
-        name: 'Parque Alameda Central',
-        category: 'atraccion',
-        description: 'Hermoso parque histórico, ideal para paseos románticos y fotografías',
-        address: 'Alameda Central, Centro Histórico, Ciudad de México',
-        distance: '2.3 km del evento',
-        coordinates: { lat: 19.4365, lng: -99.1426 }
-      },
-      // Transporte
-      {
-        id: 'aeropuerto-internacional',
-        name: 'Aeropuerto Internacional Benito Juárez',
-        category: 'transporte',
-        description: 'Principal aeropuerto de la ciudad. Recomendamos taxi o Uber para llegar',
-        address: 'Av. Capitán Carlos León S/N, Peñón de los Baños, Ciudad de México',
-        distance: '25 km del evento (45-60 min en taxi)',
-        phone: '+52 55 2482-2424',
-        website: 'www.aicm.com.mx',
-        coordinates: { lat: 19.4363, lng: -99.0721 }
-      }
     ]
   },
   theme: {

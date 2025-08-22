@@ -20,6 +20,7 @@ export interface Couple {
   hashtag: string;
   story: string;
   quote: string;
+  image?: string; // Imagen específica para la sección About
 }
 
 // Tipos para la información del evento
