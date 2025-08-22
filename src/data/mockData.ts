@@ -1268,7 +1268,7 @@ export const mockWeddingFriendsTest: WeddingData = {
     },
   ],
   heroImage: {
-    url: '/assets/friends/hero01.jpg',
+    url: '/assets/friends/gallery-04.jpg',
     alt: 'María y Carlos - Friends Test - Imagen principal de boda'
   },
   specialMoments: [
