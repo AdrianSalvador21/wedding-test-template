@@ -45,7 +45,7 @@ const Accommodation = () => {
           backgroundPosition: '-304px -136px'
         }}
       >
-        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
           {/* Título */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
@@ -85,7 +85,7 @@ const Accommodation = () => {
   if (!isLoaded) {
     return (
       <section className="bg-white">
-        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto" />
             <div className="h-4 bg-gray-200 rounded w-96 mx-auto" />

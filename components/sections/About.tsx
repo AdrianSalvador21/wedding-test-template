@@ -25,7 +25,7 @@ const About = () => {
         backgroundSize: '1273px 845px'
       }}
     >
-      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
         {/* Título principal - manteniendo estilo original */}
         <div className="text-center mb-12">
           <h2 className="section-title text-stone-600 opacity-90 mb-4">
