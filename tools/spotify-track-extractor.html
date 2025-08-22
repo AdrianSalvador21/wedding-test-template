@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Extractor de Track ID de Spotify</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1db954, #191414);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1db954;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #191414;
+            box-sizing: border-box;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #1db954;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #1ed760;
+        }
+        
+        .result {
+            background: rgba(29, 185, 84, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #1db954;
+        }
+        
+        .result h3 {
+            margin-top: 0;
+            color: #1db954;
+        }
+        
+        .track-id {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            text-align: center;
+            margin: 10px 0;
+            border: 1px solid #1db954;
+        }
+        
+        .copy-btn {
+            background: #191414;
+            padding: 8px 15px;
+            font-size: 14px;
+            width: auto;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        
+        .example {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Extractor de Track ID</h1>
+        <p style="text-align: center; opacity: 0.8;">
+            Para obtener el Track ID de cualquier canción de Spotify
+        </p>
+        
+        <div class="input-group">
+            <label for="spotifyUrl">🔗 Pega aquí el enlace de Spotify:</label>
+            <input 
+                type="text" 
+                id="spotifyUrl" 
+                placeholder="https://open.spotify.com/track/0tgVpDi06FyKpA1z0VMD4v?si=..."
+            >
+        </div>
+        
+        <button onclick="extractTrackId()">🎯 Extraer Track ID</button>
+        
+        <div class="example">
+            <strong>💡 Cómo obtener el enlace:</strong><br>
+            1. Ve a <a href="https://open.spotify.com" target="_blank" style="color: #1db954;">open.spotify.com</a><br>
+            2. Busca tu canción<br>
+            3. Haz click en la canción<br>
+            4. Copia la URL del navegador<br>
+            5. Pégala arriba ☝️
+        </div>
+        
+        <div id="result" class="result hidden">
+            <h3>✅ Track ID Extraído:</h3>
+            <div class="track-id" id="trackId"></div>
+            <button class="copy-btn" onclick="copyTrackId()">📋 Copiar Track ID</button>
+            
+            <div style="margin-top: 20px;">
+                <strong>🎵 Información de la canción:</strong>
+                <div id="songInfo"></div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                <strong>📝 Código para tu proyecto:</strong>
+                <pre id="codeExample" style="color: #1db954; font-size: 12px; overflow-x: auto;"></pre>
+                <button class="copy-btn" onclick="copyCode()">📋 Copiar Código</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let extractedTrackId = '';
+        let extractedCode = '';
+
+        function extractTrackId() {
+            const url = document.getElementById('spotifyUrl').value.trim();
+            const resultDiv = document.getElementById('result');
+            const trackIdDiv = document.getElementById('trackId');
+            const songInfoDiv = document.getElementById('songInfo');
+            const codeExampleDiv = document.getElementById('codeExample');
+            
+            if (!url) {
+                alert('Por favor, pega un enlace de Spotify');
+                return;
+            }
+            
+            // Extraer Track ID usando regex
+            const trackIdMatch = url.match(/track\/([a-zA-Z0-9]{22})/);
+            
+            if (trackIdMatch) {
+                extractedTrackId = trackIdMatch[1];
+                trackIdDiv.textContent = extractedTrackId;
+                
+                // Simular información de la canción (en un proyecto real, usarías la API)
+                songInfoDiv.innerHTML = `
+                    <div style="margin: 10px 0;">
+                        <strong>Track ID:</strong> ${extractedTrackId}<br>
+                        <strong>URL Original:</strong> <a href="${url}" target="_blank" style="color: #1db954;">Ver en Spotify</a>
+                    </div>
+                `;
+                
+                // Generar código de ejemplo
+                extractedCode = `music: {
+  enabled: true,
+  spotifyTrackId: '${extractedTrackId}',
+  title: 'Nombre de la Canción',
+  artist: 'Nombre del Artista',
+  autoplay: true,
+  volume: 0.3,
+  showControls: false,
+  useRealSpotify: false // false = demo elegante, true = preview real
+}`;
+                
+                codeExampleDiv.textContent = extractedCode;
+                resultDiv.classList.remove('hidden');
+                
+            } else {
+                alert('❌ No se pudo extraer el Track ID. Asegúrate de que sea un enlace válido de Spotify.');
+            }
+        }
+        
+        function copyTrackId() {
+            navigator.clipboard.writeText(extractedTrackId).then(() => {
+                alert('✅ Track ID copiado al portapapeles!');
+            });
+        }
+        
+        function copyCode() {
+            navigator.clipboard.writeText(extractedCode).then(() => {
+                alert('✅ Código copiado al portapapeles!');
+            });
+        }
+        
+        // Permitir extraer con Enter
+        document.getElementById('spotifyUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                extractTrackId();
+            }
+        });
+    </script>
+</body>
+</html>

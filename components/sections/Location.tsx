@@ -43,7 +43,7 @@ const Location = () => {
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
           {/* Título */}
           <div className="text-center mb-12">
-            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
+            <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto"></div>
           </div>
 
@@ -132,7 +132,7 @@ const Location = () => {
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12">
-            <h2 className="section-title text-stone-600 opacity-80 mb-4">{t('title')}</h2>
+            <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto"></div>
           </div>
 
