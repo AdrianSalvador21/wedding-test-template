@@ -48,7 +48,7 @@ const About = () => {
             <div className="order-2 lg:order-1">
               <div className="relative overflow-hidden rounded-lg shadow-lg group">
                 <Image
-                  src={currentWedding?.gallery?.[0]?.url || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
+                  src={couple?.image || currentWedding?.gallery?.[0]?.url || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
                   alt={`${couple?.bride.name || 'Novia'} y ${couple?.groom.name || 'Novio'}`}
                   width={800}
                   height={1000}

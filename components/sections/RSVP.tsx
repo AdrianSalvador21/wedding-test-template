@@ -84,6 +84,7 @@ const RSVP = () => {
           {/* Título */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle font-body">
               {t('description')}
             </p>
@@ -119,6 +120,7 @@ const RSVP = () => {
           {/* Título */}
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle font-body">
               {t('description')}
             </p>
@@ -253,6 +255,7 @@ const RSVP = () => {
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
             <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle font-body">
               {t('description')}
             </p>
