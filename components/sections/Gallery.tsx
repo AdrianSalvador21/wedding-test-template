@@ -146,7 +146,7 @@ const Gallery = () => {
         backgroundPosition: '166% 11%'
       }}
     >
-      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
         {/* Título */}
         <motion.div 
           className="text-center mb-12"

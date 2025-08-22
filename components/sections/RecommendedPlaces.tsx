@@ -38,7 +38,7 @@ const RecommendedPlaces = () => {
         backgroundSize: '500px 800px'
       }}
     >
-      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
         
         {/* Título siguiendo el patrón exacto de otras secciones */}
         <div className="text-center mb-12">

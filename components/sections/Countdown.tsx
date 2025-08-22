@@ -61,7 +61,7 @@ const Countdown = () => {
   if (!mounted) {
     return (
       <section id="countdown" className="bg-gray-50">
-        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 text-center py-12">
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 text-center py-16">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-8" />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl mx-auto">
@@ -99,7 +99,7 @@ const Countdown = () => {
         backgroundSize: '1388px 909px'
       }}
           >
-      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 text-center py-12">
+      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 text-center py-16">
         {isEventPassed ? (
           <div className="max-w-2xl mx-auto">
             <p className="text-2xl text-accent font-body font-semibold mb-4">{t('eventPassed')}</p>
