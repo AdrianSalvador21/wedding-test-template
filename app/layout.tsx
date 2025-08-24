@@ -15,11 +15,11 @@ function DataInitializer({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Si estamos en la página principal (no en una ruta de wedding específica)
-    // cargamos los datos por defecto
-    if (pathname === '/' || pathname === '/en') {
+    // Solo cargar datos de boda para rutas específicas de wedding, no para la landing
+    if (pathname === '/en') {
       dispatch(fetchWeddingData('maria-carlos-2025'));
     }
+    // No cargar datos para '/' ya que es la landing page
   }, [dispatch, pathname]);
 
   // Solución para viewport height en iOS

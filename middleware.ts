@@ -12,6 +12,11 @@ const intlMiddleware = createMiddleware({
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Excluir la landing page (/) del middleware de internacionalización
+  if (pathname === '/') {
+    return NextResponse.next();
+  }
+
   // Excluir assets estáticos - IMPORTANTE para que las imágenes funcionen
   if (pathname.startsWith('/assets/') || 
       pathname.startsWith('/.well-known/') ||
@@ -28,7 +33,7 @@ export function middleware(request: NextRequest) {
     return new NextResponse('Not Found', { status: 404 });
   }
 
-  // Aplicar middleware de internacionalización
+  // Aplicar middleware de internacionalización solo a rutas que no sean la landing
   return intlMiddleware(request);
 }
 
