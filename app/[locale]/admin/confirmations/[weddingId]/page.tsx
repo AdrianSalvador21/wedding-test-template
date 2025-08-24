@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Users, Calendar, CheckCircle, XCircle, Download, Filter, Search } from 'lucide-react';
+import { XCircle } from 'lucide-react';
 import { rsvpService } from '../../../../../services/rsvpService';
 import { FirebaseRSVP } from '../../../../../src/types/wedding';
 
@@ -203,7 +203,7 @@ const AdminConfirmationsPage = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <select
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as any)}
+              onChange={(e) => setFilterStatus(e.target.value as 'all' | 'attending' | 'not-attending')}
               className="border-0 border-b border-stone-300 bg-transparent focus:border-stone-900 focus:outline-none transition-colors text-stone-700 py-2"
             >
               <option value="all">Todos</option>
@@ -290,7 +290,7 @@ const AdminConfirmationsPage = () => {
                         <div className="pt-5">
                           <div className="text-stone-600 font-medium mb-4">Mensaje</div>
                           <div className="bg-stone-50/80 rounded-xl p-5 border border-stone-100">
-                            <p className="text-stone-700 text-sm leading-relaxed italic font-light">"{rsvp.message}"</p>
+                            <p className="text-stone-700 text-sm leading-relaxed italic font-light">&ldquo;{rsvp.message}&rdquo;</p>
                           </div>
                         </div>
                       )}
@@ -304,7 +304,7 @@ const AdminConfirmationsPage = () => {
                       <h3 className="text-xl font-light text-stone-900 mb-1">{rsvp.guestName}</h3>
                       <p className="text-stone-500 text-sm">{rsvp.guestEmail}</p>
                       {rsvp.message && (
-                        <p className="text-stone-600 italic text-sm mt-2 max-w-md">"{rsvp.message}"</p>
+                        <p className="text-stone-600 italic text-sm mt-2 max-w-md">&ldquo;{rsvp.message}&rdquo;</p>
                       )}
                     </div>
 

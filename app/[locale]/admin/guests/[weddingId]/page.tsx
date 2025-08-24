@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Users, Plus, Edit2, Trash2, Save, X, UserPlus, Calendar, Copy, Check, Link, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Check, Link, ChevronDown, ChevronUp } from 'lucide-react';
 import { guestService } from '../../../../../services/guestService';
 import { FirebaseGuest } from '../../../../../src/types/wedding';
 
@@ -265,29 +265,7 @@ const AdminGuestsPage = () => {
     }
   };
 
-  // Función temporal para reparar guestIds faltantes
-  const handleFixGuestIds = async () => {
-    try {
-      setIsSubmitting(true);
-      await guestService.fixMissingGuestIds(weddingId);
-      
-      // Recargar invitados
-      const [updatedGuests, updatedStats] = await Promise.all([
-        guestService.getWeddingGuests(weddingId),
-        guestService.getWeddingGuestStats(weddingId)
-      ]);
 
-      setGuests(updatedGuests);
-      setStats(updatedStats);
-      
-      alert('✅ GuestIds reparados exitosamente');
-    } catch (err) {
-      console.error('Error reparando guestIds:', err);
-      setError('Error al reparar guestIds');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -703,7 +681,7 @@ const AdminGuestsPage = () => {
                         <div className="pt-5">
                           <div className="text-stone-600 font-medium mb-4">Mensaje de los Novios</div>
                           <div className="bg-stone-50/80 rounded-xl p-5 border border-stone-100">
-                            <p className="text-stone-700 text-sm leading-relaxed font-light">"{guest.coupleMessage}"</p>
+                            <p className="text-stone-700 text-sm leading-relaxed font-light">&ldquo;{guest.coupleMessage}&rdquo;</p>
                           </div>
                         </div>
                       )}
@@ -712,7 +690,7 @@ const AdminGuestsPage = () => {
                         <div className="pt-5">
                           <div className="text-stone-600 font-medium mb-4">Mensaje del Invitado</div>
                           <div className="bg-stone-50/80 rounded-xl p-5 border border-stone-100">
-                            <p className="text-stone-700 text-sm leading-relaxed font-light">"{guest.rsvpConfirmation.message}"</p>
+                            <p className="text-stone-700 text-sm leading-relaxed font-light">&ldquo;{guest.rsvpConfirmation.message}&rdquo;</p>
                           </div>
                         </div>
                       )}
@@ -761,12 +739,12 @@ const AdminGuestsPage = () => {
                         <div className="space-y-2">
                           {guest.coupleMessage && (
                             <p className="text-stone-600 italic text-sm max-w-md">
-                              <span className="text-xs text-stone-500 uppercase tracking-wide font-medium">Novios:</span> "{guest.coupleMessage}"
+                              <span className="text-xs text-stone-500 uppercase tracking-wide font-medium">Novios:</span> &ldquo;{guest.coupleMessage}&rdquo;
                             </p>
                           )}
                           {guest.rsvpConfirmation?.message && (
                             <p className="text-stone-600 italic text-sm max-w-md">
-                              <span className="text-xs text-stone-500 uppercase tracking-wide font-medium">Invitado:</span> "{guest.rsvpConfirmation.message}"
+                              <span className="text-xs text-stone-500 uppercase tracking-wide font-medium">Invitado:</span> &ldquo;{guest.rsvpConfirmation.message}&rdquo;
                             </p>
                           )}
                         </div>

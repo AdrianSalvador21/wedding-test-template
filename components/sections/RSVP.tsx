@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,11 +11,11 @@ import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
-import { rsvpService } from '../../services/rsvpService';
+
 import { guestService } from '../../services/guestService';
 import { FirebaseRSVP } from '../../src/types/wedding';
 
-const RSVP = () => {
+const RSVPContent = () => {
   const { t } = useTranslations('rsvp');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
@@ -61,7 +61,7 @@ const RSVP = () => {
         setError(null);
 
         // Buscar el invitado y verificar si ya tiene confirmación
-        let guest = await guestService.getGuestByGuestId(guestId, weddingId);
+        const guest = await guestService.getGuestByGuestId(guestId, weddingId);
         
         if (guest && guest.rsvpConfirmation) {
           // Convertir la confirmación del invitado al formato RSVP para compatibilidad
@@ -165,7 +165,7 @@ const RSVP = () => {
         if (guestInfo) {
           guestCount = guestInfo.guestCount;
         }
-      } catch (error) {
+      } catch {
         console.warn('No se pudo obtener información del invitado, usando guestCount por defecto');
       }
 
@@ -593,6 +593,18 @@ const RSVP = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+const RSVP = () => {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-stone-300 border-t-stone-900 rounded-full"></div>
+      </div>
+    }>
+      <RSVPContent />
+    </Suspense>
   );
 };
 

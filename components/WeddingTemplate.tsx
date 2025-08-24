@@ -33,7 +33,7 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
   const { t } = useTranslations('template');
   const [showOverlay, setShowOverlay] = useState(!!guestId);
   const [guestInfo, setGuestInfo] = useState<FirebaseGuest | null>(null);
-  const [guestLoading, setGuestLoading] = useState(false);
+
   const router = useRouter();
   const params = useParams();
   const currentLocale = params.locale as string;
@@ -43,7 +43,7 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
     const fetchGuestInfo = async () => {
       if (!guestId || !currentWedding?.id) return;
 
-      setGuestLoading(true);
+
       try {
         const guest = await guestService.getGuestByGuestId(guestId, currentWedding.id);
         setGuestInfo(guest);
@@ -58,8 +58,6 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
       } catch (error) {
         console.error('Error buscando invitado:', error);
         setGuestInfo(null);
-      } finally {
-        setGuestLoading(false);
       }
     };
 
