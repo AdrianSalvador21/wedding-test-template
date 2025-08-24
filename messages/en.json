@@ -198,6 +198,12 @@
       "submit": "Confirm Attendance",
       "submitting": "Sending..."
     },
+    "confirmation": {
+      "received": "Confirmation Received!",
+      "registered": "Response Registered",
+      "seeYouThere": "See you on {date} at {venue}!",
+      "sorryToMiss": "We're sorry you can't join us. Thank you for responding!"
+    },
     "eventInfo": {
       "title": "Event Information",
       "date": "Date: November 21st, 2025",
@@ -316,7 +322,7 @@
     },
     "quote": "\"Love is the most powerful force in the world\"",
     "cta": "Have questions? Contact us!",
-    "copyright": "With love, María & Carlos"
+    "copyright": "With love, {brideName} & {groomName}"
   },
   "invitationOverlay": {
     "personalInvitation": "Personal Invitation",
@@ -346,5 +352,10 @@
     "notFoundMessage": "We couldn't find this invitation. Please verify that the link is correct.",
     "tryAgain": "Try again",
     "seeYouThere": "See you on {date} at {venue}!"
+  },
+  "recommendedPlaces": {
+    "title": "Recommended Places",
+    "subtitle": "Special guide to places for our guests",
+    "description": "We've selected some special places that we think you'll enjoy during your visit."
   }
 } 

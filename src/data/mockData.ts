@@ -1107,7 +1107,7 @@ export const mockWeddingFriendsTest: WeddingData = {
     hashtag: '#NúribanYJuan2025',
     story: 'Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.',
     quote: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.',
-    image: '/assets/friends/hero01.jpg' // Imagen específica para About
+    image: '/assets/friends/gallery-04.jpg' // Imagen específica para About
   },
   event: {
     weddingId: 'friends-test',
@@ -1268,7 +1268,7 @@ export const mockWeddingFriendsTest: WeddingData = {
     },
   ],
   heroImage: {
-    url: '/assets/friends/gallery-04.jpg',
+    url: '/assets/friends/hero01.jpg',
     alt: 'María y Carlos - Friends Test - Imagen principal de boda'
   },
   specialMoments: [
@@ -1360,8 +1360,8 @@ export const mockWeddingFriendsTest: WeddingData = {
   },
   music: {
     enabled: true,
-    fileName: 'perfect-ed.mp3', // Archivo MP3 local en /assets/music/
-    spotifyTrackId: '0tgVpDi06FyKpA1z0VMD4v', // "Perfect" by Ed Sheeran
+    fileName: 'test01.mp3', // Archivo MP3 local en /assets/music/
+    spotifyTrackId: '0tgVpDi06FyKpA1z0VMD4v', // "Perfect"n by Ed Sheeran
     title: 'Perfect',
     artist: 'Ed Sheeran',
     autoplay: true,

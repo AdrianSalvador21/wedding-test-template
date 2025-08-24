@@ -1,3 +1,50 @@
+// Tipos para Firebase RSVP
+export interface FirebaseRSVP {
+  id: string;
+  weddingId: string;
+  guestId: string;
+  guestName: string;
+  guestEmail: string;
+  attending: boolean;
+  guestCount?: number; // Número de invitados
+  plusOne?: {
+    attending: boolean;
+    name?: string;
+  };
+  dietaryRestrictions?: string;
+  message?: string;
+  submittedAt: string; // ISO timestamp
+  updatedAt: string; // ISO timestamp
+}
+
+export interface FirebaseGuest {
+  id: string;
+  weddingId: string;
+  guestId?: string; // ID único para la URL de invitación
+  name: string;
+  email?: string;
+  phone?: string;
+  plusOneAllowed: boolean;
+  guestCount: number; // Número total de invitados (incluyendo acompañante)
+  coupleMessage?: string; // Mensaje personalizado de los novios
+  language: 'es' | 'en'; // Idioma preferido del invitado
+  rsvpStatus: 'pending' | 'confirmed' | 'declined';
+  // Información de confirmación RSVP (cuando confirman asistencia)
+  rsvpConfirmation?: {
+    attending: boolean;
+    guestEmail?: string;
+    message?: string;
+    dietaryRestrictions?: string;
+    plusOne?: {
+      attending: boolean;
+      name?: string;
+    };
+    submittedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Tipos para la información de la pareja
 export interface Couple {
   bride: {
