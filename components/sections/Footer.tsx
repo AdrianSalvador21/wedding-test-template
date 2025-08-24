@@ -124,7 +124,7 @@ const Footer = () => {
 
             {/* Copyright */}
             <p className="text-white/60 text-xs font-body mt-6">
-              {t('copyright')}
+              {t('copyright').replace('{brideName}', brideName).replace('{groomName}', groomName)}
             </p>
           </div>
         </div>
@@ -232,7 +232,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <div className="text-center text-white/60 text-sm font-body animation-delay-600">
-            <p>{t('copyright')}</p>
+            <p>{t('copyright').replace('{brideName}', brideName).replace('{groomName}', groomName)}</p>
           </div>
         </div>
       </div>

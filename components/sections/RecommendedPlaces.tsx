@@ -6,9 +6,11 @@ import { openExternalLink } from '@/lib/utils';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
+import { useTranslations } from '../../lib/translations';
 import { RecommendedPlace } from '../../src/types/wedding';
 
 const RecommendedPlaces = () => {
+  const { t } = useTranslations('recommendedPlaces');
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
 
@@ -17,7 +19,7 @@ const RecommendedPlaces = () => {
     return null;
   }
 
-  const { title, subtitle, places } = weddingData.recommendedPlaces;
+  const { places } = weddingData.recommendedPlaces;
 
   // Generar URL de Maps
   const getMapsUrl = (place: RecommendedPlace) => {
@@ -43,14 +45,15 @@ const RecommendedPlaces = () => {
         {/* Título siguiendo el patrón exacto de otras secciones */}
         <div className="text-center mb-12">
           <h2 className="section-title text-stone-600 opacity-90 mb-4">
-            {title}
+            {t('title')}
           </h2>
           <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
-          {subtitle && (
-            <p className="section-subtitle">
-              {subtitle}
-            </p>
-          )}
+          <p className="section-subtitle">
+            {t('subtitle')}
+          </p>
+          <p className="text-stone-600 font-body text-sm mt-4 max-w-2xl mx-auto">
+            {t('description')}
+          </p>
         </div>
 
         {/* Grid simple de lugares */}

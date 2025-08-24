@@ -116,10 +116,10 @@ const Countdown = () => {
             </div>
 
             {/* Números de cuenta regresiva horizontales */}
-            <div className="flex justify-center items-center sm:gap-4 md:gap-6 mb-12">
+            <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 mb-12 countdown-numbers">
               {/* Días */}
               <div className="text-center">
-                <div className="text-xl sm:text-2xl md:text-3xl font-light text-stone-600 mb-2 font-body opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.days).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
@@ -132,7 +132,7 @@ const Countdown = () => {
 
               {/* Horas */}
               <div className="text-center">
-                <div className="text-xl sm:text-2xl md:text-3xl font-light text-stone-600 mb-2 font-body opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.hours).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
@@ -145,7 +145,7 @@ const Countdown = () => {
 
               {/* Minutos */}
               <div className="text-center">
-                <div className="text-xl sm:text-2xl md:text-3xl font-light text-stone-600 mb-2 font-body opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.minutes).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
@@ -158,7 +158,7 @@ const Countdown = () => {
 
               {/* Segundos */}
               <div className="text-center">
-                <div className="text-xl sm:text-2xl md:text-3xl font-light text-stone-600 mb-2 font-body opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.seconds).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">

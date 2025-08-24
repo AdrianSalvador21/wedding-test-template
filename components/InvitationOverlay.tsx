@@ -8,15 +8,16 @@ import { selectCurrentWedding } from '../src/store/slices/weddingSlice';
 import { getMockInvitation } from '../src/data/mockInvitations';
 import { useThemePatterns, useTheme } from '../lib/theme-context';
 import { useTranslations } from '../lib/translations';
-import type { WeddingInvitation } from '../src/types/wedding';
+import type { WeddingInvitation, FirebaseGuest } from '../src/types/wedding';
 
 interface InvitationOverlayProps {
   guestId: string;
   weddingId: string;
+  guestInfo?: FirebaseGuest | null;
   onClose: () => void;
 }
 
-const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingId, onClose }) => {
+const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingId, guestInfo, onClose }) => {
   const [isVisible, setIsVisible] = useState(true);
   const currentWedding = useAppSelector(selectCurrentWedding);
   const [invitation, setInvitation] = useState<WeddingInvitation | null>(null);
@@ -67,11 +68,21 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
     }, 500); // Esperar a que termine la animación
   };
 
-  if (!invitation || !currentWedding) {
+  if (!currentWedding) {
     return null;
   }
 
-  const { guest } = invitation;
+  // Usar información real del invitado si está disponible, sino usar mock
+  const guest = guestInfo ? {
+    name: guestInfo.name,
+    allowedGuests: guestInfo.guestCount,
+    specialMessage: guestInfo.coupleMessage || null
+  } : (invitation?.guest || {
+    name: 'Invitado',
+    allowedGuests: 1,
+    specialMessage: null
+  });
+
   const { bride, groom } = currentWedding.couple;
 
   return (

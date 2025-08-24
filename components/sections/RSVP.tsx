@@ -1,23 +1,36 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, Check, ChevronDown } from 'lucide-react';
+import { Send, Check, ChevronDown, AlertCircle } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
+import { rsvpService } from '../../services/rsvpService';
+import { guestService } from '../../services/guestService';
+import { FirebaseRSVP } from '../../src/types/wedding';
 
 const RSVP = () => {
   const { t } = useTranslations('rsvp');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
+  const searchParams = useSearchParams();
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [existingRSVP, setExistingRSVP] = useState<FirebaseRSVP | null>(null);
+
+  // Obtener parámetros de la URL
+  const guestId = searchParams.get('guest');
+  const weddingId = weddingData?.id || 'friends-test';
 
   // Datos dinámicos con fallbacks
   const receptionVenue = weddingData?.event.receptionVenue;
@@ -34,13 +47,64 @@ const RSVP = () => {
     });
   };
 
-  // Schema de validación simplificado
+  // Cargar confirmación RSVP existente al montar el componente
+  useEffect(() => {
+    const loadExistingRSVP = async () => {
+      if (!guestId) {
+        setError('No se proporcionó un ID de invitado válido en la URL (?guest=tu-id)');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Buscar el invitado y verificar si ya tiene confirmación
+        let guest = await guestService.getGuestByGuestId(guestId, weddingId);
+        
+        if (guest && guest.rsvpConfirmation) {
+          // Convertir la confirmación del invitado al formato RSVP para compatibilidad
+          const rsvpData: FirebaseRSVP = {
+            id: guest.id,
+            weddingId: guest.weddingId,
+            guestId: guest.guestId || guestId,
+            guestName: guest.name,
+            guestEmail: guest.rsvpConfirmation.guestEmail || '',
+            attending: guest.rsvpConfirmation.attending,
+            guestCount: guest.guestCount,
+            message: guest.rsvpConfirmation.message,
+            dietaryRestrictions: guest.rsvpConfirmation.dietaryRestrictions,
+            plusOne: guest.rsvpConfirmation.plusOne,
+            submittedAt: guest.rsvpConfirmation.submittedAt,
+            updatedAt: guest.updatedAt
+          };
+          
+          setExistingRSVP(rsvpData);
+          setIsSubmitted(true);
+        }
+
+      } catch (err) {
+        console.error('Error verificando RSVP existente:', err);
+        // No mostrar error aquí, solo log - el invitado puede confirmar por primera vez
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadExistingRSVP();
+  }, [guestId, weddingId]);
+
+  // Schema de validación actualizado
   const rsvpSchema = z.object({
     name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-    email: z.string().optional(),
+    email: z.string().email('Email inválido').optional().or(z.literal('')),
     attendance: z.enum(['yes', 'no'], {
       required_error: t('form.selectOption')
     }),
+    plusOneName: z.string().optional(),
+    plusOneAttendance: z.enum(['yes', 'no']).optional(),
+    dietaryRestrictions: z.string().optional(),
     message: z.string().optional(),
   });
 
@@ -49,29 +113,200 @@ const RSVP = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    setValue
   } = useForm<RSVPFormData>({
     resolver: zodResolver(rsvpSchema),
     mode: 'onChange'
   });
 
+  // Pre-llenar el formulario si ya existe una confirmación
+  useEffect(() => {
+    if (existingRSVP) {
+      setValue('name', existingRSVP.guestName);
+      setValue('email', existingRSVP.guestEmail || '');
+      setValue('attendance', existingRSVP.attending ? 'yes' : 'no');
+      setValue('message', existingRSVP.message || '');
+      setValue('dietaryRestrictions', existingRSVP.dietaryRestrictions || '');
+      
+      if (existingRSVP.plusOne) {
+        setValue('plusOneAttendance', existingRSVP.plusOne.attending ? 'yes' : 'no');
+        setValue('plusOneName', existingRSVP.plusOne.name || '');
+      }
+    }
+  }, [existingRSVP, setValue]);
+
   const onSubmit = async (data: RSVPFormData) => {
+    if (!guestId) {
+      setError('ID de invitado no disponible');
+      return;
+    }
+
     setIsSubmitting(true);
+    setError(null);
     
-    // Simular envío de formulario con datos dinámicos
-    const rsvpData = {
-      ...data,
-      weddingId: weddingData?.id || 'default',
-      eventDate: weddingDate.toISOString(),
-      venue: venueName
-    };
-    
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    console.log('RSVP Data:', rsvpData);
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    try {
+      // Obtener información del invitado para el guestCount
+      let guestCount = 1; // Default
+      let guestInfo = null; // Declarar fuera del try-catch
+      
+      try {
+        // Primero intentar por guestId
+        guestInfo = await guestService.getGuestByGuestId(guestId, weddingId);
+        
+        // Si no encuentra por guestId, buscar por nombre (fallback)
+        if (!guestInfo) {
+          const allGuests = await guestService.getWeddingGuests(weddingId);
+          guestInfo = allGuests.find(g => 
+            g.name.toLowerCase().trim() === data.name.toLowerCase().trim()
+          ) || null;
+        }
+        
+        if (guestInfo) {
+          guestCount = guestInfo.guestCount;
+        }
+      } catch (error) {
+        console.warn('No se pudo obtener información del invitado, usando guestCount por defecto');
+      }
+
+      // Preparar datos de confirmación RSVP
+      const rsvpConfirmation = {
+        attending: data.attendance === 'yes',
+        guestEmail: data.email || undefined,
+        message: data.message?.trim() || undefined,
+        dietaryRestrictions: data.dietaryRestrictions?.trim() || undefined,
+        plusOne: data.plusOneAttendance ? {
+          attending: data.plusOneAttendance === 'yes',
+          name: data.plusOneName?.trim() || undefined
+        } : undefined,
+        submittedAt: new Date().toISOString()
+      };
+
+      // Limpiar campos undefined
+      Object.keys(rsvpConfirmation).forEach(key => {
+        if (rsvpConfirmation[key as keyof typeof rsvpConfirmation] === undefined) {
+          delete rsvpConfirmation[key as keyof typeof rsvpConfirmation];
+        }
+      });
+
+      // Actualizar el invitado con la confirmación RSVP
+      const rsvpStatus = data.attendance === 'yes' ? 'confirmed' : 'declined';
+      
+      // Buscar el invitado para actualizar
+      let targetGuest = guestInfo;
+      
+      if (!targetGuest) {
+        // Si no encontramos el invitado por guestId, buscar por nombre
+        const allGuests = await guestService.getWeddingGuests(weddingId);
+        targetGuest = allGuests.find(g => 
+          g.name.toLowerCase().trim() === data.name.toLowerCase().trim()
+        ) || null;
+      }
+      
+      if (targetGuest) {
+        await guestService.updateGuest(targetGuest.id, {
+          rsvpStatus,
+          rsvpConfirmation
+        });
+      } else {
+        console.warn('⚠️ No se encontró el invitado para actualizar la confirmación');
+      }
+      
+      console.log('✅ RSVP guardado exitosamente:', {
+        weddingId,
+        guestId,
+        attending: data.attendance === 'yes',
+        rsvpStatus
+      });
+      
+      // Actualizar estado local para mostrar confirmación
+      setExistingRSVP({
+        id: 'guest-rsvp',
+        weddingId,
+        guestId,
+        guestName: data.name,
+        guestEmail: data.email || '',
+        attending: data.attendance === 'yes',
+        guestCount,
+        message: data.message?.trim(),
+        dietaryRestrictions: data.dietaryRestrictions?.trim(),
+        plusOne: rsvpConfirmation.plusOne,
+        submittedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      
+      setIsSubmitted(true);
+      
+    } catch (err) {
+      console.error('❌ Error guardando RSVP:', err);
+      setError('Error al guardar la confirmación. Por favor, intenta de nuevo.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  // Estado de carga
+  if (isLoading) {
+    return (
+      <section 
+        id="rsvp" 
+        className="bg-gray-50 relative overflow-hidden"
+        style={getBackgroundStyle(3, '160px')}
+      >
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
+          <div className="text-center mb-12">
+            <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+          </div>
+
+          <div className="max-w-md mx-auto text-center">
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="animate-spin w-8 h-8 border-2 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-text font-body">Cargando información del invitado...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Estado de error
+  if (error) {
+    return (
+      <section 
+        id="rsvp" 
+        className="bg-gray-50 relative overflow-hidden"
+        style={getBackgroundStyle(3, '160px')}
+      >
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
+          <div className="text-center mb-12">
+            <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+          </div>
+
+          <div className="max-w-md mx-auto text-center">
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-heading font-semibold text-red-600 mb-4">
+                Error
+              </h3>
+              <p className="text-text font-body mb-6">
+                {error}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors font-body font-medium"
+              >
+                Reintentar
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (isSubmitted) {
     return (
@@ -96,10 +331,13 @@ const RSVP = () => {
                 <Check className="w-8 h-8 text-green-600" />
               </div>
               <h2 className="text-2xl font-heading font-semibold text-primary mb-4">
-                {t('success')}
+                {existingRSVP?.attending ? t('confirmation.received') : t('confirmation.registered')}
               </h2>
-              <p className="text-text font-body">
-                {t('seeYouThere').replace('{date}', formatDate(weddingDate)).replace('{venue}', venueName)}
+              <p className="text-text font-body mb-4">
+                {existingRSVP?.attending 
+                  ? t('confirmation.seeYouThere').replace('{date}', formatDate(weddingDate)).replace('{venue}', venueName)
+                  : t('confirmation.sorryToMiss')
+                }
               </p>
             </div>
           </div>

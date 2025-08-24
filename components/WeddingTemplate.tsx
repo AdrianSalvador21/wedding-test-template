@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { useWedding } from '../src/store/hooks';
 import { useTranslations } from '../lib/translations';
 import { ThemeProvider } from '../lib/theme-context';
 import { createWeddingTheme } from '../lib/theme-utils';
+import { guestService } from '../services/guestService';
+import { FirebaseGuest } from '../src/types/wedding';
 import Hero from './sections/Hero';
 import Countdown from './sections/Countdown';
 import About from './sections/About';
@@ -29,6 +32,39 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
   const { currentWedding, loading, error, initialized } = useWedding();
   const { t } = useTranslations('template');
   const [showOverlay, setShowOverlay] = useState(!!guestId);
+  const [guestInfo, setGuestInfo] = useState<FirebaseGuest | null>(null);
+  const [guestLoading, setGuestLoading] = useState(false);
+  const router = useRouter();
+  const params = useParams();
+  const currentLocale = params.locale as string;
+
+  // Buscar información del invitado en Firebase y validar idioma
+  useEffect(() => {
+    const fetchGuestInfo = async () => {
+      if (!guestId || !currentWedding?.id) return;
+
+      setGuestLoading(true);
+      try {
+        const guest = await guestService.getGuestByGuestId(guestId, currentWedding.id);
+        setGuestInfo(guest);
+
+        // Validar idioma del invitado
+        if (guest && guest.language && guest.language !== currentLocale) {
+          // Redireccionar al idioma correcto del invitado
+          const correctUrl = `/${guest.language}/wedding/${currentWedding.id}?guest=${guestId}`;
+          router.replace(correctUrl);
+          return;
+        }
+      } catch (error) {
+        console.error('Error buscando invitado:', error);
+        setGuestInfo(null);
+      } finally {
+        setGuestLoading(false);
+      }
+    };
+
+    fetchGuestInfo();
+  }, [guestId, currentWedding?.id, currentLocale, router]);
 
   // Estado de carga
   if (!initialized || loading) {
@@ -98,6 +134,7 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
           <InvitationOverlay
             guestId={guestId}
             weddingId={currentWedding.id}
+            guestInfo={guestInfo}
             onClose={() => setShowOverlay(false)}
           />
         )}
