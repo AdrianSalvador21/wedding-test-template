@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Reglas para las invitaciones de boda
+    match /weddings/{weddingId} {
+      // Permitir lectura pública para que los invitados puedan ver las invitaciones
+      allow read: if true;
+      
+      // Permitir escritura solo desde el admin (por ahora sin autenticación específica)
+      // En producción, deberías añadir autenticación de admin
+      allow write: if true;
+      
+      // Permitir crear nuevos documentos de boda
+      allow create: if true;
+    }
+    
+    // Reglas para RSVP de invitados
+    match /rsvp/{rsvpId} {
+      // Permitir lectura solo del propio RSVP o desde admin
+      allow read: if true;
+      
+      // Permitir que los invitados creen y actualicen sus propios RSVP
+      allow create, update: if true;
+      
+      // Solo admin puede eliminar RSVP
+      allow delete: if false;
+    }
+    
+    // Reglas para invitados individuales (si los usas)
+    match /guests/{guestId} {
+      // Permitir lectura de información básica del invitado
+      allow read: if true;
+      
+      // Solo admin puede modificar información de invitados
+      allow write: if true;
+    }
+    
+    // Reglas para configuración general del sistema
+    match /config/{configId} {
+      // Solo lectura pública de configuración
+      allow read: if true;
+      
+      // Solo admin puede modificar configuración
+      allow write: if false; // Cambiar a true si necesitas modificar config desde admin
+    }
+    
+    // Reglas para analytics/métricas (opcional)
+    match /analytics/{analyticsId} {
+      // Solo admin puede leer analytics
+      allow read: if true;
+      
+      // Sistema puede escribir métricas
+      allow write: if true;
+    }
+  }
+}

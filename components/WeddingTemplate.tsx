@@ -31,8 +31,9 @@ interface WeddingTemplateProps {
 export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
   const { currentWedding, loading, error, initialized } = useWedding();
   const { t } = useTranslations('template');
-  const [showOverlay, setShowOverlay] = useState(!!guestId);
+  const [showOverlay, setShowOverlay] = useState(false);
   const [guestInfo, setGuestInfo] = useState<FirebaseGuest | null>(null);
+  const [guestLoading, setGuestLoading] = useState(!!guestId);
 
   const router = useRouter();
   const params = useParams();
@@ -41,23 +42,36 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
   // Buscar información del invitado en Firebase y validar idioma
   useEffect(() => {
     const fetchGuestInfo = async () => {
-      if (!guestId || !currentWedding?.id) return;
-
+      if (!guestId || !currentWedding?.id) {
+        setGuestLoading(false);
+        return;
+      }
 
       try {
+        setGuestLoading(true);
         const guest = await guestService.getGuestByGuestId(guestId, currentWedding.id);
-        setGuestInfo(guest);
+        
+        if (guest) {
+          setGuestInfo(guest);
+          setShowOverlay(true); // Solo mostrar overlay si encontramos info del invitado
 
-        // Validar idioma del invitado
-        if (guest && guest.language && guest.language !== currentLocale) {
-          // Redireccionar al idioma correcto del invitado
-          const correctUrl = `/${guest.language}/wedding/${currentWedding.id}?guest=${guestId}`;
-          router.replace(correctUrl);
-          return;
+          // Validar idioma del invitado
+          if (guest.language && guest.language !== currentLocale) {
+            // Redireccionar al idioma correcto del invitado
+            const correctUrl = `/${guest.language}/wedding/${currentWedding.id}?guest=${guestId}`;
+            router.replace(correctUrl);
+            return;
+          }
+        } else {
+          setGuestInfo(null);
+          setShowOverlay(false); // No mostrar overlay si no hay info del invitado
         }
       } catch (error) {
         console.error('Error buscando invitado:', error);
         setGuestInfo(null);
+        setShowOverlay(false); // No mostrar overlay en caso de error
+      } finally {
+        setGuestLoading(false);
       }
     };
 
@@ -65,12 +79,14 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
   }, [guestId, currentWedding?.id, currentLocale, router]);
 
   // Estado de carga
-  if (!initialized || loading) {
+  if (!initialized || loading || guestLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-primary-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-primary-800 font-medium">{t('loading')}</p>
+          <p className="text-primary-800 font-medium">
+            {guestLoading ? 'Cargando información del invitado...' : t('loading')}
+          </p>
         </div>
       </div>
     );
@@ -142,6 +158,24 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
           <MusicPlayer music={currentWedding.music} />
         )}
       </main>
+
+      {/* Footer Invyta */}
+      <footer className="bg-gradient-to-br from-primary via-secondary to-accent text-white py-2">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center">
+            <a
+              href="https://invyta.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block hover:opacity-80 transition-opacity"
+            >
+              <div className="text-xl font-serif font-bold text-white">
+                invyta
+              </div>
+            </a>
+          </div>
+        </div>
+      </footer>
     </ThemeProvider>
   );
 }

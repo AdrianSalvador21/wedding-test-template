@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Funciones auxiliares
+    function isAdmin() {
+      // En producción, implementar autenticación de admin
+      return request.auth != null && request.auth.token.admin == true;
+    }
+    
+    function isOwner(weddingId) {
+      // Verificar si el usuario autenticado es dueño de la boda
+      return request.auth != null && request.auth.uid == resource.data.ownerId;
+    }
+    
+    function isValidRSVP() {
+      // Validar estructura del RSVP
+      return request.resource.data.keys().hasAll(['weddingId', 'guestName', 'status']) &&
+             request.resource.data.status in ['confirmed', 'declined', 'pending'];
+    }
+    
+    // Reglas para las invitaciones de boda
+    match /weddings/{weddingId} {
+      // Lectura pública para invitaciones activas
+      allow read: if resource.data.isActive == true;
+      
+      // Solo admin o dueño puede escribir
+      allow write: if isAdmin() || isOwner(weddingId);
+      
+      // Solo admin puede crear nuevas bodas
+      allow create: if isAdmin();
+      
+      // No permitir eliminación (soft delete usando isActive: false)
+      allow delete: if false;
+    }
+    
+    // Reglas para RSVP de invitados
+    match /rsvp/{rsvpId} {
+      // Admin puede leer todos los RSVP
+      allow read: if isAdmin();
+      
+      // Invitados pueden leer solo su propio RSVP
+      allow read: if request.auth != null && request.auth.uid == resource.data.guestId;
+      
+      // Invitados pueden crear RSVP válidos
+      allow create: if isValidRSVP() && 
+                      request.auth != null && 
+                      request.resource.data.guestId == request.auth.uid;
+      
+      // Invitados pueden actualizar su propio RSVP
+      allow update: if request.auth != null && 
+                      request.auth.uid == resource.data.guestId &&
+                      isValidRSVP();
+      
+      // Solo admin puede eliminar RSVP
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para invitados individuales
+    match /guests/{guestId} {
+      // Admin puede leer todos los invitados
+      allow read: if isAdmin();
+      
+      // Invitados pueden leer su propia información
+      allow read: if request.auth != null && request.auth.uid == guestId;
+      
+      // Solo admin puede modificar información de invitados
+      allow write: if isAdmin();
+    }
+    
+    // Reglas para configuración general del sistema
+    match /config/{configId} {
+      // Lectura pública de configuración básica
+      allow read: if configId in ['themes', 'languages', 'public-settings'];
+      
+      // Solo admin puede leer configuración sensible
+      allow read: if isAdmin();
+      
+      // Solo admin puede modificar configuración
+      allow write: if isAdmin();
+    }
+    
+    // Reglas para analytics/métricas
+    match /analytics/{analyticsId} {
+      // Solo admin puede leer analytics
+      allow read: if isAdmin();
+      
+      // Sistema puede escribir métricas (requiere service account)
+      allow write: if request.auth != null && request.auth.token.service_account == true;
+    }
+    
+    // Reglas para logs de auditoría
+    match /audit_logs/{logId} {
+      // Solo admin puede leer logs
+      allow read: if isAdmin();
+      
+      // Sistema puede escribir logs
+      allow create: if request.auth != null;
+      
+      // No permitir modificación o eliminación de logs
+      allow update, delete: if false;
+    }
+  }
+}

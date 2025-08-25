@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Optimized crawling
+Crawl-delay: 1
+
+# Sitemap
+Sitemap: https://invyta.com/sitemap.xml
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /*?guest=*
+
+# Allow specific pages
+Allow: /
+Allow: /en/
+Allow: /es/
+Allow: /wedding/*/
+
+# Block search engines from indexing private wedding pages
+Disallow: /en/wedding/
+Disallow: /es/wedding/

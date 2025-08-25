@@ -2,17 +2,21 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import StructuredData from './StructuredData';
 import { 
   Check, 
   X, 
   Globe, 
   Smartphone,
   Star,
-  ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
 
 const LandingPage = () => {
+  // WhatsApp configuration
+  const whatsappMessage = "Hola! Me interesa conocer más sobre las invitaciones digitales de Invyta. ¿Podrías brindarme información?";
+  const whatsappLink = `https://wa.me/529602460590?text=${encodeURIComponent(whatsappMessage)}`;
+
   const fadeInUp = {
     initial: { opacity: 0, y: 30 },
     animate: { opacity: 1, y: 0 },
@@ -29,6 +33,7 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-50 to-stone-100" style={{ backgroundColor: '#faf8f5' }}>
+      <StructuredData />
       {/* Header/Navigation */}
       <header className="fixed top-0 w-full bg-white/90 backdrop-blur-md border-b border-stone-200/50 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -40,9 +45,14 @@ const LandingPage = () => {
             <a href="#funcionalidades" className="text-stone-600 hover:text-stone-800 transition-colors">Funcionalidades</a>
             <a href="#paquetes" className="text-stone-600 hover:text-stone-800 transition-colors">Paquetes</a>
             <a href="#ejemplos" className="text-stone-600 hover:text-stone-800 transition-colors">Ejemplos</a>
-            <button className="bg-stone-800 text-white px-6 py-2 rounded-full hover:bg-stone-700 transition-colors">
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-stone-800 text-white px-6 py-2 rounded-full hover:bg-stone-700 transition-colors inline-block"
+            >
               Comenzar ahora
-            </button>
+            </a>
           </nav>
         </div>
       </header>
@@ -64,13 +74,14 @@ const LandingPage = () => {
                   Comparte con tus invitados una experiencia única y personalizada.
                 </p>
                 
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-amber-600 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-amber-700 transition-colors shadow-lg"
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-amber-600 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-amber-700 hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg inline-block"
                 >
                   Crea tu invitación ahora
-                </motion.button>
+                </a>
               </div>
 
               {/* Features Icons */}
@@ -160,12 +171,12 @@ const LandingPage = () => {
                 desc: "Más por menos dinero"
               },
               { 
-                title: "Envíos ilimitados", 
+                title: "Invitaciones ilimitadas", 
                 desc: "Sin límites ni costos extra"
               },
               { 
-                title: "Todo en un link", 
-                desc: "Información completa"
+                title: "Links personalizados para tus invitados", 
+                desc: "Haz personal el momento de compartir la invitación"
               },
               { 
                 title: "Gestión inteligente", 
@@ -203,6 +214,118 @@ const LandingPage = () => {
           </motion.div>
 
 
+        </div>
+      </section>
+
+      {/* Admin Features Section */}
+      <section className="py-20 bg-gradient-to-br from-stone-50 to-amber-50/30">
+        <div className="max-w-6xl mx-auto px-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl lg:text-4xl font-serif font-bold text-stone-800 mb-4">
+              Panel de administración intuitivo
+            </h2>
+            <p className="text-lg text-stone-600 max-w-2xl mx-auto">
+              Controla cada aspecto de tu boda desde una interfaz moderna y fácil de usar
+            </p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Admin Boda */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="group"
+            >
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100 hover:shadow-lg transition-all duration-300">
+                <div className="mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-amber-50 to-stone-50">
+                  <img 
+                    src="/assets/landing/admin-boda.png" 
+                    alt="Panel de administración de boda" 
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
+                    <h3 className="text-xl font-semibold text-stone-800">
+                      Editor de Invitación
+                    </h3>
+                  </div>
+                  <p className="text-stone-600 text-sm leading-relaxed">
+                    Personaliza cada detalle: información de la pareja, lugares del evento, cronograma y configuraciones especiales.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Admin Invitados */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="group"
+            >
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100 hover:shadow-lg transition-all duration-300">
+                <div className="mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-amber-50 to-stone-50">
+                  <img 
+                    src="/assets/landing/admin-invitados.png" 
+                    alt="Panel de gestión de invitados" 
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
+                    <h3 className="text-xl font-semibold text-stone-800">
+                      Gestión de Invitados
+                    </h3>
+                  </div>
+                  <p className="text-stone-600 text-sm leading-relaxed">
+                    Administra tu lista de invitados y controla las confirmaciones de asistencia en tiempo real.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Features highlight */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6"
+          >
+            <div className="text-center">
+              <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <div className="w-6 h-6 bg-amber-600 rounded-lg"></div>
+              </div>
+              <p className="text-sm text-stone-600 font-medium">Diseño intuitivo</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <div className="w-6 h-6 bg-amber-600 rounded-lg"></div>
+              </div>
+              <p className="text-sm text-stone-600 font-medium">Tiempo real</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <div className="w-6 h-6 bg-amber-600 rounded-lg"></div>
+              </div>
+              <p className="text-sm text-stone-600 font-medium">Fácil de usar</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <div className="w-6 h-6 bg-amber-600 rounded-lg"></div>
+              </div>
+              <p className="text-sm text-stone-600 font-medium">Sin límites</p>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -246,7 +369,7 @@ const LandingPage = () => {
                   "Dominio/espacio web incluido hasta 15 días después del evento",
                   "Entrega en hasta 7 días hábiles",
                   "Bienvenida general",
-                  "Cuenta regresiva",
+                  "Cuenta regresiva personalizada",
                   "Detalles del evento",
                   "Nuestra historia",
                   "Galería de fotos",
@@ -255,7 +378,7 @@ const LandingPage = () => {
                   "Mesa de regalos",
                   "Hospedaje recomendado",
                   "Sección de solo adultos",
-                  "Formulario RSVP",
+                  "Formulario RSVP (Confirmación de asistencia)",
                   "Gestión de invitados confirmados"
                 ].map((feature, index) => (
                   <div key={index} className="flex items-center space-x-3">
@@ -282,9 +405,14 @@ const LandingPage = () => {
                 ))}
               </div>
 
-              <button className="w-full bg-stone-800 text-white py-3 rounded-xl hover:bg-stone-700 transition-colors font-medium">
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-stone-800 text-white py-3 rounded-xl hover:bg-stone-700 transition-colors font-medium inline-block text-center"
+              >
                 Elegir Básico
-              </button>
+              </a>
             </motion.div>
 
             {/* Paquete Personalizado */}
@@ -295,7 +423,7 @@ const LandingPage = () => {
               viewport={{ once: true }}
               className="bg-gradient-to-br from-amber-600 to-amber-700 rounded-3xl p-8 shadow-xl text-white relative overflow-hidden"
             >
-              <div className="absolute top-4 right-4 bg-white text-amber-600 px-3 py-1 rounded-full text-sm font-medium">
+              <div className="absolute top-0 right-0 bg-white text-amber-600 px-3 py-1 rounded-badge text-sm font-medium">
                 Recomendado
               </div>
 
@@ -325,7 +453,7 @@ const LandingPage = () => {
                   "Sistema RSVP inteligente",
                   "Panel de gestión de invitados",
                   "URL individual por invitado",
-                  "Mensaje de bienvenida único",
+                  "Mensaje de bienvenida único por invitado",
                   "Control de boletos por invitado",
                   "Idioma personalizado (ES/EN)",
                   "Canción en la invitación",
@@ -333,14 +461,19 @@ const LandingPage = () => {
                 ].map((feature, index) => (
                   <div key={index} className="flex items-center space-x-3">
                     <Check className="w-4 h-4 text-white flex-shrink-0" />
-                    <span className="text-sm">{feature}</span>
+                    <span>{feature}</span>
                   </div>
                 ))}
               </div>
 
-              <button className="w-full bg-white text-amber-600 py-3 rounded-xl hover:bg-amber-50 transition-colors font-medium">
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-white text-amber-600 py-3 rounded-xl hover:bg-amber-50 transition-colors font-medium inline-block text-center"
+              >
                 Elegir Personalizado
-              </button>
+              </a>
             </motion.div>
           </div>
         </div>
@@ -365,7 +498,7 @@ const LandingPage = () => {
                 Explora nuestros ejemplos en vivo
               </h3>
               
-              <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+              <div className="grid md:grid-cols-1 gap-6 max-w-3xl mx-auto">
                 <Link 
                   href="/es/wedding/maria-carlos-2025?guest=guest-001"
                   className="group block bg-amber-600 text-white p-6 rounded-2xl hover:bg-amber-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
@@ -373,11 +506,10 @@ const LandingPage = () => {
                   <div className="text-center">
                     <h4 className="text-xl font-semibold mb-2">Invitación completa</h4>
                     <p className="text-white/90 mb-4">María & Carlos • Español</p>
-                    <ArrowRight className="w-6 h-6 mx-auto group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
 
-                <Link 
+                {/*<Link 
                   href="/en/wedding/maria-carlos-2025?guest=guest-001"
                   className="group block bg-white border-2 border-stone-200 text-stone-800 p-6 rounded-2xl hover:border-stone-300 hover:shadow-lg transition-all duration-300"
                 >
@@ -386,7 +518,7 @@ const LandingPage = () => {
                     <p className="text-stone-600 mb-4">María & Carlos • English</p>
                     <ArrowRight className="w-6 h-6 mx-auto group-hover:translate-x-1 transition-transform" />
                   </div>
-                </Link>
+                </Link> */}
               </div>
             </motion.div>
           </div>
@@ -427,7 +559,7 @@ const LandingPage = () => {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div {...fadeInUp} className="space-y-8">
             <h2 className="text-4xl lg:text-5xl font-serif font-bold">
-              ¡Incorpora Invyta a tus eventos y sube al siguiente nivel!
+              ¿Eres wedding planner? 
             </h2>
             
             <p className="text-xl opacity-90 max-w-2xl mx-auto">
@@ -435,13 +567,14 @@ const LandingPage = () => {
             </p>
             
             <div className="space-y-4">
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white text-amber-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-stone-50 transition-colors shadow-lg"
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white text-amber-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-stone-50 hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg inline-block"
               >
                 Comenzar ahora
-              </motion.button>
+              </a>
               
               <p className="text-amber-100 text-sm">
                 Respuesta en menos de 24 horas
@@ -454,44 +587,59 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="bg-stone-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="space-y-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="grid md:grid-cols-4 gap-8"
+          >
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="space-y-4"
+            >
               <div className="text-2xl font-serif font-bold">invyta</div>
               <p className="text-stone-400">
-                Invitaciones digitales elegantes y funcionales para tu día especial.
+                Invitaciones digitales para tu día especial.
               </p>
-            </div>
+            </motion.div>
             
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
               <h4 className="font-semibold mb-4">Producto</h4>
               <ul className="space-y-2 text-stone-400">
                 <li><a href="#funcionalidades" className="hover:text-white transition-colors">Funcionalidades</a></li>
                 <li><a href="#paquetes" className="hover:text-white transition-colors">Paquetes</a></li>
                 <li><a href="#ejemplos" className="hover:text-white transition-colors">Ejemplos</a></li>
               </ul>
-            </div>
+            </motion.div>
             
-            <div>
-              <h4 className="font-semibold mb-4">Soporte</h4>
-              <ul className="space-y-2 text-stone-400">
-                <li><a href="#" className="hover:text-white transition-colors">Ayuda</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contacto</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-              </ul>
-            </div>
             
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
               <h4 className="font-semibold mb-4">Contacto</h4>
               <ul className="space-y-2 text-stone-400">
                 <li>hola@invyta.me</li>
-                <li>+52 55 1234-5678</li>
+                <li>+52 960 246 0590</li>
               </ul>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
           
-          <div className="border-t border-stone-800 mt-12 pt-8 text-center text-stone-400">
-            <p>&copy; 2024 Invyta. Todos los derechos reservados.</p>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="border-t border-stone-800 mt-12 pt-8 text-center text-stone-400"
+          >
+            <p>&copy; 2025 Invyta. Todos los derechos reservados.</p>
+          </motion.div>
         </div>
       </footer>
     </div>
