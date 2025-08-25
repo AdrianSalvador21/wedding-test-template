@@ -3,6 +3,7 @@
 import { useWedding } from '../../src/store/hooks';
 import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
 
@@ -34,19 +35,43 @@ export default function GiftRegistry() {
     >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         {/* Título */}
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
-          <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+          <motion.div 
+            className="w-16 h-0.5 bg-accent mx-auto mb-6"
+            initial={{ width: 0 }}
+            whileInView={{ width: 64 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          ></motion.div>
           {giftRegistry.message && (
-            <p className="section-subtitle">
+            <motion.p 
+              className="section-subtitle"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            >
               {giftRegistry.message}
-            </p>
+            </motion.p>
           )}
-        </div>
+        </motion.div>
 
         {/* Mesas de Regalos Online */}
         {giftRegistry.registries.length > 0 && (
-          <div className="mb-6 max-w-2xl mx-auto">
+          <motion.div 
+            className="mb-6 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
+          >
             <div className="bg-white border border-border rounded-lg">
               <button
                 onClick={() => setIsRegistryExpanded(!isRegistryExpanded)}
@@ -82,12 +107,18 @@ export default function GiftRegistry() {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
 
                 {/* Cuenta Bancaria */}
         {giftRegistry.bankAccount && (
-          <div className="max-w-2xl mx-auto">
+          <motion.div 
+            className="max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
+          >
             <div className="bg-white border border-border rounded-lg">
               <button
                 onClick={() => setIsBankExpanded(!isBankExpanded)}
@@ -167,7 +198,7 @@ export default function GiftRegistry() {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </section>

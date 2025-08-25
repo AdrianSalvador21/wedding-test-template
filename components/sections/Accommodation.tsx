@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { MapPin, ExternalLink } from 'lucide-react';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
@@ -47,18 +48,43 @@ const Accommodation = () => {
       >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
           {/* Título */}
-          <div className="text-center mb-12">
+          <motion.div 
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
             <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
-            <p className="section-subtitle">
+            <motion.div 
+              className="w-16 h-0.5 bg-accent mx-auto mb-6"
+              initial={{ width: 0 }}
+              whileInView={{ width: 64 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            ></motion.div>
+            <motion.p 
+              className="section-subtitle"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            >
               {t('subtitle')}
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
 
           <div className="max-w-lg mx-auto space-y-4">
             {/* Lista de hoteles sin cards */}
             {accommodationOptions.map((hotel, index) => (
-              <div key={index} className="py-2 px-4">
+              <motion.div 
+                key={index} 
+                className="py-2 px-4"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.5 + (index * 0.1), ease: "easeOut" }}
+              >
                 <div className="flex items-center justify-center mb-4">
                   <h4 className="text-base md:text-lg font-body font-semibold text-stone-700">{hotel.name}</h4>
                 </div>
@@ -73,7 +99,7 @@ const Accommodation = () => {
                     <ExternalLink className="w-4 h-4 ml-2" />
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

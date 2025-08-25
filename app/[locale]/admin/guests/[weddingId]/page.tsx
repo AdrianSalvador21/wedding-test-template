@@ -3,8 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Plus, Edit2, Trash2, Save, X, Check, Link } from 'lucide-react';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../../../../../lib/firebase';
 import { guestService } from '../../../../../services/guestService';
-import { FirebaseGuest } from '../../../../../src/types/wedding';
+import { FirebaseGuest, WeddingData } from '../../../../../src/types/wedding';
+import WeddingNotFound from '../../../../../components/WeddingNotFound';
 
 interface GuestStats {
   total: number;
@@ -31,6 +34,7 @@ const AdminGuestsPage = () => {
   const [stats, setStats] = useState<GuestStats>({ total: 0, totalGuestCount: 0, confirmed: 0, declined: 0, pending: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingGuest, setEditingGuest] = useState<FirebaseGuest | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,7 +50,45 @@ const AdminGuestsPage = () => {
     coupleMessage: ''
   });
 
+  // Crear datos iniciales para nueva boda
+  const createInitialWeddingData = (weddingId: string): WeddingData => ({
+    id: weddingId,
+    couple: {
+      bride: { name: '', fullName: '', phone: '', email: '', instagram: '', facebook: '' },
+      groom: { name: '', fullName: '', phone: '', email: '', instagram: '', facebook: '' },
+      coupleEmail: '', hashtag: '', story: { es: '', en: '' }, quote: { es: '', en: '' }
+    },
+    event: {
+      weddingId: weddingId, date: '', time: '16:00', rsvpDeadline: '',
+      ceremony: { time: '16:00', duration: 45 }, reception: { time: '19:30', duration: 300 },
+      ceremonyVenue: { name: { es: '', en: '' }, address: '', coordinates: { lat: 0, lng: 0 }, description: '', mapsUrl: '' },
+      receptionVenue: { name: { es: '', en: '' }, address: '', coordinates: { lat: 0, lng: 0 }, description: '', mapsUrl: '', features: [] },
+      dressCode: { style: { es: '', en: '' }, description: { es: '', en: '' }, recommendations: { ladies: [], gentlemen: [] }, colors: { recommended: [], avoid: [] } }
+    },
+    timeline: [], accommodation: { hotels: [], recommendedPlaces: [] },
+    giftRegistry: { enabled: false, message: '', registries: [] },
+    adultOnlyEvent: { enabled: false, message: '' },
+    rsvp: { enabled: true, deadline: '', maxGuests: 2, dietaryOptions: true, customQuestions: [] },
+    gallery: [], heroImage: { url: '', alt: '' }, specialMoments: [], relationshipStats: { yearsTogther: 0, adventures: 0, memories: 0, dreams: 0 },
+    transport: { parking: false, valetParking: false, shuttleService: { available: false, pickupPoints: [], schedule: [] }, publicTransport: '', rideshare: false },
+    music: { enabled: false, spotifyTrackId: '', spotifyPlaylistId: '', fileName: '', title: '', artist: '', autoplay: false, volume: 0.5, showControls: true, startTime: 0 },
+    recommendedPlaces: { enabled: false, title: '', subtitle: '', places: [] },
+    theme: { id: 'classic' }, status: 'draft', languages: ['es', 'en'], defaultLanguage: 'es', isActive: false,
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+  });
 
+  // Validar si el ID de la boda es válido
+  const isValidWeddingId = (id: string): boolean => {
+    // Validaciones básicas del ID
+    if (!id || id.length < 3 || id.length > 50) return false;
+    if (!/^[a-zA-Z0-9\-_]+$/.test(id)) return false;
+    
+    // IDs reservados o no válidos
+    const reservedIds = ['admin', 'api', 'auth', 'login', 'register', 'demo', 'test', 'null', 'undefined'];
+    if (reservedIds.includes(id.toLowerCase())) return false;
+    
+    return true;
+  };
 
   // Cargar invitados
   useEffect(() => {
@@ -57,10 +99,40 @@ const AdminGuestsPage = () => {
         return;
       }
 
+      // Validar formato del ID
+      if (!isValidWeddingId(weddingId)) {
+        setNotFound(true);
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
         setError(null);
 
+        // Verificar si la boda existe en Firebase
+        const docRef = doc(db, 'weddings', weddingId);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data() as WeddingData;
+          
+          // Verificar si la boda tiene información básica
+          const hasBasicInfo = data.couple?.bride?.name || data.couple?.groom?.name || data.event?.date;
+          
+          if (!hasBasicInfo) {
+            // Existe pero sin información, crear estructura base
+            const initialData = createInitialWeddingData(weddingId);
+            await setDoc(docRef, initialData);
+          }
+        } else {
+          // No existe el documento en Firebase → 404
+          setNotFound(true);
+          setIsLoading(false);
+          return;
+        }
+
+        // Cargar invitados y estadísticas
         const [fetchedGuests, fetchedStats] = await Promise.all([
           guestService.getWeddingGuests(weddingId),
           guestService.getWeddingGuestStats(weddingId)
@@ -144,18 +216,23 @@ const AdminGuestsPage = () => {
             : g
         ));
       } else {
-        const newGuest = await guestService.createGuest(guestData);
-        if (newGuest && typeof newGuest === 'object' && 'id' in newGuest) {
-          setGuests(prev => [...prev, newGuest]);
-        }
+        const newGuestId = await guestService.createGuest(guestData);
         
-        // Actualizar estadísticas
-        setStats(prev => ({
-          ...prev,
-          total: prev.total + 1,
-          totalGuestCount: prev.totalGuestCount + Number(formData.guestCount),
-          pending: prev.pending + 1
-        }));
+        // Obtener el invitado completo recién creado
+        const newGuest = await guestService.getGuest(newGuestId);
+        
+        if (newGuest) {
+          // Actualizar la lista local de invitados
+          setGuests(prev => [...prev, newGuest]);
+          
+          // Actualizar estadísticas
+          setStats(prev => ({
+            ...prev,
+            total: prev.total + 1,
+            totalGuestCount: prev.totalGuestCount + Number(formData.guestCount),
+            pending: prev.pending + 1
+          }));
+        }
       }
 
       resetForm();
@@ -208,7 +285,7 @@ const AdminGuestsPage = () => {
 
   const handleCopyLink = async (guest: FirebaseGuest) => {
     try {
-      const guestId = guest.id;
+      const guestId = guest.guestId; // Usar el guestId correcto de Firebase
       
       // Usar el idioma del invitado para la URL
       const locale = guest.language || 'es';
@@ -242,6 +319,10 @@ const AdminGuestsPage = () => {
         </div>
       </div>
     );
+  }
+
+  if (notFound) {
+    return <WeddingNotFound weddingId={weddingId} />;
   }
 
   if (error && !showForm) {
@@ -490,12 +571,12 @@ const AdminGuestsPage = () => {
       {/* Modal del Formulario */}
       {showForm && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="flex items-center justify-center min-h-screen pt-0 px-0 pb-0 text-center sm:pt-4 sm:px-4 sm:pb-20 sm:block sm:p-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={resetForm}></div>
 
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <form onSubmit={handleSubmit}>
-                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div className="inline-block align-bottom bg-white w-full h-full sm:rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:h-auto">
+              <form onSubmit={handleSubmit} className="h-full flex flex-col sm:h-auto sm:block">
+                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 flex-1 overflow-y-auto sm:flex-none sm:overflow-visible">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">
                       {editingGuest ? 'Editar Invitado' : 'Nuevo Invitado'}
@@ -605,7 +686,7 @@ const AdminGuestsPage = () => {
                   )}
                 </div>
 
-                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <div className="bg-gray-50 px-4 py-3 sm:px-6 flex flex-col sm:flex-row-reverse gap-3 sm:gap-0 flex-shrink-0">
                   <button
                     type="submit"
                     disabled={isSubmitting}

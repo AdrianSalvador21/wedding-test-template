@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../../lib/firebase';
 import { WeddingData } from '../../../../../src/types/wedding';
+import WeddingNotFound from '../../../../../components/WeddingNotFound';
 import { 
   Save, 
   User, 
@@ -86,8 +87,7 @@ const createInitialWeddingData = (weddingId: string): WeddingData => ({
   giftRegistry: {
     enabled: false,
     message: '',
-    registries: [],
-    bankAccount: undefined
+    registries: []
   },
   adultOnlyEvent: {
     enabled: false,
@@ -160,21 +160,54 @@ export default function WeddingEditorPage() {
   const [activeTab, setActiveTab] = useState('couple');
   const [error, setError] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
+
+  // Validar si el ID de la boda es válido
+  const isValidWeddingId = (id: string): boolean => {
+    // Validaciones básicas del ID
+    if (!id || id.length < 3 || id.length > 50) return false;
+    if (!/^[a-zA-Z0-9\-_]+$/.test(id)) return false;
+    
+    // IDs reservados o no válidos
+    const reservedIds = ['admin', 'api', 'auth', 'login', 'register', 'demo', 'test', 'null', 'undefined'];
+    if (reservedIds.includes(id.toLowerCase())) return false;
+    
+    return true;
+  };
 
   // Cargar datos de la boda
   const loadWeddingData = async () => {
     try {
       setLoading(true);
+      
+      // Validar formato del ID
+      if (!isValidWeddingId(weddingId)) {
+        setNotFound(true);
+        return;
+      }
+      
       const docRef = doc(db, 'weddings', weddingId);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        setWeddingData(docSnap.data() as WeddingData);
+        const data = docSnap.data() as WeddingData;
+        
+        // Verificar si la boda tiene información básica
+        const hasBasicInfo = data.couple?.bride?.name || data.couple?.groom?.name || data.event?.date;
+        
+        if (hasBasicInfo) {
+          // Tiene información, cargar datos existentes
+          setWeddingData(data);
+        } else {
+          // Existe pero sin información, crear estructura base
+          const initialData = createInitialWeddingData(weddingId);
+          setWeddingData(initialData);
+          await setDoc(docRef, initialData);
+        }
       } else {
-        // Crear nueva boda con datos iniciales
-        const initialData = createInitialWeddingData(weddingId);
-        setWeddingData(initialData);
-        await setDoc(docRef, initialData);
+        // No existe el documento en Firebase → 404
+        setNotFound(true);
+        return;
       }
     } catch (err) {
       console.error('Error cargando datos:', err);
@@ -275,12 +308,20 @@ export default function WeddingEditorPage() {
           )
         );
       case 'gifts':
-        return !!(
-          weddingData.giftRegistry?.enabled && (
-            (weddingData.giftRegistry.registries && weddingData.giftRegistry.registries.length > 0) ||
-            weddingData.giftRegistry.bankAccount
-          )
-        );
+        if (!weddingData.giftRegistry?.enabled) return false;
+        
+        // Al menos una tienda debe estar completa (con nombre y URL)
+        const hasCompleteRegistry = weddingData.giftRegistry.registries && 
+          weddingData.giftRegistry.registries.some((registry: {name?: string; url?: string}) => 
+            registry.name && registry.url
+          );
+        
+        // O debe tener cuenta bancaria completa
+        const hasCompleteBankAccount = weddingData.giftRegistry.bankAccount && 
+          weddingData.giftRegistry.bankAccount.bankName && 
+          weddingData.giftRegistry.bankAccount.accountName;
+        
+        return !!(hasCompleteRegistry || hasCompleteBankAccount);
       case 'social':
         return !!(
           weddingData.couple?.hashtag &&
@@ -289,9 +330,11 @@ export default function WeddingEditorPage() {
            weddingData.couple?.coupleEmail)
         );
       case 'settings':
-        return !!(
-          weddingData.adultOnlyEvent?.enabled !== undefined
-        );
+        // Si no está habilitado, se considera completo
+        if (!weddingData.adultOnlyEvent?.enabled) return true;
+        
+        // Si está habilitado, debe tener mensaje
+        return !!(weddingData.adultOnlyEvent.message && weddingData.adultOnlyEvent.message.trim());
       default:
         return false;
     }
@@ -325,6 +368,10 @@ export default function WeddingEditorPage() {
         </div>
       </div>
     );
+  }
+
+  if (notFound) {
+    return <WeddingNotFound weddingId={weddingId} />;
   }
 
   if (error) {
@@ -914,8 +961,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
       time: '16:00',
       title: { es: '', en: '' },
       description: { es: '', en: '' },
-      icon: 'MapPin',
-      isHighlight: false
+      icon: 'MapPin'
     };
     const newTimelineData = [...timelineData, newEvent];
     onChange('timeline', newTimelineData);
@@ -954,7 +1000,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
       </div>
 
       <div className="space-y-4">
-        {timelineData.map((event: {id: string; title?: {es: string; en: string}; time?: string; description?: {es: string; en: string}; icon?: string; isHighlight?: boolean}, index: number) => (
+        {timelineData.map((event: {id: string; title?: {es: string; en: string}; time?: string; description?: {es: string; en: string}; icon?: string}, index: number) => (
           <div key={event.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
               <h3 className="text-base font-medium text-gray-800">Evento #{index + 1}</h3>
@@ -966,18 +1012,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ID único
-                </label>
-                <input
-                  type="text"
-                  value={event.id}
-                  onChange={(e) => updateTimelineEvent(index, 'id', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                />
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Hora
@@ -1053,19 +1088,6 @@ function TimelineSection({ data, onChange }: SectionProps) {
                   className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
               </div>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id={`highlight-${index}`}
-                checked={event.isHighlight || false}
-                onChange={(e) => updateTimelineEvent(index, 'isHighlight', e.target.checked)}
-                className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
-              />
-              <label htmlFor={`highlight-${index}`} className="ml-2 block text-sm text-gray-900">
-                Evento destacado
-              </label>
             </div>
           </div>
         ))}

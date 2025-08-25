@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
@@ -26,24 +27,48 @@ const AdultOnlyEvent = () => {
     >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
         {/* Título */}
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
-          <div className="w-16 h-0.5 bg-accent mx-auto"></div>
-        </div>
+          <motion.div 
+            className="w-16 h-0.5 bg-accent mx-auto"
+            initial={{ width: 0 }}
+            whileInView={{ width: 64 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          ></motion.div>
+        </motion.div>
 
         {/* Contenido principal */}
         <div className="max-w-4xl mx-auto text-center">
           {/* Mensaje principal */}
-          <p className="section-subtitle mb-8">
+          <motion.p 
+            className="section-subtitle mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+          >
             {message}
-          </p>
+          </motion.p>
 
           {/* Elemento decorativo sutil */}
-          <div className="flex items-center justify-center space-x-3">
+          <motion.div 
+            className="flex items-center justify-center space-x-3"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
+          >
             <div className="w-12 h-0.5 bg-accent"></div>
             <div className="w-2 h-2 bg-accent rounded-full"></div>
             <div className="w-12 h-0.5 bg-accent"></div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

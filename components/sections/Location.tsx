@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { ExternalLink, MapPin } from 'lucide-react';
 import { openExternalLink } from '@/lib/utils';
@@ -53,10 +54,16 @@ const Location = () => {
       >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
           {/* Título */}
-          <div className="text-center mb-12">
+          <motion.div 
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
             <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto"></div>
-          </div>
+          </motion.div>
 
           {/* Ubicaciones */}
           <div className="max-w-4xl mx-auto space-y-12">
