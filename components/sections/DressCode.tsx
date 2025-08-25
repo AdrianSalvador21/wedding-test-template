@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useParams } from 'next/navigation';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
@@ -9,14 +10,21 @@ import { useThemePatterns } from '../../lib/theme-context';
 
 const DressCode = () => {
   const { t } = useTranslations('dressCode');
+  const params = useParams();
+  const currentLocale = params.locale as string;
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
 
-  // Datos dinámicos con fallbacks
+  // Datos dinámicos con fallbacks y soporte bilingüe
   const dressCodeData = weddingData?.event.dressCode;
-  const dressCodeStyle = dressCodeData?.style || t('style.name');
-  const dressCodeDescription = dressCodeData?.description || t('style.description');
+  const dressCodeStyle = typeof dressCodeData?.style === 'object' && dressCodeData.style
+    ? (dressCodeData.style[currentLocale as 'es' | 'en'] || dressCodeData.style.es || '')
+    : (dressCodeData?.style as unknown as string || t('style.name'));
+    
+  const dressCodeDescription = typeof dressCodeData?.description === 'object' && dressCodeData.description
+    ? (dressCodeData.description[currentLocale as 'es' | 'en'] || dressCodeData.description.es || '')
+    : (dressCodeData?.description as unknown as string || t('style.description'));
 
   // Versión estática para móvil
   if (isMobile) {

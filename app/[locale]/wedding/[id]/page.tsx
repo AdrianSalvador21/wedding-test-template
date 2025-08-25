@@ -3,7 +3,7 @@ import { getMockWeddingData } from '../../../../src/data/mockData';
 import WeddingPageClient from '../../../../components/WeddingPageClient';
 
 interface WeddingPageProps {
-  params: { id: string };
+  params: { id: string; locale: string };
   searchParams: { guest?: string };
 }
 
@@ -27,7 +27,10 @@ export async function generateMetadata({ params }: WeddingPageProps): Promise<Me
   });
 
   const title = `${couple.bride.name} & ${couple.groom.name} - Invitación de Boda`;
-  const description = `Te invitamos a celebrar nuestro amor el ${formattedDate}. ${couple.story.substring(0, 160)}...`;
+  const storyText = typeof couple.story === 'object' && couple.story 
+    ? (couple.story[params.locale as 'es' | 'en'] || couple.story.es || '')
+    : (couple.story as string || '');
+  const description = `Te invitamos a celebrar nuestro amor el ${formattedDate}. ${storyText.substring(0, 160)}...`;
   
   // Crear keywords con verificaciones de seguridad
   const keywords = [
@@ -42,10 +45,16 @@ export async function generateMetadata({ params }: WeddingPageProps): Promise<Me
 
   // Agregar venue names solo si existen
   if (event.ceremonyVenue?.name) {
-    keywords.push(event.ceremonyVenue.name);
+    const ceremonyName = typeof event.ceremonyVenue.name === 'object' 
+      ? (event.ceremonyVenue.name[params.locale as 'es' | 'en'] || event.ceremonyVenue.name.es || '')
+      : (event.ceremonyVenue.name as string || '');
+    if (ceremonyName) keywords.push(ceremonyName);
   }
   if (event.receptionVenue?.name) {
-    keywords.push(event.receptionVenue.name);
+    const receptionName = typeof event.receptionVenue.name === 'object' 
+      ? (event.receptionVenue.name[params.locale as 'es' | 'en'] || event.receptionVenue.name.es || '')
+      : (event.receptionVenue.name as string || '');
+    if (receptionName) keywords.push(receptionName);
   }
   
   return {

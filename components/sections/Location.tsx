@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useParams } from 'next/navigation';
 import { ExternalLink, MapPin } from 'lucide-react';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
@@ -11,18 +12,28 @@ import { useTranslations } from '../../lib/translations';
 
 const Location = () => {
   const { t } = useTranslations('location');
+  const params = useParams();
+  const currentLocale = params.locale as string;
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
 
-  // Datos dinámicos con fallbacks
-  const ceremonyVenue = weddingData?.event.ceremonyVenue?.name || t('ceremony.venue');
+  // Datos dinámicos con fallbacks y soporte bilingüe
+  const ceremonyVenueName = typeof weddingData?.event.ceremonyVenue?.name === 'object' && weddingData.event.ceremonyVenue.name
+    ? (weddingData.event.ceremonyVenue.name[currentLocale as 'es' | 'en'] || weddingData.event.ceremonyVenue.name.es || '')
+    : (weddingData?.event.ceremonyVenue?.name as unknown as string || t('ceremony.venue'));
+    
+  const ceremonyVenue = ceremonyVenueName;
   const ceremonyAddress = weddingData?.event.ceremonyVenue?.address || t('ceremony.address');
   const ceremonyMapsUrl = weddingData?.event.ceremonyVenue?.coordinates 
     ? `https://maps.google.com/maps?q=${weddingData.event.ceremonyVenue.coordinates.lat},${weddingData.event.ceremonyVenue.coordinates.lng}`
     : `https://maps.google.com/maps?q=${encodeURIComponent(ceremonyVenue + ' ' + ceremonyAddress)}`;
   
-  const receptionVenue = weddingData?.event.receptionVenue?.name || t('reception.venue');
+  const receptionVenueName = typeof weddingData?.event.receptionVenue?.name === 'object' && weddingData.event.receptionVenue.name
+    ? (weddingData.event.receptionVenue.name[currentLocale as 'es' | 'en'] || weddingData.event.receptionVenue.name.es || '')
+    : (weddingData?.event.receptionVenue?.name as unknown as string || t('reception.venue'));
+    
+  const receptionVenue = receptionVenueName;
   const receptionAddress = weddingData?.event.receptionVenue?.address || t('reception.address');
   const receptionMapsUrl = weddingData?.event.receptionVenue?.coordinates 
     ? `https://maps.google.com/maps?q=${weddingData.event.receptionVenue.coordinates.lat},${weddingData.event.receptionVenue.coordinates.lng}`

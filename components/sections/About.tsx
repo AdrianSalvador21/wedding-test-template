@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { useParams } from 'next/navigation';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddingSlice';
@@ -9,12 +10,20 @@ import { useThemePatterns } from '../../lib/theme-context';
 
 const About = () => {
   const { t } = useTranslations('about');
+  const params = useParams();
+  const currentLocale = params.locale as string;
   const currentWedding = useAppSelector(selectCurrentWedding);
   const couple = useAppSelector(selectCouple);
   const { getBackgroundStyle } = useThemePatterns();
 
-  // Datos dinámicos de la boda
-  const story = couple?.story || t('story'); // Fallback a traducción si no hay datos
+  // Datos dinámicos de la boda con soporte bilingüe
+  const storyText = typeof couple?.story === 'object' && couple.story
+    ? (couple.story[currentLocale as 'es' | 'en'] || couple.story.es || '')
+    : (couple?.story as unknown as string || t('story'));
+    
+  const quoteText = typeof couple?.quote === 'object' && couple.quote
+    ? (couple.quote[currentLocale as 'es' | 'en'] || couple.quote.es || '')
+    : (couple?.quote as unknown as string || '');
 
   return (
     <section 
@@ -38,7 +47,7 @@ const About = () => {
           {/* Cita romántica - centrada y elegante */}
           <div className="text-center mb-16">
             <blockquote className="text-xl md:text-2xl font-heading italic text-stone-600 leading-relaxed max-w-4xl mx-auto">
-              &ldquo;{couple?.quote || 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.'}&rdquo;
+              &ldquo;{quoteText || 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.'}&rdquo;
             </blockquote>
           </div>
 
@@ -63,7 +72,7 @@ const About = () => {
             <div className="order-1 lg:order-2 space-y-6">
               <div className="space-y-4 text-gray-700 leading-relaxed text-base lg:text-lg">
                 <p className="font-body">
-                  {story}
+                  {storyText}
                 </p>
               </div>
               

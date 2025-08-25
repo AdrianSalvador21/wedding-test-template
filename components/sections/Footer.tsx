@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useParams } from 'next/navigation';
 import { Heart, Instagram, Facebook, Mail, Phone } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { openExternalLink } from '@/lib/utils';
@@ -11,6 +12,8 @@ import { useTheme } from '../../lib/theme-context';
 
 const Footer = () => {
   const { t } = useTranslations('footer');
+  const params = useParams();
+  const currentLocale = params.locale as string;
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
   const { currentTheme } = useTheme();
@@ -26,7 +29,9 @@ const Footer = () => {
   const brideFacebook = couple?.bride.facebook;
   const groomFacebook = couple?.groom.facebook;
   const coupleEmail = couple?.coupleEmail || 'maria.carlos@email.com';
-  const coupleQuote = couple?.quote || t('quote');
+  const coupleQuote = typeof couple?.quote === 'object' && couple.quote
+    ? (couple.quote[currentLocale as 'es' | 'en'] || couple.quote.es || '')
+    : (couple?.quote as unknown as string || t('quote'));
   const hashtag = couple?.hashtag || '#MaríaYCarlos2025';
 
   // Clases condicionales basadas en el tema

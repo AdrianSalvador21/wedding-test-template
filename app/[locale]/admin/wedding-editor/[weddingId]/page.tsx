@@ -47,6 +47,7 @@ const createInitialWeddingData = (weddingId: string): WeddingData => ({
     weddingId: weddingId,
     date: '',
     time: '16:00',
+    rsvpDeadline: '',
     ceremony: { time: '16:00', duration: 45 },
     reception: { time: '19:30', duration: 300 },
     ceremonyVenue: {
@@ -61,11 +62,20 @@ const createInitialWeddingData = (weddingId: string): WeddingData => ({
       address: '',
       coordinates: { lat: 0, lng: 0 },
       description: '',
-      mapsUrl: ''
+      mapsUrl: '',
+      features: []
     },
     dressCode: {
       style: { es: '', en: '' },
-      description: { es: '', en: '' }
+      description: { es: '', en: '' },
+      recommendations: {
+        ladies: [],
+        gentlemen: []
+      },
+      colors: {
+        recommended: [],
+        avoid: []
+      }
     }
   },
   timeline: [],
@@ -77,7 +87,7 @@ const createInitialWeddingData = (weddingId: string): WeddingData => ({
     enabled: false,
     message: '',
     registries: [],
-    bankAccount: null
+    bankAccount: undefined
   },
   adultOnlyEvent: {
     enabled: false,
@@ -90,8 +100,52 @@ const createInitialWeddingData = (weddingId: string): WeddingData => ({
     dietaryOptions: true,
     customQuestions: []
   },
-  theme: 'classic',
+  gallery: [],
+  heroImage: {
+    url: '',
+    alt: ''
+  },
+  specialMoments: [],
+  relationshipStats: {
+    yearsTogther: 0,
+    adventures: 0,
+    memories: 0,
+    dreams: 0
+  },
+  transport: {
+    parking: false,
+    valetParking: false,
+    shuttleService: {
+      available: false,
+      pickupPoints: [],
+      schedule: []
+    },
+    publicTransport: '',
+    rideshare: false
+  },
+  music: {
+    enabled: false,
+    spotifyTrackId: '',
+    spotifyPlaylistId: '',
+    fileName: '',
+    title: '',
+    artist: '',
+    autoplay: false,
+    volume: 0.5,
+    showControls: true,
+    startTime: 0
+  },
+  recommendedPlaces: {
+    enabled: false,
+    title: '',
+    subtitle: '',
+    places: []
+  },
+  theme: { id: 'classic' },
   status: 'draft',
+  languages: ['es', 'en'],
+  defaultLanguage: 'es',
+  isActive: false,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString()
 });
@@ -161,7 +215,7 @@ export default function WeddingEditorPage() {
   };
 
   // Actualizar datos anidados
-  const updateWeddingData = (path: string, value: any) => {
+  const updateWeddingData = (path: string, value: string | number | boolean | object | null) => {
     if (!weddingData) return;
     
     const keys = path.split('.');
@@ -197,9 +251,9 @@ export default function WeddingEditorPage() {
         );
       case 'venues':
         return !!(
-          weddingData.event?.ceremonyVenue?.name?.es &&
+          getSafeValue(weddingData.event?.ceremonyVenue || {}, 'name.es') &&
           weddingData.event?.ceremonyVenue?.mapsUrl &&
-          weddingData.event?.receptionVenue?.name?.es &&
+          getSafeValue(weddingData.event?.receptionVenue || {}, 'name.es') &&
           weddingData.event?.receptionVenue?.mapsUrl
         );
       case 'timeline':
@@ -208,7 +262,7 @@ export default function WeddingEditorPage() {
         return !!(
           weddingData.accommodation?.hotels && 
           weddingData.accommodation.hotels.length > 0 &&
-          weddingData.accommodation.hotels.every((hotel: any) => 
+          weddingData.accommodation.hotels.every((hotel: {name?: string; description?: string; mapsUrl?: string}) => 
             hotel.name && hotel.description && hotel.mapsUrl
           )
         );
@@ -216,7 +270,7 @@ export default function WeddingEditorPage() {
         return !!(
           weddingData.accommodation?.recommendedPlaces && 
           weddingData.accommodation.recommendedPlaces.length > 0 &&
-          weddingData.accommodation.recommendedPlaces.every((place: any) => 
+          weddingData.accommodation.recommendedPlaces.every((place: {name?: string; description?: string; mapsUrl?: string}) => 
             place.name && place.description && place.mapsUrl
           )
         );
@@ -444,56 +498,56 @@ export default function WeddingEditorPage() {
           <div className="p-4 sm:p-6">
             {activeTab === 'couple' && (
               <CoupleSection 
-                data={weddingData?.couple}
+                data={(weddingData?.couple || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`couple.${field}`, value)}
               />
             )}
             {activeTab === 'event' && (
               <EventSection 
-                data={weddingData?.event}
+                data={(weddingData?.event || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`event.${field}`, value)}
               />
             )}
             {activeTab === 'venues' && (
               <VenuesSection 
-                ceremonyVenue={weddingData?.event?.ceremonyVenue}
-                receptionVenue={weddingData?.event?.receptionVenue}
+                ceremonyVenue={(weddingData?.event?.ceremonyVenue || {}) as Record<string, unknown>}
+                receptionVenue={(weddingData?.event?.receptionVenue || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`event.${field}`, value)}
               />
             )}
             {activeTab === 'timeline' && (
               <TimelineSection 
-                data={weddingData?.timeline}
+                data={(weddingData?.timeline || []) as unknown as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(field, value)}
               />
             )}
             {activeTab === 'accommodation' && (
               <AccommodationSection 
-                data={weddingData?.accommodation}
+                data={(weddingData?.accommodation || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`accommodation.${field}`, value)}
               />
             )}
             {activeTab === 'recommendedPlaces' && (
               <RecommendedPlacesSection 
-                data={weddingData?.accommodation}
+                data={(weddingData?.accommodation || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`accommodation.${field}`, value)}
               />
             )}
             {activeTab === 'gifts' && (
               <GiftsSection 
-                data={weddingData}
+                data={(weddingData || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(field, value)}
               />
             )}
             {activeTab === 'social' && (
               <SocialSection 
-                data={weddingData?.couple}
+                data={(weddingData?.couple || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`couple.${field}`, value)}
               />
             )}
             {activeTab === 'settings' && (
               <SettingsSection 
-                data={weddingData}
+                data={(weddingData || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(field, value)}
               />
             )}
@@ -505,29 +559,29 @@ export default function WeddingEditorPage() {
 }
 
 // Helper function para acceso seguro a propiedades anidadas
-const getSafeValue = (obj: any, path: string, defaultValue: any = '') => {
+const getSafeValue = (obj: Record<string, unknown>, path: string, defaultValue: string | number | boolean = ''): string => {
   const keys = path.split('.');
-  let current = obj;
+  let current: unknown = obj;
   for (const key of keys) {
-    if (current && typeof current === 'object' && key in current) {
-      current = current[key];
+    if (current && typeof current === 'object' && key in (current as Record<string, unknown>)) {
+      current = (current as Record<string, unknown>)[key];
     } else {
-      return defaultValue;
+      return String(defaultValue);
     }
   }
-  return current || defaultValue;
+  return String(current || defaultValue);
 };
 
 // Interfaces para props
 interface SectionProps {
-  data: any;
-  onChange: (field: string, value: any) => void;
+  data: Record<string, unknown>;
+  onChange: (field: string, value: string | number | boolean | object | null) => void;
 }
 
 interface VenuesSectionProps {
-  ceremonyVenue: any;
-  receptionVenue: any;
-  onChange: (field: string, value: any) => void;
+  ceremonyVenue: Record<string, unknown>;
+  receptionVenue: Record<string, unknown>;
+  onChange: (field: string, value: string | number | boolean | object | null) => void;
 }
 
 function CoupleSection({ data, onChange }: SectionProps) {
@@ -741,7 +795,7 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
             </label>
             <input
               type="text"
-              value={ceremonyVenue?.name?.es || ''}
+              value={getSafeValue(ceremonyVenue, 'name.es')}
               onChange={(e) => onChange('ceremonyVenue.name.es', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
               placeholder="Iglesia del Sagrado Corazón"
@@ -753,7 +807,7 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
             </label>
             <input
               type="text"
-              value={ceremonyVenue?.name?.en || ''}
+              value={getSafeValue(ceremonyVenue, 'name.en')}
               onChange={(e) => onChange('ceremonyVenue.name.en', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
               placeholder="Sacred Heart Church"
@@ -768,7 +822,7 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
             </label>
             <input
               type="text"
-              value={ceremonyVenue?.address || ''}
+              value={getSafeValue(ceremonyVenue, 'address')}
               onChange={(e) => onChange('ceremonyVenue.address', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
               placeholder="Calle de los Santos 456, Ciudad, Estado 12345"
@@ -780,7 +834,7 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
             </label>
             <input
               type="url"
-              value={ceremonyVenue?.mapsUrl || ''}
+              value={getSafeValue(ceremonyVenue, 'mapsUrl')}
               onChange={(e) => onChange('ceremonyVenue.mapsUrl', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
               placeholder="https://maps.google.com/..."
@@ -799,7 +853,7 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
             </label>
             <input
               type="text"
-              value={receptionVenue?.name?.es || ''}
+              value={getSafeValue(receptionVenue, 'name.es')}
               onChange={(e) => onChange('receptionVenue.name.es', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
               placeholder="Jardines del Edén"
@@ -811,7 +865,7 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
             </label>
             <input
               type="text"
-              value={receptionVenue?.name?.en || ''}
+              value={getSafeValue(receptionVenue, 'name.en')}
               onChange={(e) => onChange('receptionVenue.name.en', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
               placeholder="Eden Gardens"
@@ -826,7 +880,7 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
             </label>
             <input
               type="text"
-              value={receptionVenue?.address || ''}
+              value={getSafeValue(receptionVenue, 'address')}
               onChange={(e) => onChange('receptionVenue.address', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
               placeholder="Av. Principal 123, Ciudad, Estado 12345"
@@ -838,7 +892,7 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
             </label>
             <input
               type="url"
-              value={receptionVenue?.mapsUrl || ''}
+              value={getSafeValue(receptionVenue, 'mapsUrl')}
               onChange={(e) => onChange('receptionVenue.mapsUrl', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
               placeholder="https://maps.google.com/..."
@@ -873,7 +927,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
     onChange('timeline', newData);
   };
 
-  const updateTimelineEvent = (index: number, field: string, value: any) => {
+  const updateTimelineEvent = (index: number, field: string, value: string | number | boolean | object | null) => {
     const newData = [...timelineData];
     const keys = field.split('.');
     let current = newData[index];
@@ -900,7 +954,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
       </div>
 
       <div className="space-y-4">
-        {timelineData.map((event: any, index: number) => (
+        {timelineData.map((event: {id: string; title?: {es: string; en: string}; time?: string; description?: {es: string; en: string}; icon?: string; isHighlight?: boolean}, index: number) => (
           <div key={event.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
               <h3 className="text-base font-medium text-gray-800">Evento #{index + 1}</h3>
@@ -958,7 +1012,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
                 </label>
                 <input
                   type="text"
-                  value={event.title?.es || ''}
+                  value={getSafeValue(event, 'title.es')}
                   onChange={(e) => updateTimelineEvent(index, 'title.es', e.target.value)}
                   className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
@@ -969,7 +1023,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
                 </label>
                 <input
                   type="text"
-                  value={event.title?.en || ''}
+                  value={getSafeValue(event, 'title.en')}
                   onChange={(e) => updateTimelineEvent(index, 'title.en', e.target.value)}
                   className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
@@ -983,7 +1037,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
                 </label>
                 <textarea
                   rows={2}
-                  value={event.description?.es || ''}
+                  value={getSafeValue(event, 'description.es')}
                   onChange={(e) => updateTimelineEvent(index, 'description.es', e.target.value)}
                   className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
@@ -994,7 +1048,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
                 </label>
                 <textarea
                   rows={2}
-                  value={event.description?.en || ''}
+                  value={getSafeValue(event, 'description.en')}
                   onChange={(e) => updateTimelineEvent(index, 'description.en', e.target.value)}
                   className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
@@ -1039,7 +1093,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
 }
 
 function AccommodationSection({ data, onChange }: SectionProps) {
-  const hotelsData = data?.hotels || [];
+  const hotelsData = Array.isArray(data?.hotels) ? data.hotels : [];
 
   const addHotel = () => {
     const newHotel = {
@@ -1058,7 +1112,7 @@ function AccommodationSection({ data, onChange }: SectionProps) {
     onChange('hotels', newData);
   };
 
-  const updateHotel = (index: number, field: string, value: any) => {
+  const updateHotel = (index: number, field: string, value: string | number | boolean | object | null) => {
     const newData = [...hotelsData];
     newData[index] = { ...newData[index], [field]: value };
     onChange('hotels', newData);
@@ -1077,7 +1131,7 @@ function AccommodationSection({ data, onChange }: SectionProps) {
       </div>
 
       <div className="space-y-4">
-        {hotelsData.map((hotel: any, index: number) => (
+        {hotelsData.map((hotel: {id: string; name?: string; description?: string; mapsUrl?: string}, index: number) => (
           <div key={hotel.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
               <h3 className="text-base font-medium text-gray-800">Hotel #{index + 1}</h3>
@@ -1142,7 +1196,7 @@ function AccommodationSection({ data, onChange }: SectionProps) {
 }
 
 function RecommendedPlacesSection({ data, onChange }: SectionProps) {
-  const placesData = data?.recommendedPlaces || [];
+  const placesData = Array.isArray(data?.recommendedPlaces) ? data.recommendedPlaces : [];
 
   const addPlace = () => {
     const newPlace = {
@@ -1161,7 +1215,7 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
     onChange('recommendedPlaces', newData);
   };
 
-  const updatePlace = (index: number, field: string, value: any) => {
+  const updatePlace = (index: number, field: string, value: string | number | boolean | object | null) => {
     const newData = [...placesData];
     newData[index] = { ...newData[index], [field]: value };
     onChange('recommendedPlaces', newData);
@@ -1180,7 +1234,7 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
       </div>
 
       <div className="space-y-4">
-        {placesData.map((place: any, index: number) => (
+        {placesData.map((place: {id: string; name?: string; description?: string; mapsUrl?: string}, index: number) => (
           <div key={place.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
               <h3 className="text-base font-medium text-gray-800">Lugar #{index + 1}</h3>
@@ -1245,7 +1299,9 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
 }
 
 function GiftsSection({ data, onChange }: SectionProps) {
-  const giftRegistryData = data?.giftRegistry || { enabled: false, message: '', registries: [], bankAccount: null };
+  const giftRegistryData = (data && typeof data === 'object' && 'giftRegistry' in data && data.giftRegistry) 
+    ? data.giftRegistry as {enabled: boolean; message: string; registries: unknown[]; bankAccount: unknown}
+    : { enabled: false, message: '', registries: [], bankAccount: null };
 
   const addRegistry = () => {
     const newRegistry = {
@@ -1264,14 +1320,15 @@ function GiftsSection({ data, onChange }: SectionProps) {
     onChange('giftRegistry.registries', newRegistries);
   };
 
-  const updateRegistry = (index: number, field: string, value: any) => {
+  const updateRegistry = (index: number, field: string, value: string | number | boolean | object | null) => {
     const newRegistries = [...giftRegistryData.registries];
-    newRegistries[index] = { ...newRegistries[index], [field]: value };
+    const currentItem = newRegistries[index] as Record<string, unknown> || {};
+    newRegistries[index] = { ...currentItem, [field]: value };
     onChange('giftRegistry.registries', newRegistries);
   };
 
-  const updateBankAccount = (field: string, value: any) => {
-    const bankAccount = giftRegistryData.bankAccount || {};
+  const updateBankAccount = (field: string, value: string | number | boolean | object | null) => {
+    const bankAccount = giftRegistryData.bankAccount as Record<string, unknown> || {};
     onChange('giftRegistry.bankAccount', { ...bankAccount, [field]: value });
   };
 
@@ -1337,7 +1394,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
               </div>
 
               <div className="space-y-4">
-                {giftRegistryData.registries.map((registry: any, index: number) => (
+                {(giftRegistryData.registries as {id: string; name?: string; url?: string; description?: string}[]).map((registry, index: number) => (
                   <div key={registry.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                       <h4 className="text-base font-medium text-gray-800">Tienda #{index + 1}</h4>
@@ -1414,7 +1471,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                 </label>
               </div>
 
-              {giftRegistryData.bankAccount && (
+              {!!giftRegistryData.bankAccount && (
                 <div className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
                   <h4 className="text-base font-medium text-gray-800 mb-4">Información Bancaria</h4>
                   
@@ -1425,7 +1482,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                       </label>
                       <input
                         type="text"
-                        value={giftRegistryData.bankAccount.bankName || ''}
+                        value={getSafeValue(giftRegistryData.bankAccount as Record<string, unknown>, 'bankName')}
                         onChange={(e) => updateBankAccount('bankName', e.target.value)}
                         className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                         placeholder="Banco BBVA, Santander, Banorte..."
@@ -1437,7 +1494,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                       </label>
                       <input
                         type="text"
-                        value={giftRegistryData.bankAccount.accountName || ''}
+                        value={getSafeValue(giftRegistryData.bankAccount as Record<string, unknown>, 'accountName')}
                         onChange={(e) => updateBankAccount('accountName', e.target.value)}
                         className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                         placeholder="Nombre completo del titular"
@@ -1449,7 +1506,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                       </label>
                       <input
                         type="text"
-                        value={giftRegistryData.bankAccount.accountNumber || ''}
+                        value={getSafeValue(giftRegistryData.bankAccount as Record<string, unknown>, 'accountNumber')}
                         onChange={(e) => updateBankAccount('accountNumber', e.target.value)}
                         className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                         placeholder="1234567890"
@@ -1461,7 +1518,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                       </label>
                       <input
                         type="text"
-                        value={giftRegistryData.bankAccount.clabe || ''}
+                        value={getSafeValue(giftRegistryData.bankAccount as Record<string, unknown>, 'clabe')}
                         onChange={(e) => updateBankAccount('clabe', e.target.value)}
                         className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                         placeholder="012345678901234567"
@@ -1474,7 +1531,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                       </label>
                       <textarea
                         rows={2}
-                        value={giftRegistryData.bankAccount.description || ''}
+                        value={getSafeValue(giftRegistryData.bankAccount as Record<string, unknown>, 'description')}
                         onChange={(e) => updateBankAccount('description', e.target.value)}
                         className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                         placeholder="También puedes contribuir directamente a nuestra cuenta bancaria"
@@ -1601,7 +1658,9 @@ function SocialSection({ data, onChange }: SectionProps) {
 }
 
 function SettingsSection({ data, onChange }: SectionProps) {
-  const adultOnlyData = getSafeValue(data, 'adultOnlyEvent', { enabled: false, message: '' });
+  const adultOnlyData = (data && typeof data === 'object' && 'adultOnlyEvent' in data && data.adultOnlyEvent) 
+    ? data.adultOnlyEvent as {enabled: boolean; message: string}
+    : { enabled: false, message: '' };
 
   return (
     <div className="space-y-6 sm:space-y-8">

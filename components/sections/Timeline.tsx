@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useParams } from 'next/navigation';
 import { Clock, MapPin, Users, Calendar, Star, Circle, Sparkles, Gift, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslations } from '../../lib/translations';
@@ -11,6 +12,8 @@ import { useThemePatterns } from '../../lib/theme-context';
 
 const Timeline = () => {
   const { t } = useTranslations('timeline');
+  const params = useParams();
+  const currentLocale = params.locale as string;
   const { isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
@@ -27,8 +30,12 @@ const Timeline = () => {
   // Datos dinámicos con fallback
   const events = weddingData?.timeline?.length ? weddingData.timeline.map((event, index) => ({
     time: event.time,
-    title: event.title,
-    description: event.description,
+    title: typeof event.title === 'object' && event.title
+      ? (event.title[currentLocale as 'es' | 'en'] || event.title.es || '')
+      : (event.title as unknown as string || ''),
+    description: typeof event.description === 'object' && event.description
+      ? (event.description[currentLocale as 'es' | 'en'] || event.description.es || '')
+      : (event.description as unknown as string || ''),
     icon: getIconByIndex(index)
   })) : [
     {

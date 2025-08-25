@@ -126,20 +126,28 @@ const AdminGuestsPage = () => {
         coupleMessage: formData.coupleMessage.trim(),
         weddingId,
         rsvpStatus: 'pending' as const,
+        plusOneAllowed: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
 
       if (editingGuest) {
-        const updatedGuest = await guestService.updateGuest(editingGuest.id, {
+        await guestService.updateGuest(editingGuest.id, {
           ...guestData,
           updatedAt: new Date().toISOString()
         });
         
-        setGuests(prev => prev.map(g => g.id === editingGuest.id ? updatedGuest : g));
+        // Actualizar el estado local con los nuevos datos
+        setGuests(prev => prev.map(g => 
+          g.id === editingGuest.id 
+            ? { ...g, ...guestData, updatedAt: new Date().toISOString() }
+            : g
+        ));
       } else {
         const newGuest = await guestService.createGuest(guestData);
-        setGuests(prev => [...prev, newGuest]);
+        if (newGuest && typeof newGuest === 'object' && 'id' in newGuest) {
+          setGuests(prev => [...prev, newGuest]);
+        }
         
         // Actualizar estadísticas
         setStats(prev => ({

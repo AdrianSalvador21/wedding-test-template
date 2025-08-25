@@ -21,3 +21,4 @@ Allow: /wedding/*/
 # Block search engines from indexing private wedding pages
 Disallow: /en/wedding/
 Disallow: /es/wedding/
+
