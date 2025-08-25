@@ -4,8 +4,8 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, Check, ChevronDown, AlertCircle } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { Send, ChevronDown, AlertCircle } from 'lucide-react';
+import { useSearchParams, useParams } from 'next/navigation';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
@@ -29,12 +29,16 @@ const RSVPContent = () => {
   const [existingRSVP, setExistingRSVP] = useState<FirebaseRSVP | null>(null);
 
   // Obtener parámetros de la URL
+  const params = useParams();
+  const currentLocale = params.locale as string;
   const guestId = searchParams.get('guest');
   const weddingId = weddingData?.id || 'friends-test';
 
   // Datos dinámicos con fallbacks
   const receptionVenue = weddingData?.event.receptionVenue;
-  const venueName = receptionVenue?.name || t('eventInfo.venue');
+  const venueName = typeof receptionVenue?.name === 'object' && receptionVenue.name
+    ? (receptionVenue.name[currentLocale as 'es' | 'en'] || receptionVenue.name.es || '')
+    : (receptionVenue?.name as unknown as string || t('eventInfo.venue'));
   const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
 
   // Formatear fecha y hora
@@ -327,9 +331,6 @@ const RSVPContent = () => {
 
           <div className="max-w-md mx-auto text-center">
             <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Check className="w-8 h-8 text-green-600" />
-              </div>
               <h2 className="text-2xl font-heading font-semibold text-primary mb-4">
                 {existingRSVP?.attending ? t('confirmation.received') : t('confirmation.registered')}
               </h2>

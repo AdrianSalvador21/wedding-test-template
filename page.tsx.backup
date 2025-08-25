@@ -1,0 +1,2895 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../../../../../lib/firebase';
+import { WeddingData } from '../../../../../src/types/wedding';
+import { 
+  Save, 
+  User, 
+  Calendar, 
+  Clock, 
+  MapPin, 
+  Camera, 
+  Heart, 
+  Gift, 
+  Music, 
+  Settings,
+  Loader2
+} from 'lucide-react';
+
+// Datos iniciales para nueva boda - SOLO campos que se usan en el template
+const createInitialWeddingData = (weddingId: string): WeddingData => ({
+  id: weddingId,
+  couple: {
+    bride: {
+      name: '', // ✅ Usado en Hero, About
+      fullName: '',
+      phone: '',
+      email: '',
+      instagram: '',
+      facebook: ''
+    },
+    groom: {
+      name: '', // ✅ Usado en Hero, About
+      fullName: '',
+      phone: '',
+      email: '',
+      instagram: '',
+      facebook: ''
+    },
+    coupleEmail: '',
+    hashtag: '',
+    story: { es: '', en: '' }, // ✅ Usado en About
+    quote: { es: '', en: '' }  // ✅ Usado en About
+  },
+  event: {
+    weddingId: weddingId,
+    date: '',
+    time: '16:00',
+    ceremony: { time: '16:00', duration: 45 },
+    reception: { time: '19:30', duration: 300 },
+    ceremonyVenue: {
+      name: { es: '', en: '' },
+      address: '',
+      description: { es: '', en: '' }
+    },
+    receptionVenue: {
+      name: { es: '', en: '' },
+      address: '',
+      description: { es: '', en: '' },
+      features: { es: [], en: [] }
+    },
+    dressCode: {
+      style: { es: '', en: '' },
+      description: { es: '', en: '' },
+      recommendations: {
+        ladies: { es: [], en: [] },
+        gentlemen: { es: [], en: [] }
+      },
+      colors: { recommended: [], avoid: [] }
+    },
+    rsvpDeadline: ''
+  },
+  timeline: [],
+  gallery: [],
+  heroImage: { url: '', alt: '' },
+  specialMoments: [],
+  relationshipStats: {
+    yearsTogther: 0,
+    adventures: 0,
+    memories: 0,
+    dreams: 0
+  },
+  accommodation: [],
+  transport: {
+    parking: false,
+    valetParking: false,
+    rideshare: false,
+    shuttleService: {
+      available: false,
+      pickupPoints: [],
+      schedule: []
+    }
+  },
+  giftRegistry: {
+    enabled: false,
+    registries: []
+  },
+  adultOnlyEvent: {
+    enabled: false
+  },
+  recommendedPlaces: {
+    enabled: false,
+    places: []
+  },
+  theme: { id: 'classic' },
+  languages: ['es', 'en'],
+  defaultLanguage: 'es',
+  isActive: true,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+});
+
+// Solo tabs para secciones que aparecen en el template
+const tabs = [
+  { id: 'couple', label: 'Pareja', icon: User, description: 'Nombres, historia y frase' },
+  { id: 'event', label: 'Evento', icon: Calendar, description: 'Fecha, hora y código de vestimenta' },
+  { id: 'venues', label: 'Lugares', icon: MapPin, description: 'Ceremonia y recepción' },
+  { id: 'timeline', label: 'Cronograma', icon: Clock, description: 'Eventos del día' },
+  { id: 'gallery', label: 'Galería', icon: Camera, description: 'Imagen principal y fotos' },
+  // Secciones ocultas por ahora - no aparecen en template base
+  // { id: 'moments', label: 'Momentos', icon: Heart },
+  // { id: 'accommodation', label: 'Hospedaje', icon: MapPin },
+  // { id: 'gifts', label: 'Regalos', icon: Gift },
+  // { id: 'music', label: 'Música', icon: Music },
+  // { id: 'settings', label: 'Configuración', icon: Settings }
+];
+
+export default function WeddingEditorPage() {
+  const params = useParams();
+  const weddingId = params.weddingId as string;
+  
+  const [activeTab, setActiveTab] = useState('couple');
+  const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    loadWeddingData();
+  }, [weddingId]);
+
+  const loadWeddingData = async () => {
+    try {
+      const docRef = doc(db, 'weddings', weddingId);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        // Boda existente
+        setWeddingData(docSnap.data() as WeddingData);
+      } else {
+        // Nueva boda - crear automáticamente en Firebase
+        const newWedding = createInitialWeddingData(weddingId);
+        
+        // Guardar la nueva boda en Firebase
+        await setDoc(docRef, newWedding);
+        setWeddingData(newWedding);
+        
+        console.log(`✅ Nueva boda creada automáticamente: ${weddingId}`);
+      }
+    } catch (error) {
+      console.error('Error loading/creating wedding data:', error);
+      
+      // En caso de error, aún así crear la boda localmente para que el usuario pueda trabajar
+      const fallbackWedding = createInitialWeddingData(weddingId);
+      setWeddingData(fallbackWedding);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveWeddingData = async () => {
+    if (!weddingData) return;
+    
+    setSaving(true);
+    try {
+      // Validar que los datos críticos estén presentes
+      const dataToSave = {
+        ...weddingData,
+        // Asegurar que arrays críticos estén inicializados
+        timeline: Array.isArray(weddingData.timeline) ? weddingData.timeline : [],
+        gallery: Array.isArray(weddingData.gallery) ? weddingData.gallery : [],
+        specialMoments: Array.isArray(weddingData.specialMoments) ? weddingData.specialMoments : [],
+        accommodation: Array.isArray(weddingData.accommodation) ? weddingData.accommodation : [],
+        music: weddingData.music || { playlist: [] },
+        updatedAt: new Date().toISOString()
+      };
+      
+      const docRef = doc(db, 'weddings', weddingId);
+      await setDoc(docRef, dataToSave);
+      
+      // Mostrar mensaje de éxito más elegante
+      const successMessage = document.createElement('div');
+      successMessage.innerHTML = `
+        <div class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+          ¡Invitación guardada exitosamente!
+        </div>
+      `;
+      document.body.appendChild(successMessage);
+      setTimeout(() => {
+        document.body.removeChild(successMessage);
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error saving wedding data:', error);
+      
+      // Mostrar mensaje de error más informativo
+      const errorMessage = document.createElement('div');
+      errorMessage.innerHTML = `
+        <div class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          Error al guardar. Verifica tu conexión e intenta de nuevo.
+        </div>
+      `;
+      document.body.appendChild(errorMessage);
+      setTimeout(() => {
+        document.body.removeChild(errorMessage);
+      }, 5000);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateWeddingData = (path: string, value: any) => {
+    if (!weddingData) return;
+    
+    console.log('updateWeddingData called with:', { path, value });
+    const newData = { ...weddingData };
+    const keys = path.split('.');
+    let current: any = newData;
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!current[keys[i]]) {
+        current[keys[i]] = {};
+      }
+      current = current[keys[i]];
+    }
+    
+    const finalKey = keys[keys.length - 1];
+    current[finalKey] = value;
+    
+    // Asegurar que arrays críticos se mantengan como arrays
+    if (finalKey === 'timeline' && !Array.isArray(value)) {
+      current[finalKey] = [];
+    }
+    if (finalKey === 'gallery' && !Array.isArray(value)) {
+      current[finalKey] = [];
+    }
+    if (finalKey === 'specialMoments' && !Array.isArray(value)) {
+      current[finalKey] = [];
+    }
+    if (finalKey === 'accommodation' && !Array.isArray(value)) {
+      current[finalKey] = [];
+    }
+
+    
+    // Actualizar timestamp
+    newData.updatedAt = new Date().toISOString();
+    
+    setWeddingData(newData);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-600" />
+        <span className="ml-2 text-lg">Cargando editor...</span>
+      </div>
+    );
+  }
+
+  if (!weddingData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-amber-600 mx-auto mb-4" />
+          <p className="text-lg text-gray-600">Preparando editor de invitación...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Navbar Invyte */}
+      <header className="bg-white/95 backdrop-blur-md border-b border-stone-200/50 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-stone-800 tracking-tight">
+                invyta
+              </div>
+              <div className="hidden sm:block text-gray-300">|</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Header de página */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex flex-col space-y-1 sm:space-y-2">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+                Editor de Invitación
+              </h1>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-1 sm:space-y-0 text-xs sm:text-sm text-gray-600">
+                <div className="flex items-center">
+                  <span className="font-medium">ID:</span>
+                  <span className="ml-1 font-mono bg-gray-100 px-2 py-0.5 rounded text-xs">{weddingId}</span>
+                </div>
+                <div className="hidden sm:block text-gray-300">•</div>
+                <div className="flex items-center">
+                  <span className="font-medium">Estado:</span>
+                  <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-800 font-medium">
+                    ✓ Activa
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Botón de guardado */}
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={saveWeddingData}
+                disabled={saving}
+                className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base font-medium shadow-sm"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Guardar Cambios
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+          {/* Sidebar con tabs - Mobile: Horizontal scroll, Desktop: Vertical */}
+          <div className="w-full lg:w-64 lg:flex-shrink-0">
+            {/* Mobile: Horizontal scrollable tabs */}
+            <div className="lg:hidden">
+              <div className="flex space-x-1 overflow-x-auto pb-2 scrollbar-hide">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const isComplete = isSectionComplete(tab.id, weddingData);
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex-shrink-0 flex flex-col items-center px-3 py-2 text-xs font-medium rounded-lg transition-colors min-w-[80px] relative ${
+                        activeTab === tab.id
+                          ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                          : 'text-gray-600 hover:bg-gray-100 border border-transparent'
+                      }`}
+                    >
+                      <div className="relative">
+                        <Icon className="w-4 h-4 mb-1" />
+                        {isComplete && (
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-center leading-tight">{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            
+            {/* Desktop: Vertical sidebar */}
+            <div className="hidden lg:block">
+              <nav className="space-y-2">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isComplete = isSectionComplete(tab.id, weddingData);
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors ${
+                      activeTab === tab.id
+                        ? 'bg-amber-100 text-amber-800 border-l-4 border-amber-600'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="relative mr-3">
+                      <Icon className="w-5 h-5 flex-shrink-0" />
+                      {isComplete && (
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
+                          <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <span className="font-medium">{tab.label}</span>
+                    {isComplete && (
+                      <span className="ml-auto text-xs text-green-600 font-medium">✓</span>
+                    )}
+                  </button>
+                );
+              })}
+              </nav>
+            </div>
+          </div>
+
+          {/* Contenido principal */}
+          <div className="flex-1 bg-white rounded-lg shadow-sm border p-4 sm:p-6 lg:p-8">
+            {activeTab === 'couple' && (
+              <CoupleSection 
+                data={weddingData.couple} 
+                onChange={(field, value) => updateWeddingData(`couple.${field}`, value)}
+              />
+            )}
+            
+            {activeTab === 'event' && (
+              <EventSection 
+                data={weddingData.event} 
+                onChange={(field, value) => updateWeddingData(`event.${field}`, value)}
+              />
+            )}
+            
+            {activeTab === 'timeline' && (
+              <TimelineSection 
+                data={weddingData.timeline} 
+                onChange={(field, value) => updateWeddingData(field, value)}
+              />
+            )}
+
+            {activeTab === 'venues' && (
+              <VenuesSection 
+                ceremonyVenue={weddingData.event.ceremonyVenue}
+                receptionVenue={weddingData.event.receptionVenue}
+                onChange={(field, value) => updateWeddingData(`event.${field}`, value)}
+              />
+            )}
+
+            {activeTab === 'gallery' && (
+              <GallerySection 
+                gallery={weddingData.gallery}
+                heroImage={weddingData.heroImage}
+                onChange={(field, value) => updateWeddingData(field, value)}
+              />
+            )}
+
+            {activeTab === 'moments' && (
+              <MomentsSection 
+                specialMoments={weddingData.specialMoments}
+                relationshipStats={weddingData.relationshipStats}
+                onChange={(field, value) => updateWeddingData(field, value)}
+              />
+            )}
+
+            {activeTab === 'accommodation' && (
+              <AccommodationSection 
+                data={weddingData.accommodation}
+                transport={weddingData.transport}
+                onChange={(field, value) => updateWeddingData(field, value)}
+              />
+            )}
+
+            {activeTab === 'gifts' && (
+              <GiftsSection 
+                data={weddingData.giftRegistry}
+                onChange={(field, value) => updateWeddingData(`giftRegistry.${field}`, value)}
+              />
+            )}
+
+            {activeTab === 'music' && (
+              <MusicSection 
+                data={weddingData.music}
+                recommendedPlaces={weddingData.recommendedPlaces}
+                onChange={(field, value) => updateWeddingData(field, value)}
+              />
+            )}
+
+            {activeTab === 'settings' && (
+              <SettingsSection 
+                theme={weddingData.theme}
+                languages={weddingData.languages}
+                defaultLanguage={weddingData.defaultLanguage}
+                isActive={weddingData.isActive}
+                adultOnlyEvent={weddingData.adultOnlyEvent}
+                onChange={(field, value) => updateWeddingData(field, value)}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Función helper para verificar si una sección está completa
+const isSectionComplete = (sectionId: string, weddingData: any): boolean => {
+  if (!weddingData) return false;
+  
+  switch (sectionId) {
+    case 'couple':
+      return !!(weddingData.couple?.bride?.name && 
+                weddingData.couple?.groom?.name &&
+                weddingData.couple?.story?.es &&
+                weddingData.couple?.story?.en);
+    
+    case 'event':
+      return !!(weddingData.event?.date && 
+                weddingData.event?.time &&
+                weddingData.event?.dressCode?.style?.es);
+    
+    case 'timeline':
+      return !!(weddingData.timeline && Array.isArray(weddingData.timeline) && weddingData.timeline.length > 0);
+    
+    case 'venues':
+      return !!(weddingData.event?.ceremonyVenue?.name?.es && 
+                weddingData.event?.receptionVenue?.name?.es);
+    
+    case 'gallery':
+      return !!(weddingData.gallery && weddingData.gallery.length > 0);
+    
+    case 'moments':
+      return !!(weddingData.specialMoments && weddingData.specialMoments.length > 0);
+    
+    case 'accommodation':
+      return !!(weddingData.accommodation && weddingData.accommodation.length > 0);
+    
+    case 'gifts':
+      return !!(weddingData.giftRegistry?.enabled);
+    
+    case 'music':
+      return !!(weddingData.music?.playlist && weddingData.music.playlist.length > 0);
+    
+    case 'settings':
+      return !!(weddingData.isActive !== undefined && 
+                weddingData.theme &&
+                weddingData.languages && weddingData.languages.length > 0);
+    
+    default:
+      return false;
+  }
+};
+
+// Función helper para obtener valores seguros
+const getSafeValue = (obj: any, path: string, defaultValue: any = '') => {
+  const keys = path.split('.');
+  let current = obj;
+  for (const key of keys) {
+    if (current && typeof current === 'object' && key in current) {
+      current = current[key];
+    } else {
+      return defaultValue;
+    }
+  }
+  return current || defaultValue;
+};
+
+// Tipos para los componentes
+interface SectionProps {
+  data: any;
+  onChange: (field: string, value: any) => void;
+}
+
+interface VenuesSectionProps {
+  ceremonyVenue: any;
+  receptionVenue: any;
+  onChange: (field: string, value: any) => void;
+}
+
+interface GallerySectionProps {
+  gallery: any;
+  heroImage: any;
+  onChange: (field: string, value: any) => void;
+}
+
+interface MomentsSectionProps {
+  specialMoments: any;
+  relationshipStats: any;
+  onChange: (field: string, value: any) => void;
+}
+
+interface AccommodationSectionProps {
+  data: any;
+  transport: any;
+  onChange: (field: string, value: any) => void;
+}
+
+interface MusicSectionProps {
+  data: any;
+  recommendedPlaces: any;
+  onChange: (field: string, value: any) => void;
+}
+
+interface SettingsSectionProps {
+  theme: any;
+  languages: any;
+  defaultLanguage: any;
+  isActive: any;
+  adultOnlyEvent: any;
+  onChange: (field: string, value: any) => void;
+}
+
+// Componente para la sección de pareja
+function CoupleSection({ data, onChange }: SectionProps) {
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Información de la Pareja</h2>
+        <p className="text-sm text-gray-600 mb-6">
+          ✅ Solo campos que aparecen en la invitación
+        </p>
+        
+        {/* Nombres - LO MÁS IMPORTANTE */}
+        <div className="mb-8 bg-amber-50 p-6 rounded-lg border border-amber-200">
+          <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+            <span className="mr-2">👫</span>
+            Nombres (aparecen en el título principal)
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre de la Novia ✅
+              </label>
+              <input
+                type="text"
+                value={getSafeValue(data, 'bride.name')}
+                onChange={(e) => onChange('bride.name', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="María"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre del Novio ✅
+              </label>
+              <input
+                type="text"
+                value={getSafeValue(data, 'groom.name')}
+                onChange={(e) => onChange('groom.name', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="Carlos"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Historia de amor - APARECE EN ABOUT */}
+        <div className="mb-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
+          <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+            <span className="mr-2">📖</span>
+            Historia de amor (aparece en sección "Sobre nosotros")
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Historia en Español ✅
+              </label>
+              <textarea
+                rows={4}
+                value={getSafeValue(data, 'story.es')}
+                onChange={(e) => onChange('story.es', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="Hace más de 6 años, el destino nos unió en una cafetería de la ciudad..."
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Historia en Inglés ✅
+              </label>
+              <textarea
+                rows={4}
+                value={getSafeValue(data, 'story.en')}
+                onChange={(e) => onChange('story.en', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="More than 6 years ago, destiny brought us together in a city café..."
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Frase especial - APARECE EN ABOUT */}
+        <div className="mb-8 bg-green-50 p-6 rounded-lg border border-green-200">
+          <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+            <span className="mr-2">💬</span>
+            Frase especial (aparece como cita romántica)
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Frase en Español ✅
+              </label>
+              <input
+                type="text"
+                value={getSafeValue(data, 'quote.es')}
+                onChange={(e) => onChange('quote.es', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección."
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Frase en Inglés ✅
+              </label>
+              <input
+                type="text"
+                value={getSafeValue(data, 'quote.en')}
+                onChange={(e) => onChange('quote.en', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="Love is not just looking at each other, but looking together in the same direction."
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Componente simplificado para la sección de evento - SOLO campos que aparecen en template
+function EventSection({ data, onChange }: SectionProps) {
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Información del Evento</h2>
+        <p className="text-sm text-gray-600 mb-6">
+          ✅ Solo campos que aparecen en la invitación
+        </p>
+        
+        {/* Fecha y hora - APARECEN EN HERO Y COUNTDOWN */}
+        <div className="mb-8 bg-purple-50 p-6 rounded-lg border border-purple-200">
+          <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+            <span className="mr-2">📅</span>
+            Fecha y Hora (aparecen en Hero y Countdown)
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Fecha de la boda ✅
+              </label>
+              <input
+                type="date"
+                value={getSafeValue(data, 'date') ? getSafeValue(data, 'date').split('T')[0] : ''}
+                onChange={(e) => onChange('date', e.target.value + 'T16:00:00.000Z')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Hora del evento ✅
+              </label>
+              <input
+                type="time"
+                value={getSafeValue(data, 'time')}
+                onChange={(e) => onChange('time', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Código de vestimenta - APARECE EN DRESSCODE */}
+        <div className="mb-8 bg-indigo-50 p-6 rounded-lg border border-indigo-200">
+          <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+            <span className="mr-2">👔</span>
+            Código de Vestimenta (aparece en sección DressCode)
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Estilo en Español ✅
+              </label>
+              <input
+                type="text"
+                value={getSafeValue(data, 'dressCode.style.es')}
+                onChange={(e) => onChange('dressCode.style.es', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="Formal / Cocktail"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Estilo en Inglés ✅
+              </label>
+              <input
+                type="text"
+                value={getSafeValue(data, 'dressCode.style.en')}
+                onChange={(e) => onChange('dressCode.style.en', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="Formal / Cocktail"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Descripción en Español ✅
+              </label>
+              <textarea
+                rows={2}
+                value={getSafeValue(data, 'dressCode.description.es')}
+                onChange={(e) => onChange('dressCode.description.es', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="Queremos que te sientas elegante y cómodo en nuestra celebración"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Descripción en Inglés ✅
+              </label>
+              <textarea
+                rows={2}
+                value={getSafeValue(data, 'dressCode.description.en')}
+                onChange={(e) => onChange('dressCode.description.en', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="We want you to feel elegant and comfortable at our celebration"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Hora de inicio
+              </label>
+              <input
+                type="time"
+                value={data.ceremony.time}
+                onChange={(e) => onChange('ceremony.time', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Duración (minutos)
+              </label>
+              <input
+                type="number"
+                value={data.ceremony.duration}
+                onChange={(e) => onChange('ceremony.duration', parseInt(e.target.value))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                min="15"
+                max="180"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Información de recepción */}
+        <div className="mb-8">
+          <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Recepción</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Hora de inicio
+              </label>
+              <input
+                type="time"
+                value={data.reception.time}
+                onChange={(e) => onChange('reception.time', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Duración (minutos)
+              </label>
+              <input
+                type="number"
+                value={data.reception.duration}
+                onChange={(e) => onChange('reception.duration', parseInt(e.target.value))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                min="60"
+                max="720"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Código de vestimenta */}
+        <div className="mb-8">
+          <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Código de Vestimenta</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Estilo (Español)
+              </label>
+              <input
+                type="text"
+                value={data.dressCode.style.es}
+                onChange={(e) => onChange('dressCode.style.es', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="Formal / Cocktail"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Estilo (Inglés)
+              </label>
+              <input
+                type="text"
+                value={data.dressCode.style.en}
+                onChange={(e) => onChange('dressCode.style.en', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="Formal / Cocktail"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Descripción (Español)
+              </label>
+              <textarea
+                rows={2}
+                value={data.dressCode.description.es}
+                onChange={(e) => onChange('dressCode.description.es', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="Queremos que te sientas elegante y cómodo en nuestra celebración"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Descripción (Inglés)
+              </label>
+              <textarea
+                rows={2}
+                value={data.dressCode.description.en}
+                onChange={(e) => onChange('dressCode.description.en', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="We want you to feel elegant and comfortable at our celebration"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+            <div>
+              <h4 className="text-md font-medium text-gray-700 mb-3">Recomendaciones para Damas</h4>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Español</label>
+                  <textarea
+                    rows={3}
+                    value={data.dressCode.recommendations.ladies.es.join('\n')}
+                    onChange={(e) => onChange('dressCode.recommendations.ladies.es', e.target.value.split('\n').filter(item => item.trim()))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Vestidos midi o largos elegantes&#10;Conjuntos de falda y blusa sofisticados&#10;Pantalones de vestir con blusa elegante"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Inglés</label>
+                  <textarea
+                    rows={3}
+                    value={data.dressCode.recommendations.ladies.en.join('\n')}
+                    onChange={(e) => onChange('dressCode.recommendations.ladies.en', e.target.value.split('\n').filter(item => item.trim()))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Elegant midi or long dresses&#10;Sophisticated skirt and blouse sets&#10;Dress pants with elegant blouse"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-md font-medium text-gray-700 mb-3">Recomendaciones para Caballeros</h4>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Español</label>
+                  <textarea
+                    rows={3}
+                    value={data.dressCode.recommendations.gentlemen.es.join('\n')}
+                    onChange={(e) => onChange('dressCode.recommendations.gentlemen.es', e.target.value.split('\n').filter(item => item.trim()))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Traje completo (saco y pantalón)&#10;Pantalón de vestir con camisa y saco&#10;Camisa de vestir (corbata opcional)"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Inglés</label>
+                  <textarea
+                    rows={3}
+                    value={data.dressCode.recommendations.gentlemen.en.join('\n')}
+                    onChange={(e) => onChange('dressCode.recommendations.gentlemen.en', e.target.value.split('\n').filter(item => item.trim()))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Complete suit (jacket and pants)&#10;Dress pants with shirt and jacket&#10;Dress shirt (tie optional)"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Colores recomendados (códigos hex separados por comas)
+              </label>
+              <input
+                type="text"
+                value={data.dressCode.colors.recommended.join(', ')}
+                onChange={(e) => onChange('dressCode.colors.recommended', e.target.value.split(',').map(c => c.trim()).filter(c => c))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="#8b7355, #a67c5a, #d4af8c, #2c3e50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Colores a evitar (códigos hex separados por comas)
+              </label>
+              <input
+                type="text"
+                value={data.dressCode.colors.avoid.join(', ')}
+                onChange={(e) => onChange('dressCode.colors.avoid', e.target.value.split(',').map(c => c.trim()).filter(c => c))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                placeholder="#ffffff, #f8f8ff, #ff0000"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TimelineSection({ data, onChange }: SectionProps) {
+  // Asegurar que data sea siempre un array
+  const timelineData = Array.isArray(data) ? data : [];
+
+  const addTimelineEvent = () => {
+    const newEvent = {
+      id: `event-${Date.now()}`,
+      time: '16:00',
+      title: { es: '', en: '' },
+      description: { es: '', en: '' },
+      icon: 'MapPin',
+      isHighlight: false
+    };
+    console.log('Adding timeline event:', newEvent);
+    console.log('Current timelineData:', timelineData);
+    const newTimelineData = [...timelineData, newEvent];
+    console.log('New timeline data:', newTimelineData);
+    onChange('timeline', newTimelineData);
+  };
+
+  const removeTimelineEvent = (index: number) => {
+    const newData = [...timelineData];
+    newData.splice(index, 1);
+    onChange('timeline', newData);
+  };
+
+  const updateTimelineEvent = (index: number, field: string, value: any) => {
+    const newData = [...timelineData];
+    const keys = field.split('.');
+    let current = newData[index];
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!current[keys[i]]) {
+        current[keys[i]] = {};
+      }
+      current = current[keys[i]];
+    }
+    
+    current[keys[keys.length - 1]] = value;
+    onChange('timeline', newData);
+  };
+
+  const iconOptions = [
+    'MapPin', 'Heart', 'Camera', 'Music', 'Utensils', 'Users', 'Wine', 'Clock', 'Star', 'Gift'
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h2 className="text-xl font-semibold text-gray-900">Cronograma del Evento</h2>
+      </div>
+
+      <div className="space-y-4">
+        {timelineData.map((event: any, index: number) => (
+          <div key={event.id} className="bg-gray-50 p-4 sm:p-6 rounded-lg border">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+              <h3 className="text-lg font-medium text-gray-800">Evento #{index + 1}</h3>
+              <button
+                onClick={() => removeTimelineEvent(index)}
+                className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+              >
+                Eliminar
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ID único
+                </label>
+                <input
+                  type="text"
+                  value={getSafeValue(event, 'id')}
+                  onChange={(e) => updateTimelineEvent(index, 'id', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                  placeholder="arrival"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Hora
+                </label>
+                <input
+                  type="time"
+                  value={getSafeValue(event, 'time')}
+                  onChange={(e) => updateTimelineEvent(index, 'time', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Icono
+                </label>
+                <select
+                  value={getSafeValue(event, 'icon')}
+                  onChange={(e) => updateTimelineEvent(index, 'icon', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                >
+                  {iconOptions.map(icon => (
+                    <option key={icon} value={icon}>{icon}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Título (Español)
+                </label>
+                <input
+                  type="text"
+                  value={getSafeValue(event, 'title.es')}
+                  onChange={(e) => updateTimelineEvent(index, 'title.es', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                  placeholder="Llegada de Invitados"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Título (Inglés)
+                </label>
+                <input
+                  type="text"
+                  value={getSafeValue(event, 'title.en')}
+                  onChange={(e) => updateTimelineEvent(index, 'title.en', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                  placeholder="Guest Arrival"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Descripción (Español)
+                </label>
+                <textarea
+                  rows={2}
+                  value={getSafeValue(event, 'description.es')}
+                  onChange={(e) => updateTimelineEvent(index, 'description.es', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                  placeholder="Recepción y bienvenida en los jardines"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Descripción (Inglés)
+                </label>
+                <textarea
+                  rows={2}
+                  value={getSafeValue(event, 'description.en')}
+                  onChange={(e) => updateTimelineEvent(index, 'description.en', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                  placeholder="Reception and welcome in the gardens"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={`highlight-${index}`}
+                  checked={getSafeValue(event, 'isHighlight', false)}
+                  onChange={(e) => updateTimelineEvent(index, 'isHighlight', e.target.checked)}
+                  className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+                />
+                <label htmlFor={`highlight-${index}`} className="ml-2 text-sm text-gray-700">
+                  Evento destacado
+                </label>
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ubicación específica (opcional)
+                </label>
+                <input
+                  type="text"
+                  value={getSafeValue(event, 'location', '')}
+                  onChange={(e) => updateTimelineEvent(index, 'location', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                  placeholder="Jardín principal"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {timelineData.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <p className="mb-4">No hay eventos en el cronograma</p>
+            <p className="text-sm mb-6">Crea el primer evento para comenzar a construir tu cronograma</p>
+          </div>
+        ) : null}
+
+        {/* Botón para agregar evento - siempre visible */}
+        <div className="text-center pt-4 border-t border-gray-200 mt-6">
+          <button
+            type="button"
+            onClick={() => {
+              console.log('Button clicked!');
+              addTimelineEvent();
+            }}
+            className="inline-flex items-center px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors text-sm font-medium shadow-sm cursor-pointer"
+          >
+            + {timelineData.length === 0 ? 'Agregar Primer Evento' : 'Agregar Evento'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectionProps) {
+  return (
+    <div className="space-y-8">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">Lugares del Evento</h2>
+      <p className="text-sm text-gray-600 mb-6">
+        ✅ Solo campos que aparecen en la sección Location
+      </p>
+      
+      {/* Lugar de ceremonia - APARECE EN LOCATION */}
+      <div className="mb-8 bg-teal-50 p-6 rounded-lg border border-teal-200">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+          <span className="mr-2">⛪</span>
+          Lugar de la Ceremonia (aparece en Location)
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Nombre en Español ✅
+            </label>
+            <input
+              type="text"
+              value={ceremonyVenue?.name?.es || ''}
+              onChange={(e) => onChange('ceremonyVenue.name.es', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="Iglesia del Sagrado Corazón"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Nombre en Inglés ✅
+            </label>
+            <input
+              type="text"
+              value={ceremonyVenue?.name?.en || ''}
+              onChange={(e) => onChange('ceremonyVenue.name.en', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="Sacred Heart Church"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Dirección ✅
+          </label>
+          <input
+            type="text"
+            value={ceremonyVenue?.address || ''}
+            onChange={(e) => onChange('ceremonyVenue.address', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            placeholder="Calle de los Santos 456, Ciudad, Estado 12345"
+          />
+        </div>
+      </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Dirección completa
+          </label>
+          <input
+            type="text"
+            value={ceremonyVenue?.address || ''}
+            onChange={(e) => onChange('ceremonyVenue.address', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            placeholder="Calle de los Santos 456, Ciudad, Estado 12345"
+          />
+        </div>
+
+        <div className="space-y-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Descripción (Español)
+            </label>
+            <textarea
+              rows={2}
+              value={ceremonyVenue?.description?.es || ''}
+              onChange={(e) => onChange('ceremonyVenue.description.es', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="Hermosa iglesia con arquitectura colonial donde celebraremos nuestra ceremonia religiosa"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Descripción (Inglés)
+            </label>
+            <textarea
+              rows={2}
+              value={ceremonyVenue?.description?.en || ''}
+              onChange={(e) => onChange('ceremonyVenue.description.en', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="Beautiful church with colonial architecture where we will celebrate our religious ceremony"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Latitud (opcional)
+            </label>
+            <input
+              type="number"
+              step="any"
+              value={ceremonyVenue?.coordinates?.lat || ''}
+              onChange={(e) => onChange('ceremonyVenue.coordinates.lat', parseFloat(e.target.value) || undefined)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="19.4290"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Longitud (opcional)
+            </label>
+            <input
+              type="number"
+              step="any"
+              value={ceremonyVenue?.coordinates?.lng || ''}
+              onChange={(e) => onChange('ceremonyVenue.coordinates.lng', parseFloat(e.target.value) || undefined)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="-99.1285"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Lugar de recepción - APARECE EN LOCATION */}
+      <div className="mb-8 bg-emerald-50 p-6 rounded-lg border border-emerald-200">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+          <span className="mr-2">🏛️</span>
+          Lugar de la Recepción (aparece en Location)
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Nombre en Español ✅
+            </label>
+            <input
+              type="text"
+              value={receptionVenue?.name?.es || ''}
+              onChange={(e) => onChange('receptionVenue.name.es', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="Jardines del Edén"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Nombre en Inglés ✅
+            </label>
+            <input
+              type="text"
+              value={receptionVenue?.name?.en || ''}
+              onChange={(e) => onChange('receptionVenue.name.en', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="Eden Gardens"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Dirección ✅
+          </label>
+          <input
+            type="text"
+            value={receptionVenue?.address || ''}
+            onChange={(e) => onChange('receptionVenue.address', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            placeholder="Av. Principal 123, Ciudad, Estado 12345"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Dirección completa
+          </label>
+          <input
+            type="text"
+            value={receptionVenue?.address || ''}
+            onChange={(e) => onChange('receptionVenue.address', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            placeholder="Av. Principal 123, Ciudad, Estado 12345"
+          />
+        </div>
+
+        <div className="space-y-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Descripción (Español)
+            </label>
+            <textarea
+              rows={2}
+              value={receptionVenue?.description?.es || ''}
+              onChange={(e) => onChange('receptionVenue.description.es', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="Un hermoso lugar rodeado de naturaleza, perfecto para celebrar nuestro amor"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Descripción (Inglés)
+            </label>
+            <textarea
+              rows={2}
+              value={receptionVenue?.description?.en || ''}
+              onChange={(e) => onChange('receptionVenue.description.en', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="A beautiful place surrounded by nature, perfect for celebrating our love"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+          <div>
+            <h4 className="text-md font-medium text-gray-700 mb-3">Características del lugar (Español)</h4>
+            <textarea
+              rows={4}
+              value={receptionVenue?.features?.es?.join('\n') || ''}
+              onChange={(e) => onChange('receptionVenue.features.es', e.target.value.split('\n').filter(item => item.trim()))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+              placeholder="Jardines exteriores para cóctel&#10;Salón principal climatizado&#10;Estacionamiento amplio y seguro&#10;Área de fotos panorámicas"
+            />
+          </div>
+          <div>
+            <h4 className="text-md font-medium text-gray-700 mb-3">Características del lugar (Inglés)</h4>
+            <textarea
+              rows={4}
+              value={receptionVenue?.features?.en?.join('\n') || ''}
+              onChange={(e) => onChange('receptionVenue.features.en', e.target.value.split('\n').filter(item => item.trim()))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+              placeholder="Outdoor gardens for cocktail&#10;Air-conditioned main hall&#10;Ample and secure parking&#10;Panoramic photo area"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Latitud (opcional)
+            </label>
+            <input
+              type="number"
+              step="any"
+              value={receptionVenue?.coordinates?.lat || ''}
+              onChange={(e) => onChange('receptionVenue.coordinates.lat', parseFloat(e.target.value) || undefined)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="19.4326"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Longitud (opcional)
+            </label>
+            <input
+              type="number"
+              step="any"
+              value={receptionVenue?.coordinates?.lng || ''}
+              onChange={(e) => onChange('receptionVenue.coordinates.lng', parseFloat(e.target.value) || undefined)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              placeholder="-99.1332"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GallerySection({ gallery, heroImage, onChange }: GallerySectionProps) {
+  // Asegurar que gallery sea siempre un array
+  const galleryData = Array.isArray(gallery) ? gallery : [];
+
+  const addPhoto = () => {
+    const newPhoto = {
+      url: '',
+      alt: '',
+      caption: { es: '', en: '' },
+      cols: 1,
+      rows: 1
+    };
+    onChange('gallery', [...galleryData, newPhoto]);
+  };
+
+  const removePhoto = (index: number) => {
+    const newData = [...galleryData];
+    newData.splice(index, 1);
+    onChange('gallery', newData);
+  };
+
+  const updatePhoto = (index: number, field: string, value: any) => {
+    const newData = [...galleryData];
+    if (field.includes('.')) {
+      // Para campos anidados como caption.es
+      const [parent, child] = field.split('.');
+      newData[index] = { 
+        ...newData[index], 
+        [parent]: { 
+          ...newData[index][parent], 
+          [child]: value 
+        }
+      };
+    } else {
+      newData[index] = { ...newData[index], [field]: value };
+    }
+    onChange('gallery', newData);
+  };
+
+  const updateHeroImage = (field: string, value: string) => {
+    onChange('heroImage', { ...heroImage, [field]: value });
+  };
+
+  return (
+    <div className="space-y-8">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">Galería de Fotos</h2>
+      <p className="text-sm text-gray-600 mb-6">
+        ✅ Solo campos que aparecen en Hero y Gallery
+      </p>
+      
+      {/* Imagen principal - APARECE EN HERO */}
+      <div className="bg-rose-50 p-6 rounded-lg border border-rose-200">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+          <span className="mr-2">🖼️</span>
+          Imagen Principal (aparece en Hero)
+        </h3>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            URL de la imagen principal
+          </label>
+          <input
+            type="url"
+            value={getSafeValue({ heroImage }, 'heroImage', '')}
+            onChange={(e) => updateHeroImage(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+            placeholder="https://example.com/hero-image.jpg"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Esta imagen aparecerá como fondo principal de la invitación
+          </p>
+          
+          {heroImage && (
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Vista previa
+              </label>
+              <div className="border border-gray-200 rounded-lg p-2 bg-white">
+                <img
+                  src={heroImage}
+                  alt="Imagen principal"
+                  className="max-w-full h-32 object-cover rounded"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling!.classList.remove('hidden');
+                  }}
+                />
+                <div className="hidden text-gray-500 text-sm p-4 text-center">
+                  Error al cargar la imagen. Verifica la URL.
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Galería de fotos */}
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <h3 className="text-lg font-medium text-gray-800">Galería de Fotos</h3>
+          <button
+            onClick={addPhoto}
+            className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
+          >
+            + Agregar Foto
+          </button>
+        </div>
+
+        <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <div className="w-5 h-5 bg-amber-400 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">!</span>
+              </div>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-amber-800">Información sobre las imágenes</h3>
+              <p className="mt-1 text-sm text-amber-700">
+                Para mejores resultados, usa imágenes de alta calidad (mínimo 800px de ancho). 
+                El sistema de grid permite controlar el tamaño: cols (ancho) y rows (alto) van de 1 a 3.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {gallery.map((photo: any, index: number) => (
+            <div key={index} className="bg-gray-50 p-4 sm:p-6 rounded-lg border">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                <h4 className="text-md font-medium text-gray-800">Foto #{index + 1}</h4>
+                <button
+                  onClick={() => removePhoto(index)}
+                  className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                >
+                  Eliminar
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    URL de la imagen *
+                  </label>
+                  <input
+                    type="url"
+                    value={getSafeValue(photo, 'url')}
+                    onChange={(e) => updatePhoto(index, 'url', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="https://example.com/photo.jpg"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Texto alternativo
+                    </label>
+                    <input
+                      type="text"
+                      value={getSafeValue(photo, 'alt')}
+                      onChange={(e) => updatePhoto(index, 'alt', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                      placeholder="Descripción de la foto"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Pie de foto (opcional)
+                    </label>
+                    <input
+                      type="text"
+                      value={getSafeValue(photo, 'caption', '')}
+                      onChange={(e) => updatePhoto(index, 'caption', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                      placeholder="Nuestro primer viaje juntos"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Ancho (cols)
+                    </label>
+                    <select
+                      value={getSafeValue(photo, 'cols', 1)}
+                      onChange={(e) => updatePhoto(index, 'cols', parseInt(e.target.value))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    >
+                      <option value={1}>1 columna</option>
+                      <option value={2}>2 columnas</option>
+                      <option value={3}>3 columnas</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Alto (rows)
+                    </label>
+                    <select
+                      value={getSafeValue(photo, 'rows', 1)}
+                      onChange={(e) => updatePhoto(index, 'rows', parseInt(e.target.value))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    >
+                      <option value={1}>1 fila</option>
+                      <option value={2}>2 filas</option>
+                      <option value={3}>3 filas</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2 flex items-end">
+                    <div className="text-xs text-gray-500 bg-gray-100 p-2 rounded">
+                      <strong>Vista previa del tamaño:</strong> {getSafeValue(photo, 'cols', 1)}x{getSafeValue(photo, 'rows', 1)} celdas
+                    </div>
+                  </div>
+                </div>
+
+                {getSafeValue(photo, 'url') && (
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Vista previa
+                    </label>
+                    <div className="border border-gray-200 rounded-lg p-2 bg-white">
+                      <img
+                        src={getSafeValue(photo, 'url')}
+                        alt={getSafeValue(photo, 'alt')}
+                        className="max-w-full h-32 object-cover rounded"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.nextElementSibling!.classList.remove('hidden');
+                        }}
+                      />
+                      <div className="hidden text-gray-500 text-sm p-4 text-center">
+                        Error al cargar la imagen. Verifica la URL.
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {gallery.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <p className="mb-4">No hay fotos en la galería</p>
+              <button
+                onClick={addPhoto}
+                className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
+              >
+                + Agregar Primera Foto
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MomentsSection({ specialMoments, relationshipStats, onChange }: MomentsSectionProps) {
+  const addSpecialMoment = () => {
+    const newMoment = {
+      year: new Date().getFullYear().toString(),
+      title: { es: '', en: '' },
+      description: { es: '', en: '' },
+      image: ''
+    };
+    onChange('specialMoments', [...specialMoments, newMoment]);
+  };
+
+  const removeSpecialMoment = (index: number) => {
+    const newMoments = [...specialMoments];
+    newMoments.splice(index, 1);
+    onChange('specialMoments', newMoments);
+  };
+
+  const updateSpecialMoment = (index: number, field: string, value: any) => {
+    const newMoments = [...specialMoments];
+    const keys = field.split('.');
+    let current = newMoments[index];
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!current[keys[i]]) {
+        current[keys[i]] = {};
+      }
+      current = current[keys[i]];
+    }
+    
+    current[keys[keys.length - 1]] = value;
+    onChange('specialMoments', newMoments);
+  };
+
+  const updateRelationshipStats = (field: string, value: any) => {
+    onChange('relationshipStats', {
+      ...relationshipStats,
+      [field]: value
+    });
+  };
+
+  return (
+    <div className="space-y-8">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">Momentos Especiales</h2>
+      
+      {/* Estadísticas de la relación */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg border">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Estadísticas de la Relación</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Años juntos
+            </label>
+            <input
+              type="number"
+              value={getSafeValue(relationshipStats, 'yearsTogther', 0)}
+              onChange={(e) => updateRelationshipStats('yearsTogther', parseInt(e.target.value) || 0)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+              min="0"
+              max="100"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Aventuras
+            </label>
+            <input
+              type="number"
+              value={getSafeValue(relationshipStats, 'adventures', 0)}
+              onChange={(e) => updateRelationshipStats('adventures', parseInt(e.target.value) || 0)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+              min="0"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Recuerdos
+            </label>
+            <input
+              type="number"
+              value={getSafeValue(relationshipStats, 'memories', 0)}
+              onChange={(e) => updateRelationshipStats('memories', parseInt(e.target.value) || 0)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+              min="0"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Sueños
+            </label>
+            <input
+              type="number"
+              value={getSafeValue(relationshipStats, 'dreams', 0)}
+              onChange={(e) => updateRelationshipStats('dreams', parseInt(e.target.value) || 0)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+              min="0"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Momentos especiales */}
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <h3 className="text-lg font-medium text-gray-800">Momentos Especiales</h3>
+          <button
+            onClick={addSpecialMoment}
+            className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
+          >
+            + Agregar Momento
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {specialMoments.map((moment: any, index: number) => (
+            <div key={index} className="bg-gray-50 p-4 sm:p-6 rounded-lg border">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                <h4 className="text-md font-medium text-gray-800">Momento #{index + 1}</h4>
+                <button
+                  onClick={() => removeSpecialMoment(index)}
+                  className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                >
+                  Eliminar
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Año
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(moment, 'year')}
+                    onChange={(e) => updateSpecialMoment(index, 'year', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="2018"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Título (Español)
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(moment, 'title.es')}
+                    onChange={(e) => updateSpecialMoment(index, 'title.es', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Primer Encuentro"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Título (Inglés)
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(moment, 'title.en')}
+                    onChange={(e) => updateSpecialMoment(index, 'title.en', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="First Meeting"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Descripción (Español)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={getSafeValue(moment, 'description.es')}
+                    onChange={(e) => updateSpecialMoment(index, 'description.es', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Nos conocimos en una cafetería del centro"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Descripción (Inglés)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={getSafeValue(moment, 'description.en')}
+                    onChange={(e) => updateSpecialMoment(index, 'description.en', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="We met at a downtown café"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  URL de imagen (opcional)
+                </label>
+                <input
+                  type="url"
+                  value={getSafeValue(moment, 'image', '')}
+                  onChange={(e) => updateSpecialMoment(index, 'image', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+            </div>
+          ))}
+
+          {specialMoments.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <p className="mb-4">No hay momentos especiales agregados</p>
+              <button
+                onClick={addSpecialMoment}
+                className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
+              >
+                + Agregar Primer Momento
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AccommodationSection({ data, transport, onChange }: AccommodationSectionProps) {
+  const addAccommodation = () => {
+    const newAccommodation = {
+      name: '',
+      distance: '',
+      price: '',
+      phone: '',
+      website: '',
+      amenities: { es: [], en: [] }
+    };
+    onChange('accommodation', [...data, newAccommodation]);
+  };
+
+  const removeAccommodation = (index: number) => {
+    const newData = [...data];
+    newData.splice(index, 1);
+    onChange('accommodation', newData);
+  };
+
+  const updateAccommodation = (index: number, field: string, value: any) => {
+    const newData = [...data];
+    const keys = field.split('.');
+    let current = newData[index];
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!current[keys[i]]) {
+        current[keys[i]] = {};
+      }
+      current = current[keys[i]];
+    }
+    
+    current[keys[keys.length - 1]] = value;
+    onChange('accommodation', newData);
+  };
+
+  const updateTransport = (field: string, value: any) => {
+    const keys = field.split('.');
+    let newTransport = { ...transport };
+    let current = newTransport;
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!current[keys[i]]) {
+        current[keys[i]] = {};
+      }
+      current = current[keys[i]];
+    }
+    
+    current[keys[keys.length - 1]] = value;
+    onChange('transport', newTransport);
+  };
+
+  return (
+    <div className="space-y-8">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">Hospedaje y Transporte</h2>
+      
+      {/* Hospedaje */}
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <h3 className="text-lg font-medium text-gray-800">Hospedaje Recomendado</h3>
+          <button
+            onClick={addAccommodation}
+            className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
+          >
+            + Agregar Hotel
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {data.map((hotel: any, index: number) => (
+            <div key={index} className="bg-gray-50 p-4 sm:p-6 rounded-lg border">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                <h4 className="text-md font-medium text-gray-800">Hotel #{index + 1}</h4>
+                <button
+                  onClick={() => removeAccommodation(index)}
+                  className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                >
+                  Eliminar
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre del hotel
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(hotel, 'name')}
+                    onChange={(e) => updateAccommodation(index, 'name', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Hotel Boutique Central"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Distancia del evento
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(hotel, 'distance')}
+                    onChange={(e) => updateAccommodation(index, 'distance', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="5 min del lugar"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Precio
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(hotel, 'price')}
+                    onChange={(e) => updateAccommodation(index, 'price', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Desde $120/noche"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Teléfono
+                  </label>
+                  <input
+                    type="tel"
+                    value={getSafeValue(hotel, 'phone')}
+                    onChange={(e) => updateAccommodation(index, 'phone', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="+52 55 1111-2222"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sitio web
+                  </label>
+                  <input
+                    type="url"
+                    value={getSafeValue(hotel, 'website')}
+                    onChange={(e) => updateAccommodation(index, 'website', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="www.hotelboutiquecentral.com"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Amenidades (Español) - Una por línea
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={getSafeValue(hotel, 'amenities.es', []).join('\n')}
+                    onChange={(e) => updateAccommodation(index, 'amenities.es', e.target.value.split('\n').filter(item => item.trim()))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="WiFi gratuito&#10;Desayuno incluido&#10;Estacionamiento"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Amenidades (Inglés) - Una por línea
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={getSafeValue(hotel, 'amenities.en', []).join('\n')}
+                    onChange={(e) => updateAccommodation(index, 'amenities.en', e.target.value.split('\n').filter(item => item.trim()))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Free WiFi&#10;Breakfast included&#10;Parking"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {data.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <p className="mb-4">No hay hoteles agregados</p>
+              <button
+                onClick={addAccommodation}
+                className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
+              >
+                + Agregar Primer Hotel
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Transporte */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg border">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Información de Transporte</h3>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="parking"
+              checked={getSafeValue(transport, 'parking', false)}
+              onChange={(e) => updateTransport('parking', e.target.checked)}
+              className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+            />
+            <label htmlFor="parking" className="ml-2 text-sm text-gray-700">
+              Estacionamiento disponible
+            </label>
+          </div>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="valetParking"
+              checked={getSafeValue(transport, 'valetParking', false)}
+              onChange={(e) => updateTransport('valetParking', e.target.checked)}
+              className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+            />
+            <label htmlFor="valetParking" className="ml-2 text-sm text-gray-700">
+              Servicio de valet
+            </label>
+          </div>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="rideshare"
+              checked={getSafeValue(transport, 'rideshare', false)}
+              onChange={(e) => updateTransport('rideshare', e.target.checked)}
+              className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+            />
+            <label htmlFor="rideshare" className="ml-2 text-sm text-gray-700">
+              Uber/Taxis recomendados
+            </label>
+          </div>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="shuttleAvailable"
+              checked={getSafeValue(transport, 'shuttleService.available', false)}
+              onChange={(e) => updateTransport('shuttleService.available', e.target.checked)}
+              className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+            />
+            <label htmlFor="shuttleAvailable" className="ml-2 text-sm text-gray-700">
+              Servicio de transporte
+            </label>
+          </div>
+        </div>
+
+        {getSafeValue(transport, 'shuttleService.available', false) && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 p-4 bg-amber-50 rounded-lg">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Puntos de recogida (uno por línea)
+              </label>
+              <textarea
+                rows={3}
+                value={getSafeValue(transport, 'shuttleService.pickupPoints', []).join('\n')}
+                onChange={(e) => updateTransport('shuttleService.pickupPoints', e.target.value.split('\n').filter(item => item.trim()))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                placeholder="Hotel Boutique Central&#10;Gran Hotel Plaza"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Horarios de recogida (uno por línea)
+              </label>
+              <textarea
+                rows={3}
+                value={getSafeValue(transport, 'shuttleService.schedule', []).join('\n')}
+                onChange={(e) => updateTransport('shuttleService.schedule', e.target.value.split('\n').filter(item => item.trim()))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                placeholder="15:00&#10;15:15&#10;15:30"
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Transporte público (Español)
+            </label>
+            <textarea
+              rows={2}
+              value={getSafeValue(transport, 'publicTransport.es', '')}
+              onChange={(e) => updateTransport('publicTransport.es', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+              placeholder="Estación de metro a 2 cuadras"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Transporte público (Inglés)
+            </label>
+            <textarea
+              rows={2}
+              value={getSafeValue(transport, 'publicTransport.en', '')}
+              onChange={(e) => updateTransport('publicTransport.en', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+              placeholder="Metro station 2 blocks away"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GiftsSection({ data, onChange }: SectionProps) {
+  const addRegistry = () => {
+    const newRegistry = {
+      id: `registry-${Date.now()}`,
+      name: '',
+      url: '',
+      description: ''
+    };
+    onChange('registries', [...(data.registries || []), newRegistry]);
+  };
+
+  const removeRegistry = (index: number) => {
+    const newRegistries = [...(data.registries || [])];
+    newRegistries.splice(index, 1);
+    onChange('registries', newRegistries);
+  };
+
+  const updateRegistry = (index: number, field: string, value: any) => {
+    const newRegistries = [...(data.registries || [])];
+    newRegistries[index] = { ...newRegistries[index], [field]: value };
+    onChange('registries', newRegistries);
+  };
+
+  const updateGiftRegistry = (field: string, value: any) => {
+    onChange(field, value);
+  };
+
+  return (
+    <div className="space-y-8">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">Mesa de Regalos</h2>
+      
+      {/* Configuración general */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg border">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Configuración General</h3>
+        
+        <div className="mb-6">
+          <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              id="giftRegistryEnabled"
+              checked={getSafeValue(data, 'enabled', false)}
+              onChange={(e) => updateGiftRegistry('enabled', e.target.checked)}
+              className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+            />
+            <label htmlFor="giftRegistryEnabled" className="ml-2 text-sm text-gray-700">
+              Habilitar mesa de regalos
+            </label>
+          </div>
+        </div>
+
+        {getSafeValue(data, 'enabled', false) && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mensaje para invitados (Español)
+              </label>
+              <textarea
+                rows={3}
+                value={getSafeValue(data, 'message.es', '')}
+                onChange={(e) => updateGiftRegistry('message.es', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                placeholder="Tu presencia es nuestro regalo más valioso, pero si deseas hacernos un obsequio, hemos preparado algunas opciones:"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mensaje para invitados (Inglés)
+              </label>
+              <textarea
+                rows={3}
+                value={getSafeValue(data, 'message.en', '')}
+                onChange={(e) => updateGiftRegistry('message.en', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                placeholder="Your presence is our most valuable gift, but if you wish to give us a present, we have prepared some options:"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {getSafeValue(data, 'enabled', false) && (
+        <>
+          {/* Mesas de regalos */}
+          <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <h3 className="text-lg font-medium text-gray-800">Mesas de Regalos</h3>
+              <button
+                onClick={addRegistry}
+                className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
+              >
+                + Agregar Mesa de Regalos
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {(data.registries || []).map((registry: any, index: number) => (
+                <div key={registry.id} className="bg-gray-50 p-4 sm:p-6 rounded-lg border">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                    <h4 className="text-md font-medium text-gray-800">Mesa de Regalos #{index + 1}</h4>
+                    <button
+                      onClick={() => removeRegistry(index)}
+                      className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        ID único
+                      </label>
+                      <input
+                        type="text"
+                        value={getSafeValue(registry, 'id')}
+                        onChange={(e) => updateRegistry(index, 'id', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                        placeholder="liverpool"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nombre de la tienda
+                      </label>
+                      <input
+                        type="text"
+                        value={getSafeValue(registry, 'name')}
+                        onChange={(e) => updateRegistry(index, 'name', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                        placeholder="Liverpool"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      URL de la mesa de regalos
+                    </label>
+                    <input
+                      type="url"
+                      value={getSafeValue(registry, 'url')}
+                      onChange={(e) => updateRegistry(index, 'url', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                      placeholder="https://mesaderegalos.liverpool.com.mx/milistaderegalos/123456789"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Descripción
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={getSafeValue(registry, 'description')}
+                      onChange={(e) => updateRegistry(index, 'description', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                      placeholder="Mesa de regalos en Liverpool con todo lo que necesitamos para nuestro hogar"
+                    />
+                  </div>
+                </div>
+              ))}
+
+              {(data.registries || []).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <p className="mb-4">No hay mesas de regalos agregadas</p>
+                  <button
+                    onClick={addRegistry}
+                    className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
+                  >
+                    + Agregar Primera Mesa de Regalos
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Información bancaria */}
+          <div className="bg-white p-4 sm:p-6 rounded-lg border">
+            <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Lluvia de Sobres (Información Bancaria)</h3>
+            
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre del banco
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(data, 'bankAccount.bankName', '')}
+                    onChange={(e) => updateGiftRegistry('bankAccount.bankName', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Banco BBVA"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Titular de la cuenta
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(data, 'bankAccount.accountName', '')}
+                    onChange={(e) => updateGiftRegistry('bankAccount.accountName', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="María Elena González"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Número de cuenta
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(data, 'bankAccount.accountNumber', '')}
+                    onChange={(e) => updateGiftRegistry('bankAccount.accountNumber', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="1234567890"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    CLABE (opcional)
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(data, 'bankAccount.clabe', '')}
+                    onChange={(e) => updateGiftRegistry('bankAccount.clabe', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="012345678901234567"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Descripción adicional (opcional)
+                </label>
+                <textarea
+                  rows={2}
+                  value={getSafeValue(data, 'bankAccount.description', '')}
+                  onChange={(e) => updateGiftRegistry('bankAccount.description', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                  placeholder="También puedes contribuir directamente a nuestra cuenta bancaria"
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function MusicSection({ data, recommendedPlaces, onChange }: MusicSectionProps) {
+  const addSong = () => {
+    const newSong = {
+      title: '',
+      artist: '',
+      url: ''
+    };
+    onChange('playlist', [...(data || []), newSong]);
+  };
+
+  const removeSong = (index: number) => {
+    const newData = [...(data || [])];
+    newData.splice(index, 1);
+    onChange('playlist', newData);
+  };
+
+  const updateSong = (index: number, field: string, value: any) => {
+    const newData = [...(data || [])];
+    newData[index] = { ...newData[index], [field]: value };
+    onChange('playlist', newData);
+  };
+
+  return (
+    <div className="space-y-8">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">Música y Lugares Recomendados</h2>
+      
+      {/* Playlist */}
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <h3 className="text-lg font-medium text-gray-800">Playlist de la Boda</h3>
+          <button
+            onClick={addSong}
+            className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
+          >
+            + Agregar Canción
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {(data || []).map((song: any, index: number) => (
+            <div key={index} className="bg-gray-50 p-4 sm:p-6 rounded-lg border">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                <h4 className="text-md font-medium text-gray-800">Canción #{index + 1}</h4>
+                <button
+                  onClick={() => removeSong(index)}
+                  className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                >
+                  Eliminar
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Título de la canción
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(song, 'title')}
+                    onChange={(e) => updateSong(index, 'title', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Perfect"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Artista
+                  </label>
+                  <input
+                    type="text"
+                    value={getSafeValue(song, 'artist')}
+                    onChange={(e) => updateSong(index, 'artist', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Ed Sheeran"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  URL (Spotify, YouTube, etc.)
+                </label>
+                <input
+                  type="url"
+                  value={getSafeValue(song, 'url', '')}
+                  onChange={(e) => updateSong(index, 'url', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                  placeholder="https://open.spotify.com/track/..."
+                />
+              </div>
+            </div>
+          ))}
+
+          {(data || []).length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <p className="mb-4">No hay canciones en la playlist</p>
+              <button
+                onClick={addSong}
+                className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
+              >
+                + Agregar Primera Canción
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Lugares recomendados - Placeholder por ahora */}
+      <div className="bg-gray-50 p-6 rounded-lg border">
+        <h3 className="text-lg font-medium text-gray-800 mb-4">Lugares Recomendados</h3>
+        <p className="text-gray-600">Esta sección se implementará en la siguiente actualización.</p>
+      </div>
+    </div>
+  );
+}
+
+function SettingsSection({ theme, languages, defaultLanguage, isActive, adultOnlyEvent, onChange }: SettingsSectionProps) {
+  const updateSetting = (field: string, value: any) => {
+    onChange(field, value);
+  };
+
+  const updateAdultOnlyEvent = (field: string, value: any) => {
+    onChange('adultOnlyEvent', {
+      ...adultOnlyEvent,
+      [field]: value
+    });
+  };
+
+  return (
+    <div className="space-y-8">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">Configuración General</h2>
+      
+      {/* Estado de la invitación */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg border">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Estado de la Invitación</h3>
+        
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="isActive"
+            checked={getSafeValue({ isActive }, 'isActive', false)}
+            onChange={(e) => updateSetting('isActive', e.target.checked)}
+            className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+          />
+          <label htmlFor="isActive" className="ml-2 text-sm text-gray-700">
+            Invitación activa y visible para los invitados
+          </label>
+        </div>
+        <p className="mt-1 text-xs text-gray-500">
+          Si está desactivada, los invitados verán un mensaje de "invitación no disponible"
+        </p>
+      </div>
+
+      {/* Configuración de idiomas */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg border">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Idiomas</h3>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Idioma por defecto
+            </label>
+            <select
+              value={getSafeValue({ defaultLanguage }, 'defaultLanguage', 'es')}
+              onChange={(e) => updateSetting('defaultLanguage', e.target.value)}
+              className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+            >
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+            </select>
+            <p className="mt-1 text-xs text-gray-500">
+              Este será el idioma que se muestre si no se puede detectar el idioma del invitado
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Idiomas disponibles
+            </label>
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="lang-es"
+                  checked={(languages || []).includes('es')}
+                  onChange={(e) => {
+                    const currentLangs = languages || [];
+                    if (e.target.checked) {
+                      updateSetting('languages', [...currentLangs.filter((l: string) => l !== 'es'), 'es']);
+                    } else {
+                      updateSetting('languages', currentLangs.filter((l: string) => l !== 'es'));
+                    }
+                  }}
+                  className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+                />
+                <label htmlFor="lang-es" className="ml-2 text-sm text-gray-700">
+                  Español
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="lang-en"
+                  checked={(languages || []).includes('en')}
+                  onChange={(e) => {
+                    const currentLangs = languages || [];
+                    if (e.target.checked) {
+                      updateSetting('languages', [...currentLangs.filter((l: string) => l !== 'en'), 'en']);
+                    } else {
+                      updateSetting('languages', currentLangs.filter((l: string) => l !== 'en'));
+                    }
+                  }}
+                  className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+                />
+                <label htmlFor="lang-en" className="ml-2 text-sm text-gray-700">
+                  Inglés
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tema de colores */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg border">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Tema de Colores</h3>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Tema principal
+          </label>
+          <select
+            value={getSafeValue({ theme }, 'theme', 'classic-elegance')}
+            onChange={(e) => updateSetting('theme', e.target.value)}
+            className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+          >
+            <option value="classic-elegance">Elegancia Clásica</option>
+            <option value="romantic-blush">Romance Rosado</option>
+            <option value="garden-fresh">Jardín Fresco</option>
+            <option value="sunset-warmth">Calidez del Atardecer</option>
+            <option value="ocean-breeze">Brisa Marina</option>
+            <option value="autumn-harvest">Cosecha de Otoño</option>
+            <option value="winter-wonder">Maravilla Invernal</option>
+            <option value="spring-bloom">Floración Primaveral</option>
+          </select>
+          <p className="mt-1 text-xs text-gray-500">
+            El tema define la paleta de colores y el estilo visual de la invitación
+          </p>
+        </div>
+      </div>
+
+      {/* Evento solo para adultos */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg border">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Restricciones de Edad</h3>
+        
+        <div className="space-y-4">
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="adultOnlyEnabled"
+              checked={getSafeValue(adultOnlyEvent, 'enabled', false)}
+              onChange={(e) => updateAdultOnlyEvent('enabled', e.target.checked)}
+              className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+            />
+            <label htmlFor="adultOnlyEnabled" className="ml-2 text-sm text-gray-700">
+              Evento solo para adultos
+            </label>
+          </div>
+
+          {getSafeValue(adultOnlyEvent, 'enabled', false) && (
+            <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Mensaje (Español)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={getSafeValue(adultOnlyEvent, 'message.es', '')}
+                    onChange={(e) => updateAdultOnlyEvent('message.es', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Por favor, considera que este es un evento solo para adultos. Agradecemos tu comprensión."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Mensaje (Inglés)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={getSafeValue(adultOnlyEvent, 'message.en', '')}
+                    onChange={(e) => updateAdultOnlyEvent('message.en', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    placeholder="Please note that this is an adults-only event. We appreciate your understanding."
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Información técnica */}
+      <div className="bg-gray-50 p-4 sm:p-6 rounded-lg border">
+        <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">Información Técnica</h3>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600">
+          <div>
+            <strong>Versión del template:</strong> 1.0.0
+          </div>
+          <div>
+            <strong>Última actualización:</strong> {new Date().toLocaleDateString('es-ES')}
+          </div>
+          <div>
+            <strong>Idiomas configurados:</strong> {(languages || []).join(', ') || 'Ninguno'}
+          </div>
+          <div>
+            <strong>Estado:</strong> {isActive ? '✅ Activa' : '❌ Inactiva'}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

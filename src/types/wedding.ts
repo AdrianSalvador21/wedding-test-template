@@ -65,8 +65,8 @@ export interface Couple {
   };
   coupleEmail: string;
   hashtag: string;
-  story: string;
-  quote: string;
+  story: { es: string; en: string };
+  quote: { es: string; en: string };
   image?: string; // Imagen específica para la sección About
 }
 
@@ -84,27 +84,29 @@ export interface EventInfo {
     duration: number;
   };
   ceremonyVenue?: {
-    name: string;
+    name: { es: string; en: string };
     address: string;
     coordinates?: {
       lat: number;
       lng: number;
     };
     description?: string;
+    mapsUrl?: string;
   };
   receptionVenue: {
-    name: string;
+    name: { es: string; en: string };
     address: string;
     coordinates?: {
       lat: number;
       lng: number;
     };
     description: string;
+    mapsUrl?: string;
     features: string[];
   };
   dressCode: {
-    style: string;
-    description: string;
+    style: { es: string; en: string };
+    description: { es: string; en: string };
     recommendations: {
       ladies: string[];
       gentlemen: string[];
@@ -121,8 +123,8 @@ export interface EventInfo {
 export interface TimelineEvent {
   id: string;
   time: string;
-  title: string;
-  description: string;
+  title: { es: string; en: string };
+  description: { es: string; en: string };
   icon: string;
   isHighlight?: boolean;
   location?: string;
@@ -264,15 +266,26 @@ export interface WeddingData {
   };
   specialMoments: SpecialMoment[];
   relationshipStats: RelationshipStats;
-  accommodation: AccommodationOption[];
+  accommodation: {
+    hotels: AccommodationOption[];
+    recommendedPlaces: AccommodationOption[];
+  };
   transport: TransportInfo;
   giftRegistry: GiftRegistry;
   adultOnlyEvent: AdultOnlyEvent;
+  rsvp: {
+    enabled: boolean;
+    deadline: string;
+    maxGuests: number;
+    dietaryOptions: boolean;
+    customQuestions: string[];
+  };
   music?: MusicConfig;
   recommendedPlaces?: RecommendedPlacesConfig;
   theme: {
     id: string; // ID del tema predefinido ('classic', 'romantic', 'modern', 'elegant')
   };
+  status: 'draft' | 'active' | 'archived';
   languages: string[];
   defaultLanguage: string;
   isActive: boolean;

@@ -15,7 +15,7 @@ const Accommodation = () => {
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
 
-  const accommodationOptions = weddingData?.accommodation || [
+  const accommodationOptions = weddingData?.accommodation?.hotels || [
     {
       name: 'Hotel Boutique Central',
       price: 'Desde $120/noche',

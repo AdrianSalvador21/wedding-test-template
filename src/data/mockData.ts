@@ -24,8 +24,14 @@ export const mockWeddingMariaCarlos: WeddingData = {
     },
     coupleEmail: 'maria.carlos@email.com',
     hashtag: '#Núriban&Juan2025',
-    story: 'Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.',
-    quote: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.'
+    story: {
+      es: 'Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.',
+      en: 'More than 6 years ago, destiny brought us together in a city café. What began as a casual conversation turned into shared laughter, intertwined dreams, and a love that grew day by day. Today, we want to celebrate this unique moment surrounded by the people we love most.'
+    },
+    quote: {
+      es: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.',
+      en: 'Love is not just looking at each other, but looking together in the same direction.'
+    }
   },
   event: {
     weddingId: 'maria-carlos-2025',
@@ -40,7 +46,10 @@ export const mockWeddingMariaCarlos: WeddingData = {
       duration: 360
     },
     ceremonyVenue: {
-      name: 'Iglesia del Sagrado Corazón',
+      name: {
+        es: 'Iglesia del Sagrado Corazón',
+        en: 'Sacred Heart Church'
+      },
       address: 'Calle de los Santos 456, Ciudad, Estado 12345',
       coordinates: {
         lat: 19.4290,
@@ -49,7 +58,10 @@ export const mockWeddingMariaCarlos: WeddingData = {
       description: 'Hermosa iglesia con arquitectura colonial donde celebraremos nuestra ceremonia religiosa'
     },
     receptionVenue: {
-      name: 'Jardines del Edén',
+      name: {
+        es: 'Jardines del Edén',
+        en: 'Eden Gardens'
+      },
       address: 'Av. Principal 123, Ciudad, Estado 12345',
       coordinates: {
         lat: 19.4326,
@@ -66,8 +78,14 @@ export const mockWeddingMariaCarlos: WeddingData = {
       ]
     },
     dressCode: {
-      style: 'Formal / Cocktail',
-      description: 'Queremos que te sientas elegante y cómodo en nuestra celebración',
+      style: {
+        es: 'Formal / Cocktail',
+        en: 'Formal / Cocktail'
+      },
+      description: {
+        es: 'Queremos que te sientas elegante y cómodo en nuestra celebración',
+        en: 'We want you to feel elegant and comfortable at our celebration'
+      },
       recommendations: {
         ladies: [
           'Vestidos midi o largos elegantes',
@@ -93,44 +111,80 @@ export const mockWeddingMariaCarlos: WeddingData = {
     {
       id: 'arrival',
       time: '15:30',
-      title: 'Llegada de Invitados',
-      description: 'Recepción y bienvenida en los jardines',
+      title: {
+        es: 'Llegada de Invitados',
+        en: 'Guest Arrival'
+      },
+      description: {
+        es: 'Recepción y bienvenida en los jardines',
+        en: 'Reception and welcome in the gardens'
+      },
       icon: 'MapPin'
     },
     {
       id: 'ceremony',
       time: '16:00',
-      title: 'Ceremonia Civil',
-      description: '¡El momento más esperado! Intercambio de votos',
+      title: {
+        es: 'Ceremonia Civil',
+        en: 'Civil Ceremony'
+      },
+      description: {
+        es: '¡El momento más esperado! Intercambio de votos',
+        en: 'The most awaited moment! Exchange of vows'
+      },
       icon: 'Heart',
       isHighlight: true
     },
     {
       id: 'photos',
       time: '16:45',
-      title: 'Sesión de Fotos',
-      description: 'Fotos con familiares y amigos cercanos',
+      title: {
+        es: 'Sesión de Fotos',
+        en: 'Photo Session'
+      },
+      description: {
+        es: 'Fotos con familiares y amigos cercanos',
+        en: 'Photos with family and close friends'
+      },
       icon: 'Camera'
     },
     {
       id: 'cocktail',
       time: '18:00',
-      title: 'Cóctel de Celebración',
-      description: 'Aperitivos y bebidas mientras preparamos la recepción',
+      title: {
+        es: 'Cóctel de Celebración',
+        en: 'Celebration Cocktail'
+      },
+      description: {
+        es: 'Aperitivos y bebidas mientras preparamos la recepción',
+        en: 'Appetizers and drinks while we prepare the reception'
+      },
       icon: 'Utensils'
     },
     {
       id: 'reception',
       time: '19:30',
-      title: 'Cena y Brindis',
-      description: 'Cena especial con nuestros seres queridos',
+      title: {
+        es: 'Cena y Brindis',
+        en: 'Dinner and Toast'
+      },
+      description: {
+        es: 'Cena especial con nuestros seres queridos',
+        en: 'Special dinner with our loved ones'
+      },
       icon: 'Utensils'
     },
     {
       id: 'party',
       time: '21:00',
-      title: '¡A Bailar!',
-      description: 'Música, baile y diversión hasta altas horas',
+      title: {
+        es: '¡A Bailar!',
+        en: 'Let\'s Dance!'
+      },
+      description: {
+        es: 'Música, baile y diversión hasta altas horas',
+        en: 'Music, dancing and fun until late hours'
+      },
       icon: 'Music'
     }
   ],
@@ -205,7 +259,8 @@ export const mockWeddingMariaCarlos: WeddingData = {
     memories: 1250,
     dreams: 8
   },
-  accommodation: [
+  accommodation: {
+    hotels: [
     {
       name: 'Hotel Boutique Central',
       distance: '5 min del lugar',
@@ -222,7 +277,9 @@ export const mockWeddingMariaCarlos: WeddingData = {
       website: 'www.granhotelplaza.com',
       amenities: ['WiFi gratuito', 'Gimnasio', 'Piscina']
     }
-  ],
+    ],
+    recommendedPlaces: []
+  },
   transport: {
     parking: true,
     valetParking: true,
@@ -269,9 +326,17 @@ export const mockWeddingMariaCarlos: WeddingData = {
     enabled: true,
     message: 'Aunque adoramos a los pequeños de la familia, hemos decidido que nuestra celebración sea solo para adultos. Esperamos que puedan acompañarnos en esta noche especial.'
   },
+  rsvp: {
+    enabled: true,
+    deadline: '2025-10-01',
+    maxGuests: 2,
+    dietaryOptions: true,
+    customQuestions: []
+  },
   theme: {
     id: 'classic'
   },
+  status: 'draft',
   languages: ['es', 'en'],
   defaultLanguage: 'es',
   isActive: true,
@@ -301,8 +366,14 @@ export const mockWeddingAnaLuis: WeddingData = {
     },
     coupleEmail: 'ana.luis@email.com',
     hashtag: '#AnaYLuis2025',
-    story: 'Nuestros caminos se cruzaron en la universidad hace 8 años. Entre estudios, café y largas conversaciones descubrimos que éramos almas gemelas. Hoy escribimos un nuevo capítulo de nuestra historia de amor.',
-    quote: 'El amor verdadero no tiene final, porque el verdadero amor nunca termina.'
+    story: {
+      es: 'Nuestros caminos se cruzaron en la universidad hace 8 años. Entre estudios, café y largas conversaciones descubrimos que éramos almas gemelas. Hoy escribimos un nuevo capítulo de nuestra historia de amor.',
+      en: 'Our paths crossed at university 8 years ago. Between studies, coffee and long conversations we discovered we were soulmates. Today we write a new chapter in our love story.'
+    },
+    quote: {
+      es: 'El amor verdadero no tiene final, porque el verdadero amor nunca termina.',
+      en: 'True love has no ending, because true love never ends.'
+    }
   },
   event: {
     weddingId: 'ana-luis-2025',
@@ -317,7 +388,10 @@ export const mockWeddingAnaLuis: WeddingData = {
       duration: 300
     },
     ceremonyVenue: {
-      name: 'Capilla San Francisco',
+      name: {
+        es: 'Capilla San Francisco',
+        en: 'San Francisco Chapel'
+      },
       address: 'Plaza Principal s/n, Pueblo Mágico, Estado 54321',
       coordinates: {
         lat: 20.5920,
@@ -326,7 +400,10 @@ export const mockWeddingAnaLuis: WeddingData = {
       description: 'Hermosa capilla colonial del siglo XVIII con arquitectura tradicional mexicana'
     },
     receptionVenue: {
-      name: 'Hacienda San Miguel',
+      name: {
+        es: 'Hacienda San Miguel',
+        en: 'San Miguel Hacienda'
+      },
       address: 'Carretera Nacional Km 25, Pueblo Mágico, Estado 54321',
       coordinates: {
         lat: 20.5937,
@@ -343,8 +420,14 @@ export const mockWeddingAnaLuis: WeddingData = {
       ]
     },
     dressCode: {
-      style: 'Garden Party / Semi-Formal',
-      description: 'Un estilo elegante pero relajado, perfecto para una celebración al aire libre',
+      style: {
+        es: 'Garden Party / Semi-Formal',
+        en: 'Garden Party / Semi-Formal'
+      },
+      description: {
+        es: 'Un estilo elegante pero relajado, perfecto para una celebración al aire libre',
+        en: 'An elegant but relaxed style, perfect for an outdoor celebration'
+      },
       recommendations: {
         ladies: [
           'Vestidos florales o de colores pasteles',
@@ -370,44 +453,80 @@ export const mockWeddingAnaLuis: WeddingData = {
     {
       id: 'welcome',
       time: '16:30',
-      title: 'Bienvenida',
-      description: 'Recibimiento con agua de sabores y canapés',
+      title: {
+        es: 'Bienvenida',
+        en: 'Welcome'
+      },
+      description: {
+        es: 'Recibimiento con agua de sabores y canapés',
+        en: 'Reception with flavored water and canapés'
+      },
       icon: 'Users'
     },
     {
       id: 'ceremony',
       time: '17:00',
-      title: 'Ceremonia Religiosa',
-      description: 'Ceremonia en la capilla colonial',
+      title: {
+        es: 'Ceremonia Religiosa',
+        en: 'Religious Ceremony'
+      },
+      description: {
+        es: 'Ceremonia en la capilla colonial',
+        en: 'Ceremony at the colonial chapel'
+      },
       icon: 'Heart',
       isHighlight: true
     },
     {
       id: 'toast',
       time: '17:50',
-      title: 'Brindis de Bienvenida',
-      description: 'Celebración con vino de la región',
+      title: {
+        es: 'Brindis de Bienvenida',
+        en: 'Welcome Toast'
+      },
+      description: {
+        es: 'Celebración con vino de la región',
+        en: 'Celebration with regional wine'
+      },
       icon: 'Wine'
     },
     {
       id: 'photos',
       time: '18:30',
-      title: 'Golden Hour',
-      description: 'Sesión de fotos en los viñedos',
+      title: {
+        es: 'Golden Hour',
+        en: 'Golden Hour'
+      },
+      description: {
+        es: 'Sesión de fotos en los viñedos',
+        en: 'Photo session in the vineyards'
+      },
       icon: 'Camera'
     },
     {
       id: 'dinner',
       time: '20:00',
-      title: 'Cena de Gala',
-      description: 'Menú mexicano contemporáneo',
+      title: {
+        es: 'Cena de Gala',
+        en: 'Gala Dinner'
+      },
+      description: {
+        es: 'Menú mexicano contemporáneo',
+        en: 'Contemporary Mexican menu'
+      },
       icon: 'Utensils'
     },
     {
       id: 'party',
       time: '22:00',
-      title: 'Fiesta',
-      description: 'Música en vivo y baile hasta el amanecer',
+      title: {
+        es: 'Fiesta',
+        en: 'Party'
+      },
+      description: {
+        es: 'Música en vivo y baile hasta el amanecer',
+        en: 'Live music and dancing until dawn'
+      },
       icon: 'Music'
     }
   ],
@@ -468,7 +587,8 @@ export const mockWeddingAnaLuis: WeddingData = {
     memories: 2341,
     dreams: 12
   },
-  accommodation: [
+  accommodation: {
+    hotels: [
     {
       name: 'Posada Colonial San Miguel',
       distance: '2 min del lugar',
@@ -476,7 +596,9 @@ export const mockWeddingAnaLuis: WeddingData = {
       phone: '+52 33 5555-7777',
       amenities: ['Arquitectura colonial', 'Spa', 'Restaurant gourmet']
     }
-  ],
+    ],
+    recommendedPlaces: []
+  },
   transport: {
     parking: true,
     valetParking: false,
@@ -522,9 +644,17 @@ export const mockWeddingAnaLuis: WeddingData = {
   adultOnlyEvent: {
     enabled: false
   },
+  rsvp: {
+    enabled: true,
+    deadline: '2025-08-15',
+    maxGuests: 2,
+    dietaryOptions: true,
+    customQuestions: []
+  },
   theme: {
     id: 'modern'
   },
+  status: 'draft',
   languages: ['es', 'en'],
   defaultLanguage: 'es',
   isActive: true,
@@ -550,8 +680,14 @@ export const mockWeddingLuxury: WeddingData = {
     },
     coupleEmail: 'isabella.alexander@example.com',
     hashtag: '#IsabellaAndAlexander2025',
-    story: 'Isabella y Alexander se conocieron en París durante un intercambio académico en la Sorbona. Cinco años después, con carreras consolidadas en diferentes continentes, decidieron que el amor no conoce fronteras. Su historia es de elegancia, sofisticación y una conexión que trasciende océanos.',
-    quote: 'El amor no conoce fronteras'
+    story: {
+      es: 'Isabella y Alexander se conocieron en París durante un intercambio académico en la Sorbona. Cinco años después, con carreras consolidadas en diferentes continentes, decidieron que el amor no conoce fronteras. Su historia es de elegancia, sofisticación y una conexión que trasciende océanos.',
+      en: 'Isabella and Alexander met in Paris during an academic exchange at the Sorbonne. Five years later, with established careers on different continents, they decided that love knows no borders. Their story is one of elegance, sophistication and a connection that transcends oceans.'
+    },
+    quote: {
+      es: 'El amor no conoce fronteras',
+      en: 'Love knows no borders'
+    }
   },
   event: {
     weddingId: 'isabella-alexander-2025',
@@ -566,7 +702,10 @@ export const mockWeddingLuxury: WeddingData = {
       duration: 300
     },
     ceremonyVenue: {
-      name: 'Château de la Vigne - Capilla',
+      name: {
+        es: 'Château de la Vigne - Capilla',
+        en: 'Château de la Vigne - Chapel'
+      },
       address: 'Carretera Valle de Guadalupe Km 95, Ensenada, Baja California 22750',
       coordinates: {
         lat: 32.1456,
@@ -575,7 +714,10 @@ export const mockWeddingLuxury: WeddingData = {
       description: 'Capilla gótica del Château con arquitectura francesa y elegancia contemporánea.'
     },
     receptionVenue: {
-      name: 'Château de la Vigne',
+      name: {
+        es: 'Château de la Vigne',
+        en: 'Château de la Vigne'
+      },
       address: 'Carretera Valle de Guadalupe Km 95, Ensenada, Baja California 22750',
       coordinates: {
         lat: 32.1456,
@@ -585,8 +727,14 @@ export const mockWeddingLuxury: WeddingData = {
       features: ['Viñedos privados', 'Capilla gótica', 'Jardines franceses', 'Terraza panorámica', 'Bodega de vinos']
     },
     dressCode: {
-      style: 'Formal Elegance',
-      description: 'Elegancia formal con toques de sofisticación europea. Paleta de azul marino, dorado y tonos neutros.',
+      style: {
+        es: 'Formal Elegance',
+        en: 'Formal Elegance'
+      },
+      description: {
+        es: 'Elegancia formal con toques de sofisticación europea. Paleta de azul marino, dorado y tonos neutros.',
+        en: 'Formal elegance with touches of European sophistication. Navy blue, gold and neutral tone palette.'
+      },
       recommendations: {
         ladies: [
           'Vestidos largos en tonos azul marino, dorado suave o champagne',
@@ -612,51 +760,93 @@ export const mockWeddingLuxury: WeddingData = {
     {
       id: 'arrival',
       time: '17:30',
-      title: 'Llegada y Recepción',
-      description: 'Recibimiento con champagne y vista a los viñedos',
+      title: {
+        es: 'Llegada y Recepción',
+        en: 'Arrival and Reception'
+      },
+      description: {
+        es: 'Recibimiento con champagne y vista a los viñedos',
+        en: 'Reception with champagne and vineyard views'
+      },
       icon: 'Users'
     },
     {
       id: 'ceremony',
       time: '18:00',
-      title: 'Ceremonia Civil',
-      description: 'Unión en la capilla gótica del Château',
+      title: {
+        es: 'Ceremonia Civil',
+        en: 'Civil Ceremony'
+      },
+      description: {
+        es: 'Unión en la capilla gótica del Château',
+        en: 'Union in the Gothic chapel of the Château'
+      },
       icon: 'Heart',
       isHighlight: true
     },
     {
       id: 'cocktail',
       time: '18:30',
-      title: 'Cocktail Hour',
-      description: 'Canapés gourmet y cata de vinos en la terraza',
+      title: {
+        es: 'Cocktail Hour',
+        en: 'Cocktail Hour'
+      },
+      description: {
+        es: 'Canapés gourmet y cata de vinos en la terraza',
+        en: 'Gourmet canapés and wine tasting on the terrace'
+      },
       icon: 'Wine'
     },
     {
       id: 'photos',
       time: '19:30',
-      title: 'Sesión de Fotos',
-      description: 'Golden hour en los jardines franceses',
+      title: {
+        es: 'Sesión de Fotos',
+        en: 'Photo Session'
+      },
+      description: {
+        es: 'Golden hour en los jardines franceses',
+        en: 'Golden hour in the French gardens'
+      },
       icon: 'Camera'
     },
     {
       id: 'dinner',
       time: '20:00',
-      title: 'Cena de Gala',
-      description: 'Menú degustación francés-mexicano de 7 tiempos',
+      title: {
+        es: 'Cena de Gala',
+        en: 'Gala Dinner'
+      },
+      description: {
+        es: 'Menú degustación francés-mexicano de 7 tiempos',
+        en: '7-course French-Mexican tasting menu'
+      },
       icon: 'Utensils'
     },
     {
       id: 'speeches',
       time: '21:30',
-      title: 'Brindis y Palabras',
-      description: 'Momento íntimo con familia y amigos',
+      title: {
+        es: 'Brindis y Palabras',
+        en: 'Toasts and Words'
+      },
+      description: {
+        es: 'Momento íntimo con familia y amigos',
+        en: 'Intimate moment with family and friends'
+      },
       icon: 'MessageCircle'
     },
     {
       id: 'party',
       time: '22:30',
-      title: 'Celebración',
-      description: 'Baile con orquesta y DJ hasta el amanecer',
+      title: {
+        es: 'Celebración',
+        en: 'Celebration'
+      },
+      description: {
+        es: 'Baile con orquesta y DJ hasta el amanecer',
+        en: 'Dancing with orchestra and DJ until dawn'
+      },
       icon: 'Music'
     }
   ],
@@ -736,7 +926,8 @@ export const mockWeddingLuxury: WeddingData = {
     memories: 3247,
     dreams: 25
   },
-  accommodation: [
+  accommodation: {
+    hotels: [
     {
       name: 'Château de la Vigne - Suites',
       distance: 'En el mismo lugar',
@@ -751,7 +942,9 @@ export const mockWeddingLuxury: WeddingData = {
       phone: '+52 646 234-5678',
       amenities: ['Vista a viñedos', 'Piscina', 'Restaurant premiado']
     }
-  ],
+    ],
+    recommendedPlaces: []
+  },
   transport: {
     parking: true,
     valetParking: true,
@@ -792,9 +985,17 @@ export const mockWeddingLuxury: WeddingData = {
     enabled: true,
     message: 'Para mantener la elegancia y sofisticación de la velada, hemos decidido que sea un evento solo para adultos. Agradecemos vuestra comprensión.'
   },
+  rsvp: {
+    enabled: true,
+    deadline: '2025-08-20',
+    maxGuests: 2,
+    dietaryOptions: true,
+    customQuestions: []
+  },
   theme: {
     id: 'luxury'
   },
+  status: 'draft',
   languages: ['es', 'en'],
   defaultLanguage: 'es',
   isActive: true,
@@ -824,8 +1025,14 @@ export const mockWeddingPremium: WeddingData = {
     },
     coupleEmail: 'vale.seb@email.com',
     hashtag: '#ValentinaySebastian2025',
-    story: 'Nuestro amor floreció como una rosa dorada en el jardín de la vida. Desde aquella primera mirada en la galería de arte hasta hoy, hemos tejido una historia de pasión, arte y sueños compartidos. En cada atardecer, en cada risa, en cada momento de silencio, hemos construido un amor que trasciende el tiempo.',
-    quote: 'En el arte del amor, cada día pintamos juntos un lienzo de eternidad.'
+    story: {
+      es: 'Nuestro amor floreció como una rosa dorada en el jardín de la vida. Desde aquella primera mirada en la galería de arte hasta hoy, hemos tejido una historia de pasión, arte y sueños compartidos. En cada atardecer, en cada risa, en cada momento de silencio, hemos construido un amor que trasciende el tiempo.',
+      en: 'Our love blossomed like a golden rose in the garden of life. From that first glance in the art gallery until today, we have woven a story of passion, art and shared dreams. In every sunset, in every laugh, in every moment of silence, we have built a love that transcends time.'
+    },
+    quote: {
+      es: 'En el arte del amor, cada día pintamos juntos un lienzo de eternidad.',
+      en: 'In the art of love, every day we paint together a canvas of eternity.'
+    }
   },
   event: {
     weddingId: 'valentina-sebastian-2025',
@@ -840,7 +1047,10 @@ export const mockWeddingPremium: WeddingData = {
       duration: 420
     },
     ceremonyVenue: {
-      name: 'Jardín Botánico de Chapultepec',
+      name: {
+        es: 'Jardín Botánico de Chapultepec',
+        en: 'Chapultepec Botanical Garden'
+      },
       address: 'Av. Paseo de la Reforma S/N, Chapultepec, Ciudad de México',
       coordinates: {
         lat: 19.4194,
@@ -849,7 +1059,10 @@ export const mockWeddingPremium: WeddingData = {
       description: 'Un santuario natural en el corazón de la ciudad, donde la naturaleza y el arte se fusionan en perfecta armonía'
     },
     receptionVenue: {
-      name: 'Hacienda San Angel',
+      name: {
+        es: 'Hacienda San Angel',
+        en: 'Hacienda San Angel'
+      },
       address: 'Calz. Desierto de los Leones 4620, Alcantarilla, Ciudad de México',
       coordinates: {
         lat: 19.3611,
@@ -866,8 +1079,14 @@ export const mockWeddingPremium: WeddingData = {
       ]
     },
     dressCode: {
-      style: 'Gala / Black Tie Opcional',
-      description: 'Una celebración de elegancia y sofisticación, donde cada detalle refleja la belleza del momento',
+      style: {
+        es: 'Gala / Black Tie Opcional',
+        en: 'Gala / Black Tie Optional'
+      },
+      description: {
+        es: 'Una celebración de elegancia y sofisticación, donde cada detalle refleja la belleza del momento',
+        en: 'A celebration of elegance and sophistication, where every detail reflects the beauty of the moment'
+      },
       recommendations: {
         ladies: [
           'Vestidos largos de gala',
@@ -893,51 +1112,93 @@ export const mockWeddingPremium: WeddingData = {
     {
       id: 'arrival',
       time: '16:30',
-      title: 'Recepción de Invitados',
-      description: 'Bienvenida con copa de champagne rosé',
+      title: {
+        es: 'Recepción de Invitados',
+        en: 'Guest Reception'
+      },
+      description: {
+        es: 'Bienvenida con copa de champagne rosé',
+        en: 'Welcome with rosé champagne'
+      },
       icon: 'MapPin'
     },
     {
       id: 'ceremony',
       time: '17:00',
-      title: 'Ceremonia Sacred',
-      description: 'Unión de almas bajo el rosal dorado',
+      title: {
+        es: 'Ceremonia Sacred',
+        en: 'Sacred Ceremony'
+      },
+      description: {
+        es: 'Unión de almas bajo el rosal dorado',
+        en: 'Union of souls under the golden rose bush'
+      },
       icon: 'Heart',
       isHighlight: true
     },
     {
       id: 'photos',
       time: '17:50',
-      title: 'Sesión Artística',
-      description: 'Retratos en los jardines de rosas',
+      title: {
+        es: 'Sesión Artística',
+        en: 'Artistic Session'
+      },
+      description: {
+        es: 'Retratos en los jardines de rosas',
+        en: 'Portraits in the rose gardens'
+      },
       icon: 'Camera'
     },
     {
       id: 'cocktail',
       time: '19:00',
-      title: 'Cocktail Premium',
-      description: 'Canapés gourmet y mixología de autor',
+      title: {
+        es: 'Cocktail Premium',
+        en: 'Premium Cocktail'
+      },
+      description: {
+        es: 'Canapés gourmet y mixología de autor',
+        en: 'Gourmet canapés and signature mixology'
+      },
       icon: 'Wine'
     },
     {
       id: 'reception',
       time: '20:00',
-      title: 'Cena de Degustación',
-      description: 'Menú de 6 tiempos con maridaje de vinos',
+      title: {
+        es: 'Cena de Degustación',
+        en: 'Tasting Dinner'
+      },
+      description: {
+        es: 'Menú de 6 tiempos con maridaje de vinos',
+        en: '6-course menu with wine pairing'
+      },
       icon: 'Utensils'
     },
     {
       id: 'speeches',
       time: '21:30',
-      title: 'Brindis de Amor',
-      description: 'Palabras del corazón y champagne Cristal',
+      title: {
+        es: 'Brindis de Amor',
+        en: 'Toast of Love'
+      },
+      description: {
+        es: 'Palabras del corazón y champagne Cristal',
+        en: 'Words from the heart and Cristal champagne'
+      },
       icon: 'MessageCircle'
     },
     {
       id: 'party',
       time: '22:30',
-      title: 'Celebración Dorada',
-      description: 'Baile con orquesta sinfónica y DJ',
+      title: {
+        es: 'Celebración Dorada',
+        en: 'Golden Celebration'
+      },
+      description: {
+        es: 'Baile con orquesta sinfónica y DJ',
+        en: 'Dancing with symphony orchestra and DJ'
+      },
       icon: 'Music'
     }
   ],
@@ -1017,7 +1278,8 @@ export const mockWeddingPremium: WeddingData = {
     memories: 2847,
     dreams: 31
   },
-  accommodation: [
+  accommodation: {
+    hotels: [
     {
       name: 'Hotel Presidente InterContinental',
       distance: '20 min del lugar',
@@ -1032,7 +1294,9 @@ export const mockWeddingPremium: WeddingData = {
       phone: '+52 55 2345-6789',
       amenities: ['Suites premium', 'Spa world-class', 'Bar rooftop', 'Servicio de mayordomo']
     }
-  ],
+    ],
+    recommendedPlaces: []
+  },
   transport: {
     parking: true,
     valetParking: true,
@@ -1073,9 +1337,17 @@ export const mockWeddingPremium: WeddingData = {
     enabled: true,
     message: 'Para mantener la atmósfera íntima y sofisticada de nuestra celebración artística, hemos decidido que sea un evento solo para adultos. Agradecemos vuestra comprensión.'
   },
+  rsvp: {
+    enabled: true,
+    deadline: '2025-11-14',
+    maxGuests: 2,
+    dietaryOptions: true,
+    customQuestions: []
+  },
   theme: {
     id: 'premium'
   },
+  status: 'draft',
   languages: ['es', 'en'],
   defaultLanguage: 'es',
   isActive: true,
@@ -1105,8 +1377,14 @@ export const mockWeddingFriendsTest: WeddingData = {
     },
     coupleEmail: 'maria.carlos@email.com',
     hashtag: '#NúribanYJuan2025',
-    story: 'Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.',
-    quote: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.',
+    story: {
+      es: 'Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.',
+      en: 'More than 6 years ago, destiny brought us together in a city café. What began as a casual conversation turned into shared laughter, intertwined dreams, and a love that grew day by day. Today, we want to celebrate this unique moment surrounded by the people we love most.'
+    },
+    quote: {
+      es: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.',
+      en: 'Love is not just looking at each other, but looking together in the same direction.'
+    },
     image: '/assets/friends/gallery-04.jpg' // Imagen específica para About
   },
   event: {
@@ -1122,7 +1400,10 @@ export const mockWeddingFriendsTest: WeddingData = {
       duration: 360
     },
     ceremonyVenue: {
-      name: 'Iglesia del Sagrado Corazón',
+      name: {
+        es: 'Iglesia del Sagrado Corazón',
+        en: 'Sacred Heart Church'
+      },
       address: 'Calle de los Santos 456, Ciudad, Estado 12345',
       coordinates: {
         lat: 19.4290,
@@ -1131,7 +1412,10 @@ export const mockWeddingFriendsTest: WeddingData = {
       description: 'Hermosa iglesia con arquitectura colonial donde celebraremos nuestra ceremonia religiosa'
     },
     receptionVenue: {
-      name: 'Jardines del Edén',
+      name: {
+        es: 'Jardines del Edén',
+        en: 'Eden Gardens'
+      },
       address: 'Av. Principal 123, Ciudad, Estado 12345',
       coordinates: {
         lat: 19.4326,
@@ -1148,8 +1432,14 @@ export const mockWeddingFriendsTest: WeddingData = {
       ]
     },
     dressCode: {
-      style: 'Formal / Cocktail',
-      description: 'Queremos que te sientas elegante y cómodo en nuestra celebración',
+      style: {
+        es: 'Formal / Cocktail',
+        en: 'Formal / Cocktail'
+      },
+      description: {
+        es: 'Queremos que te sientas elegante y cómodo en nuestra celebración',
+        en: 'We want you to feel elegant and comfortable at our celebration'
+      },
       recommendations: {
         ladies: [
           'Vestidos midi o largos elegantes',
@@ -1175,44 +1465,80 @@ export const mockWeddingFriendsTest: WeddingData = {
     {
       id: 'arrival',
       time: '15:30',
-      title: 'Llegada de Invitados',
-      description: 'Recepción y bienvenida en los jardines',
+      title: {
+        es: 'Llegada de Invitados',
+        en: 'Guest Arrival'
+      },
+      description: {
+        es: 'Recepción y bienvenida en los jardines',
+        en: 'Reception and welcome in the gardens'
+      },
       icon: 'MapPin'
     },
     {
       id: 'ceremony',
       time: '16:00',
-      title: 'Ceremonia Civil',
-      description: '¡El momento más esperado! Intercambio de votos',
+      title: {
+        es: 'Ceremonia Civil',
+        en: 'Civil Ceremony'
+      },
+      description: {
+        es: '¡El momento más esperado! Intercambio de votos',
+        en: 'The most awaited moment! Exchange of vows'
+      },
       icon: 'Heart',
       isHighlight: true
     },
     {
       id: 'photos',
       time: '16:45',
-      title: 'Sesión de Fotos',
-      description: 'Fotos con familiares y amigos cercanos',
+      title: {
+        es: 'Sesión de Fotos',
+        en: 'Photo Session'
+      },
+      description: {
+        es: 'Fotos con familiares y amigos cercanos',
+        en: 'Photos with family and close friends'
+      },
       icon: 'Camera'
     },
     {
       id: 'cocktail',
       time: '18:00',
-      title: 'Cóctel de Celebración',
-      description: 'Aperitivos y bebidas mientras preparamos la recepción',
+      title: {
+        es: 'Cóctel de Celebración',
+        en: 'Celebration Cocktail'
+      },
+      description: {
+        es: 'Aperitivos y bebidas mientras preparamos la recepción',
+        en: 'Appetizers and drinks while we prepare the reception'
+      },
       icon: 'Utensils'
     },
     {
       id: 'reception',
       time: '19:30',
-      title: 'Cena y Brindis',
-      description: 'Cena especial con nuestros seres queridos',
+      title: {
+        es: 'Cena y Brindis',
+        en: 'Dinner and Toast'
+      },
+      description: {
+        es: 'Cena especial con nuestros seres queridos',
+        en: 'Special dinner with our loved ones'
+      },
       icon: 'Utensils'
     },
     {
       id: 'party',
       time: '21:00',
-      title: '¡A Bailar!',
-      description: 'Música, baile y diversión hasta altas horas',
+      title: {
+        es: '¡A Bailar!',
+        en: 'Let\'s Dance!'
+      },
+      description: {
+        es: 'Música, baile y diversión hasta altas horas',
+        en: 'Music, dancing and fun until late hours'
+      },
       icon: 'Music'
     }
   ],
@@ -1294,7 +1620,8 @@ export const mockWeddingFriendsTest: WeddingData = {
     memories: 1250,
     dreams: 8
   },
-  accommodation: [
+  accommodation: {
+    hotels: [
     {
       name: 'Hotel Boutique Central',
       distance: '5 min del lugar',
@@ -1311,7 +1638,9 @@ export const mockWeddingFriendsTest: WeddingData = {
       website: 'www.granhotelplaza.com',
       amenities: ['WiFi gratuito', 'Gimnasio', 'Piscina']
     }
-  ],
+    ],
+    recommendedPlaces: []
+  },
   transport: {
     parking: true,
     valetParking: true,
@@ -1414,9 +1743,17 @@ export const mockWeddingFriendsTest: WeddingData = {
       },
     ]
   },
+  rsvp: {
+    enabled: true,
+    deadline: '2025-10-15',
+    maxGuests: 2,
+    dietaryOptions: true,
+    customQuestions: []
+  },
   theme: {
     id: 'classic'
   },
+  status: 'draft',
   languages: ['es', 'en'],
   defaultLanguage: 'es',
   isActive: true,
@@ -1446,8 +1783,14 @@ export const mockWeddingCorporate: WeddingData = {
     },
     coupleEmail: 'patricia.roberto@email.com',
     hashtag: '#PatriciaYRoberto2025',
-    story: 'Nuestra historia comenzó en el mundo corporativo, donde la excelencia y la dedicación nos unieron. Durante cinco años trabajando en proyectos desafiantes, descubrimos que nuestras metas profesionales compartían el mismo valor: construir algo duradero juntos. Hoy, queremos celebrar no solo nuestro amor, sino también el compromiso mutuo hacia un futuro próspero.',
-    quote: 'El éxito se mide no solo en logros, sino en las personas con quienes compartes el camino.'
+    story: {
+      es: 'Nuestra historia comenzó en el mundo corporativo, donde la excelencia y la dedicación nos unieron. Durante cinco años trabajando en proyectos desafiantes, descubrimos que nuestras metas profesionales compartían el mismo valor: construir algo duradero juntos. Hoy, queremos celebrar no solo nuestro amor, sino también el compromiso mutuo hacia un futuro próspero.',
+      en: 'Our story began in the corporate world, where excellence and dedication brought us together. During five years working on challenging projects, we discovered that our professional goals shared the same value: building something lasting together. Today, we want to celebrate not only our love, but also our mutual commitment to a prosperous future.'
+    },
+    quote: {
+      es: 'El éxito se mide no solo en logros, sino en las personas con quienes compartes el camino.',
+      en: 'Success is measured not only in achievements, but in the people with whom you share the journey.'
+    }
   },
   event: {
     weddingId: 'roberto-patricia-2025',
@@ -1462,7 +1805,10 @@ export const mockWeddingCorporate: WeddingData = {
       duration: 360
     },
     ceremonyVenue: {
-      name: 'Torre Corporativa Milenio - Salón Ejecutivo',
+      name: {
+        es: 'Torre Corporativa Milenio - Salón Ejecutivo',
+        en: 'Milenio Corporate Tower - Executive Hall'
+      },
       address: 'Av. Paseo de la Reforma 350, Juárez, Ciudad de México',
       coordinates: {
         lat: 19.4326,
@@ -1471,7 +1817,10 @@ export const mockWeddingCorporate: WeddingData = {
       description: 'Un espacio de vanguardia con vista panorámica de la ciudad, donde la elegancia corporativa se encuentra con la celebración personal'
     },
     receptionVenue: {
-      name: 'Club Empresarial Metropolitan',
+      name: {
+        es: 'Club Empresarial Metropolitan',
+        en: 'Metropolitan Business Club'
+      },
       address: 'Av. Presidente Masaryk 201, Polanco, Ciudad de México',
       coordinates: {
         lat: 19.4284,
@@ -1488,8 +1837,14 @@ export const mockWeddingCorporate: WeddingData = {
       ]
     },
     dressCode: {
-      style: 'Business Formal / Cocktail Elegante',
-      description: 'Una celebración donde la elegancia profesional se encuentra con la sofisticación personal',
+      style: {
+        es: 'Business Formal / Cocktail Elegante',
+        en: 'Business Formal / Elegant Cocktail'
+      },
+      description: {
+        es: 'Una celebración donde la elegancia profesional se encuentra con la sofisticación personal',
+        en: 'A celebration where professional elegance meets personal sophistication'
+      },
       recommendations: {
         ladies: [
           'Vestidos cocktail elegantes',
@@ -1515,51 +1870,93 @@ export const mockWeddingCorporate: WeddingData = {
     {
       id: 'arrival',
       time: '17:30',
-      title: 'Recepción Ejecutiva',
-      description: 'Bienvenida con cóctel de networking',
+      title: {
+        es: 'Recepción Ejecutiva',
+        en: 'Executive Reception'
+      },
+      description: {
+        es: 'Bienvenida con cóctel de networking',
+        en: 'Welcome with networking cocktail'
+      },
       icon: 'MapPin'
     },
     {
       id: 'ceremony',
       time: '18:00',
-      title: 'Ceremonia Corporativa',
-      description: 'Unión en el salón ejecutivo con vista a la ciudad',
+      title: {
+        es: 'Ceremonia Corporativa',
+        en: 'Corporate Ceremony'
+      },
+      description: {
+        es: 'Unión en el salón ejecutivo con vista a la ciudad',
+        en: 'Union in the executive hall with city views'
+      },
       icon: 'Heart',
       isHighlight: true
     },
     {
       id: 'photos',
       time: '18:45',
-      title: 'Sesión Profesional',
-      description: 'Fotografías en la terraza panorámica',
+      title: {
+        es: 'Sesión Profesional',
+        en: 'Professional Session'
+      },
+      description: {
+        es: 'Fotografías en la terraza panorámica',
+        en: 'Photography on the panoramic terrace'
+      },
       icon: 'Camera'
     },
     {
       id: 'cocktail',
       time: '19:30',
-      title: 'Cocktail Premium',
-      description: 'Networking y aperitivos gourmet',
+      title: {
+        es: 'Cocktail Premium',
+        en: 'Premium Cocktail'
+      },
+      description: {
+        es: 'Networking y aperitivos gourmet',
+        en: 'Networking and gourmet appetizers'
+      },
       icon: 'Wine'
     },
     {
       id: 'reception',
       time: '20:30',
-      title: 'Cena Ejecutiva',
-      description: 'Menú degustación de 5 tiempos',
+      title: {
+        es: 'Cena Ejecutiva',
+        en: 'Executive Dinner'
+      },
+      description: {
+        es: 'Menú degustación de 5 tiempos',
+        en: '5-course tasting menu'
+      },
       icon: 'Utensils'
     },
     {
       id: 'speeches',
       time: '22:00',
-      title: 'Brindis Corporativo',
-      description: 'Palabras de éxito y champagne premium',
+      title: {
+        es: 'Brindis Corporativo',
+        en: 'Corporate Toast'
+      },
+      description: {
+        es: 'Palabras de éxito y champagne premium',
+        en: 'Words of success and premium champagne'
+      },
       icon: 'MessageCircle'
     },
     {
       id: 'party',
       time: '23:00',
-      title: 'Celebración de Logros',
-      description: 'Música selecta y ambiente sofisticado',
+      title: {
+        es: 'Celebración de Logros',
+        en: 'Achievement Celebration'
+      },
+      description: {
+        es: 'Música selecta y ambiente sofisticado',
+        en: 'Select music and sophisticated atmosphere'
+      },
       icon: 'Music'
     }
   ],
@@ -1639,7 +2036,8 @@ export const mockWeddingCorporate: WeddingData = {
     memories: 1852,
     dreams: 15
   },
-  accommodation: [
+  accommodation: {
+    hotels: [
     {
       name: 'Hotel Presidente InterContinental',
       distance: '5 min del lugar',
@@ -1654,7 +2052,9 @@ export const mockWeddingCorporate: WeddingData = {
       phone: '+52 55 2345-6789',
       amenities: ['Club ejecutivo', 'Spa de lujo', 'Restaurante gourmet', 'Servicio de limusina']
     }
-  ],
+    ],
+    recommendedPlaces: []
+  },
   transport: {
     parking: true,
     valetParking: true,
@@ -1695,9 +2095,17 @@ export const mockWeddingCorporate: WeddingData = {
     enabled: true,
     message: 'Para mantener el ambiente profesional y sofisticado de nuestra celebración corporativa, hemos decidido que sea un evento solo para adultos. Agradecemos vuestra comprensión.'
   },
+  rsvp: {
+    enabled: true,
+    deadline: '2025-09-18',
+    maxGuests: 2,
+    dietaryOptions: true,
+    customQuestions: []
+  },
   theme: {
     id: 'corporate'
   },
+  status: 'draft',
   languages: ['es', 'en'],
   defaultLanguage: 'es',
   isActive: true,
