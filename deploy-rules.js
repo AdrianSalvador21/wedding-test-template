@@ -13,28 +13,20 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔥 Desplegando reglas de Firestore...\n');
-
 // Verificar que existe el archivo de reglas
 const rulesPath = path.join(__dirname, 'firestore.rules');
 if (!fs.existsSync(rulesPath)) {
-  console.error('❌ Error: No se encontró el archivo firestore.rules');
   process.exit(1);
 }
 
 try {
   // Verificar que Firebase CLI está instalado
   execSync('firebase --version', { stdio: 'pipe' });
-  console.log('✅ Firebase CLI encontrado');
   
   // Verificar que hay un proyecto configurado
   try {
     const projectInfo = execSync('firebase use', { encoding: 'utf8' });
-    console.log('✅ Proyecto Firebase configurado:', projectInfo.trim());
   } catch (error) {
-    console.log('⚠️  No hay proyecto configurado. Configurando...');
-    console.log('Por favor, ejecuta: firebase use --add');
-    console.log('Y selecciona tu proyecto de Firebase.');
     process.exit(1);
   }
   
