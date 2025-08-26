@@ -21,11 +21,20 @@ const DressCode = () => {
   const dressCodeData = weddingData?.event.dressCode;
   const dressCodeStyle = typeof dressCodeData?.style === 'object' && dressCodeData.style
     ? (dressCodeData.style[currentLocale as 'es' | 'en'] || dressCodeData.style.es || '')
-    : (dressCodeData?.style as unknown as string || t('style.name'));
+    : (dressCodeData?.style as unknown as string || '');
     
   const dressCodeDescription = typeof dressCodeData?.description === 'object' && dressCodeData.description
     ? (dressCodeData.description[currentLocale as 'es' | 'en'] || dressCodeData.description.es || '')
-    : (dressCodeData?.description as unknown as string || t('style.description'));
+    : (dressCodeData?.description as unknown as string || '');
+
+  // No mostrar si no hay información de dress code
+  if (!dressCodeStyle && !dressCodeDescription) {
+    return null;
+  }
+
+  // Usar fallbacks de traducción solo para mostrar
+  const displayStyle = dressCodeStyle || t('style.name');
+  const displayDescription = dressCodeDescription || t('style.description');
 
   // Versión estática para móvil
   if (isMobile) {
@@ -42,9 +51,9 @@ const DressCode = () => {
           <div className="text-center mb-12">
             <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
-            <div className="text-xl font-body font-medium text-accent mb-4">{dressCodeStyle}</div>
+            <div className="text-xl font-body font-medium text-accent mb-4">{displayStyle}</div>
             <p className="section-subtitle max-w-2xl mx-auto">
-              {dressCodeDescription}
+              {displayDescription}
             </p>
           </div>
         </div>
@@ -107,7 +116,7 @@ const DressCode = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
             >
-              {dressCodeStyle}
+              {displayStyle}
             </motion.div>
             <motion.p 
               className="section-subtitle max-w-2xl mx-auto"
@@ -116,7 +125,7 @@ const DressCode = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
             >
-              {dressCodeDescription}
+              {displayDescription}
             </motion.p>
           </div>
         </motion.div>

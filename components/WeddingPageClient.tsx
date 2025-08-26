@@ -19,5 +19,5 @@ export default function WeddingPageClient({ weddingId, guestId }: WeddingPageCli
     }
   }, [weddingId, guestId, dispatch]);
 
-  return <WeddingTemplate guestId={guestId} />;
+  return <WeddingTemplate guestId={guestId} weddingId={weddingId} />;
 } 

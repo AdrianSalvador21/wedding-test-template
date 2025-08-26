@@ -8,6 +8,7 @@ import { ThemeProvider } from '../lib/theme-context';
 import { createWeddingTheme } from '../lib/theme-utils';
 import { guestService } from '../services/guestService';
 import { FirebaseGuest } from '../src/types/wedding';
+import { useWeddingMusic } from '../hooks/useWeddingMusic';
 import Hero from './sections/Hero';
 import Countdown from './sections/Countdown';
 import About from './sections/About';
@@ -26,14 +27,25 @@ import MusicPlayer from './MusicPlayer';
 
 interface WeddingTemplateProps {
   guestId?: string | null;
+  weddingId?: string;
 }
 
-export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
+export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateProps) {
   const { currentWedding, loading, error, initialized } = useWedding();
   const { t } = useTranslations('template');
   const [showOverlay, setShowOverlay] = useState(false);
   const [guestInfo, setGuestInfo] = useState<FirebaseGuest | null>(null);
   const [guestLoading, setGuestLoading] = useState(!!guestId);
+  const [showDemoOverlay, setShowDemoOverlay] = useState(false);
+  
+  // Hook de música dinámico - debe estar antes de cualquier return condicional
+  // Usar weddingId de props o currentWedding como fallback
+  const { music: dynamicMusic } = useWeddingMusic(weddingId || currentWedding?.id);
+  
+  // DEBUG: Solo logs importantes en desarrollo
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 WeddingTemplate - dynamicMusic:', dynamicMusic);
+  }
 
   const router = useRouter();
   const params = useParams();
@@ -77,6 +89,28 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
 
     fetchGuestInfo();
   }, [guestId, currentWedding?.id, currentLocale, router]);
+
+  // Mostrar overlay de demo cuando no hay guest específico y estamos usando mock data
+  useEffect(() => {
+    if (!guestId && currentWedding && !guestLoading) {
+      // Solo mostrar demo si estamos usando datos mock (no datos reales de Firebase)
+      const isMockData = currentWedding.id === 'friends-test' || 
+                        currentWedding.id === 'maria-carlos-2025' ||
+                        currentWedding.id === 'ana-luis-2024' ||
+                        currentWedding.id === 'luxury-wedding' ||
+                        currentWedding.id === 'premium-wedding' ||
+                        currentWedding.id === 'corporate-event';
+      
+      if (isMockData) {
+        // Mostrar overlay de demo después de 1 segundo
+        const timer = setTimeout(() => {
+          setShowDemoOverlay(true);
+        }, 1000);
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [guestId, currentWedding, guestLoading]);
 
   // Estado de carga
   if (!initialized || loading || guestLoading) {
@@ -153,9 +187,20 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
           />
         )}
 
+        {/* Overlay de demostración */}
+        {showDemoOverlay && currentWedding && (
+          <InvitationOverlay
+            guestId="demo-guest"
+            weddingId={currentWedding.id}
+            guestInfo={null}
+            onClose={() => setShowDemoOverlay(false)}
+            isDemoMode={true}
+          />
+        )}
+
         {/* Reproductor de música de fondo */}
-        {currentWedding.music && (
-          <MusicPlayer music={currentWedding.music} />
+        {dynamicMusic && (
+          <MusicPlayer music={dynamicMusic} />
         )}
       </main>
 

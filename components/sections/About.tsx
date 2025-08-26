@@ -8,6 +8,7 @@ import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
+import { useWeddingImages } from '../../hooks/useWeddingImages';
 
 const About = () => {
   const { t } = useTranslations('about');
@@ -16,6 +17,7 @@ const About = () => {
   const currentWedding = useAppSelector(selectCurrentWedding);
   const couple = useAppSelector(selectCouple);
   const { getBackgroundStyle } = useThemePatterns();
+  const { coupleImage } = useWeddingImages(currentWedding?.id);
 
   // Datos dinámicos de la boda con soporte bilingüe
   const storyText = typeof couple?.story === 'object' && couple.story
@@ -76,7 +78,7 @@ const About = () => {
             >
               <div className="relative overflow-hidden rounded-lg shadow-lg group">
                 <Image
-                  src={couple?.image || currentWedding?.gallery?.[0]?.url || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
+                  src={coupleImage}
                   alt={`${couple?.bride.name || 'Novia'} y ${couple?.groom.name || 'Novio'}`}
                   width={800}
                   height={1000}

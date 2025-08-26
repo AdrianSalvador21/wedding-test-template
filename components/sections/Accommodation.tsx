@@ -16,23 +16,12 @@ const Accommodation = () => {
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
 
-  const accommodationOptions = weddingData?.accommodation?.hotels || [
-    {
-      name: 'Hotel Boutique Central',
-      price: 'Desde $120/noche',
-      phone: '+52 55 1111-2222'
-    },
-    {
-      name: 'Casa de Huéspedes Jardín',
-      price: 'Desde $80/noche',
-      phone: '+52 55 3333-4444'
-    },
-    {
-      name: 'Hotel Familiar Plaza',
-      price: 'Desde $95/noche',
-      phone: '+52 55 5555-6666'
-    }
-  ];
+  // Si no hay hoteles configurados, no mostrar la sección
+  if (!weddingData?.accommodation?.hotels?.length) {
+    return null;
+  }
+
+  const accommodationOptions = weddingData.accommodation.hotels;
 
   // Versión estática para móvil
   if (isMobile) {

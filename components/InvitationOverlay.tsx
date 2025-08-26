@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { useAppSelector } from '../src/store/hooks';
 import { selectCurrentWedding } from '../src/store/slices/weddingSlice';
 import { getMockInvitation } from '../src/data/mockInvitations';
@@ -15,15 +16,18 @@ interface InvitationOverlayProps {
   weddingId: string;
   guestInfo?: FirebaseGuest | null;
   onClose: () => void;
+  isDemoMode?: boolean;
 }
 
-const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingId, guestInfo, onClose }) => {
+const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingId, guestInfo, onClose, isDemoMode = false }) => {
   const [isVisible, setIsVisible] = useState(true);
   const currentWedding = useAppSelector(selectCurrentWedding);
   const [invitation, setInvitation] = useState<WeddingInvitation | null>(null);
   const { t } = useTranslations('invitationOverlay');
   const { getBackgroundStyle } = useThemePatterns();
   const { currentTheme } = useTheme();
+  const params = useParams();
+  const currentLocale = params.locale as string;
 
   // Clases condicionales basadas en el tema
   const isLuxuryTheme = currentTheme.id === 'luxury';
@@ -36,10 +40,33 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
     : 'w-full bg-stone-600 hover:bg-stone-700 text-white font-body font-medium py-3 px-6 rounded-xl transition-all duration-300 text-sm tracking-wide';
 
   useEffect(() => {
-    // Obtener la invitación específica
-    const invitationData = getMockInvitation(weddingId, guestId);
-    setInvitation(invitationData);
-  }, [weddingId, guestId]);
+    if (isDemoMode) {
+      // Crear invitación de demostración
+      const demoInvitation: WeddingInvitation = {
+        wedding: currentWedding!,
+        guest: {
+          id: 'demo-guest',
+          name: 'Ricardo Verdi',
+          email: 'ricardo.verdi@demo.com',
+          allowedGuests: 2,
+          guestType: 'friends',
+          table: 'Mesa Demo',
+          specialMessage: currentLocale === 'en' 
+            ? 'You are very important to us, we are waiting for you!'
+            : '¡Eres muy importante para nosotros, te esperamos!',
+          isConfirmed: false,
+          notes: 'Invitación de demostración'
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      setInvitation(demoInvitation);
+    } else {
+      // Obtener la invitación específica
+      const invitationData = getMockInvitation(weddingId, guestId);
+      setInvitation(invitationData);
+    }
+  }, [weddingId, guestId, isDemoMode, currentWedding, currentLocale]);
 
   useEffect(() => {
     // Bloquear scroll en mobile cuando el overlay está activo

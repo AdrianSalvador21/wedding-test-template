@@ -18,11 +18,24 @@ export default function GiftRegistry() {
   const [isBankExpanded, setIsBankExpanded] = useState(false);
   const [isRegistryExpanded, setIsRegistryExpanded] = useState(false);
 
+  // No mostrar si no está habilitado
   if (!currentWedding?.giftRegistry?.enabled) {
     return null;
   }
 
   const { giftRegistry } = currentWedding;
+
+  // No mostrar si no hay tiendas NI cuenta bancaria configuradas
+  const hasRegistries = giftRegistry.registries && giftRegistry.registries.length > 0;
+  const hasBankAccount = giftRegistry.bankAccount && (
+    giftRegistry.bankAccount.bankName || 
+    giftRegistry.bankAccount.accountName || 
+    giftRegistry.bankAccount.accountNumber
+  );
+
+  if (!hasRegistries && !hasBankAccount) {
+    return null;
+  }
   
   // Procesar mensaje bilingüe
   const messageData = giftRegistry.message;

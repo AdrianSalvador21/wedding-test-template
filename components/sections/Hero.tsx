@@ -6,10 +6,12 @@ import { ChevronDown, Heart } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
+import { useWeddingImages } from '../../hooks/useWeddingImages';
 
 const Hero = () => {
   const { t, currentLanguage } = useTranslations('hero');
   const weddingData = useAppSelector(selectCurrentWedding);
+  const { heroImage } = useWeddingImages(weddingData?.id);
   const [isMounted, setIsMounted] = useState(false);
 
   // Datos dinámicos con fallbacks
@@ -21,8 +23,8 @@ const Hero = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const eventTime = weddingData?.event.time || '16:00';
   
-  // Imagen del Hero desde el servicio
-  const heroImageUrl = weddingData?.heroImage?.url || 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80';
+  // Imagen del Hero dinámicamente cargada
+  const heroImageUrl = heroImage;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const heroImageAlt = weddingData?.heroImage?.alt || 'Imagen principal de boda';
 
