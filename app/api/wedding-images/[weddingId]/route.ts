@@ -14,10 +14,31 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid wedding ID' }, { status: 400 });
     }
 
-    const galleryPath = path.join(process.cwd(), 'public', 'assets', 'wedding-images', weddingId, 'gallery');
+    const basePath = path.join(process.cwd(), 'public', 'assets', 'wedding-images', weddingId);
+    const galleryPath = path.join(basePath, 'gallery');
     
-    // Verificar si la carpeta existe
-    if (!fs.existsSync(galleryPath)) {
+    // Debug: Log paths en desarrollo
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🖼️ API Debug - weddingId:', weddingId);
+      console.log('🖼️ API Debug - process.cwd():', process.cwd());
+      console.log('🖼️ API Debug - basePath:', basePath);
+      console.log('🖼️ API Debug - galleryPath:', galleryPath);
+    }
+    
+    // Verificar si la carpeta base existe
+    const baseExists = fs.existsSync(basePath);
+    const galleryExists = fs.existsSync(galleryPath);
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🖼️ API Debug - baseExists:', baseExists);
+      console.log('🖼️ API Debug - galleryExists:', galleryExists);
+    }
+    
+    // Verificar si la carpeta gallery existe
+    if (!galleryExists) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🖼️ API Debug - Gallery no existe, retornando vacío');
+      }
       return NextResponse.json({ 
         heroImage: null,
         coupleImage: null,
@@ -39,11 +60,22 @@ export async function GET(
     const galleryImages = imageFiles.map(file => `/assets/wedding-images/${weddingId}/gallery/${file}`);
 
     // Verificar si existen hero.jpg y couple.jpg
-    const heroPath = path.join(process.cwd(), 'public', 'assets', 'wedding-images', weddingId, 'hero.jpg');
-    const couplePath = path.join(process.cwd(), 'public', 'assets', 'wedding-images', weddingId, 'couple.jpg');
+    const heroPath = path.join(basePath, 'hero.jpg');
+    const couplePath = path.join(basePath, 'couple.jpg');
+    
+    const heroExists = fs.existsSync(heroPath);
+    const coupleExists = fs.existsSync(couplePath);
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🖼️ API Debug - heroPath:', heroPath);
+      console.log('🖼️ API Debug - heroExists:', heroExists);
+      console.log('🖼️ API Debug - couplePath:', couplePath);
+      console.log('🖼️ API Debug - coupleExists:', coupleExists);
+      console.log('🖼️ API Debug - galleryImages count:', imageFiles.length);
+    }
 
-    const heroImage = fs.existsSync(heroPath) ? `/assets/wedding-images/${weddingId}/hero.jpg` : null;
-    const coupleImage = fs.existsSync(couplePath) ? `/assets/wedding-images/${weddingId}/couple.jpg` : null;
+    const heroImage = heroExists ? `/assets/wedding-images/${weddingId}/hero.jpg` : null;
+    const coupleImage = coupleExists ? `/assets/wedding-images/${weddingId}/couple.jpg` : null;
 
     return NextResponse.json({
       heroImage,
