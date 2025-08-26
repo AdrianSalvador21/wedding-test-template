@@ -8,3 +8,4 @@ export { GalleryIcon } from './GalleryIcon';
 export { AboutIcon } from './AboutIcon';
 export { RSVPIcon } from './RSVPIcon';
 export { AdultOnlyIcon } from './AdultOnlyIcon';
+export { CountdownIcon } from './CountdownIcon';

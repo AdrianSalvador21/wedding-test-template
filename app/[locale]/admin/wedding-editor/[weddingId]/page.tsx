@@ -752,7 +752,7 @@ function CoupleSection({ data, onChange }: SectionProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nombre de la Novia
+              Nombre de la persona 2
             </label>
             <input
               type="text"
@@ -764,7 +764,7 @@ function CoupleSection({ data, onChange }: SectionProps) {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nombre del Novio
+              Nombre de la persona 1
             </label>
             <input
               type="text"
