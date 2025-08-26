@@ -5,8 +5,8 @@ export default function StructuredData() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Invyta",
-    "url": "https://invyta.com",
-    "logo": "https://invyta.com/assets/landing/logo.png",
+    "url": "https://invyta.me",
+    "logo": "https://invyta.me/assets/landing/logo.png",
     "description": "Plataforma líder en invitaciones digitales elegantes para bodas. Crea, personaliza y gestiona invitaciones online con diseños únicos.",
     "foundingDate": "2024",
     "sameAs": [
@@ -36,7 +36,7 @@ export default function StructuredData() {
     "provider": {
       "@type": "Organization",
       "name": "Invyta",
-      "url": "https://invyta.com"
+      "url": "https://invyta.me"
     },
     "serviceType": "Invitaciones Digitales",
     "category": "Bodas y Eventos",
@@ -97,13 +97,13 @@ export default function StructuredData() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Invyta",
-    "url": "https://invyta.com",
+    "url": "https://invyta.me",
     "description": "Crea invitaciones digitales elegantes para tu boda. Plataforma completa con diseños personalizables y gestión de invitados.",
     "inLanguage": "es-MX",
     "isAccessibleForFree": true,
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://invyta.com/search?q={search_term_string}",
+      "target": "https://invyta.me/search?q={search_term_string}",
       "query-input": "required name=search_term_string"
     },
     "publisher": {
@@ -111,7 +111,7 @@ export default function StructuredData() {
       "name": "Invyta",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://invyta.com/assets/landing/logo.png"
+        "url": "https://invyta.me/assets/landing/logo.png"
       }
     }
   };
@@ -124,25 +124,25 @@ export default function StructuredData() {
         "@type": "ListItem",
         "position": 1,
         "name": "Inicio",
-        "item": "https://invyta.com"
+        "item": "https://invyta.me"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Funcionalidades",
-        "item": "https://invyta.com#funcionalidades"
+        "item": "https://invyta.me#funcionalidades"
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": "Paquetes",
-        "item": "https://invyta.com#paquetes"
+        "item": "https://invyta.me#paquetes"
       },
       {
         "@type": "ListItem",
         "position": 4,
         "name": "Ejemplos",
-        "item": "https://invyta.com#ejemplos"
+        "item": "https://invyta.me#ejemplos"
       }
     ]
   };

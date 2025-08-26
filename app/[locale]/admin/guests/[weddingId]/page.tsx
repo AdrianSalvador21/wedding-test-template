@@ -6,7 +6,7 @@ import { Plus, Edit2, Trash2, Save, X, Check, Link } from 'lucide-react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../../lib/firebase';
 import { guestService } from '../../../../../services/guestService';
-import { FirebaseGuest, WeddingData } from '../../../../../src/types/wedding';
+import { FirebaseGuest, WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
 
 interface GuestStats {
@@ -49,6 +49,99 @@ const AdminGuestsPage = () => {
     language: 'es',
     coupleMessage: ''
   });
+
+  // Función para migrar/completar datos bilingües faltantes
+  const migrateWeddingData = (data: Record<string, unknown>): WeddingData => {
+    const migrated = { ...data } as unknown as WeddingData;
+    
+    // Migrar giftRegistry.message
+    if (migrated.giftRegistry?.message && typeof migrated.giftRegistry.message === 'string') {
+      migrated.giftRegistry.message = {
+        es: migrated.giftRegistry.message,
+        en: ''
+      };
+    } else if (!migrated.giftRegistry?.message) {
+      migrated.giftRegistry = migrated.giftRegistry || {};
+      migrated.giftRegistry.message = { es: '', en: '' };
+    }
+    
+    // Migrar adultOnlyEvent.message
+    if (migrated.adultOnlyEvent?.message && typeof migrated.adultOnlyEvent.message === 'string') {
+      migrated.adultOnlyEvent.message = {
+        es: migrated.adultOnlyEvent.message,
+        en: ''
+      };
+    } else if (!migrated.adultOnlyEvent?.message) {
+      migrated.adultOnlyEvent = migrated.adultOnlyEvent || {};
+      migrated.adultOnlyEvent.message = { es: '', en: '' };
+    }
+    
+    // Migrar accommodation.hotels descriptions
+    if (migrated.accommodation?.hotels) {
+      migrated.accommodation.hotels = (migrated.accommodation.hotels as unknown as Record<string, unknown>[]).map((hotel) => {
+        if (hotel.description && typeof hotel.description === 'string') {
+          return {
+            ...hotel,
+            description: { es: hotel.description, en: '' }
+          };
+        } else if (!hotel.description) {
+          return {
+            ...hotel,
+            description: { es: '', en: '' }
+          };
+        }
+        return hotel;
+      }) as unknown as AccommodationOption[];
+    }
+    
+    // Migrar accommodation.recommendedPlaces descriptions
+    if (migrated.accommodation?.recommendedPlaces) {
+      migrated.accommodation.recommendedPlaces = (migrated.accommodation.recommendedPlaces as unknown as Record<string, unknown>[]).map((place) => {
+        if (place.description && typeof place.description === 'string') {
+          return {
+            ...place,
+            description: { es: place.description, en: '' }
+          };
+        } else if (!place.description) {
+          return {
+            ...place,
+            description: { es: '', en: '' }
+          };
+        }
+        return place;
+      }) as unknown as AccommodationOption[];
+    }
+    
+    // Migrar giftRegistry.registries descriptions
+    if (migrated.giftRegistry?.registries) {
+      migrated.giftRegistry.registries = (migrated.giftRegistry.registries as unknown as Record<string, unknown>[]).map((registry) => {
+        if (registry.description && typeof registry.description === 'string') {
+          return {
+            ...registry,
+            description: { es: registry.description, en: '' }
+          };
+        } else if (!registry.description) {
+          return {
+            ...registry,
+            description: { es: '', en: '' }
+          };
+        }
+        return registry;
+      }) as unknown as GiftRegistryItem[];
+    }
+    
+    // Migrar giftRegistry.bankAccount.description
+    if (migrated.giftRegistry?.bankAccount?.description && typeof migrated.giftRegistry.bankAccount.description === 'string') {
+      migrated.giftRegistry.bankAccount.description = {
+        es: migrated.giftRegistry.bankAccount.description,
+        en: ''
+      };
+    } else if (migrated.giftRegistry?.bankAccount && !migrated.giftRegistry.bankAccount.description) {
+      migrated.giftRegistry.bankAccount.description = { es: '', en: '' };
+    }
+    
+    return migrated as WeddingData;
+  };
 
   // Crear datos iniciales para nueva boda
   const createInitialWeddingData = (weddingId: string): WeddingData => ({
@@ -120,7 +213,11 @@ const AdminGuestsPage = () => {
           // Verificar si la boda tiene información básica
           const hasBasicInfo = data.couple?.bride?.name || data.couple?.groom?.name || data.event?.date;
           
-          if (!hasBasicInfo) {
+          if (hasBasicInfo) {
+            // Tiene información, migrar datos si es necesario
+            const migratedData = migrateWeddingData(data as unknown as Record<string, unknown>);
+            await setDoc(docRef, migratedData);
+          } else {
             // Existe pero sin información, crear estructura base
             const initialData = createInitialWeddingData(weddingId);
             await setDoc(docRef, initialData);

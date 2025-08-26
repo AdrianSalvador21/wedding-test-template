@@ -164,7 +164,7 @@ export default function WeddingTemplate({ guestId }: WeddingTemplateProps) {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
             <a
-              href="https://invyta.com"
+              href="https://invyta.me"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block hover:opacity-80 transition-opacity"

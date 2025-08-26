@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useParams } from 'next/navigation';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
@@ -11,6 +12,8 @@ const AdultOnlyEvent = () => {
   const { t } = useTranslations('adultOnlyEvent');
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
+  const params = useParams();
+  const currentLocale = params.locale as string;
 
   // Si no está habilitado, no mostrar la sección
   if (!weddingData?.adultOnlyEvent?.enabled) {
@@ -18,7 +21,10 @@ const AdultOnlyEvent = () => {
   }
 
   // Usar mensaje personalizado o el del servicio de traducciones
-  const message = weddingData.adultOnlyEvent.message || t('description');
+  const messageData = weddingData.adultOnlyEvent.message;
+  const message = typeof messageData === 'object' 
+    ? (messageData[currentLocale as 'es' | 'en'] || messageData.es || t('description'))
+    : (messageData || t('description'));
 
   return (
     <section 

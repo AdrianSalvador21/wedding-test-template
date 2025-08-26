@@ -3,6 +3,7 @@
 import { useWedding } from '../../src/store/hooks';
 import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
+import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
@@ -11,6 +12,8 @@ export default function GiftRegistry() {
   const { t } = useTranslations('giftRegistry');
   const { currentWedding } = useWedding();
   const { getBackgroundStyle } = useThemePatterns();
+  const params = useParams();
+  const currentLocale = params.locale as string;
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isBankExpanded, setIsBankExpanded] = useState(false);
   const [isRegistryExpanded, setIsRegistryExpanded] = useState(false);
@@ -20,6 +23,12 @@ export default function GiftRegistry() {
   }
 
   const { giftRegistry } = currentWedding;
+  
+  // Procesar mensaje bilingüe
+  const messageData = giftRegistry.message;
+  const giftMessage = typeof messageData === 'object' 
+    ? (messageData[currentLocale as 'es' | 'en'] || messageData.es || t('message'))
+    : (messageData || t('message'));
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -50,7 +59,7 @@ export default function GiftRegistry() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           ></motion.div>
-          {giftRegistry.message && (
+          {giftMessage && (
             <motion.p 
               className="section-subtitle"
               initial={{ opacity: 0, y: 20 }}
@@ -58,7 +67,7 @@ export default function GiftRegistry() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
             >
-              {giftRegistry.message}
+              {giftMessage}
             </motion.p>
           )}
         </motion.div>
@@ -136,11 +145,18 @@ export default function GiftRegistry() {
               
               {isBankExpanded && (
                 <div className="px-5 pb-5 border-t border-border">
-                  {giftRegistry.bankAccount.description && (
-                    <p className="text-text font-body text-center mb-6 mt-4 text-sm">
-                      {giftRegistry.bankAccount.description}
-                    </p>
-                  )}
+                  {(() => {
+                    const descriptionData = giftRegistry.bankAccount.description;
+                    const bankDescription = typeof descriptionData === 'object' 
+                      ? (descriptionData[currentLocale as 'es' | 'en'] || descriptionData.es)
+                      : descriptionData;
+                    
+                    return bankDescription && (
+                      <p className="text-text font-body text-center mb-6 mt-4 text-sm">
+                        {bankDescription}
+                      </p>
+                    );
+                  })()}
                   
                   <div className="space-y-3">
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">

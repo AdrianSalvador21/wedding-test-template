@@ -15,9 +15,9 @@ export default function WeddingPageClient({ weddingId, guestId }: WeddingPageCli
 
   useEffect(() => {
     if (weddingId) {
-      dispatch(fetchWeddingData(weddingId));
+      dispatch(fetchWeddingData({ weddingId, guestId: guestId || undefined }));
     }
-  }, [weddingId, dispatch]);
+  }, [weddingId, guestId, dispatch]);
 
   return <WeddingTemplate guestId={guestId} />;
 } 

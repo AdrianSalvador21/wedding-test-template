@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://invyta.com';
+  const baseUrl = 'https://invyta.me';
   const currentDate = new Date();
 
   return [

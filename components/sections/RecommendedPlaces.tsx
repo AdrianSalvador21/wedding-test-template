@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { MapPin, ExternalLink } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { openExternalLink } from '@/lib/utils';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
@@ -13,6 +14,8 @@ const RecommendedPlaces = () => {
   const { t } = useTranslations('recommendedPlaces');
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
+  const params = useParams();
+  const currentLocale = params.locale as string;
 
   // Si no está habilitado o no hay datos, no mostrar nada
   if (!weddingData?.recommendedPlaces?.enabled || !weddingData.recommendedPlaces.places.length) {
@@ -71,7 +74,9 @@ const RecommendedPlaces = () => {
 
                 {/* Descripción */}
                 <p className="text-stone-600 font-body text-sm leading-relaxed mb-6">
-                  {place.description}
+                  {typeof place.description === 'object' 
+                    ? (place.description[currentLocale as 'es' | 'en'] || place.description.es)
+                    : place.description}
                 </p>
 
                 {/* Botón de Maps */}
