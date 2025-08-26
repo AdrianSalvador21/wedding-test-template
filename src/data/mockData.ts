@@ -136,19 +136,6 @@ export const mockWeddingMariaCarlos: WeddingData = {
       isHighlight: true
     },
     {
-      id: 'photos',
-      time: '16:45',
-      title: {
-        es: 'Sesión de Fotos',
-        en: 'Photo Session'
-      },
-      description: {
-        es: 'Fotos con familiares y amigos cercanos',
-        en: 'Photos with family and close friends'
-      },
-      icon: 'Camera'
-    },
-    {
       id: 'cocktail',
       time: '18:00',
       title: {
@@ -796,19 +783,6 @@ export const mockWeddingLuxury: WeddingData = {
         en: 'Gourmet canapés and wine tasting on the terrace'
       },
       icon: 'Wine'
-    },
-    {
-      id: 'photos',
-      time: '19:30',
-      title: {
-        es: 'Sesión de Fotos',
-        en: 'Photo Session'
-      },
-      description: {
-        es: 'Golden hour en los jardines franceses',
-        en: 'Golden hour in the French gardens'
-      },
-      icon: 'Camera'
     },
     {
       id: 'dinner',
@@ -1488,19 +1462,6 @@ export const mockWeddingFriendsTest: WeddingData = {
       },
       icon: 'Heart',
       isHighlight: true
-    },
-    {
-      id: 'photos',
-      time: '16:45',
-      title: {
-        es: 'Sesión de Fotos',
-        en: 'Photo Session'
-      },
-      description: {
-        es: 'Fotos con familiares y amigos cercanos',
-        en: 'Photos with family and close friends'
-      },
-      icon: 'Camera'
     },
     {
       id: 'cocktail',

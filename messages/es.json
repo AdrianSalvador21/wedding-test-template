@@ -356,6 +356,7 @@
   "recommendedPlaces": {
     "title": "Lugares recomendados",
     "subtitle": "Guía especial de lugares para nuestros invitados",
-    "description": "Hemos seleccionado algunos lugares especiales que creemos que disfrutarán durante su visita."
+    "description": "Hemos seleccionado algunos lugares especiales que creemos que disfrutarán durante su visita.",
+    "button": "Ver ubicación"
   }
 } 

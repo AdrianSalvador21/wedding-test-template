@@ -125,7 +125,7 @@ const RecommendedPlaces = () => {
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-accent text-white rounded-md hover:bg-accent-dark transition-colors font-body font-medium text-sm"
                 >
                   <MapPin className="w-4 h-4" />
-                  Ver ubicación
+                  {t('button')}
                   <ExternalLink className="w-3 h-3" />
                 </button>
               </div>
