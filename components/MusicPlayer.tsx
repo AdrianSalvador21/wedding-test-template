@@ -20,8 +20,6 @@ export default function MusicPlayer({ music, className = '' }: MusicPlayerProps)
   // Sistema de audio: Prioriza archivos locales, fallback a Spotify
   useEffect(() => {
     const setupAudio = async () => {
-      console.log('🎵 Configurando audio para:', music.title, 'by', music.artist);
-
       // 1️⃣ PRIORIDAD: Archivo local MP3
       if (music.fileName) {
         const localUrl = `/assets/music/${music.fileName}`;

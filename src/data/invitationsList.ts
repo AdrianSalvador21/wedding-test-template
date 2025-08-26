@@ -39,12 +39,6 @@ export const showAvailableInvitations = () => {
     console.log('');
   });
   
-  console.log('=== EJEMPLOS DE USO ===');
-  console.log('Para acceder a una invitación específica:');
-  console.log('• URL: /wedding/maria-carlos-2025/guest-001');
-  console.log('• URL: /wedding/ana-luis-2025/guest-101');
-  console.log('');
-  
   return invitations;
 };
 
@@ -56,27 +50,13 @@ export const getInvitationDetails = (weddingId: string, guestId: string) => {
     console.log(`❌ No se encontró la invitación para: ${weddingId}/${guestId}`);
     return null;
   }
-  
-  console.log('=== DETALLES DE LA INVITACIÓN ===');
-  console.log(`💍 Boda: ${invitation.wedding.couple.bride.name} & ${invitation.wedding.couple.groom.name}`);
-  console.log(`📅 Fecha: ${new Date(invitation.wedding.event.date).toLocaleDateString('es-ES')}`);
-  console.log(`👤 Invitado: ${invitation.guest.name}`);
-  console.log(`👥 Personas permitidas: ${invitation.guest.allowedGuests}`);
-  console.log(`🏷️  Tipo de invitado: ${invitation.guest.guestType}`);
-  console.log(`📧 Email: ${invitation.guest.email || 'No disponible'}`);
-  console.log(`📱 Teléfono: ${invitation.guest.phone || 'No disponible'}`);
-  console.log(`🪑 Mesa: ${invitation.guest.table || 'No asignada'}`);
-  console.log(`✅ Confirmado: ${invitation.guest.isConfirmed ? 'Sí' : 'No'}`);
-  
   if (invitation.guest.specialMessage) {
     console.log(`💌 Mensaje personalizado:`);
     console.log(`"${invitation.guest.specialMessage}"`);
   }
-  
   if (invitation.guest.dietaryRestrictions && invitation.guest.dietaryRestrictions.length > 0) {
     console.log(`🍽️  Restricciones alimentarias: ${invitation.guest.dietaryRestrictions.join(', ')}`);
   }
-  
   if (invitation.guest.notes) {
     console.log(`📝 Notas: ${invitation.guest.notes}`);
   }
