@@ -1,0 +1,10 @@
+export { DressCodeIcon } from './DressCodeIcon';
+export { GiftRegistryIcon } from './GiftRegistryIcon';
+export { AccommodationIcon } from './AccommodationIcon';
+export { RecommendedPlacesIcon } from './RecommendedPlacesIcon';
+export { LocationIcon } from './LocationIcon';
+export { TimelineIcon } from './TimelineIcon';
+export { GalleryIcon } from './GalleryIcon';
+export { AboutIcon } from './AboutIcon';
+export { RSVPIcon } from './RSVPIcon';
+export { AdultOnlyIcon } from './AdultOnlyIcon';

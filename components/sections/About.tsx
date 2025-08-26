@@ -9,6 +9,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
+import { AboutIcon } from '../icons';
 
 const About = () => {
   const { t } = useTranslations('about');
@@ -46,9 +47,15 @@ const About = () => {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <h2 className="section-title text-stone-600 opacity-90 mb-4">
-            {t('title')}
-          </h2>
+          <div className="flex items-center justify-center mb-6">
+            <AboutIcon 
+              size={28} 
+              className="text-accent mr-3 opacity-80" 
+            />
+            <h2 className="section-title text-stone-600 opacity-90">
+              {t('title')}
+            </h2>
+          </div>
           <div className="w-16 h-0.5 bg-accent mx-auto"></div>
         </motion.div>
 

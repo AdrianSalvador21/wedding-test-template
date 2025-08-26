@@ -9,6 +9,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
+import { AccommodationIcon } from '../icons';
 
 const Accommodation = () => {
   const { t } = useTranslations('accommodation');
@@ -44,7 +45,13 @@ const Accommodation = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+            <div className="flex items-center justify-center mb-6">
+              <AccommodationIcon 
+                size={28} 
+                className="text-accent mr-3 opacity-80" 
+              />
+              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
+            </div>
             <motion.div 
               className="w-16 h-0.5 bg-accent mx-auto mb-6"
               initial={{ width: 0 }}
@@ -128,7 +135,13 @@ const Accommodation = () => {
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
-            <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+            <div className="flex items-center justify-center mb-6">
+              <AccommodationIcon 
+                size={28} 
+                className="text-accent mr-3 opacity-80" 
+              />
+              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
+            </div>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle">
               {t('subtitle')}

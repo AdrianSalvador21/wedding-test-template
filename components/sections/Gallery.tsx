@@ -10,6 +10,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
+import { GalleryIcon } from '../icons';
 
 const Gallery = () => {
   const { t } = useTranslations('gallery');
@@ -25,7 +26,7 @@ const Gallery = () => {
   });
 
   // Usar imágenes dinámicas de la galería
-  const photos = galleryImages.map((src, index) => ({
+  const photos = (galleryImages || []).map((src, index) => ({
     id: index + 1,
     src: src,
     alt: `Foto ${index + 1} de la boda`
@@ -129,7 +130,13 @@ const Gallery = () => {
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+          <div className="flex items-center justify-center mb-6">
+            <GalleryIcon 
+              size={28} 
+              className="text-accent mr-3 opacity-80" 
+            />
+            <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
+          </div>
           <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
           <p className="section-subtitle">
             {t('subtitle')}

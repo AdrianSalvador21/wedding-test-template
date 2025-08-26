@@ -9,6 +9,7 @@ import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
+import { TimelineIcon } from '../icons';
 
 const Timeline = () => {
   const { t } = useTranslations('timeline');
@@ -72,7 +73,13 @@ const Timeline = () => {
         >
           {/* Título y descripción */}
           <div className="text-center mb-12">
-            <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+            <div className="flex items-center justify-center mb-6">
+              <TimelineIcon 
+                size={28} 
+                className="text-accent mr-3 opacity-80" 
+              />
+              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
+            </div>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle font-body">
               {t('scheduleNote')}
