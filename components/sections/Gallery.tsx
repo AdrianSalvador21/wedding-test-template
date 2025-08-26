@@ -26,7 +26,7 @@ const Gallery = () => {
   });
 
   // Usar imágenes dinámicas de la galería
-  const photos = (galleryImages || []).map((src, index) => ({
+  const photos = galleryImages.map((src, index) => ({
     id: index + 1,
     src: src,
     alt: `Foto ${index + 1} de la boda`

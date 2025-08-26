@@ -47,7 +47,7 @@ export const useWeddingImages = (weddingId?: string): WeddingImages => {
             setImages(prevImages => ({
               heroImage: data.heroImage || "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80", // Fallback a imagen por defecto
               coupleImage: data.coupleImage || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Fallback a imagen por defecto
-              galleryImages: (data.galleryImages && data.galleryImages.length > 0) ? data.galleryImages : prevImages.galleryImages // Fallback a imágenes por defecto
+              galleryImages: data.galleryImages.length > 0 ? data.galleryImages : prevImages.galleryImages // Fallback a imágenes por defecto
             }));
           } else {
             setImages({
