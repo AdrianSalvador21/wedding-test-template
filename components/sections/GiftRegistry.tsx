@@ -7,6 +7,7 @@ import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
+import { GiftRegistryIcon } from '../icons';
 
 export default function GiftRegistry() {
   const { t } = useTranslations('giftRegistry');
@@ -64,7 +65,13 @@ export default function GiftRegistry() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+          <div className="flex items-center justify-center mb-6">
+            <GiftRegistryIcon 
+              size={28} 
+              className="text-accent mr-3 opacity-80" 
+            />
+            <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
+          </div>
           <motion.div 
             className="w-16 h-0.5 bg-accent mx-auto mb-6"
             initial={{ width: 0 }}

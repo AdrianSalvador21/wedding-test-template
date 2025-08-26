@@ -7,6 +7,7 @@ import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
+import { AdultOnlyIcon } from '../icons';
 
 const AdultOnlyEvent = () => {
   const { t } = useTranslations('adultOnlyEvent');
@@ -40,7 +41,13 @@ const AdultOnlyEvent = () => {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+          <div className="flex items-center justify-center mb-6">
+            <AdultOnlyIcon 
+              size={28} 
+              className="text-accent mr-3 opacity-80" 
+            />
+            <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
+          </div>
           <motion.div 
             className="w-16 h-0.5 bg-accent mx-auto"
             initial={{ width: 0 }}

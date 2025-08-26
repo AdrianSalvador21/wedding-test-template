@@ -3,18 +3,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, ExternalLink } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
+import { AccommodationIcon } from '../icons';
 
 const Accommodation = () => {
   const { t } = useTranslations('accommodation');
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
+  const params = useParams();
+  const currentLocale = params.locale as string;
 
   // Si no hay hoteles configurados, no mostrar la sección
   if (!weddingData?.accommodation?.hotels?.length) {
@@ -44,7 +48,13 @@ const Accommodation = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+            <div className="flex items-center justify-center mb-6">
+              <AccommodationIcon 
+                size={28} 
+                className="text-accent mr-3 opacity-80" 
+              />
+              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
+            </div>
             <motion.div 
               className="w-16 h-0.5 bg-accent mx-auto mb-6"
               initial={{ width: 0 }}
@@ -63,33 +73,44 @@ const Accommodation = () => {
             </motion.p>
           </motion.div>
 
-          <div className="max-w-lg mx-auto space-y-4">
-            {/* Lista de hoteles sin cards */}
-            {accommodationOptions.map((hotel, index) => (
-              <motion.div 
-                key={index} 
-                className="py-2 px-4"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.5, delay: 0.5 + (index * 0.1), ease: "easeOut" }}
-              >
-                <div className="flex items-center justify-center mb-4">
-                  <h4 className="text-base md:text-lg font-body font-semibold text-stone-700">{hotel.name}</h4>
-                </div>
-                
-                <div className="flex justify-center">
+          {/* Grid de hoteles con cards elegantes */}
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {accommodationOptions.map((hotel, index) => (
+                <motion.div 
+                  key={index} 
+                  className="bg-white rounded-lg shadow-sm border border-stone-100 p-6 hover:shadow-md transition-all duration-300 hover:border-stone-200"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.5, delay: 0.5 + (index * 0.1), ease: "easeOut" }}
+                >
+                  {/* Nombre del hotel */}
+                  <h3 className="text-base font-body font-semibold text-stone-700 mb-3 leading-tight">
+                    {hotel.name}
+                  </h3>
+
+                  {/* Descripción del hotel */}
+                  {hotel.description && (
+                    <p className="text-stone-600 font-body text-sm leading-relaxed mb-6">
+                      {typeof hotel.description === 'object' 
+                        ? (hotel.description[currentLocale as 'es' | 'en'] || hotel.description.es)
+                        : hotel.description}
+                    </p>
+                  )}
+
+                  {/* Botón de ubicación */}
                   <button
                     onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
-                    className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-accent text-white rounded-md hover:bg-accent-dark transition-colors font-body font-medium text-sm"
                   >
-                    <MapPin className="w-4 h-4 mr-2" />
+                    <MapPin className="w-4 h-4" />
                     {t('seeLocation')}
-                    <ExternalLink className="w-4 h-4 ml-2" />
+                    <ExternalLink className="w-3 h-3" />
                   </button>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -128,7 +149,13 @@ const Accommodation = () => {
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
-            <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
+            <div className="flex items-center justify-center mb-6">
+              <AccommodationIcon 
+                size={28} 
+                className="text-accent mr-3 opacity-80" 
+              />
+              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
+            </div>
             <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
             <p className="section-subtitle">
               {t('subtitle')}
@@ -148,23 +175,36 @@ const Accommodation = () => {
                 </p>
               </div>
               
-              <div className="grid md:grid-cols-3 gap-4">
+              {/* Grid de hoteles con cards elegantes */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {accommodationOptions.map((hotel, index) => (
-                  <div key={index} className="py-2 px-4">
-                    <div className="flex items-center justify-center mb-4">
-                      <h4 className="text-base md:text-lg font-body font-semibold text-stone-700">{hotel.name}</h4>
-                    </div>
-                    
-                    <div className="flex justify-center">
-                      <button
-                        onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
-                        className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
-                      >
-                        <MapPin className="w-4 h-4 mr-2" />
-                        {t('seeLocation')}
-                        <ExternalLink className="w-4 h-4 ml-2" />
-                      </button>
-                    </div>
+                  <div 
+                    key={index} 
+                    className="bg-white rounded-lg shadow-sm border border-stone-100 p-6 hover:shadow-md transition-all duration-300 hover:border-stone-200"
+                  >
+                    {/* Nombre del hotel */}
+                    <h3 className="text-base font-body font-semibold text-stone-700 mb-3 leading-tight">
+                      {hotel.name}
+                    </h3>
+
+                    {/* Descripción del hotel */}
+                    {hotel.description && (
+                      <p className="text-stone-600 font-body text-sm leading-relaxed mb-6">
+                        {typeof hotel.description === 'object' 
+                          ? (hotel.description[currentLocale as 'es' | 'en'] || hotel.description.es)
+                          : hotel.description}
+                      </p>
+                    )}
+
+                    {/* Botón de ubicación */}
+                    <button
+                      onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-accent text-white rounded-md hover:bg-accent-dark transition-colors font-body font-medium text-sm"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      {t('seeLocation')}
+                      <ExternalLink className="w-3 h-3" />
+                    </button>
                   </div>
                 ))}
               </div>

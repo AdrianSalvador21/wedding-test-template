@@ -238,7 +238,7 @@
     "clabeCopied": "CLABE copied to clipboard"
   },
   "accommodation": {
-    "title": "Recommended Accommodation",
+    "title": "Where to stay",
     "subtitle": "Lodging options near the event",
     "nearbyHotels": "Nearby Hotels",
     "description": "We recommend these hotels for your comfort",
@@ -354,8 +354,9 @@
     "seeYouThere": "See you on {date} at {venue}!"
   },
   "recommendedPlaces": {
-    "title": "Recommended Places",
+    "title": "Things to do",
     "subtitle": "Special guide to places for our guests",
-    "description": "We've selected some special places that we think you'll enjoy during your visit."
+    "description": "We've selected some special places that we think you'll enjoy during your visit.",
+    "button": "See location"
   }
 } 

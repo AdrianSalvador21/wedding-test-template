@@ -6,14 +6,14 @@
 /* CSS Custom Properties para iOS viewport */
 :root {
   --vh: 1vh;
-  
+
   /* Colores por defecto que serán sobrescritos por el tema */
   --color-primary: #8b7355;
   --color-secondary: #a67c5a;
   --color-accent: #d4af8c;
   --color-text: #6b5b4f;
   --color-background: #ffffff;
-  
+
   /* Gradientes por defecto */
   --gradient-primary: linear-gradient(135deg, #8b7355 0%, #a67c5a 100%);
 }
@@ -60,6 +60,7 @@
 
 /* Mobile: Imagen completamente estática en el flujo del documento */
 @media screen and (max-width: 768px) {
+
   /* Cambiar completamente la estructura para móvil */
   .hero-section {
     position: relative !important;
@@ -71,7 +72,7 @@
     -webkit-transform: translate3d(0, 0, 0) !important;
     will-change: auto !important;
   }
-  
+
   /* La imagen <img> será estática en el flujo normal */
   .hero-background-image {
     position: absolute !important;
@@ -92,9 +93,9 @@
     max-width: none !important;
     max-height: none !important;
   }
-  
+
   /* Overlay estático */
-  .hero-section > div:first-child > div:last-child {
+  .hero-section>div:first-child>div:last-child {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
@@ -103,13 +104,13 @@
     background: rgba(0, 0, 0, 0.3) !important;
     z-index: 1 !important;
   }
-  
+
   /* Contenido principal */
-  .hero-section > div:last-child {
+  .hero-section>div:last-child {
     position: relative !important;
     z-index: 2 !important;
   }
-  
+
   /* Forzar que el contenedor NO use background */
   .hero-section[style*="background-image"] {
     background-image: none !important;
@@ -128,7 +129,7 @@
       background: none !important;
       background-image: none !important;
     }
-    
+
     .hero-background-image {
       /* Imagen completamente estática en iOS */
       position: absolute !important;
@@ -142,7 +143,7 @@
       min-width: 100% !important;
       min-height: 100% !important;
     }
-    
+
     /* Eliminar cualquier background-image inline en iOS */
     .hero-section[style] {
       background-image: none !important;
@@ -156,7 +157,8 @@
   position: relative !important;
   overflow: hidden !important;
   /* Altura fija en píxeles - NO vh dinámico */
-  height: 812px !important; /* iPhone 12/13/14 height típica */
+  height: 812px !important;
+  /* iPhone 12/13/14 height típica */
   min-height: 812px !important;
   max-height: 812px !important;
   /* Forzar compositing layer para estabilidad */
@@ -170,7 +172,7 @@
   display: none !important;
 }
 
-.chrome-ios .hero-section > div:first-child {
+.chrome-ios .hero-section>div:first-child {
   /* Ocultar completamente el contenedor de imagen */
   display: none !important;
 }
@@ -211,9 +213,10 @@
 @media screen and (max-width: 768px) {
   .hero-section {
     /* NO usar unidades dinámicas - solo altura fija del inline style */
-    min-height: 640px; /* Fallback mínimo en caso de problemas */
+    min-height: 640px;
+    /* Fallback mínimo en caso de problemas */
   }
-  
+
   /* Prevenir layout shifts en body */
   body {
     position: relative;
@@ -237,9 +240,12 @@ body {
 
 /* Optimizaciones para móvil - SIMPLIFICADO */
 @media (max-width: 768px) {
-  html, body {
+
+  html,
+  body {
     -webkit-overflow-scrolling: touch;
-    scroll-behavior: auto; /* Cambiar a auto en móvil para mejor rendimiento */
+    scroll-behavior: auto;
+    /* Cambiar a auto en móvil para mejor rendimiento */
   }
 }
 
@@ -252,18 +258,21 @@ body {
     @apply font-semibold text-stone-600 opacity-90 text-center;
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 1.6rem; /* 29px */
+    font-size: 1.6rem;
+    /* 29px */
   }
 
   @media (min-width: 768px) {
     .section-title {
-      font-size: 2.5rem; /* 40px */
+      font-size: 2.5rem;
+      /* 40px */
     }
   }
 
   @media (min-width: 1024px) {
     .section-title {
-      font-size: 3rem; /* 48px */
+      font-size: 3rem;
+      /* 48px */
     }
   }
 
@@ -350,6 +359,7 @@ body {
       opacity: 0;
       transform: translateY(20px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -358,10 +368,13 @@ body {
 
   /* Optimización para imágenes en móvil */
   @media (max-width: 768px) {
-    .btn-primary, .btn-outline {
-      @apply hover:scale-100; /* Eliminar escala en móvil */
+
+    .btn-primary,
+    .btn-outline {
+      @apply hover:scale-100;
+      /* Eliminar escala en móvil */
     }
-    
+
     /* Deshabilitar animaciones complejas en móvil */
     .animate-fade-in-up,
     .animation-delay-200,
@@ -380,19 +393,45 @@ body {
 }
 
 /* Clases utilitarias que usan las variables de tema */
-.text-primary { color: var(--color-primary) !important; }
-.text-secondary { color: var(--color-secondary) !important; }
-.text-accent { color: var(--color-accent) !important; }
-.text-text { color: var(--color-text) !important; }
+.text-primary {
+  color: var(--color-primary) !important;
+}
 
-.bg-primary { background-color: var(--color-primary) !important; }
-.bg-secondary { background-color: var(--color-secondary) !important; }
-.bg-accent { background-color: var(--color-accent) !important; }
-.bg-background { background-color: var(--color-background) !important; }
+.text-secondary {
+  color: var(--color-secondary) !important;
+}
 
-.border-accent { border-color: var(--color-accent) !important; }
+.text-accent {
+  color: var(--color-accent) !important;
+}
 
-.bg-gradient-primary { background: var(--gradient-primary); } 
+.text-text {
+  color: var(--color-text) !important;
+}
+
+.bg-primary {
+  background-color: var(--color-primary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--color-secondary) !important;
+}
+
+.bg-accent {
+  background-color: var(--color-accent) !important;
+}
+
+.bg-background {
+  background-color: var(--color-background) !important;
+}
+
+.border-accent {
+  border-color: var(--color-accent) !important;
+}
+
+.bg-gradient-primary {
+  background: var(--gradient-primary);
+}
 
 /* Clases utilitarias adicionales usando variables CSS */
 .text-theme-primary {
@@ -563,4 +602,19 @@ body {
 
 .divider-theme-secondary {
   border-color: var(--color-secondary, #a67c5a);
-} 
+}
+
+.position-relative {
+  position: relative;
+}
+
+.absolute-right-top {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 0;
+}
+
+.border-left-bottom {
+  border-bottom-left-radius: 12px;
+}
