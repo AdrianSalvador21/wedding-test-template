@@ -3,6 +3,8 @@
 import { useWedding } from '../../src/store/hooks';
 import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
+import { useParams } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
 
@@ -10,15 +12,36 @@ export default function GiftRegistry() {
   const { t } = useTranslations('giftRegistry');
   const { currentWedding } = useWedding();
   const { getBackgroundStyle } = useThemePatterns();
+  const params = useParams();
+  const currentLocale = params.locale as string;
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isBankExpanded, setIsBankExpanded] = useState(false);
   const [isRegistryExpanded, setIsRegistryExpanded] = useState(false);
 
+  // No mostrar si no está habilitado
   if (!currentWedding?.giftRegistry?.enabled) {
     return null;
   }
 
   const { giftRegistry } = currentWedding;
+
+  // No mostrar si no hay tiendas NI cuenta bancaria configuradas
+  const hasRegistries = giftRegistry.registries && giftRegistry.registries.length > 0;
+  const hasBankAccount = giftRegistry.bankAccount && (
+    giftRegistry.bankAccount.bankName || 
+    giftRegistry.bankAccount.accountName || 
+    giftRegistry.bankAccount.accountNumber
+  );
+
+  if (!hasRegistries && !hasBankAccount) {
+    return null;
+  }
+  
+  // Procesar mensaje bilingüe
+  const messageData = giftRegistry.message;
+  const giftMessage = typeof messageData === 'object' 
+    ? (messageData[currentLocale as 'es' | 'en'] || messageData.es || t('message'))
+    : (messageData || t('message'));
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -34,19 +57,43 @@ export default function GiftRegistry() {
     >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         {/* Título */}
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <h2 className="section-title text-stone-600 opacity-90 mb-4">{t('title')}</h2>
-          <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
-          {giftRegistry.message && (
-            <p className="section-subtitle">
-              {giftRegistry.message}
-            </p>
+          <motion.div 
+            className="w-16 h-0.5 bg-accent mx-auto mb-6"
+            initial={{ width: 0 }}
+            whileInView={{ width: 64 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          ></motion.div>
+          {giftMessage && (
+            <motion.p 
+              className="section-subtitle"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            >
+              {giftMessage}
+            </motion.p>
           )}
-        </div>
+        </motion.div>
 
         {/* Mesas de Regalos Online */}
         {giftRegistry.registries.length > 0 && (
-          <div className="mb-6 max-w-2xl mx-auto">
+          <motion.div 
+            className="mb-6 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
+          >
             <div className="bg-white border border-border rounded-lg">
               <button
                 onClick={() => setIsRegistryExpanded(!isRegistryExpanded)}
@@ -82,12 +129,18 @@ export default function GiftRegistry() {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
 
                 {/* Cuenta Bancaria */}
         {giftRegistry.bankAccount && (
-          <div className="max-w-2xl mx-auto">
+          <motion.div 
+            className="max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
+          >
             <div className="bg-white border border-border rounded-lg">
               <button
                 onClick={() => setIsBankExpanded(!isBankExpanded)}
@@ -105,11 +158,18 @@ export default function GiftRegistry() {
               
               {isBankExpanded && (
                 <div className="px-5 pb-5 border-t border-border">
-                  {giftRegistry.bankAccount.description && (
-                    <p className="text-text font-body text-center mb-6 mt-4 text-sm">
-                      {giftRegistry.bankAccount.description}
-                    </p>
-                  )}
+                  {(() => {
+                    const descriptionData = giftRegistry.bankAccount.description;
+                    const bankDescription = typeof descriptionData === 'object' 
+                      ? (descriptionData[currentLocale as 'es' | 'en'] || descriptionData.es)
+                      : descriptionData;
+                    
+                    return bankDescription && (
+                      <p className="text-text font-body text-center mb-6 mt-4 text-sm">
+                        {bankDescription}
+                      </p>
+                    );
+                  })()}
                   
                   <div className="space-y-3">
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
@@ -167,7 +227,7 @@ export default function GiftRegistry() {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </section>

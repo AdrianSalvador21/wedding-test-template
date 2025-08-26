@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useTranslations } from '../../lib/translations';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useIsMobile } from '@/lib/motion';
@@ -108,67 +109,133 @@ const Countdown = () => {
         ) : (
           <>
             {/* Título con línea decorativa */}
-            <div className="mb-12">
+            <motion.div 
+              className="mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
               <h2 className="section-title text-stone-600 opacity-90 mb-4">
                 {t('subtitle')}
               </h2>
-              <div className="w-16 h-0.5 bg-accent mx-auto"></div>
-            </div>
+              <motion.div 
+                className="w-16 h-0.5 bg-accent mx-auto"
+                initial={{ width: 0 }}
+                whileInView={{ width: 64 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+              ></motion.div>
+            </motion.div>
 
             {/* Números de cuenta regresiva horizontales */}
-            <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 mb-12 countdown-numbers">
+            <motion.div 
+              className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 mb-12 countdown-numbers"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+            >
               {/* Días */}
-              <div className="text-center">
+              <motion.div 
+                className="text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
+              >
                 <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.days).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
                   {t('days')}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Separador */}
-              <div className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70">:</div>
+              <motion.div 
+                className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 0.7 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.3, delay: 0.6, ease: "easeOut" }}
+              >:</motion.div>
 
               {/* Horas */}
-              <div className="text-center">
+              <motion.div 
+                className="text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
+              >
                 <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.hours).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
                   {t('hours')}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Separador */}
-              <div className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70">:</div>
+              <motion.div 
+                className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 0.7 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.3, delay: 0.8, ease: "easeOut" }}
+              >:</motion.div>
 
               {/* Minutos */}
-              <div className="text-center">
+              <motion.div 
+                className="text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
+              >
                 <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.minutes).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
                   {t('minutes')}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Separador */}
-              <div className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70">:</div>
+              <motion.div 
+                className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 0.7 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.3, delay: 1.0, ease: "easeOut" }}
+              >:</motion.div>
 
               {/* Segundos */}
-              <div className="text-center">
+              <motion.div 
+                className="text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 1.1, ease: "easeOut" }}
+              >
                 <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
                   {String(timeLeft.seconds).padStart(2, '0')}
                 </div>
                 <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
                   {t('seconds')}
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* Fecha y hora del evento */}
-            <div className="space-y-2">
+            <motion.div 
+              className="space-y-2"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, delay: 1.2, ease: "easeOut" }}
+            >
               <p className="text-lg md:text-xl font-body font-light text-gray-700">
                 {weddingDate.toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'es-ES', {
                   day: 'numeric',
@@ -188,7 +255,7 @@ const Countdown = () => {
                   </p>
                 ) : null;
               })()}
-            </div>
+            </motion.div>
           </>
         )}
       </div>

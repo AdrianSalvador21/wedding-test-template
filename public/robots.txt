@@ -5,7 +5,7 @@ Allow: /
 Crawl-delay: 1
 
 # Sitemap
-Sitemap: https://invyta.com/sitemap.xml
+Sitemap: https://invyta.me/sitemap.xml
 
 # Disallow admin areas
 Disallow: /admin/

@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../../lib/firebase';
-import { WeddingData } from '../../../../../src/types/wedding';
+import { WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
+import WeddingNotFound from '../../../../../components/WeddingNotFound';
 import { 
   Save, 
   User, 
@@ -17,6 +18,99 @@ import {
   Loader2,
   Check
 } from 'lucide-react';
+
+// Función para migrar/completar datos bilingües faltantes
+const migrateWeddingData = (data: Record<string, unknown>): WeddingData => {
+  const migrated = { ...data } as unknown as WeddingData;
+  
+  // Migrar giftRegistry.message
+  if (migrated.giftRegistry?.message && typeof migrated.giftRegistry.message === 'string') {
+    migrated.giftRegistry.message = {
+      es: migrated.giftRegistry.message,
+      en: ''
+    };
+  } else if (!migrated.giftRegistry?.message) {
+    migrated.giftRegistry = migrated.giftRegistry || {};
+    migrated.giftRegistry.message = { es: '', en: '' };
+  }
+  
+  // Migrar adultOnlyEvent.message
+  if (migrated.adultOnlyEvent?.message && typeof migrated.adultOnlyEvent.message === 'string') {
+    migrated.adultOnlyEvent.message = {
+      es: migrated.adultOnlyEvent.message,
+      en: ''
+    };
+  } else if (!migrated.adultOnlyEvent?.message) {
+    migrated.adultOnlyEvent = migrated.adultOnlyEvent || {};
+    migrated.adultOnlyEvent.message = { es: '', en: '' };
+  }
+  
+  // Migrar accommodation.hotels descriptions
+  if (migrated.accommodation?.hotels) {
+    migrated.accommodation.hotels = (migrated.accommodation.hotels as unknown as Record<string, unknown>[]).map((hotel) => {
+      if (hotel.description && typeof hotel.description === 'string') {
+        return {
+          ...hotel,
+          description: { es: hotel.description, en: '' }
+        };
+      } else if (!hotel.description) {
+        return {
+          ...hotel,
+          description: { es: '', en: '' }
+        };
+      }
+      return hotel;
+    }) as unknown as AccommodationOption[];
+  }
+  
+  // Migrar accommodation.recommendedPlaces descriptions
+  if (migrated.accommodation?.recommendedPlaces) {
+    migrated.accommodation.recommendedPlaces = (migrated.accommodation.recommendedPlaces as unknown as Record<string, unknown>[]).map((place) => {
+      if (place.description && typeof place.description === 'string') {
+        return {
+          ...place,
+          description: { es: place.description, en: '' }
+        };
+      } else if (!place.description) {
+        return {
+          ...place,
+          description: { es: '', en: '' }
+        };
+      }
+      return place;
+    }) as unknown as AccommodationOption[];
+  }
+  
+  // Migrar giftRegistry.registries descriptions
+  if (migrated.giftRegistry?.registries) {
+    migrated.giftRegistry.registries = (migrated.giftRegistry.registries as unknown as Record<string, unknown>[]).map((registry) => {
+      if (registry.description && typeof registry.description === 'string') {
+        return {
+          ...registry,
+          description: { es: registry.description, en: '' }
+        };
+      } else if (!registry.description) {
+        return {
+          ...registry,
+          description: { es: '', en: '' }
+        };
+      }
+      return registry;
+    }) as unknown as GiftRegistryItem[];
+  }
+  
+  // Migrar giftRegistry.bankAccount.description
+  if (migrated.giftRegistry?.bankAccount?.description && typeof migrated.giftRegistry.bankAccount.description === 'string') {
+    migrated.giftRegistry.bankAccount.description = {
+      es: migrated.giftRegistry.bankAccount.description,
+      en: ''
+    };
+  } else if (migrated.giftRegistry?.bankAccount && !migrated.giftRegistry.bankAccount.description) {
+    migrated.giftRegistry.bankAccount.description = { es: '', en: '' };
+  }
+  
+  return migrated as WeddingData;
+};
 
 // Datos iniciales para nueva boda - SOLO campos que se usan en el template
 const createInitialWeddingData = (weddingId: string): WeddingData => ({
@@ -85,13 +179,12 @@ const createInitialWeddingData = (weddingId: string): WeddingData => ({
   },
   giftRegistry: {
     enabled: false,
-    message: '',
-    registries: [],
-    bankAccount: undefined
+    message: { es: '', en: '' },
+    registries: []
   },
   adultOnlyEvent: {
     enabled: false,
-    message: ''
+    message: { es: '', en: '' }
   },
   rsvp: {
     enabled: true,
@@ -160,21 +253,58 @@ export default function WeddingEditorPage() {
   const [activeTab, setActiveTab] = useState('couple');
   const [error, setError] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
+
+  // Validar si el ID de la boda es válido
+  const isValidWeddingId = (id: string): boolean => {
+    // Validaciones básicas del ID
+    if (!id || id.length < 3 || id.length > 50) return false;
+    if (!/^[a-zA-Z0-9\-_]+$/.test(id)) return false;
+    
+    // IDs reservados o no válidos
+    const reservedIds = ['admin', 'api', 'auth', 'login', 'register', 'demo', 'test', 'null', 'undefined'];
+    if (reservedIds.includes(id.toLowerCase())) return false;
+    
+    return true;
+  };
 
   // Cargar datos de la boda
   const loadWeddingData = async () => {
     try {
       setLoading(true);
+      
+      // Validar formato del ID
+      if (!isValidWeddingId(weddingId)) {
+        setNotFound(true);
+        return;
+      }
+      
       const docRef = doc(db, 'weddings', weddingId);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        setWeddingData(docSnap.data() as WeddingData);
+        const data = docSnap.data() as WeddingData;
+        
+        // Verificar si la boda tiene información básica
+        const hasBasicInfo = data.couple?.bride?.name || data.couple?.groom?.name || data.event?.date;
+        
+        if (hasBasicInfo) {
+          // Tiene información, migrar y cargar datos existentes
+          const migratedData = migrateWeddingData(data as unknown as Record<string, unknown>);
+          setWeddingData(migratedData);
+          
+          // Guardar datos migrados en Firebase
+          await setDoc(docRef, migratedData);
+        } else {
+          // Existe pero sin información, crear estructura base
+          const initialData = createInitialWeddingData(weddingId);
+          setWeddingData(initialData);
+          await setDoc(docRef, initialData);
+        }
       } else {
-        // Crear nueva boda con datos iniciales
-        const initialData = createInitialWeddingData(weddingId);
-        setWeddingData(initialData);
-        await setDoc(docRef, initialData);
+        // No existe el documento en Firebase → 404
+        setNotFound(true);
+        return;
       }
     } catch (err) {
       console.error('Error cargando datos:', err);
@@ -262,25 +392,39 @@ export default function WeddingEditorPage() {
         return !!(
           weddingData.accommodation?.hotels && 
           weddingData.accommodation.hotels.length > 0 &&
-          weddingData.accommodation.hotels.every((hotel: {name?: string; description?: string; mapsUrl?: string}) => 
-            hotel.name && hotel.description && hotel.mapsUrl
-          )
+          weddingData.accommodation.hotels.every((hotel: {name?: string; description?: string | { es: string; en: string }; mapsUrl?: string}) => {
+            const hasDescription = typeof hotel.description === 'object' 
+              ? (hotel.description.es && hotel.description.en) 
+              : hotel.description;
+            return hotel.name && hasDescription && hotel.mapsUrl;
+          })
         );
       case 'recommendedPlaces':
         return !!(
           weddingData.accommodation?.recommendedPlaces && 
           weddingData.accommodation.recommendedPlaces.length > 0 &&
-          weddingData.accommodation.recommendedPlaces.every((place: {name?: string; description?: string; mapsUrl?: string}) => 
-            place.name && place.description && place.mapsUrl
-          )
+          weddingData.accommodation.recommendedPlaces.every((place: {name?: string; description?: string | { es: string; en: string }; mapsUrl?: string}) => {
+            const hasDescription = typeof place.description === 'object' 
+              ? (place.description.es && place.description.en) 
+              : place.description;
+            return place.name && hasDescription && place.mapsUrl;
+          })
         );
       case 'gifts':
-        return !!(
-          weddingData.giftRegistry?.enabled && (
-            (weddingData.giftRegistry.registries && weddingData.giftRegistry.registries.length > 0) ||
-            weddingData.giftRegistry.bankAccount
-          )
-        );
+        if (!weddingData.giftRegistry?.enabled) return false;
+        
+        // Al menos una tienda debe estar completa (con nombre y URL)
+        const hasCompleteRegistry = weddingData.giftRegistry.registries && 
+          weddingData.giftRegistry.registries.some((registry: {name?: string; url?: string}) => 
+            registry.name && registry.url
+          );
+        
+        // O debe tener cuenta bancaria completa
+        const hasCompleteBankAccount = weddingData.giftRegistry.bankAccount && 
+          weddingData.giftRegistry.bankAccount.bankName && 
+          weddingData.giftRegistry.bankAccount.accountName;
+        
+        return !!(hasCompleteRegistry || hasCompleteBankAccount);
       case 'social':
         return !!(
           weddingData.couple?.hashtag &&
@@ -289,9 +433,18 @@ export default function WeddingEditorPage() {
            weddingData.couple?.coupleEmail)
         );
       case 'settings':
-        return !!(
-          weddingData.adultOnlyEvent?.enabled !== undefined
-        );
+        // Si no está habilitado, se considera completo
+        if (!weddingData.adultOnlyEvent?.enabled) return true;
+        
+        // Si está habilitado, debe tener mensaje
+        const message = weddingData.adultOnlyEvent.message;
+        if (typeof message === 'object') {
+          // Si es bilingüe, ambos idiomas deben estar completos
+          return !!(message.es && message.es.trim() && message.en && message.en.trim());
+        } else {
+          // Si es string simple, debe estar completo
+          return !!(message && message.trim());
+        }
       default:
         return false;
     }
@@ -325,6 +478,10 @@ export default function WeddingEditorPage() {
         </div>
       </div>
     );
+  }
+
+  if (notFound) {
+    return <WeddingNotFound weddingId={weddingId} />;
   }
 
   if (error) {
@@ -914,8 +1071,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
       time: '16:00',
       title: { es: '', en: '' },
       description: { es: '', en: '' },
-      icon: 'MapPin',
-      isHighlight: false
+      icon: 'MapPin'
     };
     const newTimelineData = [...timelineData, newEvent];
     onChange('timeline', newTimelineData);
@@ -954,7 +1110,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
       </div>
 
       <div className="space-y-4">
-        {timelineData.map((event: {id: string; title?: {es: string; en: string}; time?: string; description?: {es: string; en: string}; icon?: string; isHighlight?: boolean}, index: number) => (
+        {timelineData.map((event: {id: string; title?: {es: string; en: string}; time?: string; description?: {es: string; en: string}; icon?: string}, index: number) => (
           <div key={event.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
               <h3 className="text-base font-medium text-gray-800">Evento #{index + 1}</h3>
@@ -966,18 +1122,7 @@ function TimelineSection({ data, onChange }: SectionProps) {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ID único
-                </label>
-                <input
-                  type="text"
-                  value={event.id}
-                  onChange={(e) => updateTimelineEvent(index, 'id', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                />
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Hora
@@ -1054,19 +1199,6 @@ function TimelineSection({ data, onChange }: SectionProps) {
                 />
               </div>
             </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id={`highlight-${index}`}
-                checked={event.isHighlight || false}
-                onChange={(e) => updateTimelineEvent(index, 'isHighlight', e.target.checked)}
-                className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
-              />
-              <label htmlFor={`highlight-${index}`} className="ml-2 block text-sm text-gray-900">
-                Evento destacado
-              </label>
-            </div>
           </div>
         ))}
 
@@ -1099,7 +1231,7 @@ function AccommodationSection({ data, onChange }: SectionProps) {
     const newHotel = {
       id: `hotel-${Date.now()}`,
       name: '',
-      description: '',
+      description: { es: '', en: '' },
       mapsUrl: ''
     };
     const newHotelsData = [...hotelsData, newHotel];
@@ -1131,58 +1263,86 @@ function AccommodationSection({ data, onChange }: SectionProps) {
       </div>
 
       <div className="space-y-4">
-        {hotelsData.map((hotel: {id: string; name?: string; description?: string; mapsUrl?: string}, index: number) => (
-          <div key={hotel.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-              <h3 className="text-base font-medium text-gray-800">Hotel #{index + 1}</h3>
-              <button
-                onClick={() => removeHotel(index)}
-                className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
-              >
-                Eliminar
-              </button>
-            </div>
+        {hotelsData.map((hotel: {id: string; name?: string; description?: string | { es: string; en: string }; mapsUrl?: string}, index: number) => {
+          const descriptionEs = typeof hotel.description === 'object' ? hotel.description?.es || '' : hotel.description || '';
+          const descriptionEn = typeof hotel.description === 'object' ? hotel.description?.en || '' : '';
+          
+          return (
+            <div key={hotel.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                <h3 className="text-base font-medium text-gray-800">Hotel #{index + 1}</h3>
+                <button
+                  onClick={() => removeHotel(index)}
+                  className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                >
+                  Eliminar
+                </button>
+              </div>
 
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre del Hotel
-                </label>
-                <input
-                  type="text"
-                  value={hotel.name}
-                  onChange={(e) => updateHotel(index, 'name', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  placeholder="Hotel Boutique Plaza"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Descripción
-                </label>
-                <textarea
-                  rows={3}
-                  value={hotel.description}
-                  onChange={(e) => updateHotel(index, 'description', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  placeholder="Descripción del hotel, servicios, ubicación..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  URL de Google Maps
-                </label>
-                <input
-                  type="url"
-                  value={hotel.mapsUrl}
-                  onChange={(e) => updateHotel(index, 'mapsUrl', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  placeholder="https://maps.google.com/..."
-                />
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre del Hotel
+                  </label>
+                  <input
+                    type="text"
+                    value={hotel.name || ''}
+                    onChange={(e) => updateHotel(index, 'name', e.target.value)}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="Hotel Boutique Plaza"
+                  />
+                </div>
+                
+                {/* Descripción en Español */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Descripción (Español)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={descriptionEs}
+                    onChange={(e) => updateHotel(index, 'description', { 
+                      es: e.target.value, 
+                      en: descriptionEn 
+                    })}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="Descripción del hotel en español..."
+                  />
+                </div>
+                
+                {/* Descripción en Inglés */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Descripción (English)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={descriptionEn}
+                    onChange={(e) => updateHotel(index, 'description', { 
+                      es: descriptionEs, 
+                      en: e.target.value 
+                    })}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="Hotel description in English..."
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    URL de Google Maps
+                  </label>
+                  <input
+                    type="url"
+                    value={hotel.mapsUrl || ''}
+                    onChange={(e) => updateHotel(index, 'mapsUrl', e.target.value)}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="https://maps.google.com/..."
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {hotelsData.length === 0 && (
           <div className="text-center py-8 text-gray-500">
@@ -1202,7 +1362,7 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
     const newPlace = {
       id: `place-${Date.now()}`,
       name: '',
-      description: '',
+      description: { es: '', en: '' },
       mapsUrl: ''
     };
     const newPlacesData = [...placesData, newPlace];
@@ -1234,58 +1394,86 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
       </div>
 
       <div className="space-y-4">
-        {placesData.map((place: {id: string; name?: string; description?: string; mapsUrl?: string}, index: number) => (
-          <div key={place.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-              <h3 className="text-base font-medium text-gray-800">Lugar #{index + 1}</h3>
-              <button
-                onClick={() => removePlace(index)}
-                className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
-              >
-                Eliminar
-              </button>
-            </div>
+        {placesData.map((place: {id: string; name?: string; description?: string | { es: string; en: string }; mapsUrl?: string}, index: number) => {
+          const descriptionEs = typeof place.description === 'object' ? place.description?.es || '' : place.description || '';
+          const descriptionEn = typeof place.description === 'object' ? place.description?.en || '' : '';
+          
+          return (
+            <div key={place.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                <h3 className="text-base font-medium text-gray-800">Lugar #{index + 1}</h3>
+                <button
+                  onClick={() => removePlace(index)}
+                  className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                >
+                  Eliminar
+                </button>
+              </div>
 
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre del Lugar
-                </label>
-                <input
-                  type="text"
-                  value={place.name}
-                  onChange={(e) => updatePlace(index, 'name', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  placeholder="Restaurante La Terraza"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Descripción
-                </label>
-                <textarea
-                  rows={3}
-                  value={place.description}
-                  onChange={(e) => updatePlace(index, 'description', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  placeholder="Descripción del lugar, por qué lo recomiendan..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  URL de Google Maps
-                </label>
-                <input
-                  type="url"
-                  value={place.mapsUrl}
-                  onChange={(e) => updatePlace(index, 'mapsUrl', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  placeholder="https://maps.google.com/..."
-                />
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre del Lugar
+                  </label>
+                  <input
+                    type="text"
+                    value={place.name || ''}
+                    onChange={(e) => updatePlace(index, 'name', e.target.value)}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="Restaurante La Terraza"
+                  />
+                </div>
+                
+                {/* Descripción en Español */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Descripción (Español)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={descriptionEs}
+                    onChange={(e) => updatePlace(index, 'description', { 
+                      es: e.target.value, 
+                      en: descriptionEn 
+                    })}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="Descripción del lugar en español..."
+                  />
+                </div>
+                
+                {/* Descripción en Inglés */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Descripción (English)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={descriptionEn}
+                    onChange={(e) => updatePlace(index, 'description', { 
+                      es: descriptionEs, 
+                      en: e.target.value 
+                    })}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="Place description in English..."
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    URL de Google Maps
+                  </label>
+                  <input
+                    type="url"
+                    value={place.mapsUrl || ''}
+                    onChange={(e) => updatePlace(index, 'mapsUrl', e.target.value)}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="https://maps.google.com/..."
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {placesData.length === 0 && (
           <div className="text-center py-8 text-gray-500">
@@ -1300,14 +1488,14 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
 
 function GiftsSection({ data, onChange }: SectionProps) {
   const giftRegistryData = (data && typeof data === 'object' && 'giftRegistry' in data && data.giftRegistry) 
-    ? data.giftRegistry as {enabled: boolean; message: string; registries: unknown[]; bankAccount: unknown}
-    : { enabled: false, message: '', registries: [], bankAccount: null };
+    ? data.giftRegistry as {enabled: boolean; message: string | { es: string; en: string }; registries: unknown[]; bankAccount: unknown}
+    : { enabled: false, message: { es: '', en: '' }, registries: [], bankAccount: null };
 
   const addRegistry = () => {
     const newRegistry = {
       id: `registry-${Date.now()}`,
       name: '',
-      description: '',
+      description: { es: '', en: '' },
       url: ''
     };
     const newRegistries = [...giftRegistryData.registries, newRegistry];
@@ -1339,7 +1527,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
         accountName: '',
         accountNumber: '',
         clabe: '',
-        description: ''
+        description: { es: '', en: '' }
       });
     } else {
       onChange('giftRegistry.bankAccount', null);
@@ -1367,18 +1555,38 @@ function GiftsSection({ data, onChange }: SectionProps) {
 
         {giftRegistryData.enabled && (
           <>
-            {/* Mensaje */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mensaje para los invitados
-              </label>
-              <textarea
-                rows={3}
-                value={giftRegistryData.message}
-                onChange={(e) => onChange('giftRegistry.message', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                placeholder="Tu presencia es nuestro regalo más valioso, pero si deseas hacernos un obsequio, hemos preparado algunas opciones:"
-              />
+            {/* Mensaje bilingüe */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mensaje para los invitados (Español)
+                </label>
+                <textarea
+                  rows={3}
+                  value={typeof giftRegistryData.message === 'object' ? giftRegistryData.message?.es || '' : giftRegistryData.message || ''}
+                  onChange={(e) => {
+                    const currentMessage = typeof giftRegistryData.message === 'object' ? giftRegistryData.message : { es: giftRegistryData.message || '', en: '' };
+                    onChange('giftRegistry.message', { ...currentMessage, es: e.target.value });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                  placeholder="Tu presencia es nuestro regalo más valioso, pero si deseas hacernos un obsequio, hemos preparado algunas opciones:"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mensaje para los invitados (English)
+                </label>
+                <textarea
+                  rows={3}
+                  value={typeof giftRegistryData.message === 'object' ? giftRegistryData.message?.en || '' : ''}
+                  onChange={(e) => {
+                    const currentMessage = typeof giftRegistryData.message === 'object' ? giftRegistryData.message : { es: giftRegistryData.message || '', en: '' };
+                    onChange('giftRegistry.message', { ...currentMessage, en: e.target.value });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                  placeholder="Your presence is our most valuable gift, but if you wish to give us a present, we have prepared some options:"
+                />
+              </div>
             </div>
 
             {/* Lista de registros */}
@@ -1394,58 +1602,85 @@ function GiftsSection({ data, onChange }: SectionProps) {
               </div>
 
               <div className="space-y-4">
-                {(giftRegistryData.registries as {id: string; name?: string; url?: string; description?: string}[]).map((registry, index: number) => (
-                  <div key={registry.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-                      <h4 className="text-base font-medium text-gray-800">Tienda #{index + 1}</h4>
-                      <button
-                        onClick={() => removeRegistry(index)}
-                        className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
-                      >
-                        Eliminar
-                      </button>
-                    </div>
+                {(giftRegistryData.registries as {id: string; name?: string; url?: string; description?: string | { es: string; en: string }}[]).map((registry, index: number) => {
+                  const descriptionEs = typeof registry.description === 'object' ? registry.description?.es || '' : registry.description || '';
+                  const descriptionEn = typeof registry.description === 'object' ? registry.description?.en || '' : '';
+                  
+                  return (
+                    <div key={registry.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                        <h4 className="text-base font-medium text-gray-800">Tienda #{index + 1}</h4>
+                        <button
+                          onClick={() => removeRegistry(index)}
+                          className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Nombre de la Tienda
-                        </label>
-                        <input
-                          type="text"
-                          value={registry.name}
-                          onChange={(e) => updateRegistry(index, 'name', e.target.value)}
-                          className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                          placeholder="Liverpool, El Palacio de Hierro, Amazon..."
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          URL de la Mesa de Regalos
-                        </label>
-                        <input
-                          type="url"
-                          value={registry.url}
-                          onChange={(e) => updateRegistry(index, 'url', e.target.value)}
-                          className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                          placeholder="https://mesaderegalos.liverpool.com.mx/..."
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Descripción
-                        </label>
-                        <textarea
-                          rows={2}
-                          value={registry.description}
-                          onChange={(e) => updateRegistry(index, 'description', e.target.value)}
-                          className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                          placeholder="Mesa de regalos con todo lo que necesitamos para nuestro hogar"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Nombre de la Tienda
+                          </label>
+                          <input
+                            type="text"
+                            value={registry.name || ''}
+                            onChange={(e) => updateRegistry(index, 'name', e.target.value)}
+                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                            placeholder="Liverpool, El Palacio de Hierro, Amazon..."
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            URL de la Mesa de Regalos
+                          </label>
+                          <input
+                            type="url"
+                            value={registry.url || ''}
+                            onChange={(e) => updateRegistry(index, 'url', e.target.value)}
+                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                            placeholder="https://mesaderegalos.liverpool.com.mx/..."
+                          />
+                        </div>
+                        
+                        {/* Descripción en Español */}
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Descripción (Español)
+                          </label>
+                          <textarea
+                            rows={2}
+                            value={descriptionEs}
+                            onChange={(e) => updateRegistry(index, 'description', { 
+                              es: e.target.value, 
+                              en: descriptionEn 
+                            })}
+                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                            placeholder="Mesa de regalos con todo lo que necesitamos para nuestro hogar"
+                          />
+                        </div>
+                        
+                        {/* Descripción en Inglés */}
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Descripción (English)
+                          </label>
+                          <textarea
+                            rows={2}
+                            value={descriptionEn}
+                            onChange={(e) => updateRegistry(index, 'description', { 
+                              es: descriptionEs, 
+                              en: e.target.value 
+                            })}
+                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                            placeholder="Gift registry with everything we need for our home"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {giftRegistryData.registries.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
@@ -1525,16 +1760,47 @@ function GiftsSection({ data, onChange }: SectionProps) {
                         maxLength={18}
                       />
                     </div>
+                    {/* Descripción en Español */}
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Descripción
+                        Descripción (Español)
                       </label>
                       <textarea
                         rows={2}
-                        value={getSafeValue(giftRegistryData.bankAccount as Record<string, unknown>, 'description')}
-                        onChange={(e) => updateBankAccount('description', e.target.value)}
+                        value={(() => {
+                          const bankAccount = giftRegistryData.bankAccount as Record<string, unknown>;
+                          const description = bankAccount?.description;
+                          return typeof description === 'object' && description ? (description as {es: string; en: string}).es || '' : typeof description === 'string' ? description : '';
+                        })()}
+                        onChange={(e) => {
+                          const bankAccount = giftRegistryData.bankAccount as Record<string, unknown>;
+                          const currentDescription = typeof bankAccount?.description === 'object' ? bankAccount.description as {es: string; en: string} : { es: bankAccount?.description as string || '', en: '' };
+                          updateBankAccount('description', { ...currentDescription, es: e.target.value });
+                        }}
                         className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                         placeholder="También puedes contribuir directamente a nuestra cuenta bancaria"
+                      />
+                    </div>
+                    
+                    {/* Descripción en Inglés */}
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Descripción (English)
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={(() => {
+                          const bankAccount = giftRegistryData.bankAccount as Record<string, unknown>;
+                          const description = bankAccount?.description;
+                          return typeof description === 'object' && description ? (description as {es: string; en: string}).en || '' : '';
+                        })()}
+                        onChange={(e) => {
+                          const bankAccount = giftRegistryData.bankAccount as Record<string, unknown>;
+                          const currentDescription = typeof bankAccount?.description === 'object' ? bankAccount.description as {es: string; en: string} : { es: bankAccount?.description as string || '', en: '' };
+                          updateBankAccount('description', { ...currentDescription, en: e.target.value });
+                        }}
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        placeholder="You can also contribute directly to our bank account"
                       />
                     </div>
                   </div>
@@ -1659,8 +1925,8 @@ function SocialSection({ data, onChange }: SectionProps) {
 
 function SettingsSection({ data, onChange }: SectionProps) {
   const adultOnlyData = (data && typeof data === 'object' && 'adultOnlyEvent' in data && data.adultOnlyEvent) 
-    ? data.adultOnlyEvent as {enabled: boolean; message: string}
-    : { enabled: false, message: '' };
+    ? data.adultOnlyEvent as {enabled: boolean; message: string | { es: string; en: string }}
+    : { enabled: false, message: { es: '', en: '' } };
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -1684,18 +1950,42 @@ function SettingsSection({ data, onChange }: SectionProps) {
         </div>
 
         {adultOnlyData.enabled && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Mensaje para los invitados
-            </label>
-            <textarea
-              rows={4}
-              value={adultOnlyData.message}
-              onChange={(e) => onChange('adultOnlyEvent.message', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-              placeholder="Aunque adoramos a los pequeños de la familia, hemos decidido que nuestra celebración sea solo para adultos. Esperamos que puedan acompañarnos en esta noche especial."
-            />
-            <p className="text-sm text-gray-500 mt-2">
+          <div className="space-y-4">
+            {/* Mensaje en Español */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mensaje para los invitados (Español)
+              </label>
+              <textarea
+                rows={4}
+                value={typeof adultOnlyData.message === 'object' ? adultOnlyData.message?.es || '' : adultOnlyData.message || ''}
+                onChange={(e) => {
+                  const currentMessage = typeof adultOnlyData.message === 'object' ? adultOnlyData.message : { es: adultOnlyData.message || '', en: '' };
+                  onChange('adultOnlyEvent.message', { ...currentMessage, es: e.target.value });
+                }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                placeholder="Aunque adoramos a los pequeños de la familia, hemos decidido que nuestra celebración sea solo para adultos. Esperamos que puedan acompañarnos en esta noche especial."
+              />
+            </div>
+            
+            {/* Mensaje en Inglés */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mensaje para los invitados (English)
+              </label>
+              <textarea
+                rows={4}
+                value={typeof adultOnlyData.message === 'object' ? adultOnlyData.message?.en || '' : ''}
+                onChange={(e) => {
+                  const currentMessage = typeof adultOnlyData.message === 'object' ? adultOnlyData.message : { es: adultOnlyData.message || '', en: '' };
+                  onChange('adultOnlyEvent.message', { ...currentMessage, en: e.target.value });
+                }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                placeholder="Although we adore the little ones in our family, we have decided that our celebration will be adults only. We hope you can join us for this special night."
+              />
+            </div>
+            
+            <p className="text-sm text-gray-500">
               Este mensaje aparecerá en la invitación para informar a los invitados sobre la política de solo adultos
             </p>
           </div>

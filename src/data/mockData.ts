@@ -1689,7 +1689,7 @@ export const mockWeddingFriendsTest: WeddingData = {
   },
   music: {
     enabled: true,
-    fileName: 'test01.mp3', // Archivo MP3 local en /assets/music/
+    fileName: 'default.mp3', // Archivo MP3 local en /assets/music/
     spotifyTrackId: '0tgVpDi06FyKpA1z0VMD4v', // "Perfect"n by Ed Sheeran
     title: 'Perfect',
     artist: 'Ed Sheeran',

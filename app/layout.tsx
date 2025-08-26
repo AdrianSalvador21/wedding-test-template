@@ -17,7 +17,7 @@ function DataInitializer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Solo cargar datos de boda para rutas específicas de wedding, no para la landing
     if (pathname === '/en') {
-      dispatch(fetchWeddingData('maria-carlos-2025'));
+      dispatch(fetchWeddingData({ weddingId: 'maria-carlos-2025' }));
     }
     // No cargar datos para '/' ya que es la landing page
   }, [dispatch, pathname]);

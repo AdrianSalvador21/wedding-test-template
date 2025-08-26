@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://invyta.com'),
+  metadataBase: new URL('https://invyta.me'),
   alternates: {
     canonical: '/',
     languages: {
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Invyta - Invitaciones Digitales Elegantes para Bodas',
     description: 'Crea invitaciones digitales únicas y elegantes para tu boda. Diseños personalizables, gestión de invitados y RSVP en tiempo real.',
-    url: 'https://invyta.com',
+    url: 'https://invyta.me',
     siteName: 'Invyta',
     images: [
       {

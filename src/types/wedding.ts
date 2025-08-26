@@ -162,12 +162,15 @@ export interface RelationshipStats {
 
 // Tipos para hospedaje recomendado
 export interface AccommodationOption {
+  id?: string;
   name: string;
-  distance: string;
-  price: string;
+  distance?: string;
+  price?: string;
   phone?: string;
   website?: string;
   amenities?: string[];
+  description?: string | { es: string; en: string }; // Campo bilingüe
+  mapsUrl?: string;
 }
 
 // Tipos para el transporte
@@ -188,7 +191,7 @@ export interface GiftRegistryItem {
   id: string;
   name: string;
   url: string;
-  description?: string;
+  description?: string | { es: string; en: string }; // Campo bilingüe
   logo?: string;
 }
 
@@ -197,12 +200,12 @@ export interface BankAccountInfo {
   accountName: string;
   accountNumber: string;
   clabe?: string;
-  description?: string;
+  description?: string | { es: string; en: string }; // Campo bilingüe
 }
 
 export interface GiftRegistry {
   enabled: boolean;
-  message?: string;
+  message?: string | { es: string; en: string }; // Campo bilingüe
   registries: GiftRegistryItem[];
   bankAccount?: BankAccountInfo;
 }
@@ -210,7 +213,7 @@ export interface GiftRegistry {
 // Tipos para evento solo adultos
 export interface AdultOnlyEvent {
   enabled: boolean;
-  message?: string;
+  message?: string | { es: string; en: string }; // Campo bilingüe
 }
 
 // Configuración de música de fondo
@@ -233,12 +236,13 @@ export interface RecommendedPlace {
   id: string;
   name: string;
   category: 'hospedaje' | 'restaurante' | 'atraccion' | 'transporte';
-  description: string;
-  address: string;
+  description: string | { es: string; en: string }; // Campo bilingüe
+  address?: string;
   distance?: string; // ej: "2.5 km del evento"
   priceRange?: '$' | '$$' | '$$$';
   phone?: string;
   website?: string;
+  mapsUrl?: string;
   coordinates?: {
     lat: number;
     lng: number;

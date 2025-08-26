@@ -10,6 +10,7 @@ interface MusicPlayerProps {
 }
 
 export default function MusicPlayer({ music, className = '' }: MusicPlayerProps) {
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -97,6 +98,10 @@ export default function MusicPlayer({ music, className = '' }: MusicPlayerProps)
       
       // Iniciar reproducción automáticamente después de la primera interacción
       if (music.autoplay && audioRef.current) {
+        // Establecer tiempo de inicio si está configurado
+        if (music.startTime && music.startTime > 0) {
+          audioRef.current.currentTime = music.startTime;
+        }
         audioRef.current.play().then(() => {
           setIsPlaying(true);
         }).catch((error) => {
@@ -141,6 +146,11 @@ export default function MusicPlayer({ music, className = '' }: MusicPlayerProps)
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
+      // Establecer tiempo de inicio si está configurado y es la primera reproducción
+      if (music.startTime && music.startTime > 0 && audioRef.current.currentTime === 0) {
+        audioRef.current.currentTime = music.startTime;
+        console.log('🎵 Estableciendo tiempo de inicio:', music.startTime, 'segundos');
+      }
       audioRef.current.play().then(() => {
         setIsPlaying(true);
       }).catch((error) => {
@@ -149,8 +159,8 @@ export default function MusicPlayer({ music, className = '' }: MusicPlayerProps)
     }
   };
 
-  // Solo mostrar si la música está habilitada
-  if (!music.enabled || !music.spotifyTrackId) {
+  // Solo mostrar si la música está habilitada y tiene fuente (archivo local o Spotify)
+  if (!music.enabled || (!music.fileName && !music.spotifyTrackId)) {
     return null;
   }
 

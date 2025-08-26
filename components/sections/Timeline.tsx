@@ -27,8 +27,13 @@ const Timeline = () => {
     return iconPool[index % iconPool.length];
   };
 
-  // Datos dinámicos con fallback
-  const events = weddingData?.timeline?.length ? weddingData.timeline.map((event, index) => ({
+  // No mostrar si no hay eventos configurados
+  if (!weddingData?.timeline?.length) {
+    return null;
+  }
+
+  // Datos dinámicos
+  const events = weddingData.timeline.map((event, index) => ({
     time: event.time,
     title: typeof event.title === 'object' && event.title
       ? (event.title[currentLocale as 'es' | 'en'] || event.title.es || '')
@@ -37,44 +42,7 @@ const Timeline = () => {
       ? (event.description[currentLocale as 'es' | 'en'] || event.description.es || '')
       : (event.description as unknown as string || ''),
     icon: getIconByIndex(index)
-  })) : [
-    {
-      time: t('events.arrival.time'),
-      title: t('events.arrival.title'),
-      description: t('events.arrival.description'),
-      icon: getIconByIndex(0)
-    },
-    {
-      time: t('events.ceremony.time'),
-      title: t('events.ceremony.title'),
-      description: t('events.ceremony.description'),
-      icon: getIconByIndex(1)
-    },
-    {
-      time: t('events.photos.time'),
-      title: t('events.photos.title'),
-      description: t('events.photos.description'),
-      icon: getIconByIndex(2)
-    },
-    {
-      time: t('events.cocktail.time'),
-      title: t('events.cocktail.title'),
-      description: t('events.cocktail.description'),
-      icon: getIconByIndex(3)
-    },
-    {
-      time: t('events.reception.time'),
-      title: t('events.reception.title'),
-      description: t('events.reception.description'),
-      icon: getIconByIndex(4)
-    },
-    {
-      time: t('events.party.time'),
-      title: t('events.party.title'),
-      description: t('events.party.description'),
-      icon: getIconByIndex(5)
-    }
-  ];
+  }));
 
   // Loading state
   if (!isLoaded) {

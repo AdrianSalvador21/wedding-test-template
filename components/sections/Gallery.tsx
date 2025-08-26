@@ -9,10 +9,12 @@ import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
+import { useWeddingImages } from '../../hooks/useWeddingImages';
 
 const Gallery = () => {
   const { t } = useTranslations('gallery');
   const weddingData = useAppSelector(selectCurrentWedding);
+  const { galleryImages } = useWeddingImages(weddingData?.id);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
@@ -22,42 +24,15 @@ const Gallery = () => {
     threshold: 0.2
   });
 
-  // Datos dinámicos con fallbacks
-  const photos = weddingData?.gallery?.length ? weddingData.gallery.map(img => ({
-    src: img.url,
-    alt: img.alt
-  })) : [
-    {
-      id: 1,
-      src: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      alt: "Momento romántico de la pareja"
-    },
-    {
-      id: 2,
-      src: "https://images.unsplash.com/photo-1470219556762-1771e7f9427d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      alt: "Preparativos de la boda"
-    },
-    {
-      id: 3,
-      src: "https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      alt: "Ceremonia de boda"
-    },
-    {
-      id: 4,
-      src: "https://images.unsplash.com/photo-1525258370847-a2d17115dbaa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      alt: "Anillos de matrimonio"
-    },
-    {
-      id: 5,
-      src: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      alt: "Celebración de boda"
-    },
-    {
-      id: 6,
-      src: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      alt: "Recepción de boda"
-    }
-  ];
+  // Usar imágenes dinámicas de la galería
+  const photos = galleryImages.map((src, index) => ({
+    id: index + 1,
+    src: src,
+    alt: `Foto ${index + 1} de la boda`
+  }));
+
+  // Si no hay imágenes, renderizar null pero después de todos los hooks
+  const shouldRender = photos.length > 0;
 
   const hashtag = weddingData?.couple.hashtag || t('hashtag');
 
@@ -135,7 +110,7 @@ const Gallery = () => {
     }
   };
 
-  return (
+  const galleryContent = (
     <section 
       ref={ref} 
       className="bg-white relative overflow-hidden"
@@ -265,6 +240,13 @@ const Gallery = () => {
       </div>
     </section>
   );
+
+  // No renderizar si no hay imágenes
+  if (!shouldRender) {
+    return null;
+  }
+
+  return galleryContent;
 };
 
 export default Gallery; 

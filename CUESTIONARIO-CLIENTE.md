@@ -657,4 +657,4 @@ Antes de enviar, verifica que hayas completado:
 
 **¡Gracias por confiar en Invyta para su día especial! 💕**
 
-*Una vez completado, envía este cuestionario junto con las fotos a: [tu-email@invyta.com]*
+*Una vez completado, envía este cuestionario junto con las fotos a: [tu-email@invyta.me]*

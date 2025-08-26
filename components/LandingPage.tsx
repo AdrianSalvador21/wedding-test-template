@@ -500,7 +500,7 @@ const LandingPage = () => {
               
               <div className="grid md:grid-cols-1 gap-6 max-w-3xl mx-auto">
                 <Link 
-                  href="/es/wedding/maria-carlos-2025?guest=bmYT3Ze4piagnrKaoey2"
+                  href="/es/wedding/maria-carlos-2025"
                   className="group block bg-amber-600 text-white p-6 rounded-2xl hover:bg-amber-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                 >
                   <div className="text-center">
@@ -510,7 +510,7 @@ const LandingPage = () => {
                 </Link>
 
                 {/*<Link 
-                  href="/en/wedding/maria-carlos-2025?guest=bmYT3Ze4piagnrKaoey2"
+                  href="/en/wedding/maria-carlos-2025"
                   className="group block bg-white border-2 border-stone-200 text-stone-800 p-6 rounded-2xl hover:border-stone-300 hover:shadow-lg transition-all duration-300"
                 >
                   <div className="text-center">

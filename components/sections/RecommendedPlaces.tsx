@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { MapPin, ExternalLink } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { openExternalLink } from '@/lib/utils';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
@@ -13,13 +14,48 @@ const RecommendedPlaces = () => {
   const { t } = useTranslations('recommendedPlaces');
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
+  const params = useParams();
+  const currentLocale = params.locale as string;
 
-  // Si no está habilitado o no hay datos, no mostrar nada
-  if (!weddingData?.recommendedPlaces?.enabled || !weddingData.recommendedPlaces.places.length) {
+  // Debug: mostrar estructura de datos (temporal)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🗺️ RecommendedPlaces Debug:', {
+      weddingData: weddingData?.id,
+      recommendedPlaces: weddingData?.recommendedPlaces,
+      accommodationRecommendedPlaces: weddingData?.accommodation?.recommendedPlaces
+    });
+  }
+
+  // Manejar diferentes estructuras de datos - priorizar donde hay datos reales
+  let places: RecommendedPlace[] = [];
+  
+  // Prioridad 1: accommodation.recommendedPlaces (estructura actual del admin)
+  if (weddingData?.accommodation?.recommendedPlaces?.length) {
+    places = weddingData.accommodation.recommendedPlaces as RecommendedPlace[];
+    if (process.env.NODE_ENV === 'development') console.log('🗺️ Usando datos de accommodation.recommendedPlaces');
+  }
+  // Prioridad 2: recommendedPlaces como array directo (Firebase)
+  else if (Array.isArray(weddingData?.recommendedPlaces) && weddingData.recommendedPlaces.length > 0) {
+    places = weddingData.recommendedPlaces as RecommendedPlace[];
+    if (process.env.NODE_ENV === 'development') console.log('🗺️ Usando datos de recommendedPlaces (array)');
+  }
+  // Prioridad 3: recommendedPlaces con estructura completa
+  else if (weddingData?.recommendedPlaces && 
+           typeof weddingData.recommendedPlaces === 'object' && 
+           'places' in weddingData.recommendedPlaces &&
+           weddingData.recommendedPlaces.enabled &&
+           weddingData.recommendedPlaces.places?.length) {
+    places = weddingData.recommendedPlaces.places;
+    if (process.env.NODE_ENV === 'development') console.log('🗺️ Usando datos de recommendedPlaces.places');
+  }
+
+  // Si no hay lugares, no mostrar
+  if (!places.length) {
+    if (process.env.NODE_ENV === 'development') console.log('🗺️ No hay lugares para mostrar');
     return null;
   }
 
-  const { places } = weddingData.recommendedPlaces;
+  if (process.env.NODE_ENV === 'development') console.log('🗺️ Lugares encontrados:', places.length, places);
 
   // Generar URL de Maps
   const getMapsUrl = (place: RecommendedPlace) => {
@@ -71,7 +107,9 @@ const RecommendedPlaces = () => {
 
                 {/* Descripción */}
                 <p className="text-stone-600 font-body text-sm leading-relaxed mb-6">
-                  {place.description}
+                  {typeof place.description === 'object' 
+                    ? (place.description[currentLocale as 'es' | 'en'] || place.description.es)
+                    : place.description}
                 </p>
 
                 {/* Botón de Maps */}

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { Heart, Instagram, Facebook, Mail, Phone } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
@@ -163,31 +164,67 @@ const Footer = () => {
         <div className="max-w-4xl mx-auto">
           
           {/* Contenido principal minimalista */}
-          <div className="text-center mb-12 animate-fade-in-up animation-delay-200">
-            <h3 className="text-2xl font-heading font-light mb-4">
+          <motion.div 
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <motion.h3 
+              className="text-2xl font-heading font-light mb-4"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            >
               {brideName} & {groomName}
-            </h3>
+            </motion.h3>
             
-            <div className="flex items-center justify-center space-x-4 mb-6">
+            <motion.div 
+              className="flex items-center justify-center space-x-4 mb-6"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+            >
               <div className={`w-12 h-px ${isLuxuryTheme ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
               <Heart className={`w-5 h-5 ${footerAccentClass}`} />
               <div className={`w-12 h-px ${isLuxuryTheme ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
-            </div>
+            </motion.div>
 
-            <p className="text-white/80 font-body mb-8 max-w-md mx-auto italic">
+            <motion.p 
+              className="text-white/80 font-body mb-8 max-w-md mx-auto italic"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+            >
               {coupleQuote}
-            </p>
+            </motion.p>
 
-            <p className="text-white/90 text-lg font-body font-medium">
+            <motion.p 
+              className="text-white/90 text-lg font-body font-medium"
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
+            >
               {t('cta')}
-            </p>
+            </motion.p>
 
             {hashtag && (
-              <p className={`${footerAccentClass} text-lg font-body font-medium mt-4`}>
+              <motion.p 
+                className={`${footerAccentClass} text-lg font-body font-medium mt-4`}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
+              >
                 {hashtag}
-              </p>
+              </motion.p>
             )}
-          </div>
+          </motion.div>
 
           {/* Información de contacto minimalista */}
           <div className="grid md:grid-cols-3 gap-8 text-center mb-12 animation-delay-400">

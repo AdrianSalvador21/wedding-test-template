@@ -14,9 +14,9 @@ const initialState: WeddingState = {
 // Acciones asíncronas (thunks)
 export const fetchWeddingData = createAsyncThunk(
   'wedding/fetchWeddingData',
-  async (weddingId: string, { rejectWithValue }) => {
+  async ({ weddingId, guestId }: { weddingId: string; guestId?: string }, { rejectWithValue }) => {
     try {
-      const response = await weddingApi.getById(weddingId);
+      const response = await weddingApi.getById(weddingId, guestId);
       
       if (!response.success) {
         return rejectWithValue(response.error || 'Error al obtener los datos de la boda');
