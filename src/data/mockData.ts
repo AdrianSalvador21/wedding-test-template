@@ -23,7 +23,7 @@ export const mockWeddingMariaCarlos: WeddingData = {
       facebook: 'carlos.rodriguez'
     },
     coupleEmail: 'maria.carlos@email.com',
-    hashtag: '#Núriban&Juan2025',
+    hashtag: '#María&Juan2025',
     story: {
       es: 'Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.',
       en: 'More than 6 years ago, destiny brought us together in a city café. What began as a casual conversation turned into shared laughter, intertwined dreams, and a love that grew day by day. Today, we want to celebrate this unique moment surrounded by the people we love most.'
@@ -1334,7 +1334,7 @@ export const mockWeddingFriendsTest: WeddingData = {
   id: 'friends-test',
   couple: {
     bride: {
-      name: 'Núriban',
+      name: 'María',
       fullName: 'María Elena González',
       phone: '+52 55 1234-5678',
       email: 'maria@email.com',
@@ -1350,7 +1350,7 @@ export const mockWeddingFriendsTest: WeddingData = {
       facebook: 'carlos.rodriguez'
     },
     coupleEmail: 'maria.carlos@email.com',
-    hashtag: '#NúribanYJuan2025',
+    hashtag: '#MaríaYJuan2025',
     story: {
       es: 'Hace más de 6 años, el destino nos unió en una cafetería de la ciudad. Lo que comenzó como una conversación casual se convirtió en risas compartidas, sueños entrelazados y un amor que creció día a día. Hoy, queremos celebrar este momento único rodeados de las personas que más queremos.',
       en: 'More than 6 years ago, destiny brought us together in a city café. What began as a casual conversation turned into shared laughter, intertwined dreams, and a love that grew day by day. Today, we want to celebrate this unique moment surrounded by the people we love most.'

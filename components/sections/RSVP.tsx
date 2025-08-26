@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, ChevronDown, AlertCircle } from 'lucide-react';
+import { Send, ChevronDown } from 'lucide-react';
 import { useSearchParams, useParams } from 'next/navigation';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
@@ -56,7 +56,7 @@ const RSVPContent = () => {
   useEffect(() => {
     const loadExistingRSVP = async () => {
       if (!guestId) {
-        setError('No se proporcionó un ID de invitado válido en la URL (?guest=tu-id)');
+        setError('Not available');
         setIsLoading(false);
         return;
       }
@@ -303,12 +303,6 @@ const RSVPContent = () => {
 
           <div className="max-w-md mx-auto text-center">
             <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <AlertCircle className="w-8 h-8 text-red-600" />
-              </div>
-              <h3 className="text-xl font-heading font-semibold text-red-600 mb-4">
-                Error
-              </h3>
               <p className="text-text font-body mb-6">
                 {error}
               </p>
