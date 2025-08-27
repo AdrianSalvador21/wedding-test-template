@@ -194,6 +194,7 @@
       "message": "Mensaje especial",
       "messagePlaceholder": "",
       "messageForCouple": "Mensaje para los novios",
+      "guestWelcome": "¡Hola {name}! Confirma tu asistencia",
       "selectOption": "Por favor selecciona una opción",
       "submit": "Confirmar Asistencia",
       "submitting": "Enviando..."
