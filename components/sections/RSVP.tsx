@@ -14,7 +14,7 @@ import { useThemePatterns } from '../../lib/theme-context';
 import { RSVPIcon } from '../icons';
 
 import { guestService } from '../../services/guestService';
-import { FirebaseRSVP } from '../../src/types/wedding';
+import { FirebaseRSVP, FirebaseGuest } from '../../src/types/wedding';
 
 const RSVPContent = () => {
   const { t } = useTranslations('rsvp');
@@ -28,6 +28,7 @@ const RSVPContent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [existingRSVP, setExistingRSVP] = useState<FirebaseRSVP | null>(null);
+  const [guestInfo, setGuestInfo] = useState<FirebaseGuest | null>(null);
 
   // Obtener parámetros de la URL
   const params = useParams();
@@ -68,6 +69,10 @@ const RSVPContent = () => {
         // Buscar el invitado y verificar si ya tiene confirmación
         const guest = await guestService.getGuestByGuestId(guestId, weddingId);
         
+        if (guest) {
+          setGuestInfo(guest); // Guardar información del invitado
+        }
+        
         if (guest && guest.rsvpConfirmation) {
           // Convertir la confirmación del invitado al formato RSVP para compatibilidad
           const rsvpData: FirebaseRSVP = {
@@ -100,10 +105,10 @@ const RSVPContent = () => {
     loadExistingRSVP();
   }, [guestId, weddingId]);
 
-  // Schema de validación actualizado
+  // Schema de validación dinámico - si el invitado existe, no requerir nombre ni email
   const rsvpSchema = z.object({
-    name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-    email: z.string().email('Email inválido').optional().or(z.literal('')),
+    name: guestInfo ? z.string().optional() : z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+    email: guestInfo ? z.string().optional() : z.string().email('Email inválido').optional().or(z.literal('')),
     attendance: z.enum(['yes', 'no'], {
       required_error: t('form.selectOption')
     }),
@@ -153,25 +158,24 @@ const RSVPContent = () => {
     try {
       // Obtener información del invitado para el guestCount
       let guestCount = 1; // Default
-      let guestInfo = null; // Declarar fuera del try-catch
+      let targetGuest = guestInfo; // Usar la información ya cargada
       
-      try {
-        // Primero intentar por guestId
-        guestInfo = await guestService.getGuestByGuestId(guestId, weddingId);
-        
-        // Si no encuentra por guestId, buscar por nombre (fallback)
-        if (!guestInfo) {
-          const allGuests = await guestService.getWeddingGuests(weddingId);
-          guestInfo = allGuests.find(g => 
-            g.name.toLowerCase().trim() === data.name.toLowerCase().trim()
-          ) || null;
+      // Si no tenemos información del invitado cargada, intentar obtenerla
+      if (!targetGuest) {
+        try {
+          // Primero intentar por guestId
+          targetGuest = await guestService.getGuestByGuestId(guestId, weddingId);
+          
+          // Si no encuentra por guestId, buscar por nombre (fallback)
+          if (!targetGuest && data.name) {
+            const allGuests = await guestService.getWeddingGuests(weddingId);
+            targetGuest = allGuests.find(g => 
+              g.name.toLowerCase().trim() === data.name!.toLowerCase().trim()
+            ) || null;
+          }
+        } catch {
+          console.warn('No se pudo obtener información del invitado, usando guestCount por defecto');
         }
-        
-        if (guestInfo) {
-          guestCount = guestInfo.guestCount;
-        }
-      } catch {
-        console.warn('No se pudo obtener información del invitado, usando guestCount por defecto');
       }
 
       // Preparar datos de confirmación RSVP
@@ -197,14 +201,15 @@ const RSVPContent = () => {
       // Actualizar el invitado con la confirmación RSVP
       const rsvpStatus = data.attendance === 'yes' ? 'confirmed' : 'declined';
       
-      // Buscar el invitado para actualizar
-      let targetGuest = guestInfo;
+      if (targetGuest) {
+        guestCount = targetGuest.guestCount;
+      }
       
-      if (!targetGuest) {
+      if (!targetGuest && data.name) {
         // Si no encontramos el invitado por guestId, buscar por nombre
         const allGuests = await guestService.getWeddingGuests(weddingId);
         targetGuest = allGuests.find(g => 
-          g.name.toLowerCase().trim() === data.name.toLowerCase().trim()
+          g.name.toLowerCase().trim() === data.name!.toLowerCase().trim()
         ) || null;
       }
       
@@ -229,8 +234,8 @@ const RSVPContent = () => {
         id: 'guest-rsvp',
         weddingId,
         guestId,
-        guestName: data.name,
-        guestEmail: data.email || '',
+        guestName: targetGuest?.name || data.name || '',
+        guestEmail: data.email || targetGuest?.email || '',
         attending: data.attendance === 'yes',
         guestCount,
         message: data.message?.trim(),
@@ -388,35 +393,39 @@ const RSVPContent = () => {
             {/* Formulario */}
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                {/* Nombre */}
-                <div>
-                  <label className="block text-sm font-body font-medium text-dark mb-2">
-                    {t('form.name')} *
-                  </label>
-                  <input
-                    {...register('name')}
-                    type="text"
-                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-sm font-body mt-1">{errors.name.message}</p>
-                  )}
-                </div>
+                {/* Nombre - Solo mostrar si NO hay información del invitado */}
+                {!guestInfo && (
+                  <div>
+                    <label className="block text-sm font-body font-medium text-dark mb-2">
+                      {t('form.name')} *
+                    </label>
+                    <input
+                      {...register('name')}
+                      type="text"
+                      className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
+                    />
+                    {errors.name && (
+                      <p className="text-red-500 text-sm font-body mt-1">{errors.name.message}</p>
+                    )}
+                  </div>
+                )}
 
-                {/* Email */}
-                <div>
-                  <label className="block text-sm font-body font-medium text-dark mb-2">
-                    {t('form.email')} (opcional)
-                  </label>
-                  <input
-                    {...register('email')}
-                    type="email"
-                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-sm font-body mt-1">{errors.email.message}</p>
-                  )}
-                </div>
+                {/* Email - Solo mostrar si NO hay información del invitado */}
+                {!guestInfo && (
+                  <div>
+                    <label className="block text-sm font-body font-medium text-dark mb-2">
+                      {t('form.email')} (opcional)
+                    </label>
+                    <input
+                      {...register('email')}
+                      type="email"
+                      className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm font-body mt-1">{errors.email.message}</p>
+                    )}
+                  </div>
+                )}
 
                 {/* Asistencia */}
                 <div>

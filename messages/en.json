@@ -194,6 +194,7 @@
       "message": "Special message",
       "messagePlaceholder": "Share your good wishes...",
       "messageForCouple": "Message for the couple",
+      "guestWelcome": "Hello {name}! Please confirm your attendance",
       "selectOption": "Please select an option",
       "submit": "Confirm Attendance",
       "submitting": "Sending..."

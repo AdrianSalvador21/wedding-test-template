@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Plus, Edit2, Trash2, Save, X, Check, Link } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare } from 'lucide-react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../../lib/firebase';
 import { guestService } from '../../../../../services/guestService';
@@ -40,6 +40,8 @@ const AdminGuestsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copiedGuestId, setCopiedGuestId] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'confirmed' | 'declined' | 'pending'>('all');
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<string>('');
 
   const [formData, setFormData] = useState<GuestFormData>({
     name: '',
@@ -402,6 +404,16 @@ const AdminGuestsPage = () => {
     }
   };
 
+  const handleShowMessage = (message: string) => {
+    setSelectedMessage(message);
+    setShowMessageModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowMessageModal(false);
+    setSelectedMessage('');
+  };
+
   const filteredGuests = guests.filter(guest => {
     if (filterStatus === 'all') return true;
     return guest.rsvpStatus === filterStatus;
@@ -599,16 +611,27 @@ const AdminGuestsPage = () => {
                       {guest.guestCount}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        guest.rsvpStatus === 'confirmed' 
-                          ? 'bg-green-100 text-green-800'
-                          : guest.rsvpStatus === 'declined'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {guest.rsvpStatus === 'confirmed' ? 'Confirmado' : 
-                         guest.rsvpStatus === 'declined' ? 'Declinó' : 'Pendiente'}
-                      </span>
+                      <div className="flex items-center space-x-2">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          guest.rsvpStatus === 'confirmed' 
+                            ? 'bg-green-100 text-green-800'
+                            : guest.rsvpStatus === 'declined'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {guest.rsvpStatus === 'confirmed' ? 'Confirmado' : 
+                           guest.rsvpStatus === 'declined' ? 'Declinó' : 'Pendiente'}
+                        </span>
+                        {guest.rsvpConfirmation?.message && (
+                          <button
+                            onClick={() => handleShowMessage(guest.rsvpConfirmation!.message!)}
+                            className="p-1 hover:bg-blue-50 rounded-full transition-colors"
+                            title="Ver mensaje del invitado"
+                          >
+                            <MessageSquare className="h-4 w-4 text-blue-500 hover:text-blue-600" />
+                          </button>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {guest.language === 'es' ? 'Español' : 'English'}
@@ -810,6 +833,47 @@ const AdminGuestsPage = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para mostrar mensaje del invitado */}
+      {showMessageModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              {/* Header del modal */}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Mensaje del Invitado
+                </h3>
+                <button
+                  onClick={handleCloseModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              {/* Contenido del mensaje */}
+              <div className="mb-6">
+                <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500">
+                  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                    &ldquo;{selectedMessage}&rdquo;
+                  </p>
+                </div>
+              </div>
+              
+              {/* Footer del modal */}
+              <div className="flex justify-end">
+                <button
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
           </div>
         </div>
