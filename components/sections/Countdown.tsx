@@ -21,6 +21,8 @@ const Countdown = () => {
   const { t, currentLanguage } = useTranslations('countdown');
   const weddingData = useAppSelector(selectCurrentWedding);
   const { getBackgroundStyle } = useThemePatterns();
+
+  console.log('weddingData', weddingData);
   
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
@@ -252,9 +254,8 @@ const Countdown = () => {
               </p>
               {(() => {
                 // Lógica de prioridad: ceremonia religiosa > recepción > tiempo genérico
-                const ceremonyTime = weddingData?.event.ceremony?.time;
-                const receptionTime = weddingData?.event.reception?.time;
-                const displayTime = ceremonyTime || receptionTime || eventTime;
+                const displayTime = eventTime;
+                console.log('displayTime', displayTime);
                 
                 return displayTime ? (
                   <p className="text-base md:text-lg font-body font-light text-gray-600">

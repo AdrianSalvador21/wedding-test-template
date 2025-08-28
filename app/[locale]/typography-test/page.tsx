@@ -17,6 +17,7 @@ const TypographyTest = () => {
 
   const scriptFonts = [
     { name: 'Great Vibes', class: 'font-great-vibes', import: 'https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap', category: 'Script Sofisticada' },
+    { name: 'Allura', class: 'font-allura', import: 'https://fonts.googleapis.com/css2?family=Allura&display=swap', category: 'Script Sofisticada' },
     { name: 'Dancing Script', class: 'font-dancing', import: 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&display=swap', category: 'Script Contemporánea' },
     { name: 'Satisfy', class: 'font-satisfy', import: 'https://fonts.googleapis.com/css2?family=Satisfy&display=swap', category: 'Script Ligera' },
     { name: 'Playfair Display Italic', class: 'font-playfair-italic', import: 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,600;1,700&display=swap', category: 'Serif Cursiva Clásica' },

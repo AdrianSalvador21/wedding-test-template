@@ -68,7 +68,7 @@ const About = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
           >
-            <blockquote className="text-xl md:text-2xl font-heading italic text-stone-600 leading-relaxed max-w-4xl mx-auto">
+            <blockquote className="text-xl md:text-2xl font-blockquote italic text-stone-600 leading-relaxed max-w-4xl mx-auto">
               &ldquo;{quoteText || 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.'}&rdquo;
             </blockquote>
           </motion.div>

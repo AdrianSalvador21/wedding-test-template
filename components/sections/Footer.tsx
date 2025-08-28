@@ -39,9 +39,21 @@ const Footer = () => {
   const isLuxuryTheme = currentTheme.id === 'luxury';
   const isPremiumTheme = currentTheme.id === 'premium';
   const isCorporateTheme = currentTheme.id === 'corporate';
-  const isThemeWithCustomColors = isLuxuryTheme || isPremiumTheme || isCorporateTheme;
+  const isSpecialCustomTheme = currentTheme.id === 'special-custom-one';
+  const isThemeWithCustomColors = isLuxuryTheme || isPremiumTheme || isCorporateTheme || isSpecialCustomTheme;
   
-  const footerBgClass = isThemeWithCustomColors ? 'footer-theme-bg' : 'bg-gradient-to-br from-primary via-secondary to-accent';
+  // Crear degradado específico para special-custom-one
+  const getFooterBgClass = () => {
+    if (isSpecialCustomTheme) {
+      return 'bg-gradient-to-br from-[#4a3f35] via-[#6b5b47] to-[#8b7355]'; // Degradado con colores del tema
+    } else if (isThemeWithCustomColors) {
+      return 'footer-theme-bg'; // Otros temas personalizados
+    } else {
+      return 'bg-gradient-to-br from-primary via-secondary to-accent'; // Temas normales
+    }
+  };
+  
+  const footerBgClass = getFooterBgClass();
   const footerTextClass = isThemeWithCustomColors ? 'footer-theme-text' : 'text-white';
   const footerAccentClass = isThemeWithCustomColors ? 'footer-theme-accent' : 'text-accent';
   const hoverClass = isThemeWithCustomColors ? 'hover-theme-accent' : 'hover:text-accent';
@@ -188,9 +200,9 @@ const Footer = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
             >
-              <div className={`w-12 h-px ${isLuxuryTheme ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
+              <div className={`w-12 h-px ${isThemeWithCustomColors ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
               <Heart className={`w-5 h-5 ${footerAccentClass}`} />
-              <div className={`w-12 h-px ${isLuxuryTheme ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
+              <div className={`w-12 h-px ${isThemeWithCustomColors ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
             </motion.div>
 
             <motion.p 

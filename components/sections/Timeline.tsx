@@ -195,7 +195,7 @@ const Timeline = () => {
                     >
                       {/* Punto con icono */}
                       <div className="absolute left-3 top-3 transform -translate-x-1/2 z-10">
-                        <div className="w-10 h-10 bg-white rounded-full border-3 border-accent shadow-lg flex items-center justify-center">
+                        <div className="w-10 h-10 ml-6 bg-white rounded-full border-3 border-accent shadow-lg flex items-center justify-center">
                           <IconComponent className="w-4 h-4 text-accent" />
                         </div>
                       </div>

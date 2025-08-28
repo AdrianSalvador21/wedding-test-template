@@ -65,12 +65,9 @@ const weddingSlice = createSlice({
     },
     
     // Actualizar tema dinámicamente
-    updateTheme: (state, action: PayloadAction<Partial<WeddingData['theme']>>) => {
+    updateTheme: (state, action: PayloadAction<string | { id: string }>) => {
       if (state.currentWedding) {
-        state.currentWedding.theme = {
-          ...state.currentWedding.theme,
-          ...action.payload
-        };
+        state.currentWedding.theme = action.payload;
       }
     },
     

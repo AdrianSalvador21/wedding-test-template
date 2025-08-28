@@ -685,6 +685,92 @@ export const corporateTheme: WeddingTheme = {
   },
 };
 
+// Tema Special Custom One (basado en invitación beige/marrón)
+export const specialCustomTheme: WeddingTheme = {
+  id: 'special-custom-one',
+  name: 'Special Custom',
+  colors: {
+    primary: '#8b7355',        // Marrón medio (igual al classic para consistencia)
+    secondary: '#6b5b47',      // Marrón oscuro del texto de la invitación
+    accent: '#97876af5',         // Beige dorado claro
+    light: '#f8f6f2',          // Crema muy claro (fondo de la invitación)
+    dark: '#4a3f35',           // Marrón muy oscuro
+    text: '#6b5b47',           // Marrón oscuro para texto principal
+    border: '#e8ddd4',         // Beige claro para bordes
+    background: '#ffffff',      // Blanco puro
+    muted: '#f5f2ed',          // Beige muy claro
+    success: '#8b7355',        // Usar color primario para success
+    warning: '#d4c4a8',        // Usar accent para warning
+    error: '#8b5a3c',          // Marrón rojizo suave
+  },
+  gradients: {
+    primary: 'linear-gradient(135deg, #8b7355 0%, #6b5b47 100%)',
+    overlay: 'linear-gradient(135deg, rgba(139, 115, 85, 0.9) 0%, rgba(107, 91, 71, 0.85) 50%, rgba(212, 196, 168, 0.7) 100%)',
+    background: 'linear-gradient(to bottom, #f8f6f2 0%, #f5f2ed 100%)',
+    accent: 'linear-gradient(135deg, #d4c4a8 0%, #c4b396 100%)',
+  },
+  fonts: {
+    heading: {
+      family: 'Allura',
+      weights: [400, 600, 700],
+      fallback: 'serif',
+    },
+    body: {
+      family: 'Lora',
+      weights: [400, 600, 700],
+      fallback: 'serif',
+    },
+  },
+  typography: {
+    heroTitle: {
+      mobile: 'text-4xl',
+      desktop: 'text-7xl lg:text-8xl xl:text-9xl',
+    },
+    sectionTitle: {
+      mobile: 'text-[26px]',
+      desktop: 'text-[26px]',
+    },
+    subtitle: {
+      mobile: 'text-lg',
+      desktop: 'text-xl lg:text-2xl',
+    },
+    body: {
+      mobile: 'text-base',
+      desktop: 'text-lg',
+    },
+  },
+  shadows: {
+    sm: '0 4px 20px rgba(107, 91, 71, 0.12)',
+    md: '0 8px 30px rgba(107, 91, 71, 0.18)',
+    lg: '0 12px 40px rgba(107, 91, 71, 0.24)',
+    xl: '0 20px 60px rgba(107, 91, 71, 0.30)',
+  },
+  patterns: {
+    primary: 'floral-classic-1',    // Usar los mismos SVGs que maria-y-juan
+    secondary: 'floral-classic-2',  // Usar los mismos SVGs que maria-y-juan
+    accent: 'floral-classic-3',     // Usar los mismos SVGs que maria-y-juan
+    subtle: 'floral-classic-4',     // Usar los mismos SVGs que maria-y-juan
+  },
+  spacing: {
+    section: {
+      mobile: 'py-12 px-8',
+      desktop: 'py-16 px-12',
+    },
+    container: {
+      mobile: 'px-6',
+      desktop: 'px-8',
+    },
+  },
+  effects: {
+    blur: 'backdrop-blur-sm',
+    opacity: {
+      light: 0.7,
+      medium: 0.8,
+      heavy: 0.9,
+    },
+  },
+};
+
 // Colección de temas disponibles
 export const availableThemes = {
   classic: classicTheme,
@@ -694,6 +780,7 @@ export const availableThemes = {
   luxury: luxuryTheme,
   premium: premiumTheme,
   corporate: corporateTheme,
+  'special-custom-one': specialCustomTheme,
 } as const;
 
 export type ThemeId = keyof typeof availableThemes;

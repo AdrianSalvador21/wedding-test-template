@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Lora:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Allura&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -617,4 +618,12 @@ body {
 
 .border-left-bottom {
   border-bottom-left-radius: 12px;
+}
+
+.font-heading {
+  font-family: 'Allura', cursive;
+}
+
+.font-blockquote {
+  font-family: 'Cormorant Garamond', serif;
 }

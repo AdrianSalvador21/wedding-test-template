@@ -30,8 +30,8 @@ function processBilingualData(data: unknown, language: 'es' | 'en' = 'es'): unkn
     if (value && typeof value === 'object' && !Array.isArray(value)) {
       const bilingualValue = value as Record<string, unknown>;
       if (typeof bilingualValue.es === 'string' && typeof bilingualValue.en === 'string') {
-        // Usar el idioma solicitado, fallback a español
-        processed[key] = bilingualValue[language] || bilingualValue.es;
+        // MANTENER el objeto bilingüe intacto para que los componentes puedan seleccionar el idioma
+        processed[key] = bilingualValue;
       } else {
         // Si es un objeto anidado, procesarlo recursivamente
         processed[key] = processBilingualData(value, language);

@@ -288,7 +288,7 @@ export interface WeddingData {
   recommendedPlaces?: RecommendedPlacesConfig;
   theme: {
     id: string; // ID del tema predefinido ('classic', 'romantic', 'modern', 'elegant')
-  };
+  } | string; // Puede ser objeto legacy o string directo desde Firebase
   status: 'draft' | 'active' | 'archived';
   languages: string[];
   defaultLanguage: string;
