@@ -51,16 +51,6 @@ const nextConfig = {
           },
         ],
       },
-      // Optimizar caching de assets estáticos (imágenes)
-      {
-        source: '/assets/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=86400, s-maxage=31536000, immutable',
-          },
-        ],
-      },
     ];
   },
 };

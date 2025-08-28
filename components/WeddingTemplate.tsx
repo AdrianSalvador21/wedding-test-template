@@ -205,7 +205,7 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
       </main>
 
       {/* Footer Invyta */}
-      <footer className="bg-gradient-to-br from-primary via-secondary to-accent text-white py-2">
+      <footer className="footer-theme-bg from-primary via-secondary to-accent text-white py-2">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
             <a

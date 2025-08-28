@@ -207,7 +207,7 @@ const Hero = () => {
               <div className="w-24 h-px bg-white bg-opacity-40"></div>
               
               {/* Nombres en una línea */}
-              <h1 className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl font-heading font-semibold text-white tracking-wide leading-tight">
+              <h1 className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl font-heading text-white tracking-wide leading-tight">
                 {brideName}
                 <span className="text-3xl md:text-6xl lg:text-7xl xl:text-8xl text-stone-200 opacity-80 mx-4 md:mx-6 font-serif italic">
                   &

@@ -8,14 +8,29 @@ import { getCorporateBackgroundStyle } from './floral-patterns';
 // Función para crear un tema completo basado en los datos del servicio
 export const createWeddingTheme = (weddingData: WeddingData): WeddingTheme => {
   const { theme } = weddingData;
+  console.log('theme', theme);
+  
+  // Determinar el ID del tema
+  let themeId: string;
+  
+  if (typeof theme === 'string') {
+    // Nuevo formato: theme es un string directo desde Firebase
+    themeId = theme;
+  } else if (theme && typeof theme === 'object' && theme.id) {
+    // Formato legacy: theme es un objeto con id
+    themeId = theme.id;
+  } else {
+    // Fallback si no hay tema definido
+    themeId = 'classic';
+  }
   
   // Obtener el tema predefinido basado en el ID
-  if (['classic', 'romantic', 'modern', 'elegant', 'luxury', 'premium', 'corporate'].includes(theme.id)) {
-    return getTheme(theme.id as ThemeId);
+  if (['classic', 'romantic', 'modern', 'elegant', 'luxury', 'premium', 'corporate', 'special-custom-one'].includes(themeId)) {
+    return getTheme(themeId as ThemeId);
   }
   
   // Si el ID no es reconocido, usar el tema classic como fallback
-  console.warn(`Tema desconocido: ${theme.id}. Usando tema classic como fallback.`);
+  console.warn(`Tema desconocido: ${themeId}. Usando tema classic como fallback.`);
   return getTheme('classic');
 };
 
@@ -216,6 +231,15 @@ export const getThemeBackgroundStyle = (
       : patternNumber;
     
     return getCorporateBackgroundStyle(patternName, size);
+  }
+  
+  // Si es el tema special-custom-one, usar los mismos patrones que classic (floral)
+  if (themeId === 'special-custom-one') {
+    const floralPatternNumber = typeof patternNumber === 'string' 
+      ? parseInt(patternNumber) || 1
+      : patternNumber;
+    
+    return getFloralBackgroundStyle(floralPatternNumber as 1 | 2 | 3 | 4 | 5, size);
   }
   
   // Para todos los demás temas, usar patrones florales
