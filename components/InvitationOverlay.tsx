@@ -158,7 +158,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                 {/* Header Simple */}
                 <div className="relative bg-gradient-to-b from-stone-50 to-white p-6 pt-8 text-center">
                   {/* Couple Names */}
-                  <h1 className="text-xl font-heading text-stone-800 leading-tight mb-4">
+                  <h1 className="text-xl font-blockquote text-stone-800 leading-tight mb-4">
                     {bride.name} & {groom.name}
                   </h1>
                   
@@ -168,7 +168,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                 {/* Invitation Info */}
                 <div className="px-6 py-6 text-center space-y-6">
                   <div>
-                    <h3 className="text-xl font-heading text-stone-800 mb-2">
+                    <h3 className="text-xl font-blockquote text-stone-800 mb-2">
                       {guest.name}
                     </h3>
                     
