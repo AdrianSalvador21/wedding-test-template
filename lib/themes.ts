@@ -711,7 +711,7 @@ export const specialCustomTheme: WeddingTheme = {
   },
   fonts: {
     heading: {
-      family: 'Allura',
+      family: 'Cormorant Garamond',
       weights: [400, 600, 700],
       fallback: 'serif',
     },

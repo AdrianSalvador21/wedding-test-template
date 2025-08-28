@@ -95,7 +95,7 @@ const Footer = () => {
           <div className="text-center space-y-6 max-w-sm mx-auto">
             {/* Nombres de la pareja */}
             <div>
-              <h2 className="text-2xl font-heading font-light mb-2">
+              <h2 className="text-2xl font-special font-light mb-2">
                 {brideName} & {groomName}
               </h2>
               
