@@ -232,7 +232,7 @@ const Gallery = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <div className="bg-gradient-primary rounded-2xl p-8 text-white max-w-2xl mx-auto">
-            <h3 className="text-xl font-heading font-semibold mb-4">
+            <h3 className="text-xl font-blockquote font-semibold mb-4">
               {t('shareMessage')}
             </h3>
             <p className="opacity-90 mb-6 font-body">

@@ -216,7 +216,7 @@ const Timeline = () => {
                           </div>
                           
                           {/* Título */}
-                          <h3 className="text-stone-700 font-semibold text-base mb-2 font-heading">
+                          <h3 className="text-stone-700 font-semibold text-base mb-2 font-blockquote">
                             {event.title}
                           </h3>
                           
