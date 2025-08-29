@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { Clock, MapPin, Users, Calendar, Star, Circle, Sparkles, Gift } from 'lucide-react';
+import { Clock, MapPin, Users, Calendar, Star, Circle, Sparkles, Gift, Heart, Music, Utensils, Wine, type LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
@@ -20,11 +20,31 @@ const Timeline = () => {
   const { getBackgroundStyle } = useThemePatterns();
 
 
-  // Pool de iconos genéricos neutros
+  // Mapeo de strings a componentes de iconos
+  const iconMap: Record<string, LucideIcon> = {
+    'MapPin': MapPin,
+    'Heart': Heart,
+    'Music': Music,
+    'Utensils': Utensils,
+    'Users': Users,
+    'Wine': Wine,
+    'Clock': Clock,
+    'Star': Star,
+    'Gift': Gift,
+    'Calendar': Calendar,
+    'Circle': Circle,
+    'Sparkles': Sparkles
+  };
+
+  // Pool de iconos genéricos neutros (fallback)
   const iconPool = [Clock, Users, Calendar, Star, Circle, MapPin, Sparkles, Gift];
 
-  // Función para asignar icono por índice
-  const getIconByIndex = (index: number) => {
+  // Función para obtener icono por nombre o índice
+  const getIcon = (iconName: string | undefined, index: number) => {
+    if (iconName && iconMap[iconName]) {
+      return iconMap[iconName];
+    }
+    // Fallback al pool genérico por índice
     return iconPool[index % iconPool.length];
   };
 
@@ -42,7 +62,7 @@ const Timeline = () => {
     description: typeof event.description === 'object' && event.description
       ? (event.description[currentLocale as 'es' | 'en'] || event.description.es || '')
       : (event.description as unknown as string || ''),
-    icon: getIconByIndex(index)
+    icon: getIcon(event.icon as string, index)
   }));
 
   // Loading state

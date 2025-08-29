@@ -22,7 +22,7 @@ const Hero = () => {
   const venueName = weddingData?.event.receptionVenue?.name || t('location');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const eventTime = weddingData?.event.time || '16:00';
-  
+
   // Imagen del Hero dinámicamente cargada
   const heroImageUrl = heroImage;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,16 +30,16 @@ const Hero = () => {
 
   // Estado para la altura fija
   const [fixedHeight, setFixedHeight] = useState<number | null>(null);
-  
+
   // Detectar si es móvil y tipo de navegador
   const [isMobile, setIsMobile] = useState(false);
   const [isChromeIOS, setIsChromeIOS] = useState(false);
-  
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     // Detectar Chrome en iOS específicamente
     const detectChromeIOS = () => {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -52,11 +52,11 @@ const Hero = () => {
         isChromeIOS: isChromeIOSDetected
       });
     };
-    
+
     checkMobile();
     detectChromeIOS();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -64,12 +64,12 @@ const Hero = () => {
     // Precargar imagen de fondo para evitar layout shift
     const img = document.createElement('img');
     img.src = heroImageUrl;
-    
+
     // SOLUCIÓN: Calcular altura UNA SOLA VEZ y fijarla
     const setFixedViewportHeight = () => {
       const currentHeight = window.innerHeight;
       console.log('🔒 Fijando altura Hero a:', currentHeight + 'px');
-      
+
       // Para Chrome iOS, usar una altura aún más conservadora
       if (isChromeIOS) {
         // Usar la altura mínima del viewport para evitar redimensionamiento
@@ -79,7 +79,7 @@ const Hero = () => {
       } else {
         setFixedHeight(currentHeight);
       }
-      
+
       // También setear la variable CSS como backup
       const vh = currentHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -87,7 +87,7 @@ const Hero = () => {
 
     // Calcular altura solo una vez al montar
     setFixedViewportHeight();
-    
+
     // Solo recalcular en cambio de orientación (no en scroll)
     const handleOrientationChange = () => {
       setTimeout(() => {
@@ -96,7 +96,7 @@ const Hero = () => {
     };
 
     window.addEventListener('orientationchange', handleOrientationChange);
-    
+
     setIsMounted(true);
 
     return () => {
@@ -109,14 +109,14 @@ const Hero = () => {
     if (isChromeIOS) {
       document.body.classList.add('chrome-ios');
       console.log('🎯 Clase chrome-ios agregada al body');
-      
+
       // Pasar la imagen al CSS usando CSS custom property
       document.documentElement.style.setProperty('--hero-bg-image', `url(${heroImageUrl})`);
     } else {
       document.body.classList.remove('chrome-ios');
       document.documentElement.style.removeProperty('--hero-bg-image');
     }
-    
+
     return () => {
       document.body.classList.remove('chrome-ios');
       document.documentElement.style.removeProperty('--hero-bg-image');
@@ -135,7 +135,7 @@ const Hero = () => {
   const formatDate = () => {
     return weddingDate.toLocaleDateString(locale, {
       weekday: 'long',
-      year: 'numeric', 
+      year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
@@ -161,9 +161,9 @@ const Hero = () => {
   }, [heroImageUrl, fixedHeight, isChromeIOS]);
 
   return (
-    <section 
+    <section
       className="hero-section relative flex items-center justify-center text-white overflow-hidden"
-      style={{ 
+      style={{
         // Chrome iOS: usar altura fija en píxeles para evitar redimensionamiento
         ...(isChromeIOS ? {
           height: '812px',  // Altura fija típica de iPhone
@@ -188,7 +188,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto m-relative-10">
         <motion.div
           initial={isMounted ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
@@ -200,12 +200,12 @@ const Hero = () => {
             <h2 className="text-xs md:text-sm font-body font-light tracking-[0.4em] uppercase text-white opacity-90 mb-2">
               {t('ourWedding')}
             </h2>
-            
+
             {/* Nombres de la pareja - en línea con & decorativo */}
             <div className="flex flex-col items-center space-y-4">
               {/* Línea decorativa superior */}
               <div className="w-24 h-px bg-white bg-opacity-40"></div>
-              
+
               {/* Nombres en una línea */}
               <h1 className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl font-heading text-white tracking-wide leading-tight">
                 {brideName}
@@ -214,7 +214,7 @@ const Hero = () => {
                 </span>
                 {groomName}
               </h1>
-              
+
               {/* Línea decorativa inferior */}
               <div className="w-24 h-px bg-white bg-opacity-40"></div>
             </div>
@@ -241,8 +241,8 @@ const Hero = () => {
             {/* Scroll indicator - abajo del botón */}
             <motion.div
               animate={isMounted ? { y: [0, 8, 0] } : { y: 0 }}
-              transition={{ 
-                duration: 2.5, 
+              transition={{
+                duration: 2.5,
                 repeat: Infinity,
                 ease: "easeInOut",
                 delay: isMounted ? 1 : 0
