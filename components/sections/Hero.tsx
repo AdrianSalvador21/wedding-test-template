@@ -12,8 +12,6 @@ const Hero = () => {
   const { t, currentLanguage } = useTranslations('hero');
   const weddingData = useAppSelector(selectCurrentWedding);
   const { heroImage } = useWeddingImages(weddingData?.id);
-  const [isMounted, setIsMounted] = useState(false);
-
   // Datos dinámicos con fallbacks
   const brideName = weddingData?.couple.bride.name || 'María';
   const groomName = weddingData?.couple.groom.name || 'Carlos';
@@ -96,8 +94,6 @@ const Hero = () => {
     };
 
     window.addEventListener('orientationchange', handleOrientationChange);
-
-    setIsMounted(true);
 
     return () => {
       window.removeEventListener('orientationchange', handleOrientationChange);
@@ -188,77 +184,257 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto m-relative-10">
-        <motion.div
-          initial={isMounted ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
+      <div className="relative m-relative-10 z-10 text-center px-4 max-w-4xl mx-auto">
+        {/* "NUESTRA BODA" - Animación de entrada suave */}
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: isMounted ? 0.8 : 0, ease: "easeOut" }}
-          className="space-y-12"
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
         >
-          {/* "NUESTRA BODA" */}
-          <div className="mb-8">
-            <h2 className="text-xs md:text-sm font-body font-light tracking-[0.4em] uppercase text-white opacity-90 mb-2">
-              {t('ourWedding')}
-            </h2>
-
-            {/* Nombres de la pareja - en línea con & decorativo */}
-            <div className="flex flex-col items-center space-y-4">
-              {/* Línea decorativa superior */}
-              <div className="w-24 h-px bg-white bg-opacity-40"></div>
-
-              {/* Nombres en una línea */}
-              <h1 className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl font-heading text-white tracking-wide leading-tight">
-                {brideName}
-                <span className="text-3xl md:text-6xl lg:text-7xl xl:text-8xl text-stone-200 opacity-80 mx-4 md:mx-6 font-serif italic">
-                  &
-                </span>
-                {groomName}
-              </h1>
-
-              {/* Línea decorativa inferior */}
-              <div className="w-24 h-px bg-white bg-opacity-40"></div>
-            </div>
-          </div>
-
-          {/* Fecha del evento */}
-          <div className="mb-8">
-            <p className="text-lg md:text-xl font-body font-light text-white opacity-90">
-              {formatDate()}
-            </p>
-          </div>
-
-          {/* Call to Action Button */}
-          <div className="space-y-6">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-stone-400 bg-opacity-70 text-white font-body font-medium py-3 px-8 md:py-3.5 md:px-10 rounded-full text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white border-opacity-30"
-            >
-              {t('cta')}
-            </motion.button>
-
-            {/* Scroll indicator - abajo del botón */}
-            <motion.div
-              animate={isMounted ? { y: [0, 8, 0] } : { y: 0 }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: isMounted ? 1 : 0
+          <motion.h2 
+            className="text-xs md:text-sm font-body font-light tracking-[0.4em] uppercase text-white opacity-90 mb-2"
+            initial={{ opacity: 0, letterSpacing: '0.8em' }}
+            animate={{ opacity: 1, letterSpacing: '0.4em' }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: 0.4 }}
+          >
+            {t('ourWedding')}
+          </motion.h2>
+          
+          {/* Nombres de la pareja - con animaciones escalonadas */}
+          <div className="flex flex-col items-center space-y-4">
+            {/* Línea decorativa superior */}
+            <motion.div 
+              className="h-px bg-white bg-opacity-40"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: '6rem', opacity: 1 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.6 }}
+            />
+            
+            {/* Nombres con animación elegante */}
+            <motion.h1 
+              className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl font-heading text-white tracking-wide leading-tight"
+              initial={{ opacity: 0, scale: 0.8, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ 
+                duration: 1.2, 
+                ease: [0.25, 0.46, 0.45, 0.94], // Curva de animación elegante
+                delay: 0.8 
               }}
-              className="flex flex-col items-center opacity-70 pt-4"
             >
-              <ChevronDown className="w-6 h-6" />
-            </motion.div>
+              <motion.span
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 1 }}
+              >
+                {brideName}
+              </motion.span>
+              <motion.span 
+                className="text-3xl md:text-6xl lg:text-7xl xl:text-8xl text-stone-200 opacity-80 mx-4 md:mx-6 font-serif italic"
+                initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ 
+                  duration: 0.6, 
+                  ease: "easeOut", 
+                  delay: 1.2,
+                  type: "spring",
+                  stiffness: 200
+                }}
+              >
+                &
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 1.4 }}
+              >
+                {groomName}
+              </motion.span>
+            </motion.h1>
+            
+            {/* Línea decorativa inferior */}
+            <motion.div 
+              className="h-px bg-white bg-opacity-40"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: '6rem', opacity: 1 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 1.6 }}
+            />
           </div>
         </motion.div>
 
-        {/* Decorative elements */}
+        {/* Fecha del evento */}
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 1.8 }}
+        >
+          <motion.p 
+            className="text-lg md:text-xl font-body font-light text-white opacity-90"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 2 }}
+          >
+            {formatDate()}
+          </motion.p>
+        </motion.div>
+
+        {/* Call to Action Button */}
+        <motion.div 
+          className="space-y-6"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 2.2 }}
+        >
+          <motion.button
+            whileHover={{ 
+              scale: 1.0, 
+              boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
+              backgroundColor: "rgba(255,255,255,0.15)"
+            }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth' })}
+            className="bg-stone-400 bg-opacity-70 text-white font-body font-medium py-3 px-8 md:py-3.5 md:px-10 rounded-full text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white border-opacity-30"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ 
+              duration: 0.6, 
+              ease: "easeOut", 
+              delay: 2.4,
+              type: "spring",
+              stiffness: 200
+            }}
+          >
+            {t('cta')}
+          </motion.button>
+
+          {/* Scroll indicator - abajo del botón */}
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ 
+              duration: 2.5, 
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 3
+            }}
+            className="flex flex-col items-center opacity-70 pt-4"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <motion.div
+              animate={{ 
+                scale: [1, 1.1, 1],
+                opacity: [0.7, 1, 0.7]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 3.2
+              }}
+            >
+              <ChevronDown className="w-6 h-6" />
+            </motion.div>
+          </motion.div>
+        </motion.div>
+
+        {/* Decorative elements - Corazones flotantes elegantes */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-          <Heart className="absolute top-20 left-10 w-8 h-8 opacity-20 animate-pulse" />
-          <Heart className="absolute top-40 right-16 w-6 h-6 opacity-30 animate-pulse" style={{ animationDelay: '1s' }} />
-          <Heart className="absolute bottom-32 left-20 w-10 h-10 opacity-15 animate-pulse" style={{ animationDelay: '2s' }} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0, rotate: -45 }}
+            animate={{ 
+              opacity: [0.15, 0.3, 0.15], 
+              scale: [0.8, 1.2, 0.8],
+              rotate: [0, 10, 0],
+              y: [0, -10, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 3.5
+            }}
+            className="absolute top-20 left-10"
+          >
+            <Heart className="w-8 h-8 text-white" />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0, rotate: 45 }}
+            animate={{ 
+              opacity: [0.2, 0.4, 0.2], 
+              scale: [1, 1.3, 1],
+              rotate: [0, -15, 0],
+              x: [0, 5, 0]
+            }}
+            transition={{
+              duration: 3.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 4
+            }}
+            className="absolute top-40 right-16"
+          >
+            <Heart className="w-6 h-6 text-white" />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0, rotate: -30 }}
+            animate={{ 
+              opacity: [0.1, 0.25, 0.1], 
+              scale: [0.9, 1.4, 0.9],
+              rotate: [0, 20, 0],
+              y: [0, -15, 0],
+              x: [0, -5, 0]
+            }}
+            transition={{
+              duration: 5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 4.5
+            }}
+            className="absolute bottom-32 left-20"
+          >
+            <Heart className="w-10 h-10 text-white" />
+          </motion.div>
+          
+          {/* Corazones adicionales para más elegancia */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ 
+              opacity: [0.05, 0.15, 0.05], 
+              scale: [1, 1.1, 1],
+              rotate: [0, 360, 0]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "linear",
+              delay: 5
+            }}
+            className="absolute top-1/3 right-8"
+          >
+            <Heart className="w-4 h-4 text-white" />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ 
+              opacity: [0.08, 0.2, 0.08], 
+              scale: [0.8, 1.2, 0.8],
+              y: [0, -20, 0]
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 5.5
+            }}
+            className="absolute bottom-1/4 right-1/4"
+          >
+            <Heart className="w-5 h-5 text-white" />
+          </motion.div>
         </div>
       </div>
     </section>
