@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { Clock, MapPin, Users, Calendar, Star, Circle, Sparkles, Gift, Heart, Music, Utensils, Wine } from 'lucide-react';
+import { Clock, MapPin, Users, Calendar, Star, Circle, Sparkles, Gift, Heart, Music, Utensils, Wine, type LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslations } from '../../lib/translations';
 import { useIsMobile } from '@/lib/motion';
@@ -21,7 +21,7 @@ const Timeline = () => {
 
 
   // Mapeo de strings a componentes de iconos
-  const iconMap: Record<string, React.ComponentType<any>> = {
+  const iconMap: Record<string, LucideIcon> = {
     'MapPin': MapPin,
     'Heart': Heart,
     'Music': Music,
