@@ -1711,7 +1711,7 @@ export const mockWeddingFriendsTest: WeddingData = {
     dietaryOptions: true,
     customQuestions: []
   },
-  theme: 'special-custom-one',
+  theme: 'special-custom-two',
   status: 'draft',
   languages: ['es', 'en'],
   defaultLanguage: 'es',

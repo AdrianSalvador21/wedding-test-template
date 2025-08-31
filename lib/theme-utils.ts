@@ -8,7 +8,6 @@ import { getCorporateBackgroundStyle } from './floral-patterns';
 // Función para crear un tema completo basado en los datos del servicio
 export const createWeddingTheme = (weddingData: WeddingData): WeddingTheme => {
   const { theme } = weddingData;
-  console.log('theme', theme);
   
   // Determinar el ID del tema
   let themeId: string;
@@ -25,7 +24,7 @@ export const createWeddingTheme = (weddingData: WeddingData): WeddingTheme => {
   }
   
   // Obtener el tema predefinido basado en el ID
-  if (['classic', 'romantic', 'modern', 'elegant', 'luxury', 'premium', 'corporate', 'special-custom-one'].includes(themeId)) {
+  if (['classic', 'romantic', 'modern', 'elegant', 'luxury', 'premium', 'corporate', 'special-custom-one', 'special-custom-two'].includes(themeId)) {
     return getTheme(themeId as ThemeId);
   }
   
@@ -239,6 +238,16 @@ export const getThemeBackgroundStyle = (
       ? parseInt(patternNumber) || 1
       : patternNumber;
     
+    return getFloralBackgroundStyle(floralPatternNumber as 1 | 2 | 3 | 4 | 5, size);
+  }
+  
+  // Si es el tema special-custom-two, usar patrones florales más visibles
+  if (themeId === 'special-custom-two') {
+    const floralPatternNumber = typeof patternNumber === 'string' 
+      ? parseInt(patternNumber) || 1
+      : patternNumber;
+    
+    // Usar patrones florales con mayor opacidad para este tema cálido
     return getFloralBackgroundStyle(floralPatternNumber as 1 | 2 | 3 | 4 | 5, size);
   }
   

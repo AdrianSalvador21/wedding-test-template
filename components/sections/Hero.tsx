@@ -287,22 +287,14 @@ const Hero = () => {
           transition={{ duration: 0.8, ease: "easeOut", delay: 2.2 }}
         >
           <motion.button
-            whileHover={{ 
-              scale: 1.0, 
-              boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
-              backgroundColor: "rgba(255,255,255,0.15)"
-            }}
-            whileTap={{ scale: 0.95 }}
             onClick={() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth' })}
             className="bg-stone-400 bg-opacity-70 text-white font-body font-medium py-3 px-8 md:py-3.5 md:px-10 rounded-full text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white border-opacity-30"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1}}
             transition={{ 
               duration: 0.6, 
               ease: "easeOut", 
-              delay: 2.4,
-              type: "spring",
-              stiffness: 200
+              delay: 2.4
             }}
           >
             {t('cta')}

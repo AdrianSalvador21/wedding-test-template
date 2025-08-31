@@ -771,6 +771,92 @@ export const specialCustomTheme: WeddingTheme = {
   },
 };
 
+// Tema Special Custom Two (paleta cálida elegante: terracota, burgundy, bronce)
+export const specialCustomTwoTheme: WeddingTheme = {
+  id: 'special-custom-two',
+  name: 'Elegant Warmth',
+  colors: {
+    primary: '#A0522D',        // Sienna elegante (terracota refinado)
+    secondary: '#8B1538',      // Burgundy profundo (menos chillón que el rojo)
+    accent: '#d27f0e',         // Oro oscuro (bronce elegante, no amarillo chillón)
+    light: '#FAF7F2',          // Lino suave (crema muy sutil)
+    dark: '#99621d',           // Marrón chocolate oscuro
+    text: '#4A4A4A',           // Gris carbón (más legible y elegante)
+    border: '#D7CCC8',         // Beige grisáceo muy sutil
+    background: '#FEFEFE',     // Blanco casi puro
+    muted: '#F3EDE7',          // Beige pálido muy sutil
+    success: '#6B7C32',        // Verde olivo apagado (más elegante)
+    warning: '#C17817',        // Bronce cálido (no naranja chillón)
+    error: '#A0342C',          // Terracota oscuro para errores
+  },
+  gradients: {
+    primary: 'linear-gradient(135deg, #d27f0e 0%, #72460af0 100%)',
+    overlay: 'linear-gradient(135deg, rgba(160, 82, 45, 0.85) 0%, rgba(139, 21, 56, 0.80) 50%, rgba(184, 134, 11, 0.65) 100%)',
+    background: 'linear-gradient(to bottom, #FAF7F2 0%, #F3EDE7 100%)',
+    accent: 'linear-gradient(135deg, #B8860B 0%, #C17817 100%)',
+  },
+  fonts: {
+    heading: {
+      family: 'Playfair Display',
+      weights: [400, 600, 700, 900],
+      fallback: 'serif',
+    },
+    body: {
+      family: 'Source Sans Pro',
+      weights: [400, 600, 700],
+      fallback: 'sans-serif',
+    },
+  },
+  typography: {
+    heroTitle: {
+      mobile: 'text-4xl',
+      desktop: 'text-7xl lg:text-8xl xl:text-9xl',
+    },
+    sectionTitle: {
+      mobile: 'text-[28px]',
+      desktop: 'text-[32px]',
+    },
+    subtitle: {
+      mobile: 'text-lg',
+      desktop: 'text-xl lg:text-2xl',
+    },
+    body: {
+      mobile: 'text-base',
+      desktop: 'text-lg',
+    },
+  },
+  shadows: {
+    sm: '0 4px 20px rgba(160, 82, 45, 0.12)',
+    md: '0 8px 30px rgba(160, 82, 45, 0.16)',
+    lg: '0 12px 40px rgba(160, 82, 45, 0.20)',
+    xl: '0 20px 60px rgba(160, 82, 45, 0.24)',
+  },
+  patterns: {
+    primary: 'autumn-floral-1',    // Patrones más visibles para este tema
+    secondary: 'autumn-floral-2',  
+    accent: 'autumn-floral-3',     
+    subtle: 'autumn-floral-4',     
+  },
+  spacing: {
+    section: {
+      mobile: 'py-12 px-8',
+      desktop: 'py-16 px-12',
+    },
+    container: {
+      mobile: 'px-6',
+      desktop: 'px-8',
+    },
+  },
+  effects: {
+    blur: 'backdrop-blur-sm',
+    opacity: {
+      light: 0.75,
+      medium: 0.85,
+      heavy: 0.95,
+    },
+  },
+};
+
 // Colección de temas disponibles
 export const availableThemes = {
   classic: classicTheme,
@@ -781,6 +867,7 @@ export const availableThemes = {
   premium: premiumTheme,
   corporate: corporateTheme,
   'special-custom-one': specialCustomTheme,
+  'special-custom-two': specialCustomTwoTheme,
 } as const;
 
 export type ThemeId = keyof typeof availableThemes;
