@@ -82,7 +82,7 @@ const Location = () => {
                 </div>
                 <button
                   onClick={() => openExternalLink(ceremonyUrl)}
-                  className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent"
+                  className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent text-sm"
                 >
                   <MapPin className="w-4 h-4 mr-2" />
                   {t('directions')}
@@ -111,7 +111,7 @@ const Location = () => {
                 </div>
                 <button
                   onClick={() => openExternalLink(receptionMapsUrl)}
-                  className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent"
+                  className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent text-sm"
                 >
                   <MapPin className="w-4 h-4 mr-2" />
                   {t('directions')}
