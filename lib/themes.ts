@@ -778,9 +778,9 @@ export const specialCustomTwoTheme: WeddingTheme = {
   colors: {
     primary: '#A0522D',        // Sienna elegante (terracota refinado)
     secondary: '#8B1538',      // Burgundy profundo (menos chillón que el rojo)
-    accent: '#d27f0e',         // Oro oscuro (bronce elegante, no amarillo chillón)
+    accent: '#c87a10',         // Oro oscuro (bronce elegante, no amarillo chillón)
     light: '#FAF7F2',          // Lino suave (crema muy sutil)
-    dark: '#99621d',           // Marrón chocolate oscuro
+    dark: '#754915',           // Marrón chocolate oscuro
     text: '#4A4A4A',           // Gris carbón (más legible y elegante)
     border: '#D7CCC8',         // Beige grisáceo muy sutil
     background: '#FEFEFE',     // Blanco casi puro
