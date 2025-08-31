@@ -163,7 +163,7 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
   return (
     <ThemeProvider weddingTheme={weddingTheme}>
       <main className="min-h-screen">
-        <Hero />
+        <Hero overlayVisible={showOverlay || showDemoOverlay} />
         <Countdown />
         <Location />
         <About />
