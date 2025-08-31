@@ -131,11 +131,18 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
           
           {/* Invitation Card */}
           <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: -20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, type: "spring", damping: 25, stiffness: 300 }}
+            initial={{ scale: 0.8, opacity: 0, y: 50, rotateX: -15 }}
+            animate={{ scale: 1, opacity: 1, y: 0, rotateX: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: -30, rotateX: 10 }}
+            transition={{ 
+              duration: 0.6, 
+              type: "spring", 
+              damping: 20, 
+              stiffness: 200,
+              opacity: { duration: 0.4 }
+            }}
             className="relative w-full h-screen md:h-auto md:max-w-md mx-auto md:my-auto"
+            style={{ perspective: '1000px' }}
           >
             {/* Close Button */}
             <button
@@ -154,46 +161,83 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
               }}
             >
               {/* Card Interna Centrada */}
-              <div className="bg-white shadow-2xl rounded-3xl overflow-hidden border border-gray-100 max-w-xs mx-auto w-full">
+              <motion.div 
+                className="bg-white shadow-2xl rounded-3xl overflow-hidden border border-gray-100 max-w-xs mx-auto w-full"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
+              >
                 {/* Header Simple */}
                 <div className="relative bg-gradient-to-b from-stone-50 to-white p-6 pt-8 text-center">
                   {/* Couple Names */}
-                  <h1 className="text-xl font-blockquote text-stone-800 leading-tight mb-4">
+                  <motion.h1 
+                    className="text-xl font-blockquote text-stone-800 leading-tight mb-4"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
+                  >
                     {bride.name} & {groom.name}
-                  </h1>
+                  </motion.h1>
                   
-                  <div className="w-16 h-px bg-stone-300 mx-auto"></div>
+                  <motion.div 
+                    className="w-16 h-px bg-stone-300 mx-auto"
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={{ width: 64, opacity: 1 }}
+                    transition={{ delay: 0.6, duration: 0.8, ease: "easeOut" }}
+                  ></motion.div>
                 </div>
 
                 {/* Invitation Info */}
                 <div className="px-6 py-6 text-center space-y-6">
-                  <div>
-                    <h3 className="text-xl font-blockquote text-stone-800 mb-2">
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, duration: 0.5, ease: "easeOut" }}
+                  >
+                    <motion.h3 
+                      className="text-xl font-blockquote text-stone-800 mb-2"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 1.0, duration: 0.4, ease: "easeOut" }}
+                    >
                       {guest.name}
-                    </h3>
+                    </motion.h3>
                     
-                    <p className="text-base text-stone-600 font-body">
+                    <motion.p 
+                      className="text-base text-stone-600 font-body"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1.2, duration: 0.4 }}
+                    >
                       {guest.allowedGuests === 1 
                         ? t('guestCount.single')
                         : t('guestCount.multiple').replace('{count}', guest.allowedGuests.toString())
                       }
-                    </p>
-                  </div>
+                    </motion.p>
+                  </motion.div>
 
                   {/* Special Message */}
                   {guest.specialMessage && (
-                    <div className="bg-stone-50 rounded-2xl p-4">
+                    <motion.div 
+                      className="bg-stone-50 rounded-2xl p-4"
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ delay: 1.4, duration: 0.5, ease: "easeOut" }}
+                    >
                       <p className="text-sm text-stone-600 italic leading-relaxed font-body">
                         &ldquo;{guest.specialMessage}&rdquo;
                       </p>
-                    </div>
+                    </motion.div>
                   )}
                 </div>
 
                 {/* Button */}
                 <div className="px-6 pb-0">
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.6, duration: 0.5, ease: "easeOut" }}
+                    whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleClose}
                     className={buttonClass}
@@ -203,13 +247,28 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                 </div>
 
                 {/* Decorative Detail Below Button */}
-                <div className="px-6 py-3 flex items-center justify-center">
+                <motion.div 
+                  className="px-6 py-3 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.8, duration: 0.6 }}
+                >
                   <div className="flex items-center justify-center w-full max-w-24">
                     {/* Left Line */}
-                    <div className="flex-1 h-px bg-stone-300 opacity-50"></div>
+                    <motion.div 
+                      className="flex-1 h-px bg-stone-300 opacity-50"
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ delay: 2.0, duration: 0.8, ease: "easeOut" }}
+                    ></motion.div>
                     
                     {/* Heart Icon */}
-                    <div className="mx-3">
+                    <motion.div 
+                      className="mx-3"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ delay: 2.2, duration: 0.6, type: "spring", damping: 15 }}
+                    >
                       <svg 
                         width="10" 
                         height="10" 
@@ -223,23 +282,36 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                           opacity="0.4"
                         />
                       </svg>
-                    </div>
+                    </motion.div>
                     
                     {/* Right Line */}
-                    <div className="flex-1 h-px bg-stone-300 opacity-50"></div>
+                    <motion.div 
+                      className="flex-1 h-px bg-stone-300 opacity-50"
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ delay: 2.0, duration: 0.8, ease: "easeOut" }}
+                    ></motion.div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Decorative Footer */}
-                <div 
+                <motion.div 
                   className="h-8 bg-gradient-to-b from-white to-stone-50 relative overflow-hidden"
                   style={{
                     ...getBackgroundStyle(4, '60px'),
                   }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 2.4, duration: 0.4 }}
                 >
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-px bg-stone-200"></div>
-                </div>
-              </div>
+                  <motion.div 
+                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-px bg-stone-200"
+                    initial={{ width: 0, x: "-50%" }}
+                    animate={{ width: 64, x: "-50%" }}
+                    transition={{ delay: 2.6, duration: 0.6, ease: "easeOut" }}
+                  ></motion.div>
+                </motion.div>
+              </motion.div>
             </div>
           </motion.div>
         </motion.div>

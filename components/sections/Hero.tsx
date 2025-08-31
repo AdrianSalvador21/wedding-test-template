@@ -8,7 +8,22 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
 
-const Hero = () => {
+interface HeroProps {
+  overlayVisible?: boolean;
+}
+
+const Hero = ({ overlayVisible = false }: HeroProps) => {
+  const [animationKey, setAnimationKey] = useState(0);
+  const [wasOverlayVisible, setWasOverlayVisible] = useState(overlayVisible);
+
+  // Detectar cuando el overlay se cierra para reactivar animaciones
+  useEffect(() => {
+    if (wasOverlayVisible && !overlayVisible) {
+      // El overlay se acaba de cerrar, reactivar animaciones
+      setAnimationKey(prev => prev + 1);
+    }
+    setWasOverlayVisible(overlayVisible);
+  }, [overlayVisible, wasOverlayVisible]);
   const { t, currentLanguage } = useTranslations('hero');
   const weddingData = useAppSelector(selectCurrentWedding);
   const { heroImage } = useWeddingImages(weddingData?.id);
@@ -187,16 +202,21 @@ const Hero = () => {
       <div className="relative m-relative-10 z-10 text-center px-4 max-w-4xl mx-auto">
         {/* "NUESTRA BODA" - Animación de entrada suave */}
         <motion.div 
+          key={`hero-title-${animationKey}`}
           className="mb-8"
           initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          animate={{ opacity: overlayVisible ? 0 : 1, y: overlayVisible ? -20 : 0 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: overlayVisible ? 0 : 0.2 }}
         >
           <motion.h2 
+            key={`hero-subtitle-${animationKey}`}
             className="text-xs md:text-sm font-body font-light tracking-[0.4em] uppercase text-white opacity-90 mb-2"
             initial={{ opacity: 0, letterSpacing: '0.8em' }}
-            animate={{ opacity: 1, letterSpacing: '0.4em' }}
-            transition={{ duration: 1.2, ease: "easeOut", delay: 0.4 }}
+            animate={{ 
+              opacity: overlayVisible ? 0 : 1, 
+              letterSpacing: overlayVisible ? '0.8em' : '0.4em' 
+            }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: overlayVisible ? 0 : 0.4 }}
           >
             {t('ourWedding')}
           </motion.h2>
@@ -205,38 +225,56 @@ const Hero = () => {
           <div className="flex flex-col items-center space-y-4">
             {/* Línea decorativa superior */}
             <motion.div 
+              key={`hero-line-top-${animationKey}`}
               className="h-px bg-white bg-opacity-40"
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: '6rem', opacity: 1 }}
-              transition={{ duration: 1, ease: "easeOut", delay: 0.6 }}
+              animate={{ 
+                width: overlayVisible ? 0 : '6rem', 
+                opacity: overlayVisible ? 0 : 1 
+              }}
+              transition={{ duration: 1, ease: "easeOut", delay: overlayVisible ? 0 : 0.6 }}
             />
             
             {/* Nombres con animación elegante */}
             <motion.h1 
+              key={`hero-names-${animationKey}`}
               className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl font-heading text-white tracking-wide leading-tight"
               initial={{ opacity: 0, scale: 0.8, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
+              animate={{ 
+                opacity: overlayVisible ? 0 : 1, 
+                scale: overlayVisible ? 0.8 : 1, 
+                y: overlayVisible ? 30 : 0 
+              }}
               transition={{ 
                 duration: 1.2, 
                 ease: [0.25, 0.46, 0.45, 0.94], // Curva de animación elegante
-                delay: 0.8 
+                delay: overlayVisible ? 0 : 0.8 
               }}
             >
               <motion.span
+                key={`hero-bride-${animationKey}`}
                 initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 1 }}
+                animate={{ 
+                  opacity: overlayVisible ? 0 : 1, 
+                  x: overlayVisible ? -30 : 0 
+                }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: overlayVisible ? 0 : 1 }}
               >
                 {brideName}
               </motion.span>
               <motion.span 
+                key={`hero-ampersand-${animationKey}`}
                 className="text-3xl md:text-6xl lg:text-7xl xl:text-8xl text-stone-200 opacity-80 mx-4 md:mx-6 font-serif italic"
                 initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
-                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                animate={{ 
+                  opacity: overlayVisible ? 0 : 1, 
+                  scale: overlayVisible ? 0.5 : 1, 
+                  rotate: overlayVisible ? -10 : 0 
+                }}
                 transition={{ 
                   duration: 0.6, 
                   ease: "easeOut", 
-                  delay: 1.2,
+                  delay: overlayVisible ? 0 : 1.2,
                   type: "spring",
                   stiffness: 200
                 }}
@@ -244,9 +282,13 @@ const Hero = () => {
                 &
               </motion.span>
               <motion.span
+                key={`hero-groom-${animationKey}`}
                 initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 1.4 }}
+                animate={{ 
+                  opacity: overlayVisible ? 0 : 1, 
+                  x: overlayVisible ? 30 : 0 
+                }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: overlayVisible ? 0 : 1.4 }}
               >
                 {groomName}
               </motion.span>
@@ -254,26 +296,35 @@ const Hero = () => {
             
             {/* Línea decorativa inferior */}
             <motion.div 
+              key={`hero-line-bottom-${animationKey}`}
               className="h-px bg-white bg-opacity-40"
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: '6rem', opacity: 1 }}
-              transition={{ duration: 1, ease: "easeOut", delay: 1.6 }}
+              animate={{ 
+                width: overlayVisible ? 0 : '6rem', 
+                opacity: overlayVisible ? 0 : 1 
+              }}
+              transition={{ duration: 1, ease: "easeOut", delay: overlayVisible ? 0 : 1.6 }}
             />
           </div>
         </motion.div>
 
         {/* Fecha del evento */}
         <motion.div 
+          key={`hero-date-container-${animationKey}`}
           className="mb-8"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 1.8 }}
+          animate={{ 
+            opacity: overlayVisible ? 0 : 1, 
+            y: overlayVisible ? 20 : 0 
+          }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: overlayVisible ? 0 : 1.8 }}
         >
           <motion.p 
+            key={`hero-date-text-${animationKey}`}
             className="text-lg md:text-xl font-body font-light text-white opacity-90"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 2 }}
+            animate={{ opacity: overlayVisible ? 0 : 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: overlayVisible ? 0 : 2 }}
           >
             {formatDate()}
           </motion.p>
@@ -281,20 +332,25 @@ const Hero = () => {
 
         {/* Call to Action Button */}
         <motion.div 
+          key={`hero-cta-container-${animationKey}`}
           className="space-y-6"
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 2.2 }}
+          animate={{ 
+            opacity: overlayVisible ? 0 : 1, 
+            y: overlayVisible ? 30 : 0 
+          }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: overlayVisible ? 0 : 2.2 }}
         >
           <motion.button
+            key={`hero-cta-button-${animationKey}`}
             onClick={() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth' })}
             className="bg-stone-400 bg-opacity-70 text-white font-body font-medium py-3 px-8 md:py-3.5 md:px-10 rounded-full text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white border-opacity-30"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1}}
+            animate={{ opacity: overlayVisible ? 0 : 1 }}
             transition={{ 
               duration: 0.6, 
               ease: "easeOut", 
-              delay: 2.4
+              delay: overlayVisible ? 0 : 2.4
             }}
           >
             {t('cta')}
@@ -302,17 +358,19 @@ const Hero = () => {
 
           {/* Scroll indicator - abajo del botón */}
           <motion.div
-            animate={{ y: [0, 8, 0] }}
+            key={`hero-scroll-indicator-${animationKey}`}
+            animate={{ 
+              y: overlayVisible ? [0, 0, 0] : [0, 8, 0],
+              opacity: overlayVisible ? 0 : 1
+            }}
             transition={{ 
               duration: 2.5, 
-              repeat: Infinity,
+              repeat: overlayVisible ? 0 : Infinity,
               ease: "easeInOut",
-              delay: 3
+              delay: overlayVisible ? 0 : 3
             }}
             className="flex flex-col items-center opacity-70 pt-4"
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
           >
             <motion.div
               animate={{ 
