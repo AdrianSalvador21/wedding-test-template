@@ -277,7 +277,7 @@ const RSVPContent = () => {
 
           <div className="max-w-md mx-auto text-center">
             <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <div className="animate-spin w-8 h-8 border-2 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin w-8 h-8 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-text font-body">Cargando información del invitado...</p>
             </div>
           </div>
@@ -465,11 +465,11 @@ const RSVPContent = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-primary text-white font-body font-medium py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
+                  className="w-full bg-transparent border-accent text-accent hover:text-accent-dark hover:border-accent-dark font-body font-medium py-4 px-6 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-accent border-t-transparent rounded-full animate-spin" />
                       <span className="font-body">{t('form.submitting')}</span>
                     </>
                   ) : (
@@ -607,11 +607,11 @@ const RSVPContent = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-gradient-primary text-white font-body font-medium py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3"
+                      className="w-full bg-transparent border-accent text-accent hover:text-accent-dark hover:border-accent-dark font-body font-medium py-4 px-6 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
                     >
                       {isSubmitting ? (
                         <>
-                          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <div className="w-6 h-6 border-accent border-t-transparent rounded-full animate-spin" />
                           <span className="font-body">{t('form.submitting')}</span>
                         </>
                       ) : (
@@ -635,7 +635,7 @@ const RSVP = () => {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-stone-300 border-t-stone-900 rounded-full"></div>
+        <div className="animate-spin w-8 h-8 border-stone-300 border-t-stone-900 rounded-full"></div>
       </div>
     }>
       <RSVPContent />

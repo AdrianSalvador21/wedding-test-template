@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
-import { ExternalLink, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
@@ -82,11 +82,10 @@ const Location = () => {
                 </div>
                 <button
                   onClick={() => openExternalLink(ceremonyUrl)}
-                  className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+                  className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent"
                 >
                   <MapPin className="w-4 h-4 mr-2" />
                   {t('directions')}
-                  <ExternalLink className="w-4 h-4 ml-2" />
                 </button>
               </div>
             )}
@@ -112,11 +111,10 @@ const Location = () => {
                 </div>
                 <button
                   onClick={() => openExternalLink(receptionMapsUrl)}
-                  className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+                  className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent"
                 >
                   <MapPin className="w-4 h-4 mr-2" />
                   {t('directions')}
-                  <ExternalLink className="w-4 h-4 ml-2" />
                 </button>
               </div>
             )}
@@ -182,11 +180,10 @@ const Location = () => {
               </div>
               <button
                 onClick={() => openExternalLink(ceremonyUrl)}
-                className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+                className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent"
               >
                 <MapPin className="w-4 h-4 mr-2" />
                 {t('directions')}
-                <ExternalLink className="w-4 h-4 ml-2" />
               </button>
             </div>
 
@@ -208,11 +205,10 @@ const Location = () => {
               </div>
               <button
                 onClick={() => openExternalLink(receptionMapsUrl)}
-                className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body"
+                className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent"
               >
                 <MapPin className="w-4 h-4 mr-2" />
                 {t('directions')}
-                <ExternalLink className="w-4 h-4 ml-2" />
               </button>
             </div>
           </div>

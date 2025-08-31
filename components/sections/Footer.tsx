@@ -40,19 +40,22 @@ const Footer = () => {
   const isPremiumTheme = currentTheme.id === 'premium';
   const isCorporateTheme = currentTheme.id === 'corporate';
   const isSpecialCustomTheme = currentTheme.id === 'special-custom-one';
-  const isThemeWithCustomColors = isLuxuryTheme || isPremiumTheme || isCorporateTheme || isSpecialCustomTheme;
-  
-  // Crear degradado específico para special-custom-one
+  const isSpecialCustomTwoTheme = currentTheme.id === 'special-custom-two';
+  const isThemeWithCustomColors = isLuxuryTheme || isPremiumTheme || isCorporateTheme || isSpecialCustomTheme || isSpecialCustomTwoTheme;
+
+  // Crear degradados específicos para temas custom
   const getFooterBgClass = () => {
     if (isSpecialCustomTheme) {
-      return 'bg-gradient-to-br from-[#4a3f35] via-[#6b5b47] to-[#8b7355]'; // Degradado con colores del tema
+      return 'bg-gradient-to-br from-[#4a3f35] via-[#6b5b47] to-[#8b7355]'; // Degradado beige/marrón
+    } else if (isSpecialCustomTwoTheme) {
+      return 'bg-gradient-to-br from-[#d27f0e] to-[#72460af0]'; // Degradado elegante: chocolate → terracota → burgundy
     } else if (isThemeWithCustomColors) {
       return 'footer-theme-bg'; // Otros temas personalizados
     } else {
       return 'bg-gradient-to-br from-primary via-secondary to-accent'; // Temas normales
     }
   };
-  
+
   const footerBgClass = getFooterBgClass();
   const footerTextClass = isThemeWithCustomColors ? 'footer-theme-text' : 'text-white';
   const footerAccentClass = isThemeWithCustomColors ? 'footer-theme-accent' : 'text-accent';
@@ -98,7 +101,7 @@ const Footer = () => {
               <h2 className="text-2xl font-special font-light mb-2">
                 {brideName} & {groomName}
               </h2>
-              
+
               {/* Línea decorativa */}
               <div className="flex items-center justify-center space-x-3 mb-4">
                 <div className="w-8 h-px bg-white/40"></div>
@@ -171,126 +174,128 @@ const Footer = () => {
 
   // Versión para desktop con animaciones CSS
   return (
-    <footer className={`${footerBgClass} ${footerTextClass}`}>
-      <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-8 sm:">
-        <div className="max-w-4xl mx-auto">
-          
-          {/* Contenido principal minimalista */}
-          <motion.div 
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <motion.h3 
-              className="text-2xl font-heading font-light mb-4"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-            >
-              {brideName} & {groomName}
-            </motion.h3>
-            
-            <motion.div 
-              className="flex items-center justify-center space-x-4 mb-6"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-            >
-              <div className={`w-12 h-px ${isThemeWithCustomColors ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
-              <Heart className={`w-5 h-5 ${footerAccentClass}`} />
-              <div className={`w-12 h-px ${isThemeWithCustomColors ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
-            </motion.div>
+    <>
+      <footer className={`${footerBgClass} ${footerTextClass}`}>
+        <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-8 sm:">
+          <div className="max-w-4xl mx-auto">
 
-            <motion.p 
-              className="text-white/80 font-body mb-8 max-w-md mx-auto italic"
-              initial={{ opacity: 0, y: 20 }}
+            {/* Contenido principal minimalista */}
+            <motion.div
+              className="text-center mb-12"
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              {coupleQuote}
-            </motion.p>
+              <motion.h3
+                className="text-2xl font-heading font-light mb-4"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+              >
+                {brideName} & {groomName}
+              </motion.h3>
 
-            <motion.p 
-              className="text-white/90 text-lg font-body font-medium"
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
-            >
-              {t('cta')}
-            </motion.p>
+              <motion.div
+                className="flex items-center justify-center space-x-4 mb-6"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+              >
+                <div className={`w-12 h-px ${isThemeWithCustomColors ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
+                <Heart className={`w-5 h-5 ${footerAccentClass}`} />
+                <div className={`w-12 h-px ${isThemeWithCustomColors ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
+              </motion.div>
 
-            {hashtag && (
-              <motion.p 
-                className={`${footerAccentClass} text-lg font-body font-medium mt-4`}
+              <motion.p
+                className="text-white/80 font-body mb-8 max-w-md mx-auto italic"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+              >
+                {coupleQuote}
+              </motion.p>
+
+              <motion.p
+                className="text-white/90 text-lg font-body font-medium"
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
+                transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
               >
-                {hashtag}
+                {t('cta')}
               </motion.p>
-            )}
-          </motion.div>
 
-          {/* Información de contacto minimalista */}
-          <div className="grid md:grid-cols-3 gap-8 text-center mb-12 animation-delay-400">
-            <button
-              onClick={handleEmailClick}
-              className={`flex items-center justify-center space-x-3 ${hoverClass} transition-colors`}
-            >
-              <Mail className="w-4 h-4" />
-              <span className="text-sm font-body">{coupleEmail}</span>
-            </button>
-            <div className="flex items-center justify-center space-x-4">
-              <button
-                onClick={() => handleWhatsAppClick(bridPhone)}
-                className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
-              >
-                <Phone className="w-4 h-4" />
-                <span className="text-sm font-body">{brideName}</span>
-              </button>
-              <span className="text-white/40">|</span>
-              <button
-                onClick={() => handleWhatsAppClick(groomPhone)}
-                className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
-              >
-                <Phone className="w-4 h-4" />
-                <span className="text-sm font-body">{groomName}</span>
-              </button>
-            </div>
-            <div className="flex justify-center space-x-4">
-              {(brideInstagram || groomInstagram) && (
-                <button
-                  onClick={handleInstagramClick}
-                  className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110"
+              {hashtag && (
+                <motion.p
+                  className={`${footerAccentClass} text-lg font-body font-medium mt-4`}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
                 >
-                  <Instagram className="w-4 h-4 text-white" />
-                </button>
+                  {hashtag}
+                </motion.p>
               )}
-              {(brideFacebook || groomFacebook) && (
-                <button
-                  onClick={handleFacebookClick}
-                  className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110"
-                >
-                  <Facebook className="w-4 h-4 text-white" />
-                </button>
-              )}
-            </div>
-          </div>
+            </motion.div>
 
-          {/* Copyright */}
-          <div className="text-center text-white/60 text-sm font-body animation-delay-600">
-            <p>{t('copyright').replace('{brideName}', brideName).replace('{groomName}', groomName)}</p>
+            {/* Información de contacto minimalista */}
+            <div className="grid md:grid-cols-3 gap-8 text-center mb-12 animation-delay-400">
+              <button
+                onClick={handleEmailClick}
+                className={`flex items-center justify-center space-x-3 ${hoverClass} transition-colors`}
+              >
+                <Mail className="w-4 h-4" />
+                <span className="text-sm font-body">{coupleEmail}</span>
+              </button>
+              <div className="flex items-center justify-center space-x-4">
+                <button
+                  onClick={() => handleWhatsAppClick(bridPhone)}
+                  className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
+                >
+                  <Phone className="w-4 h-4" />
+                  <span className="text-sm font-body">{brideName}</span>
+                </button>
+                <span className="text-white/40">|</span>
+                <button
+                  onClick={() => handleWhatsAppClick(groomPhone)}
+                  className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
+                >
+                  <Phone className="w-4 h-4" />
+                  <span className="text-sm font-body">{groomName}</span>
+                </button>
+              </div>
+              <div className="flex justify-center space-x-4">
+                {(brideInstagram || groomInstagram) && (
+                  <button
+                    onClick={handleInstagramClick}
+                    className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110"
+                  >
+                    <Instagram className="w-4 h-4 text-white" />
+                  </button>
+                )}
+                {(brideFacebook || groomFacebook) && (
+                  <button
+                    onClick={handleFacebookClick}
+                    className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110"
+                  >
+                    <Facebook className="w-4 h-4 text-white" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Copyright */}
+            <div className="text-center text-white/60 text-sm font-body animation-delay-600">
+              <p>{t('copyright').replace('{brideName}', brideName).replace('{groomName}', groomName)}</p>
+            </div>
           </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 };
 

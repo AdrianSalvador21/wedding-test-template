@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, ExternalLink } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
@@ -102,11 +102,10 @@ const Accommodation = () => {
                   {/* Botón de ubicación */}
                   <button
                     onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-accent text-white rounded-md hover:bg-accent-dark transition-colors font-body font-medium text-sm"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-accent hover:text-accent-dark transition-colors font-body font-medium text-sm"
                   >
                     <MapPin className="w-4 h-4" />
                     {t('seeLocation')}
-                    <ExternalLink className="w-3 h-3" />
                   </button>
                 </motion.div>
               ))}
@@ -199,11 +198,10 @@ const Accommodation = () => {
                     {/* Botón de ubicación */}
                     <button
                       onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-accent text-white rounded-md hover:bg-accent-dark transition-colors font-body font-medium text-sm"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-accent hover:text-accent-dark transition-colors font-body font-medium text-sm"
                     >
                       <MapPin className="w-4 h-4" />
                       {t('seeLocation')}
-                      <ExternalLink className="w-3 h-3" />
                     </button>
                   </div>
                 ))}

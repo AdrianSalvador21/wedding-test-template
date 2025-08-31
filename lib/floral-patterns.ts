@@ -335,21 +335,24 @@ export const floralPatterns = {
 };
 
 // Helper function para generar estilos de fondo
-export const getFloralBackgroundStyle = (patternNumber: 1 | 2 | 3 | 4 | 5, size: string = '250px') => {
+export const getFloralBackgroundStyle = (
+  patternNumber: 1 | 2 | 3 | 4 | 5, 
+  size: string = '250px', 
+) => {
   // Configuración especial para el patrón 5 (mantiene configuración original)
   if (patternNumber === 5) {
     return {
       backgroundImage: `url('${floralPatterns[`pattern${patternNumber}`]}')`,
-      backgroundSize: size,
+      backgroundSize: size, // Más pequeño = más visible
       backgroundRepeat: 'repeat',
       backgroundPosition: '0% 0%',
     };
   }
   
-  // Configuración para patrones 1-4 (aparece solo 1-2 veces máximo)
+  // Configuración para patrones 1-4
   return {
     backgroundImage: `url('${floralPatterns[`pattern${patternNumber}`]}')`,
-    backgroundSize: '1400px 1000px', // Mucho más grande para que aparezca menos veces
+    backgroundSize: '1400px 1000px', // Más pequeño = más visible
     backgroundRepeat: 'repeat',
     backgroundPosition: '0% 0%',
   };
