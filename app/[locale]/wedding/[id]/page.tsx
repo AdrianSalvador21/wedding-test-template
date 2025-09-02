@@ -13,8 +13,10 @@ export async function generateMetadata({ params }: WeddingPageProps): Promise<Me
   
   if (!weddingData) {
     return {
-      title: 'Invitación de Boda',
-      description: 'Una celebración especial te espera.',
+      title: params.locale === 'en' ? 'Wedding Invitation' : 'Invitación de Boda',
+      description: params.locale === 'en' 
+        ? 'A special celebration awaits you. Love, joy, and unforgettable moments.'
+        : 'Una celebración especial te espera. Amor, alegría y momentos inolvidables.',
     };
   }
 
@@ -26,21 +28,32 @@ export async function generateMetadata({ params }: WeddingPageProps): Promise<Me
     day: 'numeric'
   });
 
-  const title = `${couple.bride.name} & ${couple.groom.name} - Invitación de Boda`;
+  // Metadatos íntimos y personales para la invitación
+  const title = params.locale === 'en' 
+    ? `${couple.bride.name} & ${couple.groom.name} - Our Wedding Day`
+    : `${couple.bride.name} & ${couple.groom.name} - Nuestra Boda`;
+    
   const storyText = typeof couple.story === 'object' && couple.story 
     ? (couple.story[params.locale as 'es' | 'en'] || couple.story.es || '')
     : (couple.story as string || '');
-  const description = `Te invitamos a celebrar nuestro amor el ${formattedDate}. ${storyText.substring(0, 160)}...`;
+    
+  const description = params.locale === 'en'
+    ? `Join us as we celebrate our love and begin our journey together as husband and wife on ${weddingDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}. Your presence would make our special day even more meaningful. ${storyText.substring(0, 120)}...`
+    : `Acompáñanos a celebrar nuestro amor y el inicio de nuestro camino juntos como esposos el ${formattedDate}. Tu presencia hará que nuestro día especial sea aún más significativo. ${storyText.substring(0, 120)}...`;
   
-  // Crear keywords con verificaciones de seguridad
+  // Crear keywords íntimas y personales
   const keywords = [
-    'boda',
-    'invitación',
-    'wedding',
+    params.locale === 'en' ? 'wedding' : 'boda',
+    params.locale === 'en' ? 'wedding invitation' : 'invitación de boda',
+    params.locale === 'en' ? 'love celebration' : 'celebración de amor',
+    params.locale === 'en' ? 'marriage' : 'matrimonio',
     couple.bride.name,
     couple.groom.name,
+    `${couple.bride.name} ${couple.groom.name}`,
     formattedDate,
     weddingDate.getFullYear().toString(),
+    params.locale === 'en' ? 'join us' : 'acompáñanos',
+    params.locale === 'en' ? 'special day' : 'día especial'
   ];
 
   // Agregar venue names solo si existen
@@ -74,7 +87,7 @@ export async function generateMetadata({ params }: WeddingPageProps): Promise<Me
           alt: weddingData.heroImage.alt,
         },
       ],
-      siteName: 'Invitación de Boda',
+      siteName: params.locale === 'en' ? 'Wedding Invitation' : 'Invitación de Boda',
     },
     twitter: {
       card: 'summary_large_image',

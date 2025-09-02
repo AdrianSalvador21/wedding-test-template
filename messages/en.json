@@ -35,6 +35,10 @@
     "engagement": "Engagement",
     "engaged": "Engaged"
   },
+  "parents": {
+    "title": "Our Parents",
+    "parentsOf": "Parents of"
+  },
   "gallery": {
     "title": "Gallery",
     "subtitle": "Moments we treasure",

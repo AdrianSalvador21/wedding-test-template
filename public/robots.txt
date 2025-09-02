@@ -1,24 +1,47 @@
 User-agent: *
 Allow: /
 
-# Optimized crawling
+# Optimized crawling for better SEO
 Crawl-delay: 1
 
-# Sitemap
+# Sitemap location
 Sitemap: https://invyta.me/sitemap.xml
 
-# Disallow admin areas
+# Allow main pages for SEO
+Allow: /
+Allow: /es/
+Allow: /en/
+Allow: /es#*
+Allow: /en#*
+
+# Block private areas
 Disallow: /admin/
 Disallow: /api/
 Disallow: /*?guest=*
-
-# Allow specific pages
-Allow: /
-Allow: /en/
-Allow: /es/
-Allow: /wedding/*/
+Disallow: /*/wedding/
+Disallow: /*/admin/
+Disallow: /demo/
+Disallow: /typography-test/
 
 # Block search engines from indexing private wedding pages
 Disallow: /en/wedding/
 Disallow: /es/wedding/
+Disallow: /*/invitation/
 
+# Allow Google to crawl CSS and JS for better rendering
+User-agent: Googlebot
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp
+
+# Specific rules for other bots
+User-agent: Bingbot
+Crawl-delay: 2
+
+User-agent: Slurp
+Crawl-delay: 3
