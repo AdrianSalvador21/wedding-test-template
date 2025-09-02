@@ -35,6 +35,10 @@
     "engagement": "Compromiso", 
     "engaged": "Comprometidos"
   },
+  "parents": {
+    "title": "Nuestros Padres",
+    "parentsOf": "Padres de"
+  },
   "gallery": {
     "title": "Galería",
     "subtitle": "Momentos especiales capturados en el tiempo",
