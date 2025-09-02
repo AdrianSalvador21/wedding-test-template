@@ -58,7 +58,7 @@ export const useWeddingMusic = (weddingId?: string): WeddingMusicResult => {
               autoplay: true,
               volume: 0.5,
               showControls: true,
-              startTime: 5 // Empezar desde el segundo 5 del track
+              startTime: 8 // Empezar desde el segundo 5 del track
             };
             
             setMusic(customMusic);
