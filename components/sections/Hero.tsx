@@ -206,7 +206,7 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
           className="mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: overlayVisible ? 0 : 1, y: overlayVisible ? -20 : 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: overlayVisible ? 0 : 0.2 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: overlayVisible ? 0 : 0.2 }}
         >
           <motion.h2 
             key={`hero-subtitle-${animationKey}`}
@@ -216,7 +216,7 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
               opacity: overlayVisible ? 0 : 1, 
               letterSpacing: overlayVisible ? '0.8em' : '0.4em' 
             }}
-            transition={{ duration: 1.2, ease: "easeOut", delay: overlayVisible ? 0 : 0.4 }}
+            transition={{ duration: 1, ease: "easeOut", delay: overlayVisible ? 0 : 0.2 }}
           >
             {t('ourWedding')}
           </motion.h2>
@@ -258,7 +258,7 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
                   opacity: overlayVisible ? 0 : 1, 
                   x: overlayVisible ? -30 : 0 
                 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: overlayVisible ? 0 : 1 }}
+                transition={{ duration: 0.1, ease: "easeOut", delay: overlayVisible ? 0 : 1 }}
               >
                 {brideName}
               </motion.span>
