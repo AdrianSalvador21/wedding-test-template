@@ -48,7 +48,7 @@ const Footer = () => {
     if (isSpecialCustomTheme) {
       return 'bg-gradient-to-br from-[#4a3f35] via-[#6b5b47] to-[#8b7355]'; // Degradado beige/marrón
     } else if (isSpecialCustomTwoTheme) {
-      return 'bg-gradient-to-br from-[#d27f0e] to-[#72460af0]'; // Degradado elegante: chocolate → terracota → burgundy
+      return 'bg-gradient-to-br from-[#db830bd9] to-[#744503ed]'; // Degradado elegante: chocolate → terracota → burgundy
     } else if (isThemeWithCustomColors) {
       return 'footer-theme-bg'; // Otros temas personalizados
     } else {
