@@ -166,7 +166,7 @@ const Accommodation = () => {
             <div className="animation-delay-400">
               <div className="text-center mb-12">
                 <MapPin className="w-12 h-12 mx-auto mb-6 text-accent" />
-                <h3 className="text-2xl font-heading font-semibold text-primary mb-4">
+                <h3 className="text-2xl font-blockquote font-semibold text-primary mb-4">
                   {t('nearbyHotels')}
                 </h3>
                 <p className="text-text font-body opacity-80">

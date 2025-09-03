@@ -349,7 +349,7 @@ const RSVPContent = () => {
 
           <div className="max-w-md mx-auto text-center">
             <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <h2 className="text-2xl font-heading font-semibold text-primary mb-4">
+              <h2 className="text-2xl font-blockquote font-semibold text-primary mb-4">
                 {existingRSVP?.attending ? t('confirmation.received') : t('confirmation.registered')}
               </h2>
               <p className="text-text font-body mb-4">

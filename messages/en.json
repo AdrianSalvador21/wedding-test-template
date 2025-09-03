@@ -256,7 +256,7 @@
   },
   "location": {
     "title": "Event Location",
-    "ceremony": "Religious Ceremony",
+    "ceremony": "Civil Ceremony",
     "reception": "Reception",
     "directions": "See location",
     "ceremony.venue": "St. Joseph Church",
