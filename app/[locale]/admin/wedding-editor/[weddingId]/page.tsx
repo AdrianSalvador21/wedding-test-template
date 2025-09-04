@@ -777,6 +777,37 @@ function CoupleSection({ data, onChange }: SectionProps) {
         </div>
       </div>
 
+      {/* Teléfonos */}
+      <div className="space-y-4 sm:space-y-6">
+        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Teléfonos</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Teléfono de la persona 2
+            </label>
+            <input
+              type="tel"
+              value={getSafeValue(data, 'bride.phone')}
+              onChange={(e) => onChange('bride.phone', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              placeholder="+52 55 1234-5678"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Teléfono de la persona 1
+            </label>
+            <input
+              type="tel"
+              value={getSafeValue(data, 'groom.phone')}
+              onChange={(e) => onChange('groom.phone', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              placeholder="+52 55 8765-4321"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Historia de amor */}
       <div className="space-y-4 sm:space-y-6">
         <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Historia de Amor</h3>

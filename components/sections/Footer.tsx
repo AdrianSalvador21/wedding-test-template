@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
-import { Heart, Instagram, Facebook, Mail, Phone } from 'lucide-react';
+import { Heart, Instagram, Facebook, Mail, MessageCircle } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
@@ -23,8 +23,8 @@ const Footer = () => {
   const couple = weddingData?.couple;
   const brideName = couple?.bride.name || 'María';
   const groomName = couple?.groom.name || 'Carlos';
-  const bridPhone = couple?.bride.phone || '+52 55 1234-5678';
-  const groomPhone = couple?.groom.phone || '+52 55 8765-4321';
+  const bridPhone = couple?.bride.phone || '';
+  const groomPhone = couple?.groom.phone || '';
   const brideInstagram = couple?.bride.instagram;
   const groomInstagram = couple?.groom.instagram;
   const brideFacebook = couple?.bride.facebook;
@@ -135,6 +135,30 @@ const Footer = () => {
                 <Mail className="w-5 h-5" />
               </button>
             </div>
+
+            {/* WhatsApp en móvil */}
+            {(bridPhone || groomPhone) && (
+              <div className="flex justify-center space-x-4">
+                {bridPhone && (
+                  <button
+                    onClick={() => handleWhatsAppClick(bridPhone)}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-full transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span className="text-sm font-body">{brideName}</span>
+                  </button>
+                )}
+                {groomPhone && (
+                  <button
+                    onClick={() => handleWhatsAppClick(groomPhone)}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-full transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span className="text-sm font-body">{groomName}</span>
+                  </button>
+                )}
+              </div>
+            )}
 
             {/* Hashtag */}
             {hashtag && (
@@ -252,21 +276,37 @@ const Footer = () => {
                 <span className="text-sm font-body">{coupleEmail}</span>
               </button>
               <div className="flex items-center justify-center space-x-4">
-                <button
-                  onClick={() => handleWhatsAppClick(bridPhone)}
-                  className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
-                >
-                  <Phone className="w-4 h-4" />
-                  <span className="text-sm font-body">{brideName}</span>
-                </button>
-                <span className="text-white/40">|</span>
-                <button
-                  onClick={() => handleWhatsAppClick(groomPhone)}
-                  className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
-                >
-                  <Phone className="w-4 h-4" />
-                  <span className="text-sm font-body">{groomName}</span>
-                </button>
+                {(bridPhone || groomPhone) ? (
+                  <>
+                    {bridPhone && (
+                      <button
+                        onClick={() => handleWhatsAppClick(bridPhone)}
+                        className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span className="text-sm font-body">{brideName}</span>
+                      </button>
+                    )}
+                    {bridPhone && groomPhone && (
+                      <span className="text-white/40">|</span>
+                    )}
+                    {groomPhone && (
+                      <button
+                        onClick={() => handleWhatsAppClick(groomPhone)}
+                        className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span className="text-sm font-body">{groomName}</span>
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex items-center space-x-4">
+                    <span className="text-sm font-body">{brideName}</span>
+                    <span className="text-white/40">|</span>
+                    <span className="text-sm font-body">{groomName}</span>
+                  </div>
+                )}
               </div>
               <div className="flex justify-center space-x-4">
                 {(brideInstagram || groomInstagram) && (
