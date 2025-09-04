@@ -112,6 +112,7 @@ const RSVPContent = () => {
     attendance: z.enum(['yes', 'no'], {
       required_error: t('form.selectOption')
     }),
+    guestCount: weddingData?.selectedGuestTickets ? z.enum(['1', '2']) : z.string().optional(),
     plusOneName: z.string().optional(),
     plusOneAttendance: z.enum(['yes', 'no']).optional(),
     dietaryRestrictions: z.string().optional(),
@@ -124,7 +125,8 @@ const RSVPContent = () => {
     register,
     handleSubmit,
     formState: { errors },
-    setValue
+    setValue,
+    watch
   } = useForm<RSVPFormData>({
     resolver: zodResolver(rsvpSchema),
     mode: 'onChange'
@@ -178,9 +180,15 @@ const RSVPContent = () => {
         }
       }
 
+      // Determinar el guestCount a usar
+      if (weddingData?.selectedGuestTickets && data.guestCount) {
+        guestCount = parseInt(data.guestCount);
+      }
+
       // Preparar datos de confirmación RSVP
       const rsvpConfirmation = {
         attending: data.attendance === 'yes',
+        guestCount: weddingData?.selectedGuestTickets && data.guestCount ? parseInt(data.guestCount) : undefined,
         guestEmail: data.email || undefined,
         message: data.message?.trim() || undefined,
         dietaryRestrictions: data.dietaryRestrictions?.trim() || undefined,
@@ -448,6 +456,34 @@ const RSVPContent = () => {
                   )}
                 </div>
 
+                {/* Número de invitados - Solo mostrar si selectedGuestTickets está activo */}
+                {weddingData?.selectedGuestTickets && (
+                  <div>
+                    <label className="block text-sm font-body font-medium text-dark mb-2">
+                      {t('form.guestCount')} *
+                    </label>
+                    <div className="relative">
+                      <select
+                        {...register('guestCount')}
+                        disabled={watch('attendance') === 'no'}
+                        className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none font-body disabled:bg-gray-100 disabled:text-gray-500"
+                        defaultValue="1"
+                      >
+                        <option value="1">{t('form.guestCountOptions.1')}</option>
+                        <option value="2">{t('form.guestCountOptions.2')}</option>
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                    </div>
+                    {errors.guestCount && (
+                      <p className="text-red-500 text-sm font-body mt-1">{t('form.selectOption')}</p>
+                    )}
+                    {/* Disclaimer sobre más boletos */}
+                    <p className="text-xs text-gray-600 mt-2 font-body">
+                      {t('form.guestCountDisclaimer')}
+                    </p>
+                  </div>
+                )}
+
                 {/* Mensaje para los novios */}
                 <div>
                   <label className="block text-sm font-body font-medium text-dark mb-2">
@@ -589,6 +625,34 @@ const RSVPContent = () => {
                         <p className="text-red-500 text-sm font-body mt-1">{t('form.selectOption')}</p>
                       )}
                     </div>
+
+                    {/* Número de invitados - Solo mostrar si selectedGuestTickets está activo */}
+                    {weddingData?.selectedGuestTickets && (
+                      <div>
+                        <label className="block text-sm font-body font-medium text-dark mb-2">
+                          {t('form.guestCount')} *
+                        </label>
+                        <div className="relative">
+                          <select
+                            {...register('guestCount')}
+                            disabled={watch('attendance') === 'no'}
+                            className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none font-body disabled:bg-gray-100 disabled:text-gray-500"
+                            defaultValue="1"
+                          >
+                            <option value="1">{t('form.guestCountOptions.1')}</option>
+                            <option value="2">{t('form.guestCountOptions.2')}</option>
+                          </select>
+                          <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                        </div>
+                        {errors.guestCount && (
+                          <p className="text-red-500 text-sm font-body mt-1">{t('form.selectOption')}</p>
+                        )}
+                        {/* Disclaimer sobre más boletos */}
+                        <p className="text-xs text-gray-600 mt-2 font-body">
+                          {t('form.guestCountDisclaimer')}
+                        </p>
+                      </div>
+                    )}
 
                     {/* Mensaje para los novios */}
                     <div>
