@@ -215,7 +215,7 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
       />*/}
 
       {/* Content */}
-      <div className="relative m-relative-10 z-10 text-center px-4 max-w-4xl mx-auto">
+      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         {/* Contenido del texto */}
         <div className="relative z-10">
         {/* "NUESTRA BODA" - Animación de entrada suave */}
