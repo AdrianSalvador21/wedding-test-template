@@ -32,6 +32,7 @@ const AdminGuestsPage = () => {
 
   const [guests, setGuests] = useState<FirebaseGuest[]>([]);
   const [stats, setStats] = useState<GuestStats>({ total: 0, totalGuestCount: 0, confirmed: 0, declined: 0, pending: 0 });
+  const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
@@ -219,10 +220,12 @@ const AdminGuestsPage = () => {
             // Tiene información, migrar datos si es necesario
             const migratedData = migrateWeddingData(data as unknown as Record<string, unknown>);
             await setDoc(docRef, migratedData);
+            setWeddingData(migratedData);
           } else {
             // Existe pero sin información, crear estructura base
             const initialData = createInitialWeddingData(weddingId);
             await setDoc(docRef, initialData);
+            setWeddingData(initialData);
           }
         } else {
           // No existe el documento en Firebase → 404
@@ -292,7 +295,8 @@ const AdminGuestsPage = () => {
         name: formData.name.trim(),
         email: formData.email.trim(),
         phone: formData.phone.trim(),
-        guestCount: Number(formData.guestCount),
+        // Si selectedGuestTickets es true, usar 1 por defecto, sino usar el valor del form
+        guestCount: weddingData?.selectedGuestTickets ? 1 : Number(formData.guestCount),
         language: formData.language,
         coupleMessage: formData.coupleMessage.trim(),
         weddingId,
@@ -608,7 +612,15 @@ const AdminGuestsPage = () => {
                       <div className="text-sm text-gray-500">{guest.phone}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {guest.guestCount}
+                      {weddingData?.selectedGuestTickets ? (
+                        // Si selectedGuestTickets es true, mostrar el número seleccionado por el usuario o "Pendiente"
+                        guest.rsvpConfirmation?.attending ? 
+                          (guest.rsvpConfirmation?.guestCount || 1) : 
+                          <span className="text-gray-500 italic">Pendiente</span>
+                      ) : (
+                        // Comportamiento normal
+                        guest.guestCount
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
@@ -754,20 +766,23 @@ const AdminGuestsPage = () => {
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Número de Personas
-                      </label>
-                      <input
-                        type="number"
-                        name="guestCount"
-                        value={formData.guestCount}
-                        onChange={handleInputChange}
-                        min="1"
-                        max="10"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                      />
-                    </div>
+                    {/* Solo mostrar número de personas si selectedGuestTickets no está activo */}
+                    {!weddingData?.selectedGuestTickets && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Número de Personas
+                        </label>
+                        <input
+                          type="number"
+                          name="guestCount"
+                          value={formData.guestCount}
+                          onChange={handleInputChange}
+                          min="1"
+                          max="10"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        />
+                      </div>
+                    )}
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">

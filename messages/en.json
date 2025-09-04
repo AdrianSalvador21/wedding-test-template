@@ -198,6 +198,12 @@
       "message": "Special message",
       "messagePlaceholder": "Share your good wishes...",
       "messageForCouple": "Message for the couple",
+      "guestCount": "Number of guests",
+      "guestCountOptions": {
+        "1": "1 guest",
+        "2": "2 guests"
+      },
+      "guestCountDisclaimer": "Need more tickets? Please contact the couple or leave us a message.",
       "guestWelcome": "Hello {name}! Please confirm your attendance",
       "selectOption": "Please select an option",
       "submit": "Confirm Attendance",
@@ -256,7 +262,7 @@
   },
   "location": {
     "title": "Event Location",
-    "ceremony": "Religious Ceremony",
+    "ceremony": "Civil Ceremony",
     "reception": "Reception",
     "directions": "See location",
     "ceremony.venue": "St. Joseph Church",

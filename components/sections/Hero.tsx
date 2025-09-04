@@ -198,8 +198,26 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
         <div className="absolute inset-0 bg-black bg-opacity-40 z-10" />
       </div>
 
+      {/* Franja horizontal de pantalla completa - animada */}
+      {/*<motion.div 
+        key={`hero-overlay-${animationKey}`}
+        className="absolute top-34 inset-x-0 top-1/2 transform -translate-y-1/2 h-80 md:h-80 bg-gradient-to-b from-black/20 via-black/60 to-black/20 z-5"
+        initial={{ opacity: 0, scaleX: 0 }}
+        animate={{ 
+          opacity: overlayVisible ? 0 : 1,
+          scaleX: overlayVisible ? 0 : 1
+        }}
+        transition={{ 
+          duration: 1, 
+          ease: "easeOut", 
+          delay: overlayVisible ? 0 : 0.5 
+        }}
+      />*/}
+
       {/* Content */}
       <div className="relative m-relative-10 z-10 text-center px-4 max-w-4xl mx-auto">
+        {/* Contenido del texto */}
+        <div className="relative z-10">
         {/* "NUESTRA BODA" - Animación de entrada suave */}
         <motion.div 
           key={`hero-title-${animationKey}`}
@@ -210,7 +228,8 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
         >
           <motion.h2 
             key={`hero-subtitle-${animationKey}`}
-            className="text-xs md:text-sm font-body font-light tracking-[0.4em] uppercase text-white opacity-90 mb-2"
+            className="text-xs md:text-sm font-body font-light tracking-[0.4em] uppercase text-white opacity-90 mb-2 drop-shadow-lg"
+            style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}
             initial={{ opacity: 0, letterSpacing: '0.8em' }}
             animate={{ 
               opacity: overlayVisible ? 0 : 1, 
@@ -238,10 +257,11 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
             {/* Nombres con animación elegante */}
             <motion.h1 
               key={`hero-names-${animationKey}`}
-              className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl font-heading text-white tracking-wide leading-tight"
+              className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl font-heading text-white tracking-wide leading-tight drop-shadow-2xl opacity-90"
+              style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.9)', opacity: 0.9 }}
               initial={{ opacity: 0, scale: 0.8, y: 30 }}
               animate={{ 
-                opacity: overlayVisible ? 0 : 1, 
+                opacity: overlayVisible ? 0 : 0.9, 
                 scale: overlayVisible ? 0.8 : 1, 
                 y: overlayVisible ? 30 : 0 
               }}
@@ -388,6 +408,7 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
             </motion.div>
           </motion.div>
         </motion.div>
+        </div> {/* Cierre del contenido del texto */}
 
         {/* Decorative elements - Corazones flotantes elegantes */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">

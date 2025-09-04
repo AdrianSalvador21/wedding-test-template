@@ -203,17 +203,20 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                       {guest.name}
                     </motion.h3>
                     
-                    <motion.p 
-                      className="text-base text-stone-600 font-body"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 1.2, duration: 0.4 }}
-                    >
-                      {guest.allowedGuests === 1 
-                        ? t('guestCount.single')
-                        : t('guestCount.multiple').replace('{count}', guest.allowedGuests.toString())
-                      }
-                    </motion.p>
+                    {/* Solo mostrar número de boletos si selectedGuestTickets no está activo */}
+                    {!currentWedding.selectedGuestTickets && (
+                      <motion.p 
+                        className="text-base text-stone-600 font-body"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1.2, duration: 0.4 }}
+                      >
+                        {guest.allowedGuests === 1 
+                          ? t('guestCount.single')
+                          : t('guestCount.multiple').replace('{count}', guest.allowedGuests.toString())
+                        }
+                      </motion.p>
+                    )}
                   </motion.div>
 
                   {/* Special Message */}

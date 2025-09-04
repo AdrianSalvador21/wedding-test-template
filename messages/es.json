@@ -198,6 +198,12 @@
       "message": "Mensaje especial",
       "messagePlaceholder": "",
       "messageForCouple": "Mensaje para los novios",
+      "guestCount": "Número de invitados",
+      "guestCountOptions": {
+        "1": "1 invitado",
+        "2": "2 invitados"
+      },
+      "guestCountDisclaimer": "¿Necesitas más boletos? Por favor contacta a los novios o déjanos un mensaje.",
       "guestWelcome": "¡Hola {name}! Confirma tu asistencia",
       "selectOption": "Por favor selecciona una opción",
       "submit": "Confirmar Asistencia",

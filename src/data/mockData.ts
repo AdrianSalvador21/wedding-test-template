@@ -1711,6 +1711,7 @@ export const mockWeddingFriendsTest: WeddingData = {
     dietaryOptions: true,
     customQuestions: []
   },
+  selectedGuestTickets: true, // Los invitados pueden seleccionar su número de boletos
   theme: 'special-custom-two',
   status: 'draft',
   languages: ['es', 'en'],

@@ -32,6 +32,7 @@ export interface FirebaseGuest {
   // Información de confirmación RSVP (cuando confirman asistencia)
   rsvpConfirmation?: {
     attending: boolean;
+    guestCount?: number; // Número de invitados seleccionado por el usuario
     guestEmail?: string;
     message?: string;
     dietaryRestrictions?: string;
@@ -284,6 +285,7 @@ export interface WeddingData {
     dietaryOptions: boolean;
     customQuestions: string[];
   };
+  selectedGuestTickets?: boolean; // Si es true, los invitados pueden seleccionar su número de boletos
   music?: MusicConfig;
   recommendedPlaces?: RecommendedPlacesConfig;
   theme: {
