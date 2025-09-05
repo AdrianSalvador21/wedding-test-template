@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { Heart, Instagram, Facebook, Mail, MessageCircle } from 'lucide-react';
@@ -18,6 +18,22 @@ const Footer = () => {
   const { isMobile, isLoaded } = useIsMobile();
   const weddingData = useAppSelector(selectCurrentWedding);
   const { currentTheme } = useTheme();
+  const [monogramExists, setMonogramExists] = useState(false);
+
+  // Verificar si existe el monograma SVG
+  useEffect(() => {
+    const checkMonogram = async () => {
+      if (weddingData?.id) {
+        try {
+          const response = await fetch(`/assets/wedding-images/${weddingData.id}/monogram.svg`);
+          setMonogramExists(response.ok);
+        } catch {
+          setMonogramExists(false);
+        }
+      }
+    };
+    checkMonogram();
+  }, [weddingData?.id]);
 
   // Datos dinámicos con fallbacks
   const couple = weddingData?.couple;
@@ -105,7 +121,18 @@ const Footer = () => {
               {/* Línea decorativa */}
               <div className="flex items-center justify-center space-x-3 mb-4">
                 <div className="w-8 h-px bg-white/40"></div>
-                <Heart className="w-4 h-4 text-white/60" />
+                {monogramExists ? (
+                  <div className="w-5 h-5 flex items-center justify-center">
+                    <img
+                      src={`/assets/wedding-images/${weddingData?.id}/monogram.svg`}
+                      alt="Monograma"
+                      className="w-5 h-5 object-contain opacity-70"
+                      style={{ filter: 'brightness(1.2)' }}
+                    />
+                  </div>
+                ) : (
+                  <Heart className="w-4 h-4 text-white/60" />
+                )}
                 <div className="w-8 h-px bg-white/40"></div>
               </div>
             </div>
@@ -229,7 +256,22 @@ const Footer = () => {
                 transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
               >
                 <div className={`w-12 h-px ${isThemeWithCustomColors ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
-                <Heart className={`w-5 h-5 ${footerAccentClass}`} />
+                {monogramExists ? (
+                  <motion.div 
+                    className="w-6 h-6 flex items-center justify-center"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <img
+                      src={`/assets/wedding-images/${weddingData?.id}/monogram.svg`}
+                      alt="Monograma"
+                      className="w-6 h-6 object-contain opacity-80"
+                      style={{ filter: 'brightness(1.3) drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
+                    />
+                  </motion.div>
+                ) : (
+                  <Heart className={`w-5 h-5 ${footerAccentClass}`} />
+                )}
                 <div className={`w-12 h-px ${isThemeWithCustomColors ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
               </motion.div>
 

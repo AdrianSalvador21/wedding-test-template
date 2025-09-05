@@ -15,6 +15,7 @@ interface HeroProps {
 const Hero = ({ overlayVisible = false }: HeroProps) => {
   const [animationKey, setAnimationKey] = useState(0);
   const [wasOverlayVisible, setWasOverlayVisible] = useState(overlayVisible);
+  const [monogramExists, setMonogramExists] = useState(false);
 
   // Detectar cuando el overlay se cierra para reactivar animaciones
   useEffect(() => {
@@ -24,8 +25,24 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
     }
     setWasOverlayVisible(overlayVisible);
   }, [overlayVisible, wasOverlayVisible]);
+
   const { t, currentLanguage } = useTranslations('hero');
   const weddingData = useAppSelector(selectCurrentWedding);
+
+  // Verificar si existe el monograma SVG
+  useEffect(() => {
+    const checkMonogram = async () => {
+      if (weddingData?.id) {
+        try {
+          const response = await fetch(`/assets/wedding-images/${weddingData.id}/monogram.svg`);
+          setMonogramExists(response.ok);
+        } catch {
+          setMonogramExists(false);
+        }
+      }
+    };
+    checkMonogram();
+  }, [weddingData?.id]);
   const { heroImage } = useWeddingImages(weddingData?.id);
   // Datos dinámicos con fallbacks
   const brideName = weddingData?.couple.bride.name || 'María';
@@ -218,13 +235,60 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         {/* Contenido del texto */}
         <div className="relative z-10">
+        
+        {/* Monograma SVG - Solo si existe */}
+        {monogramExists && (
+          <motion.div 
+            key={`hero-monogram-${animationKey}`}
+            className="mb-12 flex justify-center"
+            initial={{ opacity: 0, y: -30, scale: 0.8 }}
+            animate={{ 
+              opacity: overlayVisible ? 0 : 1, 
+              y: overlayVisible ? -30 : 0,
+              scale: overlayVisible ? 0.8 : 1
+            }}
+            transition={{ 
+              duration: 1.2, 
+              ease: [0.25, 0.46, 0.45, 0.94], 
+              delay: overlayVisible ? 0 : 0.1 
+            }}
+          >
+            <motion.div
+              className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40"
+              initial={{ rotate: -5 }}
+              animate={{ 
+                rotate: overlayVisible ? -5 : 0,
+              }}
+              transition={{ 
+                duration: 1, 
+                ease: "easeOut", 
+                delay: overlayVisible ? 0 : 0.3 
+              }}
+              whileHover={{ 
+                scale: 1.05,
+                rotate: 2,
+                transition: { duration: 0.3 }
+              }}
+            >
+              <img
+                src={`/assets/wedding-images/${weddingData?.id}/monogram.svg`}
+                alt="Monograma de los novios"
+                className="w-full h-full object-contain filter drop-shadow-lg"
+                style={{ 
+                  filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.8)) brightness(0.9)'
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+        
         {/* "NUESTRA BODA" - Animación de entrada suave */}
         <motion.div 
           key={`hero-title-${animationKey}`}
           className="mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: overlayVisible ? 0 : 1, y: overlayVisible ? -20 : 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: overlayVisible ? 0 : 0.2 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: overlayVisible ? 0 : (monogramExists ? 0.4 : 0.2) }}
         >
           <motion.h2 
             key={`hero-subtitle-${animationKey}`}
@@ -235,7 +299,7 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
               opacity: overlayVisible ? 0 : 1, 
               letterSpacing: overlayVisible ? '0.8em' : '0.4em' 
             }}
-            transition={{ duration: 1, ease: "easeOut", delay: overlayVisible ? 0 : 0.2 }}
+            transition={{ duration: 1, ease: "easeOut", delay: overlayVisible ? 0 : (monogramExists ? 0.4 : 0.2) }}
           >
             {t('ourWedding')}
           </motion.h2>
@@ -251,7 +315,7 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
                 width: overlayVisible ? 0 : '6rem', 
                 opacity: overlayVisible ? 0 : 1 
               }}
-              transition={{ duration: 1, ease: "easeOut", delay: overlayVisible ? 0 : 0.6 }}
+              transition={{ duration: 1, ease: "easeOut", delay: overlayVisible ? 0 : (monogramExists ? 0.8 : 0.6) }}
             />
             
             {/* Nombres con animación elegante */}
@@ -268,7 +332,7 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
               transition={{ 
                 duration: 1.2, 
                 ease: [0.25, 0.46, 0.45, 0.94], // Curva de animación elegante
-                delay: overlayVisible ? 0 : 0.8 
+                delay: overlayVisible ? 0 : (monogramExists ? 1.0 : 0.8) 
               }}
             >
               <motion.span
