@@ -12,6 +12,7 @@ export interface FirebaseRSVP {
     name?: string;
   };
   dietaryRestrictions?: string;
+  dietaryRestriction?: string; // Campo específico para select de dieta
   message?: string;
   submittedAt: string; // ISO timestamp
   updatedAt: string; // ISO timestamp
@@ -36,6 +37,7 @@ export interface FirebaseGuest {
     guestEmail?: string;
     message?: string;
     dietaryRestrictions?: string;
+    dietaryRestriction?: string; // Campo específico para select de dieta
     plusOne?: {
       attending: boolean;
       name?: string;
@@ -286,6 +288,7 @@ export interface WeddingData {
     customQuestions: string[];
   };
   selectedGuestTickets?: boolean; // Si es true, los invitados pueden seleccionar su número de boletos
+  hasDiet?: boolean; // Si es true, se muestra campo de restricción dietética
   music?: MusicConfig;
   recommendedPlaces?: RecommendedPlacesConfig;
   theme: {

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../../lib/firebase';
 import { guestService } from '../../../../../services/guestService';
@@ -12,6 +12,7 @@ import WeddingNotFound from '../../../../../components/WeddingNotFound';
 interface GuestStats {
   total: number;
   totalGuestCount: number;
+  totalConfirmedPersons: number;
   confirmed: number;
   declined: number;
   pending: number;
@@ -31,7 +32,7 @@ const AdminGuestsPage = () => {
   const weddingId = params.weddingId as string;
 
   const [guests, setGuests] = useState<FirebaseGuest[]>([]);
-  const [stats, setStats] = useState<GuestStats>({ total: 0, totalGuestCount: 0, confirmed: 0, declined: 0, pending: 0 });
+  const [stats, setStats] = useState<GuestStats>({ total: 0, totalGuestCount: 0, totalConfirmedPersons: 0, confirmed: 0, declined: 0, pending: 0 });
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +44,8 @@ const AdminGuestsPage = () => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'confirmed' | 'declined' | 'pending'>('all');
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<string>('');
+  const [sortBy, setSortBy] = useState<'name' | 'language' | 'status' | 'createdAt'>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const [formData, setFormData] = useState<GuestFormData>({
     name: '',
@@ -242,6 +245,14 @@ const AdminGuestsPage = () => {
 
         setGuests(fetchedGuests);
         setStats(fetchedStats);
+        
+        // Debug: verificar estados de invitados
+        console.log('🔍 Debug - Invitados cargados:', fetchedGuests.map(g => ({
+          name: g.name,
+          rsvpStatus: g.rsvpStatus,
+          hasConfirmation: !!g.rsvpConfirmation,
+          attending: g.rsvpConfirmation?.attending
+        })));
 
       } catch (err) {
         console.error('Error cargando invitados:', err);
@@ -300,7 +311,10 @@ const AdminGuestsPage = () => {
         language: formData.language,
         coupleMessage: formData.coupleMessage.trim(),
         weddingId,
-        rsvpStatus: 'pending' as const,
+        // Solo establecer rsvpStatus como 'pending' si es un nuevo invitado
+        rsvpStatus: editingGuest ? editingGuest.rsvpStatus : ('pending' as const),
+        // Preservar la confirmación RSVP si existe
+        rsvpConfirmation: editingGuest?.rsvpConfirmation,
         plusOneAllowed: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -418,9 +432,50 @@ const AdminGuestsPage = () => {
     setSelectedMessage('');
   };
 
-  const filteredGuests = guests.filter(guest => {
+  const handleSort = (column: 'name' | 'language' | 'status') => {
+    if (sortBy === column) {
+      // Si ya está ordenando por esta columna, cambiar el orden
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Si es una nueva columna, establecer orden ascendente por defecto
+      setSortBy(column);
+      setSortOrder('asc');
+    }
+  };
+
+  const filteredAndSortedGuests = guests.filter(guest => {
     if (filterStatus === 'all') return true;
-    return guest.rsvpStatus === filterStatus;
+    
+    // Usar lógica basada en rsvpConfirmation.attending
+    if (filterStatus === 'confirmed') {
+      return guest.rsvpConfirmation?.attending === true;
+    } else if (filterStatus === 'declined') {
+      return guest.rsvpConfirmation?.attending === false;
+    } else if (filterStatus === 'pending') {
+      return !guest.rsvpConfirmation || guest.rsvpConfirmation.attending === undefined;
+    }
+    
+    return true;
+  }).sort((a, b) => {
+    let comparison = 0;
+    
+    if (sortBy === 'name') {
+      comparison = a.name.localeCompare(b.name);
+    } else if (sortBy === 'language') {
+      comparison = a.language.localeCompare(b.language);
+    } else if (sortBy === 'status') {
+      // Ordenar por estado: Confirmado, Pendiente, Declinó
+      const getStatusValue = (guest: FirebaseGuest) => {
+        if (guest.rsvpConfirmation?.attending === true) return 1; // Confirmado
+        if (guest.rsvpConfirmation?.attending === false) return 3; // Declinó
+        return 2; // Pendiente
+      };
+      comparison = getStatusValue(a) - getStatusValue(b);
+    } else if (sortBy === 'createdAt') {
+      comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    }
+    
+    return sortOrder === 'asc' ? comparison : -comparison;
   });
 
   if (isLoading) {
@@ -477,27 +532,33 @@ const AdminGuestsPage = () => {
               <div className="space-y-2">
                 <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6">
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Total Invitados:</span>
+                    <span className="text-xs sm:text-sm text-gray-600">Total Invitaciones:</span>
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {stats.total}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Confirmados:</span>
+                    <span className="text-xs sm:text-sm text-gray-600">Invitaciones Confirmadas:</span>
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       {stats.confirmed}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Pendientes:</span>
+                    <span className="text-xs sm:text-sm text-gray-600">Invitaciones Pendientes:</span>
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                       {stats.pending}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Total Personas:</span>
+                    <span className="text-xs sm:text-sm text-gray-600">Total Personas Invitadas:</span>
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                       {stats.totalGuestCount}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs sm:text-sm text-gray-600">Total Personas Confirmadas:</span>
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                      {stats.totalConfirmedPersons}
                     </span>
                   </div>
                 </div>
@@ -573,11 +634,21 @@ const AdminGuestsPage = () => {
         {/* Tabla Responsiva */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full lg:min-w-[1200px] divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Invitado
+                    <button 
+                      onClick={() => handleSort('name')}
+                      className="flex items-center space-x-1 hover:text-gray-700 transition-colors text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      <span>Invitado</span>
+                      {sortBy === 'name' ? (
+                        sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Contacto
@@ -586,10 +657,35 @@ const AdminGuestsPage = () => {
                     Personas
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
+                    <button 
+                      onClick={() => handleSort('status')}
+                      className="flex items-center space-x-1 hover:text-gray-700 transition-colors text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      <span>Estado</span>
+                      {sortBy === 'status' ? (
+                        sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
                   </th>
+                  {weddingData?.hasDiet && (
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Restricción Dietética
+                    </th>
+                  )}
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Idioma
+                    <button 
+                      onClick={() => handleSort('language')}
+                      className="flex items-center space-x-1 hover:text-gray-700 transition-colors text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      <span>Idioma</span>
+                      {sortBy === 'language' ? (
+                        sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Acciones
@@ -597,7 +693,7 @@ const AdminGuestsPage = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredGuests.map((guest) => (
+                {filteredAndSortedGuests.map((guest) => (
                   <tr key={guest.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{guest.name}</div>
@@ -625,14 +721,14 @@ const AdminGuestsPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          guest.rsvpStatus === 'confirmed' 
+                          guest.rsvpConfirmation?.attending === true
                             ? 'bg-green-100 text-green-800'
-                            : guest.rsvpStatus === 'declined'
+                            : guest.rsvpConfirmation?.attending === false
                             ? 'bg-red-100 text-red-800'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}>
-                          {guest.rsvpStatus === 'confirmed' ? 'Confirmado' : 
-                           guest.rsvpStatus === 'declined' ? 'Declinó' : 'Pendiente'}
+                          {guest.rsvpConfirmation?.attending === true ? 'Confirmado' : 
+                           guest.rsvpConfirmation?.attending === false ? 'Declinó' : 'Pendiente'}
                         </span>
                         {guest.rsvpConfirmation?.message && (
                           <button
@@ -645,6 +741,26 @@ const AdminGuestsPage = () => {
                         )}
                       </div>
                     </td>
+                    {weddingData?.hasDiet && (
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {guest.rsvpConfirmation?.attending === true ? (
+                          guest.rsvpConfirmation?.dietaryRestriction ? (
+                            <span className="text-sm text-gray-900">
+                              {guest.rsvpConfirmation.dietaryRestriction === 'vegetarian' ? 'Vegetariano' :
+                               guest.rsvpConfirmation.dietaryRestriction === 'glutenFree' ? 'Sin gluten' :
+                               guest.rsvpConfirmation.dietaryRestriction === 'other' ? 'Otro' :
+                               'Otro'}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-gray-900">Otro</span>
+                          )
+                        ) : guest.rsvpConfirmation?.attending === false ? (
+                          <span className="text-gray-400 italic">-</span>
+                        ) : (
+                          <span className="text-gray-500 italic">Pendiente</span>
+                        )}
+                      </td>
+                    )}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {guest.language === 'es' ? 'Español' : 'English'}
                     </td>
@@ -683,7 +799,7 @@ const AdminGuestsPage = () => {
             </table>
           </div>
 
-          {filteredGuests.length === 0 && (
+          {filteredAndSortedGuests.length === 0 && (
             <div className="text-center py-12">
               <div className="text-gray-400 text-4xl mb-4">👥</div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">

@@ -260,6 +260,7 @@ export class GuestService {
   async getWeddingGuestStats(weddingId: string): Promise<{
     total: number;
     totalGuestCount: number;
+    totalConfirmedPersons: number;
     confirmed: number;
     declined: number;
     pending: number;
@@ -268,11 +269,21 @@ export class GuestService {
       const guests = await this.getWeddingGuests(weddingId);
       
       const stats = {
-        total: guests.length,
-        totalGuestCount: guests.reduce((sum, g) => sum + g.guestCount, 0),
-        confirmed: guests.filter(g => g.rsvpStatus === 'confirmed').length,
-        declined: guests.filter(g => g.rsvpStatus === 'declined').length,
-        pending: guests.filter(g => g.rsvpStatus === 'pending').length
+        total: guests.length, // Número de invitaciones
+        totalGuestCount: guests.reduce((sum, g) => {
+          // Siempre contar como 1 hasta que confirmen o rechacen
+          return sum + 1;
+        }, 0), // Total personas invitadas (1 por invitación hasta que confirmen/rechacen)
+        totalConfirmedPersons: guests.reduce((sum, g) => {
+          // Solo contar personas confirmadas con su número real de invitados
+          if (g.rsvpConfirmation?.attending === true) {
+            return sum + (g.rsvpConfirmation?.guestCount || 1);
+          }
+          return sum;
+        }, 0), // Total personas confirmadas (suma real de guestCount de confirmados)
+        confirmed: guests.filter(g => g.rsvpConfirmation?.attending === true).length, // Invitaciones confirmadas
+        declined: guests.filter(g => g.rsvpConfirmation?.attending === false).length,
+        pending: guests.filter(g => !g.rsvpConfirmation || g.rsvpConfirmation.attending === undefined).length
       };
       
       return stats;
