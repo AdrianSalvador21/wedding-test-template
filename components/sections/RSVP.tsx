@@ -116,6 +116,9 @@ const RSVPContent = () => {
     plusOneName: z.string().optional(),
     plusOneAttendance: z.enum(['yes', 'no']).optional(),
     dietaryRestrictions: z.string().optional(),
+    dietaryRestriction: weddingData?.hasDiet ? z.enum(['vegetarian', 'glutenFree', 'other'], {
+      required_error: t('form.selectOption')
+    }) : z.string().optional(),
     message: z.string().optional(),
   });
 
@@ -140,6 +143,7 @@ const RSVPContent = () => {
       setValue('attendance', existingRSVP.attending ? 'yes' : 'no');
       setValue('message', existingRSVP.message || '');
       setValue('dietaryRestrictions', existingRSVP.dietaryRestrictions || '');
+      setValue('dietaryRestriction', existingRSVP.dietaryRestriction || '');
       
       if (existingRSVP.plusOne) {
         setValue('plusOneAttendance', existingRSVP.plusOne.attending ? 'yes' : 'no');
@@ -192,6 +196,7 @@ const RSVPContent = () => {
         guestEmail: data.email || undefined,
         message: data.message?.trim() || undefined,
         dietaryRestrictions: data.dietaryRestrictions?.trim() || undefined,
+        dietaryRestriction: data.dietaryRestriction?.trim() || undefined,
         plusOne: data.plusOneAttendance ? {
           attending: data.plusOneAttendance === 'yes',
           name: data.plusOneName?.trim() || undefined
@@ -222,10 +227,20 @@ const RSVPContent = () => {
       }
       
       if (targetGuest) {
+        console.log('🔍 Actualizando invitado:', {
+          id: targetGuest.id,
+          name: targetGuest.name,
+          currentStatus: targetGuest.rsvpStatus,
+          newStatus: rsvpStatus,
+          confirmation: rsvpConfirmation
+        });
+        
         await guestService.updateGuest(targetGuest.id, {
           rsvpStatus,
           rsvpConfirmation
         });
+        
+        console.log('✅ Invitado actualizado correctamente');
       } else {
         console.warn('⚠️ No se encontró el invitado para actualizar la confirmación');
       }
@@ -248,6 +263,7 @@ const RSVPContent = () => {
         guestCount,
         message: data.message?.trim(),
         dietaryRestrictions: data.dietaryRestrictions?.trim(),
+        dietaryRestriction: data.dietaryRestriction?.trim(),
         plusOne: rsvpConfirmation.plusOne,
         submittedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -481,6 +497,31 @@ const RSVPContent = () => {
                     <p className="text-xs text-gray-600 mt-2 font-body">
                       {t('form.guestCountDisclaimer')}
                     </p>
+                  </div>
+                )}
+
+                {/* Restricción dietética - Solo mostrar si hasDiet está activo */}
+                {weddingData?.hasDiet && (
+                  <div>
+                    <label className="block text-sm font-body font-medium text-dark mb-2">
+                      {t('form.dietaryRestriction')} *
+                    </label>
+                    <div className="relative">
+                      <select
+                        {...register('dietaryRestriction')}
+                        disabled={watch('attendance') === 'no'}
+                        className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none font-body disabled:bg-gray-100 disabled:text-gray-500"
+                      >
+                        <option value=""></option>
+                        <option value="vegetarian">{t('form.dietaryOptions.vegetarian')}</option>
+                        <option value="glutenFree">{t('form.dietaryOptions.glutenFree')}</option>
+                        <option value="other">{t('form.dietaryOptions.other')}</option>
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                    </div>
+                    {errors.dietaryRestriction && (
+                      <p className="text-red-500 text-sm font-body mt-1">{t('form.selectOption')}</p>
+                    )}
                   </div>
                 )}
 

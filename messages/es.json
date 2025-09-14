@@ -193,6 +193,12 @@
       "guestNamesPlaceholder": "Ejemplo: Ana García, Pedro López",
       "dietary": "Restricciones alimentarias",
       "dietaryPlaceholder": "Vegetariano, vegano, alergias, etc.",
+      "dietaryRestriction": "Restricción dietética",
+      "dietaryOptions": {
+        "vegetarian": "Vegetariano",
+        "glutenFree": "Sin gluten",
+        "other": "Otro"
+      },
       "song": "Canción que no puede faltar",
       "songPlaceholder": "¿Qué canción te gustaría escuchar?",
       "message": "Mensaje especial",
@@ -272,7 +278,7 @@
   },
   "timeline": {
     "title": "Cronograma del evento",
-    "subtitle": "Programa de eventos",
+    "subtitle": "Programa de eventos", 
     "description": "Todo lo que necesitas saber sobre nuestro día especial",
     "scheduleNote": "Los horarios son aproximados, ¡queremos que disfrutes sin prisas!",
     "eventSchedule": "Cronograma del evento",

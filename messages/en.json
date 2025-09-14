@@ -193,6 +193,12 @@
       "guestNamesPlaceholder": "Example: Anna Smith, John Doe",
       "dietary": "Dietary restrictions",
       "dietaryPlaceholder": "Vegetarian, vegan, allergies, etc.",
+      "dietaryRestriction": "Dietary restriction",
+      "dietaryOptions": {
+        "vegetarian": "Vegetarian",
+        "glutenFree": "Gluten-free",
+        "other": "Other"
+      },
       "song": "Song that can't be missed",
       "songPlaceholder": "What song would you like to hear?",
       "message": "Special message",
