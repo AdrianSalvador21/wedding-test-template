@@ -105,7 +105,7 @@ const RecommendedPlaces = () => {
           </motion.div>
           
           <motion.div 
-            className="w-16 h-0.5 bg-accent mx-auto mb-6"
+            className="title-decorative-line mb-6"
             initial={{ width: 0 }}
             whileInView={{ width: 64 }}
             viewport={{ once: true, margin: "-100px" }}

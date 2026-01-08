@@ -24,7 +24,7 @@ export const createWeddingTheme = (weddingData: WeddingData): WeddingTheme => {
   }
   
   // Obtener el tema predefinido basado en el ID
-  if (['classic', 'romantic', 'modern', 'elegant', 'luxury', 'premium', 'corporate', 'special-custom-one', 'special-custom-two'].includes(themeId)) {
+  if (['classic', 'romantic', 'modern', 'elegant', 'luxury', 'premium', 'corporate', 'special-custom-one', 'special-custom-two', 'special-custom-wood'].includes(themeId)) {
     return getTheme(themeId as ThemeId);
   }
   
@@ -248,6 +248,16 @@ export const getThemeBackgroundStyle = (
       : patternNumber;
     
     // Usar patrones florales con mayor opacidad para este tema cálido
+    return getFloralBackgroundStyle(floralPatternNumber as 1 | 2 | 3 | 4 | 5, size);
+  }
+  
+  // Si es el tema special-custom-wood, usar patrones florales naturales
+  if (themeId === 'special-custom-wood') {
+    const floralPatternNumber = typeof patternNumber === 'string' 
+      ? parseInt(patternNumber) || 1
+      : patternNumber;
+    
+    // Usar patrones florales con tonos naturales para el tema wood
     return getFloralBackgroundStyle(floralPatternNumber as 1 | 2 | 3 | 4 | 5, size);
   }
   

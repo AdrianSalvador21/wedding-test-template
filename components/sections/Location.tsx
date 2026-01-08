@@ -65,7 +65,7 @@ const Location = () => {
               />
               <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
             </div>
-            <div className="w-16 h-0.5 bg-accent mx-auto"></div>
+            <div className="title-decorative-line"></div>
           </motion.div>
 
           {/* Ubicaciones */}
@@ -164,7 +164,7 @@ const Location = () => {
               />
               <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
             </div>
-            <div className="w-16 h-0.5 bg-accent mx-auto"></div>
+            <div className="title-decorative-line"></div>
           </div>
 
           {/* Ubicaciones */}

@@ -60,6 +60,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     styleElement.textContent = css;
     document.head.appendChild(styleElement);
     
+    // Aplicar clase del tema al body para CSS específico
+    document.body.className = document.body.className.replace(/theme-\S+/g, '');
+    document.body.classList.add(`theme-${theme.id}`);
+    
     // Cargar Google Fonts si es necesario
     loadGoogleFonts(theme);
     

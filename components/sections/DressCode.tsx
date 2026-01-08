@@ -57,7 +57,7 @@ const DressCode = () => {
               />
               <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
             </div>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <div className="title-decorative-line mb-6"></div>
             <div className="text-xl font-body font-medium text-accent mb-4">{displayStyle}</div>
             <p className="section-subtitle max-w-2xl mx-auto">
               {displayDescription}
