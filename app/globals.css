@@ -311,14 +311,13 @@ body {
     color: var(--color-primary) !important;
   }
 
-
-  .theme-special-custom-wood section button[type="submit"]:hover {
-    color: var(--color-primary) !important;
-    border-color: var(--color-primary) !important;
+  /* Botón "Abrir invitación" del overlay para special-custom-wood */
+  .theme-special-custom-wood .bg-stone-600 {
+    background-color: #222e19 !important;
   }
 
-  .theme-special-custom-wood section button[type="submit"]:hover svg {
-    color: var(--color-primary) !important;
+  .theme-special-custom-wood .bg-stone-600:hover {
+    background-color: #1a2313 !important;
   }
 
   @media (min-width: 768px) {
