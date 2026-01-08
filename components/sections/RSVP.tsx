@@ -296,7 +296,7 @@ const RSVPContent = () => {
               />
               <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
             </div>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <div className="title-decorative-line mb-6"></div>
           </div>
 
           <div className="max-w-md mx-auto text-center">
@@ -327,7 +327,7 @@ const RSVPContent = () => {
               />
               <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
             </div>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <div className="title-decorative-line mb-6"></div>
           </div>
 
           <div className="max-w-md mx-auto text-center">
@@ -365,7 +365,7 @@ const RSVPContent = () => {
               />
               <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
             </div>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <div className="title-decorative-line mb-6"></div>
             <p className="section-subtitle font-body">
               {t('description')}
             </p>
@@ -407,7 +407,7 @@ const RSVPContent = () => {
               />
               <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
             </div>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <div className="title-decorative-line mb-6"></div>
             <p className="section-subtitle font-body">
               {t('description')}
             </p>
@@ -605,7 +605,7 @@ const RSVPContent = () => {
               />
               <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
             </div>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <div className="title-decorative-line mb-6"></div>
             <p className="section-subtitle font-body">
               {t('description')}
             </p>

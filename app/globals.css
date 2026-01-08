@@ -263,6 +263,64 @@ body {
     /* 29px */
   }
 
+  /* Clases específicas para el tema special-custom-wood */
+  .theme-special-custom-wood .section-title {
+    color: var(--color-primary) !important;
+  }
+
+  /* Steps del carrusel de galería para special-custom-wood */
+  .theme-special-custom-wood .carousel-step-inactive {
+    background-color: #44532b !important;
+  }
+
+  .theme-special-custom-wood .carousel-step-active {
+    background-color: #44532b !important;
+  }
+
+  /* Línea decorativa de título base */
+  .title-decorative-line {
+    @apply w-16 h-0.5 bg-accent mx-auto opacity-80;
+  }
+
+  /* Línea decorativa de título para special-custom-wood */
+  .theme-special-custom-wood .title-decorative-line {
+    background-color: var(--color-accent) !important;
+  }
+
+  /* Iconos de títulos de sección usan color primary para special-custom-wood */
+  .theme-special-custom-wood .text-center .flex.items-center.justify-center svg.mr-3 {
+    color: var(--color-primary) !important;
+  }
+
+  /* Botón CTA de RSVP - texto e icono dorado para special-custom-wood */
+  .theme-special-custom-wood section button[type="submit"] {
+    color: var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+  }
+
+  .theme-special-custom-wood section button[type="submit"] svg {
+    color: var(--color-accent) !important;
+  }
+
+  .theme-special-custom-wood section button[type="submit"]:hover {
+    color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+  }
+
+  .theme-special-custom-wood section button[type="submit"]:hover svg {
+    color: var(--color-primary) !important;
+  }
+
+
+  .theme-special-custom-wood section button[type="submit"]:hover {
+    color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+  }
+
+  .theme-special-custom-wood section button[type="submit"]:hover svg {
+    color: var(--color-primary) !important;
+  }
+
   @media (min-width: 768px) {
     .section-title {
       font-size: 2.5rem;

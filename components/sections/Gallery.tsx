@@ -137,7 +137,7 @@ const Gallery = () => {
             />
             <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
           </div>
-          <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+          <div className="title-decorative-line mb-6"></div>
           <p className="section-subtitle">
             {t('subtitle')}
           </p>
@@ -212,8 +212,8 @@ const Gallery = () => {
                   onClick={() => goToSlide(index)}
                   className={`transition-all duration-300 ${
                     index === currentIndex
-                      ? 'w-8 h-2 bg-stone-600 rounded-full'
-                      : 'w-2 h-2 bg-stone-300 hover:bg-stone-400 rounded-full'
+                      ? 'w-8 h-2 rounded-full carousel-step-active bg-stone-600'
+                      : 'w-2 h-2 rounded-full carousel-step-inactive bg-stone-300 hover:bg-stone-400'
                   }`}
                   aria-label={`Ir a imagen ${index + 1}`}
                 />

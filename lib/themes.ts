@@ -857,6 +857,92 @@ export const specialCustomTwoTheme: WeddingTheme = {
   },
 };
 
+// Tema Special Custom Wood (paleta natural: verde oliva, madera y oro suave)
+export const specialCustomWoodTheme: WeddingTheme = {
+  id: 'special-custom-wood',
+  name: 'Natural Wood & Olive',
+  colors: {
+    primary: '#3c4b23de',        // Olive 1 - Verde oliva principal
+    secondary: '#4B5E2A',      // Olive 2 - Verde oliva más oscuro
+    accent: '#b29f6e',         // Soft Gold - Oro suave para acentos
+    light: '#FAF8F2',          // Off-white - Fondo claro natural
+    dark: '#222e19',           // Charcoal - Texto principal oscuro
+    text: '#28282B',           // Charcoal para texto principal
+    border: '#E8E2D5',         // Beige claro derivado del off-white
+    background: '#FFFFFF',      // Blanco puro para contraste
+    muted: '#F5F2EA',          // Tono intermedio entre off-white y blanco
+    success: '#556B2F',        // Usar color primario para success
+    warning: '#C8B27A',        // Usar accent para warning
+    error: '#8B4A3C',          // Marrón rojizo suave para errores
+  },
+  gradients: {
+    primary: 'linear-gradient(135deg, #1f2a1aed 0%, #141e03 100%)',
+    overlay: 'linear-gradient(135deg, rgba(85, 107, 47, 0.9) 0%, rgba(75, 94, 42, 0.85) 50%, rgba(200, 178, 122, 0.7) 100%)',
+    background: 'linear-gradient(to bottom, #FAF8F2 0%, #F5F2EA 100%)',
+    accent: 'linear-gradient(135deg, #C8B27A 0%, #B8A66A 100%)',
+  },
+  fonts: {
+    heading: {
+      family: 'Playfair Display',
+      weights: [400, 600, 700],
+      fallback: 'serif',
+    },
+    body: {
+      family: 'Source Sans Pro',
+      weights: [400, 600, 700],
+      fallback: 'sans-serif',
+    },
+  },
+  typography: {
+    heroTitle: {
+      mobile: 'text-4xl',
+      desktop: 'text-7xl lg:text-8xl xl:text-9xl',
+    },
+    sectionTitle: {
+      mobile: 'text-[26px]',
+      desktop: 'text-[28px]',
+    },
+    subtitle: {
+      mobile: 'text-lg',
+      desktop: 'text-xl lg:text-2xl',
+    },
+    body: {
+      mobile: 'text-base',
+      desktop: 'text-lg',
+    },
+  },
+  shadows: {
+    sm: '0 4px 20px rgba(85, 107, 47, 0.12)',
+    md: '0 8px 30px rgba(85, 107, 47, 0.16)',
+    lg: '0 12px 40px rgba(85, 107, 47, 0.20)',
+    xl: '0 20px 60px rgba(85, 107, 47, 0.24)',
+  },
+  patterns: {
+    primary: 'nature-olive-1',     // Patrones naturales para este tema
+    secondary: 'nature-olive-2',   
+    accent: 'nature-olive-3',      
+    subtle: 'nature-olive-4',      
+  },
+  spacing: {
+    section: {
+      mobile: 'py-12 px-8',
+      desktop: 'py-16 px-12',
+    },
+    container: {
+      mobile: 'px-6',
+      desktop: 'px-8',
+    },
+  },
+  effects: {
+    blur: 'backdrop-blur-sm',
+    opacity: {
+      light: 0.7,
+      medium: 0.8,
+      heavy: 0.9,
+    },
+  },
+};
+
 // Colección de temas disponibles
 export const availableThemes = {
   classic: classicTheme,
@@ -868,6 +954,7 @@ export const availableThemes = {
   corporate: corporateTheme,
   'special-custom-one': specialCustomTheme,
   'special-custom-two': specialCustomTwoTheme,
+  'special-custom-wood': specialCustomWoodTheme,
 } as const;
 
 export type ThemeId = keyof typeof availableThemes;

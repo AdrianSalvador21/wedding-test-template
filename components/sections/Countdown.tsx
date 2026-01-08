@@ -129,7 +129,7 @@ const Countdown = () => {
                 </h2>
               </div>
               <motion.div 
-                className="w-16 h-0.5 bg-accent mx-auto"
+                className="title-decorative-line"
                 initial={{ width: 0 }}
                 whileInView={{ width: 64 }}
                 viewport={{ once: true, margin: "-100px" }}

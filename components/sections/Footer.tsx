@@ -57,7 +57,8 @@ const Footer = () => {
   const isCorporateTheme = currentTheme.id === 'corporate';
   const isSpecialCustomTheme = currentTheme.id === 'special-custom-one';
   const isSpecialCustomTwoTheme = currentTheme.id === 'special-custom-two';
-  const isThemeWithCustomColors = isLuxuryTheme || isPremiumTheme || isCorporateTheme || isSpecialCustomTheme || isSpecialCustomTwoTheme;
+  const isSpecialCustomWoodTheme = currentTheme.id === 'special-custom-wood';
+  const isThemeWithCustomColors = isLuxuryTheme || isPremiumTheme || isCorporateTheme || isSpecialCustomTheme || isSpecialCustomTwoTheme || isSpecialCustomWoodTheme;
 
   // Crear degradados específicos para temas custom
   const getFooterBgClass = () => {
@@ -65,6 +66,8 @@ const Footer = () => {
       return 'bg-gradient-to-br from-[#4a3f35] via-[#6b5b47] to-[#8b7355]'; // Degradado beige/marrón
     } else if (isSpecialCustomTwoTheme) {
       return 'bg-gradient-to-br from-[#db830bd9] to-[#744503ed]'; // Degradado elegante: chocolate → terracota → burgundy
+    } else if (isSpecialCustomWoodTheme) {
+      return 'bg-gradient-to-br from-[#1F2A1A] via-[#1F2A1A] to-[#141e03]'; // Degradado natural: charcoal → olive dark → olive
     } else if (isThemeWithCustomColors) {
       return 'footer-theme-bg'; // Otros temas personalizados
     } else {
