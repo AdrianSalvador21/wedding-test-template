@@ -59,12 +59,23 @@ export async function GET(
     // Generar URLs para las imágenes de la galería
     const galleryImages = imageFiles.map(file => `/assets/wedding-images/${weddingId}/gallery/${file}`);
 
-    // Verificar si existen hero.jpg y couple.jpg
+    // Verificar si existen hero.jpg y couple con cualquier extensión
     const heroPath = path.join(basePath, 'hero.jpg');
-    const couplePath = path.join(basePath, 'couple.jpg');
+    
+    // Buscar archivo couple con cualquier extensión válida
+    let couplePath = '';
+    let coupleExists = false;
+    
+    for (const ext of imageExtensions) {
+      const testPath = path.join(basePath, `couple${ext}`);
+      if (fs.existsSync(testPath)) {
+        couplePath = testPath;
+        coupleExists = true;
+        break;
+      }
+    }
     
     const heroExists = fs.existsSync(heroPath);
-    const coupleExists = fs.existsSync(couplePath);
     
     if (process.env.NODE_ENV === 'development') {
       console.log('🖼️ API Debug - heroPath:', heroPath);
@@ -75,7 +86,7 @@ export async function GET(
     }
 
     const heroImage = heroExists ? `/assets/wedding-images/${weddingId}/hero.jpg` : null;
-    const coupleImage = coupleExists ? `/assets/wedding-images/${weddingId}/couple.jpg` : null;
+    const coupleImage = coupleExists ? `/assets/wedding-images/${weddingId}/${path.basename(couplePath)}` : null;
 
     return NextResponse.json({
       heroImage,
