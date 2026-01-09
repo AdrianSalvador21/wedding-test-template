@@ -56,9 +56,9 @@ export const useWeddingMusic = (weddingId?: string): WeddingMusicResult => {
               title: 'Música de Boda',
               artist: 'Personalizada',
               autoplay: true,
-              volume: 0.5,
+              volume: 0.4,
               showControls: true,
-              startTime: 8 // Empezar desde el segundo 5 del track
+              startTime: 0 // Empezar desde el segundo 5 del track
             };
             
             setMusic(customMusic);

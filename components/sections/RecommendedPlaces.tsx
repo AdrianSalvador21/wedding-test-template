@@ -19,10 +19,16 @@ const RecommendedPlaces = () => {
   const params = useParams();
   const currentLocale = params.locale as string;
 
+  // Si showRecommendedPlaces es false, no mostrar la sección
+  if (weddingData?.showRecommendedPlaces === false) {
+    return null;
+  }
+
   // Debug: mostrar estructura de datos (temporal)
   if (process.env.NODE_ENV === 'development') {
     console.log('🗺️ RecommendedPlaces Debug:', {
       weddingData: weddingData?.id,
+      showRecommendedPlaces: weddingData?.showRecommendedPlaces,
       recommendedPlaces: weddingData?.recommendedPlaces,
       accommodationRecommendedPlaces: weddingData?.accommodation?.recommendedPlaces
     });

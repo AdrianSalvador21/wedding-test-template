@@ -112,7 +112,7 @@ const RSVPContent = () => {
     attendance: z.enum(['yes', 'no'], {
       required_error: t('form.selectOption')
     }),
-    guestCount: weddingData?.selectedGuestTickets ? z.enum(['1', '2']) : z.string().optional(),
+    guestCount: (weddingData?.selectedGuestTickets && weddingData?.showGuestsInput !== false) ? z.enum(['1', '2']) : z.string().optional(),
     plusOneName: z.string().optional(),
     plusOneAttendance: z.enum(['yes', 'no']).optional(),
     dietaryRestrictions: z.string().optional(),
@@ -185,14 +185,14 @@ const RSVPContent = () => {
       }
 
       // Determinar el guestCount a usar
-      if (weddingData?.selectedGuestTickets && data.guestCount) {
+      if (weddingData?.selectedGuestTickets && weddingData?.showGuestsInput !== false && data.guestCount) {
         guestCount = parseInt(data.guestCount);
       }
 
       // Preparar datos de confirmación RSVP
       const rsvpConfirmation = {
         attending: data.attendance === 'yes',
-        guestCount: weddingData?.selectedGuestTickets && data.guestCount ? parseInt(data.guestCount) : undefined,
+        guestCount: (weddingData?.selectedGuestTickets && weddingData?.showGuestsInput !== false && data.guestCount) ? parseInt(data.guestCount) : undefined,
         guestEmail: data.email || undefined,
         message: data.message?.trim() || undefined,
         dietaryRestrictions: data.dietaryRestrictions?.trim() || undefined,
@@ -472,8 +472,8 @@ const RSVPContent = () => {
                   )}
                 </div>
 
-                {/* Número de invitados - Solo mostrar si selectedGuestTickets está activo */}
-                {weddingData?.selectedGuestTickets && (
+                {/* Número de invitados - Solo mostrar si selectedGuestTickets está activo y showGuestsInput no es false */}
+                {weddingData?.selectedGuestTickets && weddingData?.showGuestsInput !== false && (
                   <div>
                     <label className="block text-sm font-body font-medium text-dark mb-2">
                       {t('form.guestCount')} *
@@ -667,8 +667,8 @@ const RSVPContent = () => {
                       )}
                     </div>
 
-                    {/* Número de invitados - Solo mostrar si selectedGuestTickets está activo */}
-                    {weddingData?.selectedGuestTickets && (
+                    {/* Número de invitados - Solo mostrar si selectedGuestTickets está activo y showGuestsInput no es false */}
+                    {weddingData?.selectedGuestTickets && weddingData?.showGuestsInput !== false && (
                       <div>
                         <label className="block text-sm font-body font-medium text-dark mb-2">
                           {t('form.guestCount')} *

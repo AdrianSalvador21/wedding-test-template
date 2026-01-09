@@ -95,6 +95,10 @@
     max-height: none !important;
   }
 
+  .theme-special-custom-wood .hero-background-image {
+    top: -60px !important;
+  }
+
   /* Overlay estático */
   .hero-section>div:first-child>div:last-child {
     position: absolute !important;
@@ -259,7 +263,7 @@ body {
     @apply font-semibold text-stone-600 opacity-90 text-center;
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     /* 29px */
   }
 

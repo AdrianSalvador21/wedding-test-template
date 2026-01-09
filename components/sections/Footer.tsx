@@ -46,6 +46,11 @@ const Footer = () => {
   const brideFacebook = couple?.bride.facebook;
   const groomFacebook = couple?.groom.facebook;
   const coupleEmail = couple?.coupleEmail || 'maria.carlos@email.com';
+  
+  // Control de visibilidad de redes sociales
+  // Solo ocultar si la key llega específicamente como false
+  const showInstagram = weddingData?.hasInstagram !== false;
+  const showFacebook = weddingData?.hasFacebook !== false;
   const coupleQuote = typeof couple?.quote === 'object' && couple.quote
     ? (couple.quote[currentLocale as 'es' | 'en'] || couple.quote.es || '')
     : (couple?.quote as unknown as string || t('quote'));
@@ -142,7 +147,7 @@ const Footer = () => {
 
             {/* Redes sociales */}
             <div className="flex justify-center space-x-4">
-              {(brideInstagram || groomInstagram) && (
+              {showInstagram && (brideInstagram || groomInstagram) && (
                 <button
                   onClick={handleInstagramClick}
                   className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
@@ -150,7 +155,7 @@ const Footer = () => {
                   <Instagram className="w-5 h-5" />
                 </button>
               )}
-              {(brideFacebook || groomFacebook) && (
+              {showFacebook && (brideFacebook || groomFacebook) && (
                 <button
                   onClick={handleFacebookClick}
                   className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
@@ -354,7 +359,7 @@ const Footer = () => {
                 )}
               </div>
               <div className="flex justify-center space-x-4">
-                {(brideInstagram || groomInstagram) && (
+                {showInstagram && (brideInstagram || groomInstagram) && (
                   <button
                     onClick={handleInstagramClick}
                     className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110"
@@ -362,7 +367,7 @@ const Footer = () => {
                     <Instagram className="w-4 h-4 text-white" />
                   </button>
                 )}
-                {(brideFacebook || groomFacebook) && (
+                {showFacebook && (brideFacebook || groomFacebook) && (
                   <button
                     onClick={handleFacebookClick}
                     className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 hover:scale-110"
