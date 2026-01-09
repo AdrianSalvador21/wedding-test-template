@@ -181,33 +181,39 @@ export default function GiftRegistry() {
                   })()}
                   
                   <div className="space-y-3 mt-4">
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="text-sm font-body text-text/70">{t('bank')}</p>
-                        <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.bankName}</p>
+                    {giftRegistry.bankAccount.bankName && (
+                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="text-sm font-body text-text/70">{t('bank')}</p>
+                          <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.bankName}</p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                     
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="text-sm font-body text-text/70">{t('accountHolder')}</p>
-                        <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.accountName}</p>
+                    {giftRegistry.bankAccount.accountName && (
+                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="text-sm font-body text-text/70">{t('accountHolder')}</p>
+                          <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.accountName}</p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                     
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="text-sm font-body text-text/70">{t('accountNumber')}</p>
-                        <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.accountNumber}</p>
+                    {giftRegistry.bankAccount.accountNumber && (
+                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="text-sm font-body text-text/70">{t('accountNumber')}</p>
+                          <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.accountNumber}</p>
+                        </div>
+                        <button
+                          onClick={() => copyToClipboard(giftRegistry.bankAccount?.accountNumber || '', 'account')}
+                          className="p-2 text-text/70 hover:text-primary transition-colors"
+                          title={t('copyAccountNumber')}
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => copyToClipboard(giftRegistry.bankAccount?.accountNumber || '', 'account')}
-                        className="p-2 text-text/70 hover:text-primary transition-colors"
-                        title={t('copyAccountNumber')}
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                    </div>
+                    )}
                     
                     {giftRegistry.bankAccount.clabe && (
                       <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
@@ -227,8 +233,8 @@ export default function GiftRegistry() {
                   </div>
                   
                   {copiedField && (
-                    <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-sm font-body text-green-800 text-center">
+                    <div className="mt-4 p-3 bg-accent/10 border border-accent/30 rounded-lg">
+                      <p className="text-sm font-body text-accent text-center font-medium">
                         {copiedField === 'account' ? t('accountCopied') : t('clabeCopied')}
                       </p>
                     </div>
