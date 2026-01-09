@@ -8,6 +8,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { AdultOnlyIcon } from '../icons';
+import { formatTextWithLineBreaks } from '../../lib/text-utils';
 
 const AdultOnlyEvent = () => {
   const { t } = useTranslations('adultOnlyEvent');
@@ -26,6 +27,7 @@ const AdultOnlyEvent = () => {
   const message = typeof messageData === 'object' 
     ? (messageData[currentLocale as 'es' | 'en'] || messageData.es || t('description'))
     : (messageData || t('description'));
+
 
   return (
     <section 
@@ -67,7 +69,7 @@ const AdultOnlyEvent = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
           >
-            {message}
+            {formatTextWithLineBreaks(message)}
           </motion.p>
 
           {/* Elemento decorativo sutil */}

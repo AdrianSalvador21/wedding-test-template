@@ -10,6 +10,7 @@ import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddi
 import { useThemePatterns } from '../../lib/theme-context';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
 import { AboutIcon } from '../icons';
+import { formatTextWithLineBreaks } from '../../lib/text-utils';
 
 const About = () => {
   const { t } = useTranslations('about');
@@ -28,6 +29,7 @@ const About = () => {
   const quoteText = typeof couple?.quote === 'object' && couple.quote
     ? (couple.quote[currentLocale as 'es' | 'en'] || couple.quote.es || '')
     : (couple?.quote as unknown as string || '');
+
 
   return (
     <section 
@@ -69,7 +71,7 @@ const About = () => {
             transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
           >
             <blockquote className="text-xl md:text-2xl font-blockquote italic text-stone-600 leading-relaxed max-w-4xl mx-auto">
-              &ldquo;{quoteText || 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.'}&rdquo;
+              &ldquo;{formatTextWithLineBreaks(quoteText || 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.')}&rdquo;
             </blockquote>
           </motion.div>
 
@@ -106,7 +108,7 @@ const About = () => {
             >
               <div className="space-y-4 text-gray-700 leading-relaxed text-base lg:text-lg">
                 <p className="font-body">
-                  {storyText}
+                  {formatTextWithLineBreaks(storyText)}
                 </p>
               </div>
               

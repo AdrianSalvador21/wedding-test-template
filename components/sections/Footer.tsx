@@ -72,7 +72,7 @@ const Footer = () => {
     } else if (isSpecialCustomTwoTheme) {
       return 'bg-gradient-to-br from-[#db830bd9] to-[#744503ed]'; // Degradado elegante: chocolate → terracota → burgundy
     } else if (isSpecialCustomWoodTheme) {
-      return 'bg-gradient-to-br from-[#1F2A1A] via-[#1F2A1A] to-[#141e03]'; // Degradado natural: charcoal → olive dark → olive
+      return 'bg-gradient-to-br from-[#1F2A1Ae6] via-[#1F2A1A] to-[#141e03e3]'; // Degradado natural: charcoal → olive dark → olive
     } else if (isThemeWithCustomColors) {
       return 'footer-theme-bg'; // Otros temas personalizados
     } else {

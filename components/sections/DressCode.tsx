@@ -9,6 +9,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { DressCodeIcon } from '../icons';
+import { formatTextWithLineBreaks } from '../../lib/text-utils';
 
 const DressCode = () => {
   const { t } = useTranslations('dressCode');
@@ -37,6 +38,7 @@ const DressCode = () => {
   const displayStyle = dressCodeStyle || t('style.name');
   const displayDescription = dressCodeDescription || t('style.description');
 
+
   // Versión estática para móvil
   if (isMobile) {
     return (
@@ -58,9 +60,9 @@ const DressCode = () => {
               <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
             </div>
             <div className="title-decorative-line mb-6"></div>
-            <div className="text-xl font-body font-medium text-accent mb-4">{displayStyle}</div>
+            <div className="text-xl font-body font-medium text-accent mb-4">{formatTextWithLineBreaks(displayStyle)}</div>
             <p className="section-subtitle max-w-2xl mx-auto">
-              {displayDescription}
+              {formatTextWithLineBreaks(displayDescription)}
             </p>
           </div>
         </div>
@@ -127,7 +129,7 @@ const DressCode = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
             >
-              {displayStyle}
+              {formatTextWithLineBreaks(displayStyle)}
             </motion.div>
             <motion.p 
               className="section-subtitle max-w-2xl mx-auto"
@@ -136,7 +138,7 @@ const DressCode = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
             >
-              {displayDescription}
+              {formatTextWithLineBreaks(displayDescription)}
             </motion.p>
           </div>
         </motion.div>
