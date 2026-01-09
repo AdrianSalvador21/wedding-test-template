@@ -16,8 +16,8 @@ export default function GiftRegistry() {
   const params = useParams();
   const currentLocale = params.locale as string;
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [isBankExpanded, setIsBankExpanded] = useState(false);
-  const [isRegistryExpanded, setIsRegistryExpanded] = useState(false);
+  const [isBankExpanded, setIsBankExpanded] = useState(true);
+  const [isRegistryExpanded, setIsRegistryExpanded] = useState(true);
 
   // No mostrar si no está habilitado
   if (!currentWedding?.giftRegistry?.enabled) {
@@ -178,7 +178,7 @@ export default function GiftRegistry() {
                     );
                   })()}
                   
-                  <div className="space-y-3">
+                  <div className="space-y-3 mt-4">
                     <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                       <div>
                         <p className="text-sm font-body text-text/70">{t('bank')}</p>

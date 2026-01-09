@@ -60,6 +60,26 @@ const AdminGuestsPage = () => {
   const migrateWeddingData = (data: Record<string, unknown>): WeddingData => {
     const migrated = { ...data } as unknown as WeddingData;
     
+    // Preservar keys personalizadas si existen
+    if (data.selectedGuestTickets !== undefined) {
+      migrated.selectedGuestTickets = data.selectedGuestTickets as boolean;
+    }
+    if (data.hasDiet !== undefined) {
+      migrated.hasDiet = data.hasDiet as boolean;
+    }
+    if (data.hasInstagram !== undefined) {
+      migrated.hasInstagram = data.hasInstagram as boolean;
+    }
+    if (data.hasFacebook !== undefined) {
+      migrated.hasFacebook = data.hasFacebook as boolean;
+    }
+    if (data.showGuestsInput !== undefined) {
+      migrated.showGuestsInput = data.showGuestsInput as boolean;
+    }
+    if (data.showRecommendedPlaces !== undefined) {
+      migrated.showRecommendedPlaces = data.showRecommendedPlaces as boolean;
+    }
+    
     // Migrar giftRegistry.message
     if (migrated.giftRegistry?.message && typeof migrated.giftRegistry.message === 'string') {
       migrated.giftRegistry.message = {
@@ -168,6 +188,12 @@ const AdminGuestsPage = () => {
     giftRegistry: { enabled: false, message: '', registries: [] },
     adultOnlyEvent: { enabled: false, message: '' },
     rsvp: { enabled: true, deadline: '', maxGuests: 2, dietaryOptions: true, customQuestions: [] },
+    selectedGuestTickets: true, // Mantener funcionalidad de selección de boletos
+    hasDiet: false, // Campo de restricción dietética
+    hasInstagram: true, // Mostrar iconos de Instagram por defecto
+    hasFacebook: true, // Mostrar iconos de Facebook por defecto
+    showGuestsInput: true, // Mostrar campo de número de invitados por defecto
+    showRecommendedPlaces: true, // Mostrar lugares recomendados por defecto
     gallery: [], heroImage: { url: '', alt: '' }, specialMoments: [], relationshipStats: { yearsTogther: 0, adventures: 0, memories: 0, dreams: 0 },
     transport: { parking: false, valetParking: false, shuttleService: { available: false, pickupPoints: [], schedule: [] }, publicTransport: '', rideshare: false },
     music: { enabled: false, spotifyTrackId: '', spotifyPlaylistId: '', fileName: '', title: '', artist: '', autoplay: false, volume: 0.5, showControls: true, startTime: 0 },

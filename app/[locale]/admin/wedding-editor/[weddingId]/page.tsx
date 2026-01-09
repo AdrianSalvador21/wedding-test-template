@@ -23,6 +23,26 @@ import {
 const migrateWeddingData = (data: Record<string, unknown>): WeddingData => {
   const migrated = { ...data } as unknown as WeddingData;
   
+  // Preservar keys personalizadas si existen
+  if (data.selectedGuestTickets !== undefined) {
+    migrated.selectedGuestTickets = data.selectedGuestTickets as boolean;
+  }
+  if (data.hasDiet !== undefined) {
+    migrated.hasDiet = data.hasDiet as boolean;
+  }
+  if (data.hasInstagram !== undefined) {
+    migrated.hasInstagram = data.hasInstagram as boolean;
+  }
+  if (data.hasFacebook !== undefined) {
+    migrated.hasFacebook = data.hasFacebook as boolean;
+  }
+  if (data.showGuestsInput !== undefined) {
+    migrated.showGuestsInput = data.showGuestsInput as boolean;
+  }
+  if (data.showRecommendedPlaces !== undefined) {
+    migrated.showRecommendedPlaces = data.showRecommendedPlaces as boolean;
+  }
+  
   // Migrar giftRegistry.message
   if (migrated.giftRegistry?.message && typeof migrated.giftRegistry.message === 'string') {
     migrated.giftRegistry.message = {
@@ -193,6 +213,12 @@ const createInitialWeddingData = (weddingId: string): WeddingData => ({
     dietaryOptions: true,
     customQuestions: []
   },
+  selectedGuestTickets: true, // Mantener funcionalidad de selección de boletos
+  hasDiet: false, // Campo de restricción dietética
+  hasInstagram: true, // Mostrar iconos de Instagram por defecto
+  hasFacebook: true, // Mostrar iconos de Facebook por defecto
+  showGuestsInput: true, // Mostrar campo de número de invitados por defecto
+  showRecommendedPlaces: true, // Mostrar lugares recomendados por defecto
   gallery: [],
   heroImage: {
     url: '',
@@ -223,7 +249,7 @@ const createInitialWeddingData = (weddingId: string): WeddingData => ({
     fileName: '',
     title: '',
     artist: '',
-    autoplay: false,
+    autoplay: true,
     volume: 0.5,
     showControls: true,
     startTime: 0
@@ -291,6 +317,17 @@ export default function WeddingEditorPage() {
         if (hasBasicInfo) {
           // Tiene información, migrar y cargar datos existentes
           const migratedData = migrateWeddingData(data as unknown as Record<string, unknown>);
+          
+          // Debug: verificar keys después de migración
+          console.log('🔍 loadWeddingData - Keys después de migración:', {
+            selectedGuestTickets: migratedData.selectedGuestTickets,
+            hasDiet: migratedData.hasDiet,
+            hasInstagram: migratedData.hasInstagram,
+            hasFacebook: migratedData.hasFacebook,
+            showGuestsInput: migratedData.showGuestsInput,
+            showRecommendedPlaces: migratedData.showRecommendedPlaces
+          });
+          
           setWeddingData(migratedData);
           
           // Guardar datos migrados en Firebase
@@ -327,6 +364,17 @@ export default function WeddingEditorPage() {
     try {
       setSaving(true);
       const docRef = doc(db, 'weddings', weddingId);
+      
+      // Debug: verificar si las keys personalizadas están presentes
+      console.log('🔍 handleSave - Keys personalizadas:', {
+        selectedGuestTickets: weddingData.selectedGuestTickets,
+        hasDiet: weddingData.hasDiet,
+        hasInstagram: weddingData.hasInstagram,
+        hasFacebook: weddingData.hasFacebook,
+        showGuestsInput: weddingData.showGuestsInput,
+        showRecommendedPlaces: weddingData.showRecommendedPlaces
+      });
+      
       const updatedData = {
         ...weddingData,
         updatedAt: new Date().toISOString()
