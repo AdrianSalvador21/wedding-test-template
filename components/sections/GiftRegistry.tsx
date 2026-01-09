@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
 import { GiftRegistryIcon } from '../icons';
+import { formatTextWithLineBreaks } from '../../lib/text-utils';
 
 export default function GiftRegistry() {
   const { t } = useTranslations('giftRegistry');
@@ -43,6 +44,7 @@ export default function GiftRegistry() {
   const giftMessage = typeof messageData === 'object' 
     ? (messageData[currentLocale as 'es' | 'en'] || messageData.es || t('message'))
     : (messageData || t('message'));
+
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -87,7 +89,7 @@ export default function GiftRegistry() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
             >
-              {giftMessage}
+              {formatTextWithLineBreaks(giftMessage)}
             </motion.p>
           )}
         </motion.div>
