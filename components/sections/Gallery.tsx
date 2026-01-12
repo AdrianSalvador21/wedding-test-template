@@ -19,6 +19,8 @@ const Gallery = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [preloadedImages, setPreloadedImages] = useState<Set<string>>(new Set());
   const { getBackgroundStyle } = useThemePatterns();
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -37,6 +39,21 @@ const Gallery = () => {
 
   const hashtag = weddingData?.couple.hashtag || t('hashtag');
 
+  // Precargar todas las imágenes en desktop
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 768 && photos.length > 0) {
+      photos.forEach((photo) => {
+        if (!preloadedImages.has(photo.src)) {
+          const img = document.createElement('img');
+          img.onload = () => {
+            setPreloadedImages(prev => new Set([...Array.from(prev), photo.src]));
+          };
+          img.src = photo.src;
+        }
+      });
+    }
+  }, [photos, preloadedImages]);
+
 
 
   // Autoplay functionality - pausar durante drag
@@ -50,21 +67,30 @@ const Gallery = () => {
     return () => clearInterval(interval);
   }, [isAutoPlaying, inView, isDragging, photos.length]);
 
-  // Navigation functions
+  // Navigation functions con debounce y animaciones
   const goToPrevious = useCallback(() => {
+    if (isTransitioning) return;
     setIsAutoPlaying(false);
+    setIsTransitioning(true);
     setCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
-  }, [photos.length]);
+    setTimeout(() => setIsTransitioning(false), 300);
+  }, [photos.length, isTransitioning]);
 
   const goToNext = useCallback(() => {
+    if (isTransitioning) return;
     setIsAutoPlaying(false);
+    setIsTransitioning(true);
     setCurrentIndex((prev) => (prev + 1) % photos.length);
-  }, [photos.length]);
+    setTimeout(() => setIsTransitioning(false), 300);
+  }, [photos.length, isTransitioning]);
 
   const goToSlide = useCallback((index: number) => {
+    if (isTransitioning || index === currentIndex) return;
     setIsAutoPlaying(false);
+    setIsTransitioning(true);
     setCurrentIndex(index);
-  }, []);
+    setTimeout(() => setIsTransitioning(false), 300);
+  }, [isTransitioning, currentIndex]);
 
   // Mejorar detección de swipe
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
@@ -84,32 +110,23 @@ const Gallery = () => {
 
   // Carousel variants más suaves
   const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
+    enter: {
+      x: 300,
       opacity: 0
-    }),
+    },
     center: {
       zIndex: 1,
       x: 0,
       opacity: 1
     },
-    exit: (direction: number) => ({
+    exit: {
       zIndex: 0,
-      x: direction < 0 ? 300 : -300,
+      x: -300,
       opacity: 0
-    })
-  };
-
-  const [direction, setDirection] = useState(0);
-
-  const paginate = (newDirection: number) => {
-    setDirection(newDirection);
-    if (newDirection === 1) {
-      goToNext();
-    } else {
-      goToPrevious();
     }
   };
+
+
 
   const galleryContent = (
     <section 
@@ -144,15 +161,14 @@ const Gallery = () => {
         </motion.div>
 
         {/* Carousel Container */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="relative">
-            {/* Main Carousel */}
-            <div className="relative overflow-hidden rounded-3xl shadow-xl">
-              <div className="relative h-96 sm:h-80 md:h-96 lg:h-[480px]">
-                <AnimatePresence initial={false} custom={direction}>
+            {/* Mobile Carousel (original) */}
+            <div className="relative overflow-hidden rounded-3xl shadow-xl md:hidden">
+              <div className="relative h-96 sm:h-80">
+                <AnimatePresence initial={false}>
                   <motion.div
                     key={currentIndex}
-                    custom={direction}
                     variants={slideVariants}
                     initial="enter"
                     animate="center"
@@ -183,41 +199,169 @@ const Gallery = () => {
                   </motion.div>
                 </AnimatePresence>
               </div>
+            </div>
 
-              {/* Navigation Buttons - Solo visible en hover en desktop */}
-              <div className="absolute inset-0 flex items-center justify-between px-4 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                <button
-                  onClick={() => paginate(-1)}
-                  className="pointer-events-auto bg-white/80 hover:bg-white backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 hidden md:flex"
-                  aria-label="Imagen anterior"
-                >
-                  <ChevronLeft className="w-5 h-5 text-stone-600" />
-                </button>
-                
-                <button
-                  onClick={() => paginate(1)}
-                  className="pointer-events-auto bg-white/80 hover:bg-white backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 hidden md:flex"
-                  aria-label="Imagen siguiente"
-                >
-                  <ChevronRight className="w-5 h-5 text-stone-600" />
-                </button>
+            {/* Desktop Carousel (nuevo diseño con previews laterales) */}
+            <div className="hidden md:block relative">
+              <div className="flex items-center justify-center space-x-4 lg:space-x-6">
+                {/* Imagen previa izquierda */}
+                {currentIndex > 0 && (
+                  <div
+                    className="relative w-32 lg:w-40 h-48 lg:h-60 rounded-2xl overflow-hidden shadow-lg cursor-pointer opacity-60 hover:opacity-80 transition-all duration-300"
+                    onClick={() => goToSlide(currentIndex - 1)}
+                  >
+                    <Image
+                      src={photos[currentIndex - 1].src}
+                      alt={photos[currentIndex - 1].alt}
+                      fill
+                      className="object-cover select-none"
+                      quality={70}
+                      draggable={false}
+                      unoptimized={true}
+                    />
+                    <div className="absolute inset-0 bg-black/20" />
+                  </div>
+                )}
+
+                {/* Imagen principal */}
+                <div className="relative w-80 lg:w-96 h-96 lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl">
+                  <div 
+                    key={currentIndex}
+                    className="absolute inset-0 transition-opacity duration-300 ease-out"
+                    style={{ opacity: isTransitioning ? 0.7 : 1 }}
+                  >
+                    <Image
+                      src={photos[currentIndex].src}
+                      alt={photos[currentIndex].alt}
+                      fill
+                      className="object-contain select-none bg-gradient-to-br from-gray-50 to-gray-100"
+                      quality={95}
+                      priority={true}
+                      draggable={false}
+                      unoptimized={true}
+                    />
+                  </div>
+                  
+                  {/* Navigation Buttons - Siempre visibles en desktop */}
+                  <div className="absolute inset-0 flex items-center justify-between px-6 z-10">
+                    <button
+                      onClick={goToPrevious}
+                      disabled={isTransitioning}
+                      className={`bg-white/90 hover:bg-white backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 ${
+                        isTransitioning ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      aria-label="Imagen anterior"
+                    >
+                      <ChevronLeft className="w-6 h-6 text-stone-600" />
+                    </button>
+                    
+                    <button
+                      onClick={goToNext}
+                      disabled={isTransitioning}
+                      className={`bg-white/90 hover:bg-white backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 ${
+                        isTransitioning ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      aria-label="Imagen siguiente"
+                    >
+                      <ChevronRight className="w-6 h-6 text-stone-600" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Imagen previa derecha */}
+                {currentIndex < photos.length - 1 && (
+                  <div
+                    className="relative w-32 lg:w-40 h-48 lg:h-60 rounded-2xl overflow-hidden shadow-lg cursor-pointer opacity-60 hover:opacity-80 transition-all duration-300"
+                    onClick={() => goToSlide(currentIndex + 1)}
+                  >
+                    <Image
+                      src={photos[currentIndex + 1].src}
+                      alt={photos[currentIndex + 1].alt}
+                      fill
+                      className="object-cover select-none"
+                      quality={70}
+                      draggable={false}
+                      unoptimized={true}
+                    />
+                    <div className="absolute inset-0 bg-black/20" />
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Indicadores elegantes */}
+            {/* Indicadores elegantes con límite */}
             <div className="flex justify-center space-x-2 mt-8">
-              {photos.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`transition-all duration-300 ${
-                    index === currentIndex
-                      ? 'w-8 h-2 rounded-full carousel-step-active bg-stone-600'
-                      : 'w-2 h-2 rounded-full carousel-step-inactive bg-stone-300 hover:bg-stone-400'
-                  }`}
-                  aria-label={`Ir a imagen ${index + 1}`}
-                />
-              ))}
+              {(() => {
+                const maxVisiblePills = 5;
+                const totalPhotos = photos.length;
+                
+                // Si hay pocas imágenes, mostrar todos los pills
+                if (totalPhotos <= maxVisiblePills) {
+                  return photos.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToSlide(index)}
+                      className={`transition-all duration-300 ${
+                        index === currentIndex
+                          ? 'w-8 h-2 rounded-full carousel-step-active bg-stone-600'
+                          : 'w-2 h-2 rounded-full carousel-step-inactive bg-stone-300 hover:bg-stone-400'
+                      }`}
+                      aria-label={`Ir a imagen ${index + 1}`}
+                    />
+                  ));
+                }
+                
+                // Calcular el rango de pills visibles
+                const halfVisible = Math.floor(maxVisiblePills / 2);
+                let startIndex = Math.max(0, currentIndex - halfVisible);
+                const endIndex = Math.min(totalPhotos - 1, startIndex + maxVisiblePills - 1);
+                
+                // Ajustar si estamos cerca del final
+                if (endIndex - startIndex < maxVisiblePills - 1) {
+                  startIndex = Math.max(0, endIndex - maxVisiblePills + 1);
+                }
+                
+                const visibleIndices = [];
+                for (let i = startIndex; i <= endIndex; i++) {
+                  visibleIndices.push(i);
+                }
+                
+                return (
+                  <>
+                    {/* Indicador de más imágenes al inicio */}
+                    {startIndex > 0 && (
+                      <div className="flex items-center space-x-1">
+                        <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                        <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                        <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                      </div>
+                    )}
+                    
+                    {/* Pills visibles */}
+                    {visibleIndices.map((index) => (
+                      <button
+                        key={index}
+                        onClick={() => goToSlide(index)}
+                        className={`transition-all duration-300 ${
+                          index === currentIndex
+                            ? 'w-8 h-2 rounded-full carousel-step-active bg-stone-600'
+                            : 'w-2 h-2 rounded-full carousel-step-inactive bg-stone-300 hover:bg-stone-400'
+                        }`}
+                        aria-label={`Ir a imagen ${index + 1}`}
+                      />
+                    ))}
+                    
+                    {/* Indicador de más imágenes al final */}
+                    {endIndex < totalPhotos - 1 && (
+                      <div className="flex items-center space-x-1">
+                        <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                        <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                        <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
 
 

@@ -154,7 +154,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
 
             {/* Invitation Card - Fondo completo */}
             <div 
-              className="h-screen md:h-auto flex flex-col justify-center items-center p-6 md:p-8 relative overflow-hidden"
+              className="h-screen md:h-auto md:rounded-2xl flex flex-col justify-center items-center p-6 md:p-8 relative overflow-hidden"
               style={{
                 ...getBackgroundStyle(5, '500px'),
                 backgroundColor: '#f8f6f3'
