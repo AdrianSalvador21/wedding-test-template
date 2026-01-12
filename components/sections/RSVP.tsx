@@ -105,10 +105,10 @@ const RSVPContent = () => {
     loadExistingRSVP();
   }, [guestId, weddingId]);
 
-  // Schema de validación dinámico - si el invitado existe, no requerir nombre ni email
+  // Schema de validación - name y email siempre opcionales ya que no se muestran los campos
   const rsvpSchema = z.object({
-    name: guestInfo ? z.string().optional() : z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-    email: guestInfo ? z.string().optional() : z.string().email('Email inválido').optional().or(z.literal('')),
+    name: z.string().optional(),
+    email: z.string().optional(),
     attendance: z.enum(['yes', 'no'], {
       required_error: t('form.selectOption')
     }),
@@ -417,39 +417,7 @@ const RSVPContent = () => {
             {/* Formulario */}
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                {/* Nombre - Solo mostrar si NO hay información del invitado */}
-                {!guestInfo && (
-                  <div>
-                    <label className="block text-sm font-body font-medium text-dark mb-2">
-                      {t('form.name')} *
-                    </label>
-                    <input
-                      {...register('name')}
-                      type="text"
-                      className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
-                    />
-                    {errors.name && (
-                      <p className="text-red-500 text-sm font-body mt-1">{errors.name.message}</p>
-                    )}
-                  </div>
-                )}
-
-                {/* Email - Solo mostrar si NO hay información del invitado */}
-                {!guestInfo && (
-                  <div>
-                    <label className="block text-sm font-body font-medium text-dark mb-2">
-                      {t('form.email')} (opcional)
-                    </label>
-                    <input
-                      {...register('email')}
-                      type="email"
-                      className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
-                    />
-                    {errors.email && (
-                      <p className="text-red-500 text-sm font-body mt-1">{errors.email.message}</p>
-                    )}
-                  </div>
-                )}
+                {/* Campos de nombre y email removidos para mantener consistencia entre mobile y desktop */}
 
                 {/* Asistencia */}
                 <div>
@@ -616,35 +584,7 @@ const RSVPContent = () => {
             <div className="animation-delay-600">
               <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Nombre */}
-                    <div>
-                      <label className="block text-sm font-body font-medium text-dark mb-2">
-                        {t('form.name')} *
-                      </label>
-                      <input
-                        {...register('name')}
-                        type="text"
-                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
-                      />
-                      {errors.name && (
-                        <p className="text-red-500 text-sm font-body mt-1">{errors.name.message}</p>
-                      )}
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                      <label className="block text-sm font-body font-medium text-dark mb-2">
-                        {t('form.email')} (opcional)
-                      </label>
-                      <input
-                        {...register('email')}
-                        type="email"
-                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors font-body"
-                      />
-                      {errors.email && (
-                        <p className="text-red-500 text-sm font-body mt-1">{errors.email.message}</p>
-                      )}
-                    </div>
+                    {/* Campos de nombre y email removidos para mantener consistencia entre mobile y desktop */}
 
                     {/* Asistencia */}
                     <div>
