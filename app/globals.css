@@ -17,6 +17,17 @@
 
   /* Gradientes por defecto */
   --gradient-primary: linear-gradient(135deg, #8b7355 0%, #a67c5a 100%);
+
+  /* Forzar esquema de colores claro - ignorar preferencias del sistema */
+  color-scheme: light only;
+}
+
+/* Forzar height 130% para imágenes de galería en mobile */
+@media screen and (max-width: 768px) {
+  .gallery-mobile-image img {
+    height: 113% !important;
+    top: 0 !important;
+  }
 }
 
 /* Hero con altura fija - NO usa unidades dinámicas que causan redimensionamiento */

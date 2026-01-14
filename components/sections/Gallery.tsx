@@ -182,7 +182,7 @@ const Gallery = () => {
                     dragElastic={0.1}
                     onDragStart={() => setIsDragging(true)}
                     onDragEnd={handleDragEnd}
-                    className="absolute inset-0 cursor-grab active:cursor-grabbing"
+                    className="absolute inset-0 cursor-grab active:cursor-grabbing gallery-mobile-image"
                   >
                     <Image
                       src={photos[currentIndex].src}

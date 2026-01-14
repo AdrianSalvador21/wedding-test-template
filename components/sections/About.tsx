@@ -106,7 +106,7 @@ const About = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             >
-              <div className="space-y-4 text-gray-700 leading-relaxed text-base lg:text-lg">
+              <div className="space-y-4 text-gray-700 leading-relaxed text-base lg:text-lg text-center">
                 <p className="font-body">
                   {formatTextWithLineBreaks(storyText)}
                 </p>
