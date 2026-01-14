@@ -42,6 +42,9 @@ const migrateWeddingData = (data: Record<string, unknown>): WeddingData => {
   if (data.showRecommendedPlaces !== undefined) {
     migrated.showRecommendedPlaces = data.showRecommendedPlaces as boolean;
   }
+  if (data.showConfirmCta !== undefined) {
+    migrated.showConfirmCta = data.showConfirmCta as boolean;
+  }
   
   // Migrar giftRegistry.message
   if (migrated.giftRegistry?.message && typeof migrated.giftRegistry.message === 'string') {
@@ -217,8 +220,9 @@ const createInitialWeddingData = (weddingId: string): WeddingData => ({
   hasDiet: false, // Campo de restricción dietética
   hasInstagram: true, // Mostrar iconos de Instagram por defecto
   hasFacebook: true, // Mostrar iconos de Facebook por defecto
-  showGuestsInput: true, // Mostrar campo de número de invitados por defecto
-  showRecommendedPlaces: true, // Mostrar lugares recomendados por defecto
+      showGuestsInput: true, // Mostrar campo de número de invitados por defecto
+      showRecommendedPlaces: true, // Mostrar lugares recomendados por defecto
+      showConfirmCta: true, // Mostrar botón de confirmación en Hero por defecto
   gallery: [],
   heroImage: {
     url: '',

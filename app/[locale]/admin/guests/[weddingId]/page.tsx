@@ -79,6 +79,9 @@ const AdminGuestsPage = () => {
     if (data.showRecommendedPlaces !== undefined) {
       migrated.showRecommendedPlaces = data.showRecommendedPlaces as boolean;
     }
+    if (data.showConfirmCta !== undefined) {
+      migrated.showConfirmCta = data.showConfirmCta as boolean;
+    }
     
     // Migrar giftRegistry.message
     if (migrated.giftRegistry?.message && typeof migrated.giftRegistry.message === 'string') {
@@ -194,6 +197,7 @@ const AdminGuestsPage = () => {
     hasFacebook: true, // Mostrar iconos de Facebook por defecto
     showGuestsInput: true, // Mostrar campo de número de invitados por defecto
     showRecommendedPlaces: true, // Mostrar lugares recomendados por defecto
+    showConfirmCta: true, // Mostrar botón de confirmación en Hero por defecto
     gallery: [], heroImage: { url: '', alt: '' }, specialMoments: [], relationshipStats: { yearsTogther: 0, adventures: 0, memories: 0, dreams: 0 },
     transport: { parking: false, valetParking: false, shuttleService: { available: false, pickupPoints: [], schedule: [] }, publicTransport: '', rideshare: false },
     music: { enabled: false, spotifyTrackId: '', spotifyPlaylistId: '', fileName: '', title: '', artist: '', autoplay: false, volume: 0.5, showControls: true, startTime: 0 },

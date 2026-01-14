@@ -293,6 +293,7 @@ export interface WeddingData {
   hasFacebook?: boolean; // Si es false, oculta iconos de Facebook en footer
   showGuestsInput?: boolean; // Si es false, oculta campo de número de invitados en RSVP
   showRecommendedPlaces?: boolean; // Si es false, oculta sección de lugares recomendados
+  showConfirmCta?: boolean; // Si es false, oculta botón de confirmación en Hero
   music?: MusicConfig;
   recommendedPlaces?: RecommendedPlacesConfig;
   theme: {

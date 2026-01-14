@@ -7,6 +7,7 @@ export default {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: 'class', // Forzar modo manual, no automático por sistema
   theme: {
     extend: {
       colors: {
