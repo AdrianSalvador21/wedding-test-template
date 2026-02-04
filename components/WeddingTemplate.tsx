@@ -9,21 +9,10 @@ import { createWeddingTheme } from '../lib/theme-utils';
 import { guestService } from '../services/guestService';
 import { FirebaseGuest } from '../src/types/wedding';
 import { useWeddingMusic } from '../hooks/useWeddingMusic';
-import Hero from './sections/Hero';
-import Countdown from './sections/Countdown';
-import About from './sections/About';
-import Gallery from './sections/Gallery';
-import Timeline from './sections/Timeline';
-import DressCode from './sections/DressCode';
-import GiftRegistry from './sections/GiftRegistry';
-import Accommodation from './sections/Accommodation';
-import AdultOnlyEvent from './sections/AdultOnlyEvent';
-import RecommendedPlaces from './sections/RecommendedPlaces';
-import RSVP from './sections/RSVP';
-import Location from './sections/Location';
-import Footer from './sections/Footer';
 import InvitationOverlay from './InvitationOverlay';
 import MusicPlayer from './MusicPlayer';
+import Template01 from './templates/Template01';
+import Template02 from './templates/Template02';
 
 interface WeddingTemplateProps {
   guestId?: string | null;
@@ -163,19 +152,11 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
   return (
     <ThemeProvider weddingTheme={weddingTheme}>
       <main className="min-h-screen">
-        <Hero overlayVisible={showOverlay || showDemoOverlay} />
-        <Countdown />
-        <Location />
-        <About />
-        <Gallery />
-        <Timeline />
-        <DressCode />
-        <GiftRegistry />
-        <Accommodation />
-        <AdultOnlyEvent />
-        <RecommendedPlaces />
-        <RSVP />
-        <Footer />
+        {(currentWedding.template?.id || 'template-01') === 'template-02' ? (
+          <Template02 overlayVisible={showOverlay || showDemoOverlay} />
+        ) : (
+          <Template01 overlayVisible={showOverlay || showDemoOverlay} />
+        )}
         
         {/* Overlay de invitación personalizada */}
         {showOverlay && guestId && currentWedding && (

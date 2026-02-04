@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV - Adrián Salvador</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            background: white;
+            padding: 50px 60px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header Section */
+        .header {
+            padding-bottom: 18px;
+            margin-bottom: 35px;
+        }
+
+        .name {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            line-height: 1.1;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+            text-transform: uppercase;
+        }
+
+        .title {
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 0;
+            font-size: 16px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* Contact Info */
+        .contact-bar {
+            display: flex;
+            flex-wrap: wrap;
+            color: #666;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            margin-top: 30px;
+        }
+
+        .contact-bar a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .contact-bar span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Section Styles */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #1a1a1a;
+        }
+
+        /* Professional Summary */
+        .summary-text {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        /* Experience */
+        .job {
+            margin-bottom: 30px;
+            padding-left: 20px;
+            border-left: 2px solid #e0e0e0;
+        }
+
+        .job-header {
+            margin-bottom: 12px;
+        }
+
+        .job-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .job-company {
+            font-size: 11px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .job-description {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .job-description li {
+            font-size: 12px;
+            margin-bottom: 6px;
+            padding-left: 12px;
+            position: relative;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .job-description li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .job-stack {
+            font-size: 10px;
+            color: #888;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .job-links {
+            font-size: 10px;
+            margin-top: 8px;
+            color: #888;
+        }
+
+        .job-links a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        /* Skills Section */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .skill-category h3 {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+
+        .skill-list {
+            font-size: 11px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .soft-skills {
+            list-style: none;
+        }
+
+        .soft-skills li {
+            font-size: 11px;
+            margin-bottom: 6px;
+            padding-left: 12px;
+            position: relative;
+            color: #555;
+        }
+
+        .soft-skills li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: 600;
+        }
+
+        /* Education */
+        .education {
+            padding-left: 20px;
+            border-left: 2px solid #e0e0e0;
+        }
+
+        .education-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            color: #1a1a1a;
+        }
+
+        .education-details {
+            font-size: 11px;
+            color: #666;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .container {
+                margin: 0;
+                box-shadow: none;
+                max-width: 100%;
+                padding: 40px 50px;
+            }
+
+            /* Prevent page breaks inside individual jobs */
+            .job {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            /* Prevent orphaned section titles */
+            .section-title {
+                page-break-after: avoid;
+                break-after: avoid;
+            }
+
+            .education {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .skill-category {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            @page {
+                margin: 0.5in;
+                size: A4;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="name">Adrián Salvador</h1>
+            <p class="title">Senior Frontend Developer</p>
+            <p class="subtitle">Frontend Product Development · Spec Driven Development · Scalable Architecture </p>
+
+            <div class="contact-bar">
+                <span>📧 Correo: adriansalvadorsil25@gmail.com</span>
+                <span>📱 Teléfono: +52 55 7488 9849</span>
+                <span>🔗 <a href="https://www.linkedin.com/in/adrian-salvador-silva/">LinkedIn:
+                        https://www.linkedin.com/in/adrian-salvador-silva/</a></span>
+            </div>
+        </div>
+
+        <!-- Professional Summary -->
+        <div class="section">
+            <h2 class="section-title">Resumen Profesional</h2>
+            <p class="summary-text">
+                <strong>Senior Frontend Developer</strong> con más de 7 años de experiencia en <strong>fintech, banca y
+                    healthtech</strong>. Especializado en
+                <strong>ingeniería de productos frontend</strong>, combinando <strong>arquitectura de software, análisis
+                    de soluciones y desarrollo guiado por especificaciones (spec-driven development)</strong>.
+                Experiencia utilizando <strong>herramientas de AI de forma práctica y escalable</strong> para mejorar
+                productividad, calidad del código y toma de decisiones técnicas. Participación activa en el diseño de
+                sistemas frontend escalables y en la definición de soluciones alineadas a objetivos de negocio.
+            </p>
+        </div>
+
+        <!-- Experience -->
+        <div class="section">
+            <h2 class="section-title">Experiencia Profesional</h2>
+
+            <div class="job">
+                <div class="job-header">
+                    <h3 class="job-title">Sr Frontend Developer — Mercado Libre</h3>
+                    <p class="job-company">Noviembre 2021 — Actualidad</p>
+                </div>
+                <ul class="job-description">
+                    <li>
+                        Desarrollo de módulos frontend y backend para productos financieros dentro de Mercado Crédito.
+                    </li>
+                    <li>
+                        Análisis de requerimientos y diseño de soluciones frontend escalables, usando desarrollo guiado
+                        por espeficiaciones (Spec-Driven Development).
+                    </li>
+                    <li>Análisis técnico de nuevas implementaciones y propuestas de mejora en la plataforma.</li>
+                    <li>Identificación de vulnerabilidades y optimización de componentes existentes.</li>
+                    <li>Trabajo en un entorno de alta escala con estándares estrictos de calidad y performance.</li>
+                </ul>
+                <p class="job-stack">Stack: Next Js · Node JS · Frontend Modular Architecture</p>
+            </div>
+
+            <div class="job">
+                <div class="job-header">
+                    <h3 class="job-title">Sr Frontend Developer — Yave</h3>
+                    <p class="job-company">Septiembre 2018 — Octubre 2021</p>
+                </div>
+                <ul class="job-description">
+                    <li>Desarrollo y mantenimiento de la plataforma principal de originación hipotecaria.</li>
+                    <li>Implementación y evolución de preaprobador hipotecario para clientes.</li>
+                    <li>Desarrollo de aplicaciones B2B para partners y brokers hipotecarios.</li>
+                    <li>Creación de componentes reutilizables compartidos entre múltiples aplicaciones.</li>
+                    <li>Capacitación y acompañamiento técnico al equipo frontend en tecnologías y mejores prácticas.
+                    </li>
+                </ul>
+                <p class="job-stack">Stack: Angular · Angular Material · TypeScript · SCSS · Firebase</p>
+                <div class="job-links">
+                    Productos: yave.mx · smartlending.mx · App Partners
+                </div>
+            </div>
+
+            <div class="job">
+                <div class="job-header">
+                    <h3 class="job-title">Frontend Developer — OmniDoc</h3>
+                    <p class="job-company">Mayo 2021 — Septiembre 2021</p>
+                </div>
+                <ul class="job-description">
+                    <li>Planeación e implementación de la arquitectura frontend de la plataforma médica.</li>
+                    <li>Desarrollo de módulos core y funcionalidades principales del producto.</li>
+                    <li>Coordinación y supervisión de tareas del equipo frontend.</li>
+                    <li>Participación en entrevistas técnicas para desarrolladores frontend.</li>
+                </ul>
+                <p class="job-stack">Stack: Angular · TypeScript · SCSS</p>
+                <div class="job-links">
+                    Producto: medicos.omnidoc.com
+                </div>
+            </div>
+
+            <div class="job">
+                <div class="job-header">
+                    <h3 class="job-title">Software Developer — 2Innovate IT</h3>
+                    <p class="job-company">Enero 2017 — Agosto 2018</p>
+                </div>
+                <ul class="job-description">
+                    <li>Desarrollo de aplicación front-end para operadoras bancarios, participando de manera interna en
+                        Banco Sabadell.</li>
+                    <li>Desarrollo de bases de datos para el manejo de información de las operadoras bancarios en
+                        Oracle.</li>
+                    <li>Participación activa en la toma de decisiones técnicas para el diseño de las diferentes
+                        soluciones</li>
+                    <li>Colaboración continua con equipo backend para implementación de funcionalidades.</li>
+                </ul>
+                <p class="job-stack">Stack: Ionic · Angular · Firebase</p>
+            </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="section">
+            <h2 class="section-title">Habilidades Técnicas</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>Frontend</h3>
+                    <p class="skill-list">Next.js · React · Angular · TypeScript · JavaScript · Node.js</p>
+                </div>
+                <div class="skill-category">
+                    <h3>UI & Styling</h3>
+                    <p class="skill-list">CSS · SCSS · Tailwind CSS · Angular Material · Shadcn/ui · Radix UI</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Testing</h3>
+                    <p class="skill-list">Jest · Testing Library · TDD · Unit Testing · Integration Testing</p>
+                </div>
+                <div class="skill-category">
+                    <h3>AI & Productivity</h3>
+                    <p class="skill-list">AI-Assisted Development · MCP Integrations · LLM Tooling · Workflow Automation
+                    </p>
+                </div>
+                <div class="skill-category">
+                    <h3>Tools</h3>
+                    <p class="skill-list">Firebase · Git · GitHub · GitFlow · n8n</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Metodologías & Prácticas</h3>
+                    <p class="skill-list">Scrum · Agile · Spec-Driven Development · Code Review</p>
+                </div>
+                <div class="skill-category">
+                    <h3>Design</h3>
+                    <p class="skill-list">Figma · Adobe XD · Adobe Illustrator</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Education -->
+        <div class="section">
+            <h2 class="section-title">Educación</h2>
+            <div class="education">
+                <h3 class="education-title">Ingeniería en Computación</h3>
+                <p class="education-details">Facultad de Estudios Superiores Aragón – UNAM | 2014 – 2018</p>
+            </div>
+        </div>
+    </div>
+</body>

@@ -299,6 +299,9 @@ export interface WeddingData {
   theme: {
     id: string; // ID del tema predefinido ('classic', 'romantic', 'modern', 'elegant')
   } | string; // Puede ser objeto legacy o string directo desde Firebase
+  template?: {
+    id: string;
+  };
   status: 'draft' | 'active' | 'archived';
   languages: string[];
   defaultLanguage: string;

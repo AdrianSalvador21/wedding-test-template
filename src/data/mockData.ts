@@ -35,7 +35,7 @@ export const mockWeddingMariaCarlos: WeddingData = {
   },
   event: {
     weddingId: 'maria-carlos-2025',
-    date: '2025-11-21T16:00:00.000Z',
+    date: '2026-11-21T16:00:00.000Z',
     time: '16:00',
     ceremony: {
       time: '16:00',
@@ -1363,7 +1363,7 @@ export const mockWeddingFriendsTest: WeddingData = {
   },
   event: {
     weddingId: 'friends-test',
-    date: '2025-11-21T16:00:00.000Z',
+    date: '2026-11-21T16:00:00.000Z',
     time: '16:00',
     ceremony: {
       time: '16:00',
@@ -1643,6 +1643,9 @@ export const mockWeddingFriendsTest: WeddingData = {
       clabe: '012345678901234567',
       description: 'También puedes contribuir directamente a nuestra cuenta bancaria'
     }
+  },
+  template: {
+    id: 'template-02'
   },
   adultOnlyEvent: {
     enabled: true,
