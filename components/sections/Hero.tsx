@@ -73,12 +73,10 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
     // Detectar Chrome en iOS específicamente
     const detectChromeIOS = () => {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isChrome = /CriOS/.test(navigator.userAgent) || /Chrome/.test(navigator.userAgent);
-      const isChromeIOSDetected = isIOS && isChrome;
+      const isChromeIOSDetected = isIOS && /CriOS/.test(navigator.userAgent);
       setIsChromeIOS(isChromeIOSDetected);
       console.log('🔍 Navegador detectado:', {
         isIOS,
-        isChrome,
         isChromeIOS: isChromeIOSDetected
       });
     };

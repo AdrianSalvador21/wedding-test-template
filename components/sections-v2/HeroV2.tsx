@@ -60,8 +60,7 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
 
     const detectChromeIOS = () => {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isChrome = /CriOS/.test(navigator.userAgent) || /Chrome/.test(navigator.userAgent);
-      const isChromeIOSDetected = isIOS && isChrome;
+      const isChromeIOSDetected = isIOS && /CriOS/.test(navigator.userAgent);
       setIsChromeIOS(isChromeIOSDetected);
     };
 
