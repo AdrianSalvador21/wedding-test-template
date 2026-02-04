@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 
 export function V2Section({
   id,
@@ -14,13 +15,17 @@ export function V2Section({
   style?: React.CSSProperties;
 }) {
   return (
-    <section
+    <motion.section
       id={id}
       className={`bg-[#fbf7f1] text-[#3b342b] ${className}`}
       style={style}
+      initial={{ opacity: 0, y: 22 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       {children}
-    </section>
+    </motion.section>
   );
 }
 
@@ -70,7 +75,7 @@ export function V2Title({
           {overline}
         </p>
       )}
-      <h2 className="mt-3 font-serif font-light text-3xl md:text-4xl text-[#3b342b]">
+      <h2 className="font-serif font-light text-3xl md:text-4xl text-[#3b342b]">
         {title}
       </h2>
       <div className={align === 'left' ? 'mt-4' : 'mt-4 flex justify-center'}>
