@@ -6,7 +6,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
-import { V2Card, V2Container, V2Section, V2Title } from './ui';
+import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title } from './ui';
 
 export default function AdultOnlyEventV2() {
   const { t } = useTranslations('adultOnlyEvent');
@@ -31,18 +31,24 @@ export default function AdultOnlyEventV2() {
       style={getBackgroundStyle(2, '180px')}
     >
       <V2Container className="py-12">
-        <V2Title title={t('title')} />
+        <V2Stagger>
+          <V2StaggerItem>
+            <V2Title title={t('title')} />
+          </V2StaggerItem>
 
-        <div className="mt-10 max-w-3xl mx-auto">
-          <V2Card className="p-8 md:p-10 text-center">
-            <p className="text-base md:text-base text-[#6f6254] leading-relaxed">
-              {formatTextWithLineBreaks(message)}
-            </p>
-            <div className="mt-8 flex justify-center">
-              <div className="h-px w-24 bg-[#d7c2a5]" />
+          <V2StaggerItem>
+            <div className="mt-10 max-w-3xl mx-auto">
+              <V2Card className="p-8 md:p-10 text-center">
+                <p className="text-base md:text-base text-[#6f6254] leading-relaxed">
+                  {formatTextWithLineBreaks(message)}
+                </p>
+                <div className="mt-8 flex justify-center">
+                  <div className="h-px w-24 bg-[#d7c2a5]" />
+                </div>
+              </V2Card>
             </div>
-          </V2Card>
-        </div>
+          </V2StaggerItem>
+        </V2Stagger>
       </V2Container>
     </V2Section>
   );

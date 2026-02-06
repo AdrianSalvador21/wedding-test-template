@@ -8,6 +8,7 @@ import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
+import { V2Stagger, V2StaggerItem } from './ui';
 
 export default function FooterV2() {
   const { t } = useTranslations('footer');
@@ -102,110 +103,112 @@ export default function FooterV2() {
   return (
     <footer className="bg-[#f1e6d8] text-[#3b342b] border-t border-[#e7dccf]">
       <div className="max-w-6xl mx-auto px-6 py-14">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          <div className="lg:col-span-5">
-            <p className="text-xs tracking-[0.22em] uppercase text-[#8a7c6b]">
-              {hashtag}
-            </p>
-            <h3 className="mt-3 text-3xl md:text-4xl font-serif font-light">
-              {brideName} <span className="text-[#8a7c6b]">&</span> {groomName}
-            </h3>
-            <p className="mt-6 text-sm md:text-base text-[#6f6254] leading-relaxed">
-              {coupleQuote}
-            </p>
-          </div>
+        <V2Stagger>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+            <V2StaggerItem className="lg:col-span-5">
+              <p className="text-xs tracking-[0.22em] uppercase text-[#8a7c6b]">
+                {hashtag}
+              </p>
+              <h3 className="mt-3 text-3xl md:text-4xl font-serif font-light">
+                {brideName} <span className="text-[#8a7c6b]">&</span> {groomName}
+              </h3>
+              <p className="mt-6 text-sm md:text-base text-[#6f6254] leading-relaxed">
+                {coupleQuote}
+              </p>
+            </V2StaggerItem>
 
-          <div className="lg:col-span-7">
-            <div>
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  {monogramExists && weddingData?.id ? (
-                    <img
-                      src={`/assets/wedding-images/${weddingData.id}/monogram.svg`}
-                      alt="Monograma"
-                      className="w-8 h-8 object-contain opacity-80"
-                    />
-                  ) : (
-                    <Heart className="w-5 h-5 text-[#b79a7a]" />
-                  )}
-                  <p className="text-sm text-[#6f6254]">
-                    {t('copyright').replace('{brideName}', brideName).replace('{groomName}', groomName)}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {showInstagram && (brideInstagram || groomInstagram) && (
-                    <button
-                      onClick={handleInstagramClick}
-                      className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#e7dccf] bg-white/80 hover:opacity-90 transition-opacity"
-                      aria-label="Instagram"
-                    >
-                      <Instagram className="w-5 h-5 text-[#6f6254]" />
-                    </button>
-                  )}
-                  {showFacebook && (brideFacebook || groomFacebook) && (
-                    <button
-                      onClick={handleFacebookClick}
-                      className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#e7dccf] bg-white/80 hover:opacity-90 transition-opacity"
-                      aria-label="Facebook"
-                    >
-                      <Facebook className="w-5 h-5 text-[#6f6254]" />
-                    </button>
-                  )}
-                  <button
-                    onClick={handleEmailClick}
-                    className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#e7dccf] bg-white/80 hover:opacity-90 transition-opacity"
-                    aria-label="Email"
-                  >
-                    <Mail className="w-5 h-5 text-[#6f6254]" />
-                  </button>
-                </div>
-              </div>
-
-              {(bridPhone || groomPhone) && (
-                <div className="mt-6">
-                  <p className="text-xs tracking-[0.22em] uppercase text-[#8a7c6b]">
-                    WhatsApp
-                  </p>
-                  <div className="mt-3 space-y-2">
-                    {bridPhone && (
-                      <a
-                        href={getWhatsAppUrl(bridPhone)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm text-[#6f6254] hover:text-[#3b342b] transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleWhatsAppClick(bridPhone);
-                        }}
-                      >
-                        <MessageCircle className="w-4 h-4 text-[#b79a7a]" />
-                        <span className="font-medium text-[#3b342b]">{brideName}</span>
-                        <span className="text-[#8a7c6b]">{bridPhone}</span>
-                      </a>
+            <V2StaggerItem className="lg:col-span-7">
+              <div>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    {monogramExists && weddingData?.id ? (
+                      <img
+                        src={`/assets/wedding-images/${weddingData.id}/monogram.svg`}
+                        alt="Monograma"
+                        className="w-8 h-8 object-contain opacity-80"
+                      />
+                    ) : (
+                      <Heart className="w-5 h-5 text-[#b79a7a]" />
                     )}
-                    {groomPhone && (
-                      <a
-                        href={getWhatsAppUrl(groomPhone)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm text-[#6f6254] hover:text-[#3b342b] transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleWhatsAppClick(groomPhone);
-                        }}
+                    <p className="text-sm text-[#6f6254]">
+                      {t('copyright').replace('{brideName}', brideName).replace('{groomName}', groomName)}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {showInstagram && (brideInstagram || groomInstagram) && (
+                      <button
+                        onClick={handleInstagramClick}
+                        className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#e7dccf] bg-white/80 hover:opacity-90 transition-opacity"
+                        aria-label="Instagram"
                       >
-                        <MessageCircle className="w-4 h-4 text-[#b79a7a]" />
-                        <span className="font-medium text-[#3b342b]">{groomName}</span>
-                        <span className="text-[#8a7c6b]">{groomPhone}</span>
-                      </a>
+                        <Instagram className="w-5 h-5 text-[#6f6254]" />
+                      </button>
                     )}
+                    {showFacebook && (brideFacebook || groomFacebook) && (
+                      <button
+                        onClick={handleFacebookClick}
+                        className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#e7dccf] bg-white/80 hover:opacity-90 transition-opacity"
+                        aria-label="Facebook"
+                      >
+                        <Facebook className="w-5 h-5 text-[#6f6254]" />
+                      </button>
+                    )}
+                    <button
+                      onClick={handleEmailClick}
+                      className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#e7dccf] bg-white/80 hover:opacity-90 transition-opacity"
+                      aria-label="Email"
+                    >
+                      <Mail className="w-5 h-5 text-[#6f6254]" />
+                    </button>
                   </div>
                 </div>
-              )}
-            </div>
+
+                {(bridPhone || groomPhone) && (
+                  <div className="mt-6">
+                    <p className="text-xs tracking-[0.22em] uppercase text-[#8a7c6b]">
+                      WhatsApp
+                    </p>
+                    <div className="mt-3 space-y-2">
+                      {bridPhone && (
+                        <a
+                          href={getWhatsAppUrl(bridPhone)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-sm text-[#6f6254] hover:text-[#3b342b] transition-colors"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleWhatsAppClick(bridPhone);
+                          }}
+                        >
+                          <MessageCircle className="w-4 h-4 text-[#b79a7a]" />
+                          <span className="font-medium text-[#3b342b]">{brideName}</span>
+                          <span className="text-[#8a7c6b]">{bridPhone}</span>
+                        </a>
+                      )}
+                      {groomPhone && (
+                        <a
+                          href={getWhatsAppUrl(groomPhone)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-sm text-[#6f6254] hover:text-[#3b342b] transition-colors"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleWhatsAppClick(groomPhone);
+                          }}
+                        >
+                          <MessageCircle className="w-4 h-4 text-[#b79a7a]" />
+                          <span className="font-medium text-[#3b342b]">{groomName}</span>
+                          <span className="text-[#8a7c6b]">{groomPhone}</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </V2StaggerItem>
           </div>
-        </div>
+        </V2Stagger>
       </div>
     </footer>
   );

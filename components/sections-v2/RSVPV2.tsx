@@ -13,7 +13,7 @@ import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { guestService } from '../../services/guestService';
 import { FirebaseRSVP, FirebaseGuest } from '../../src/types/wedding';
-import { V2Card, V2Container, V2Section, V2Title, V2PillButton } from './ui';
+import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title, V2PillButton } from './ui';
 
 const RSVPContentV2 = () => {
   const { t } = useTranslations('rsvp');
@@ -276,20 +276,26 @@ const RSVPContentV2 = () => {
     return (
       <V2Section id="rsvp" className="relative overflow-hidden" style={getBackgroundStyle(3, '160px')}>
         <V2Container className="py-12">
-          <V2Title title={t('title')} subtitle={t('description')} />
+          <V2Stagger>
+            <V2StaggerItem>
+              <V2Title title={t('title')} subtitle={t('description')} />
+            </V2StaggerItem>
 
-          <div className="mt-10 max-w-3xl mx-auto">
-            <V2Card className="p-10">
-              <h3 className="font-serif text-2xl text-[#3b342b] mb-3">
-                {existingRSVP?.attending ? t('confirmation.received') : t('confirmation.registered')}
-              </h3>
-              <p className="text-sm md:text-base text-[#6f6254] leading-relaxed">
-                {existingRSVP?.attending
-                  ? t('confirmation.seeYouThere').replace('{date}', formatDate(weddingDate)).replace('{venue}', venueName)
-                  : t('confirmation.sorryToMiss')}
-              </p>
-            </V2Card>
-          </div>
+            <V2StaggerItem>
+              <div className="mt-10 max-w-3xl mx-auto">
+                <V2Card className="p-10">
+                  <h3 className="font-serif text-2xl text-[#3b342b] mb-3">
+                    {existingRSVP?.attending ? t('confirmation.received') : t('confirmation.registered')}
+                  </h3>
+                  <p className="text-sm md:text-base text-[#6f6254] leading-relaxed">
+                    {existingRSVP?.attending
+                      ? t('confirmation.seeYouThere').replace('{date}', formatDate(weddingDate)).replace('{venue}', venueName)
+                      : t('confirmation.sorryToMiss')}
+                  </p>
+                </V2Card>
+              </div>
+            </V2StaggerItem>
+          </V2Stagger>
         </V2Container>
       </V2Section>
     );
@@ -311,11 +317,15 @@ const RSVPContentV2 = () => {
   return (
     <V2Section id="rsvp" className="relative overflow-hidden" style={getBackgroundStyle(3, '160px')}>
       <V2Container className="py-12">
-        <V2Title title={t('title')} subtitle={t('description')} />
+        <V2Stagger>
+          <V2StaggerItem>
+            <V2Title title={t('title')} subtitle={t('description')} />
+          </V2StaggerItem>
 
-        <div className="mt-10 max-w-3xl mx-auto">
-          <V2Card className="p-6 md:p-8">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <V2StaggerItem>
+            <div className="mt-10 max-w-3xl mx-auto">
+              <V2Card className="p-6 md:p-8">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <div>
                 <label className="block text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b] mb-2">
                   {t('form.attendance')} *
@@ -411,9 +421,11 @@ const RSVPContentV2 = () => {
                   </span>
                 )}
               </V2PillButton>
-            </form>
-          </V2Card>
-        </div>
+                </form>
+              </V2Card>
+            </div>
+          </V2StaggerItem>
+        </V2Stagger>
       </V2Container>
     </V2Section>
   );

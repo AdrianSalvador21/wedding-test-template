@@ -5,7 +5,7 @@ import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
-import { V2Card, V2Container, V2Section, V2Title } from './ui';
+import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title } from './ui';
 
 interface TimeLeft {
   days: number;
@@ -96,49 +96,55 @@ export default function CountdownV2() {
       }}
     >
       <V2Container className="pt-0 pb-12">
-        <V2Title title={t('subtitle')} />
+        <V2Stagger>
+          <V2StaggerItem>
+            <V2Title title={t('subtitle')} />
+          </V2StaggerItem>
 
-        <div className="mt-10 max-w-4xl mx-auto">
-          {isEventPassed ? (
-            <V2Card className="p-10 text-center">
-              <p className="font-serif text-2xl text-[#b79a7a]">{t('eventPassed')}</p>
-              <p className="mt-4 text-sm md:text-base text-[#6f6254]">{t('thankYou')}</p>
-            </V2Card>
-          ) : (
-            <>
-              <div className="flex items-stretch justify-center gap-3">
-                {([
-                  { label: t('days'), value: timeLeft.days },
-                  { label: t('hours'), value: timeLeft.hours },
-                  { label: t('minutes'), value: timeLeft.minutes },
-                  { label: t('seconds'), value: timeLeft.seconds },
-                ] as const).map((item) => (
-                  <V2Card key={item.label} className="px-4 py-4 text-center w-[82px] rounded-[22px]">
-                    <div className="text-2xl md:text-3xl font-serif font-light text-[#3b342b] leading-none">
-                      {String(item.value).padStart(2, '0')}
-                    </div>
-                    <div className="mt-2 text-[10px] tracking-[0.26em] uppercase text-[#8a7c6b]">
-                      {item.label}
-                    </div>
-                  </V2Card>
-                ))}
-              </div>
+          <V2StaggerItem>
+            <div className="mt-10 max-w-4xl mx-auto">
+              {isEventPassed ? (
+                <V2Card className="p-10 text-center">
+                  <p className="font-serif text-2xl text-[#b79a7a]">{t('eventPassed')}</p>
+                  <p className="mt-4 text-sm md:text-base text-[#6f6254]">{t('thankYou')}</p>
+                </V2Card>
+              ) : (
+                <>
+                  <div className="flex items-stretch justify-center gap-3">
+                    {([
+                      { label: t('days'), value: timeLeft.days },
+                      { label: t('hours'), value: timeLeft.hours },
+                      { label: t('minutes'), value: timeLeft.minutes },
+                      { label: t('seconds'), value: timeLeft.seconds },
+                    ] as const).map((item) => (
+                      <V2Card key={item.label} className="px-4 py-4 text-center w-[82px] rounded-[22px]">
+                        <div className="text-2xl md:text-3xl font-serif font-light text-[#3b342b] leading-none">
+                          {String(item.value).padStart(2, '0')}
+                        </div>
+                        <div className="mt-2 text-[10px] tracking-[0.26em] uppercase text-[#8a7c6b]">
+                          {item.label}
+                        </div>
+                      </V2Card>
+                    ))}
+                  </div>
 
-              <div className="mt-10 text-center">
-                <p className="text-base md:text-base text-[#6f6254]">
-                  {weddingDate.toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'es-ES', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })}
-                </p>
-                <p className="mt-2 text-base md:text-base text-[#6f6254]">
-                  {formatTime(eventTime)}
-                </p>
-              </div>
-            </>
-          )}
-        </div>
+                  <div className="mt-10 text-center">
+                    <p className="text-base md:text-base text-[#6f6254]">
+                      {weddingDate.toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'es-ES', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </p>
+                    <p className="mt-2 text-base md:text-base text-[#6f6254]">
+                      {formatTime(eventTime)}
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          </V2StaggerItem>
+        </V2Stagger>
       </V2Container>
     </V2Section>
   );
