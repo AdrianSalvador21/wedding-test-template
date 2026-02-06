@@ -7,7 +7,7 @@ import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useTranslations } from '../../lib/translations';
-import { V2Card, V2Container, V2Section, V2Title, V2PillButton } from './ui';
+import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title, V2PillButton } from './ui';
 
 export default function LocationV2() {
   const { t } = useTranslations('location');
@@ -90,12 +90,20 @@ export default function LocationV2() {
   return (
     <V2Section id="location">
       <V2Container className="py-12">
-        <V2Title title={t('title')} />
+        <V2Stagger>
+          <V2StaggerItem>
+            <V2Title title={t('title')} />
+          </V2StaggerItem>
 
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
-          <Card title={t('ceremony')} venue={ceremonyVenue} address={ceremonyAddress} mapsUrl={ceremonyUrl} />
-          <Card title={t('reception')} venue={receptionVenue} address={receptionAddress} mapsUrl={receptionMapsUrl} />
-        </div>
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
+            <V2StaggerItem>
+              <Card title={t('ceremony')} venue={ceremonyVenue} address={ceremonyAddress} mapsUrl={ceremonyUrl} />
+            </V2StaggerItem>
+            <V2StaggerItem>
+              <Card title={t('reception')} venue={receptionVenue} address={receptionAddress} mapsUrl={receptionMapsUrl} />
+            </V2StaggerItem>
+          </div>
+        </V2Stagger>
       </V2Container>
     </V2Section>
   );

@@ -6,7 +6,7 @@ import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
-import { V2Card, V2Container, V2Section, V2Title } from './ui';
+import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title } from './ui';
 
 export default function DressCodeV2() {
   const { t } = useTranslations('dressCode');
@@ -48,19 +48,25 @@ export default function DressCodeV2() {
   return (
     <V2Section id="dresscode">
       <V2Container className="py-12">
-        <V2Title title={t('title')} />
+        <V2Stagger>
+          <V2StaggerItem>
+            <V2Title title={t('title')} />
+          </V2StaggerItem>
 
-        <div className="mt-10 max-w-3xl mx-auto">
-          <V2Card className="p-8 md:p-10">
-            <div className="inline-flex items-center rounded-full border border-[#eadfd3] bg-white px-5 py-2 text-sm text-[#6f6254]">
-              <span className="h-2 w-2 rounded-full bg-[#b79a7a] mr-2" />
-              <span className="font-serif">{formatTextWithLineBreaks(displayStyle)}</span>
+          <V2StaggerItem>
+            <div className="mt-10 max-w-3xl mx-auto">
+              <V2Card className="p-8 md:p-10">
+                <div className="inline-flex items-center rounded-full border border-[#eadfd3] bg-white px-5 py-2 text-sm text-[#6f6254]">
+                  <span className="h-2 w-2 rounded-full bg-[#b79a7a] mr-2" />
+                  <span className="font-serif">{formatTextWithLineBreaks(displayStyle)}</span>
+                </div>
+                <p className="mt-6 text-sm md:text-base leading-relaxed text-[#6f6254]">
+                  {formatTextWithLineBreaks(displayDescription)}
+                </p>
+              </V2Card>
             </div>
-            <p className="mt-6 text-sm md:text-base leading-relaxed text-[#6f6254]">
-              {formatTextWithLineBreaks(displayDescription)}
-            </p>
-          </V2Card>
-        </div>
+          </V2StaggerItem>
+        </V2Stagger>
       </V2Container>
     </V2Section>
   );

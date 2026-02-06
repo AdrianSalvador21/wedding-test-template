@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 
 export function V2Section({
   id,
@@ -15,17 +15,85 @@ export function V2Section({
   style?: React.CSSProperties;
 }) {
   return (
-    <motion.section
+    <section
       id={id}
       className={`bg-[#fbf7f1] text-[#3b342b] ${className}`}
       style={style}
-      initial={{ opacity: 0, y: 22 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       {children}
-    </motion.section>
+    </section>
+  );
+}
+
+const v2RevealVariants: Variants = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0 },
+};
+
+const v2StaggerVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+export function V2Reveal({
+  children,
+  className = '',
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  return (
+    <motion.div
+      className={className}
+      variants={v2RevealVariants}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 0.6, ease: 'easeOut', delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function V2Stagger({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={className}
+      variants={v2StaggerVariants}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-100px' }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function V2StaggerItem({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div className={className} variants={v2RevealVariants} transition={{ duration: 0.6, ease: 'easeOut' }}>
+      {children}
+    </motion.div>
   );
 }
 
@@ -75,7 +143,7 @@ export function V2Title({
           {overline}
         </p>
       )}
-      <h2 className="font-serif font-light text-3xl md:text-4xl text-[#3b342b]">
+      <h2 className="mt-3 font-serif font-light text-3xl md:text-4xl text-[#3b342b]">
         {title}
       </h2>
       <div className={align === 'left' ? 'mt-4' : 'mt-4 flex justify-center'}>
