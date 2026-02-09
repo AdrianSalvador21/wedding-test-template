@@ -23,6 +23,17 @@ export default function GalleryV2() {
   const [preloadedImages, setPreloadedImages] = useState<Set<string>>(new Set());
   const { getBackgroundStyle } = useThemePatterns();
 
+  type IdleCallbackHandle = number;
+
+  type RequestIdleCallback = (
+    callback: () => void,
+    options?: {
+      timeout: number;
+    }
+  ) => IdleCallbackHandle;
+
+  type CancelIdleCallback = (handle: IdleCallbackHandle) => void;
+
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.2,
@@ -73,10 +84,12 @@ export default function GalleryV2() {
 
     if (remaining.length === 0) return;
 
-    const idleCb = (window as any).requestIdleCallback as
-      | ((cb: () => void, opts?: { timeout: number }) => number)
-      | undefined;
-    const cancelIdleCb = (window as any).cancelIdleCallback as ((id: number) => void) | undefined;
+    const windowWithIdle = window as unknown as {
+      requestIdleCallback?: RequestIdleCallback;
+      cancelIdleCallback?: CancelIdleCallback;
+    };
+    const idleCb = windowWithIdle.requestIdleCallback;
+    const cancelIdleCb = windowWithIdle.cancelIdleCallback;
 
     if (idleCb) {
       const id = idleCb(
@@ -96,7 +109,7 @@ export default function GalleryV2() {
     }, 800);
 
     return () => window.clearTimeout(timeoutId);
-  }, [photos, preloadedImages]);
+  }, [photos, preloadedImages, currentIndex]);
 
   useEffect(() => {
     if (!isAutoPlaying || !inView || isDragging || photos.length === 0) return;
