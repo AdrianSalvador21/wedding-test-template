@@ -38,17 +38,64 @@ export default function GalleryV2() {
   const hashtag = weddingData?.couple.hashtag || t('hashtag');
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth >= 768 && photos.length > 0) {
-      photos.forEach((photo) => {
-        if (!preloadedImages.has(photo.src)) {
-          const img = document.createElement('img');
-          img.onload = () => {
-            setPreloadedImages((prev) => new Set([...Array.from(prev), photo.src]));
-          };
-          img.src = photo.src;
-        }
-      });
+    if (typeof window === 'undefined' || photos.length === 0) return;
+
+    const preload = (src: string) => {
+      if (!src || preloadedImages.has(src)) return;
+      const img = document.createElement('img');
+      img.onload = () => {
+        setPreloadedImages((prev) => new Set([...Array.from(prev), src]));
+      };
+      img.src = src;
+    };
+
+    const isDesktop = window.innerWidth >= 768;
+    const indicesToPreload = new Set<number>();
+
+    indicesToPreload.add(currentIndex);
+    indicesToPreload.add(currentIndex + 1);
+    indicesToPreload.add(currentIndex + 2);
+    indicesToPreload.add(currentIndex - 1);
+
+    indicesToPreload.forEach((idx) => {
+      const safeIndex = ((idx % photos.length) + photos.length) % photos.length;
+      preload(photos[safeIndex].src);
+    });
+
+    if (isDesktop) {
+      photos.forEach((p) => preload(p.src));
+      return;
     }
+
+    const remaining = photos
+      .map((p) => p.src)
+      .filter((src) => src && !preloadedImages.has(src));
+
+    if (remaining.length === 0) return;
+
+    const idleCb = (window as any).requestIdleCallback as
+      | ((cb: () => void, opts?: { timeout: number }) => number)
+      | undefined;
+    const cancelIdleCb = (window as any).cancelIdleCallback as ((id: number) => void) | undefined;
+
+    if (idleCb) {
+      const id = idleCb(
+        () => {
+          remaining.forEach((src) => preload(src));
+        },
+        { timeout: 1500 }
+      );
+
+      return () => {
+        if (cancelIdleCb) cancelIdleCb(id);
+      };
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      remaining.forEach((src) => preload(src));
+    }, 800);
+
+    return () => window.clearTimeout(timeoutId);
   }, [photos, preloadedImages]);
 
   useEffect(() => {
@@ -106,6 +153,12 @@ export default function GalleryV2() {
     exit: { zIndex: 0, x: -300, opacity: 0 },
   };
 
+  const getPhoto = (index: number) => {
+    if (photos.length === 0) return null;
+    const safeIndex = ((index % photos.length) + photos.length) % photos.length;
+    return photos[safeIndex];
+  };
+
   if (!shouldRender) {
     return null;
   }
@@ -132,8 +185,42 @@ export default function GalleryV2() {
               <div className="mt-10 max-w-6xl mx-auto">
                 <div className="relative">
                   {/* Mobile carousel */}
-                  <div className="relative overflow-hidden rounded-[22px] md:hidden border border-[#e7dccf] bg-white/10">
-                    <div className="relative h-96 sm:h-80">
+                  <div className="relative md:hidden">
+                    <div className="relative h-96 sm:h-80 overflow-visible">
+                      <div className="absolute inset-0 pointer-events-none select-none">
+                        {photos.length > 1 && (
+                          <div className="absolute inset-0 translate-x-3 translate-y-3 rotate-[1.25deg] scale-[0.985] opacity-70">
+                            <div className="relative h-full w-full rounded-[22px] overflow-hidden shadow-lg bg-white">
+                              <Image
+                                src={getPhoto(currentIndex + 1)!.src}
+                                alt={getPhoto(currentIndex + 1)!.alt}
+                                fill
+                                className="object-cover"
+                                quality={60}
+                                draggable={false}
+                              />
+                              <div className="absolute inset-0 bg-[#fbf7f1]/45" />
+                            </div>
+                          </div>
+                        )}
+
+                        {photos.length > 2 && (
+                          <div className="absolute inset-0 translate-x-6 translate-y-6 rotate-[2.25deg] scale-[0.97] opacity-40">
+                            <div className="relative h-full w-full rounded-[22px] overflow-hidden shadow-md bg-white">
+                              <Image
+                                src={getPhoto(currentIndex + 2)!.src}
+                                alt={getPhoto(currentIndex + 2)!.alt}
+                                fill
+                                className="object-cover"
+                                quality={55}
+                                draggable={false}
+                              />
+                              <div className="absolute inset-0 bg-[#fbf7f1]/55" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       <AnimatePresence initial={false}>
                         <motion.div
                           key={currentIndex}
@@ -152,16 +239,18 @@ export default function GalleryV2() {
                           onDragEnd={handleDragEnd}
                           className="absolute inset-0 cursor-grab active:cursor-grabbing"
                         >
-                          <Image
-                            src={photos[currentIndex].src}
-                            alt={photos[currentIndex].alt}
-                            fill
-                            className="object-cover select-none"
-                            quality={90}
-                            priority={currentIndex === 0}
-                            draggable={false}
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                          <div className="relative h-full w-full rounded-[22px] overflow-hidden shadow-xl bg-white">
+                            <Image
+                              src={photos[currentIndex].src}
+                              alt={photos[currentIndex].alt}
+                              fill
+                              className="object-cover select-none"
+                              quality={90}
+                              priority={currentIndex === 0}
+                              draggable={false}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                          </div>
                         </motion.div>
                       </AnimatePresence>
                     </div>
