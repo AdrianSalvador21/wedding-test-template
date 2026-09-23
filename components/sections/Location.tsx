@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { MapPin } from 'lucide-react';
 import { openExternalLink } from '@/lib/utils';
@@ -11,6 +10,7 @@ import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
 import { LocationIcon } from '../icons';
+import { T1SectionTitle } from './ui';
 
 const Location = () => {
   const { t } = useTranslations('location');
@@ -51,22 +51,7 @@ const Location = () => {
       >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
           {/* Título */}
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <div className="flex items-center justify-center mb-6">
-              <LocationIcon
-                size={28}
-                className="text-accent mr-3 opacity-80"
-              />
-              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-            </div>
-            <div className="title-decorative-line"></div>
-          </motion.div>
+          <T1SectionTitle icon={<LocationIcon size={24} />} title={t('title')} />
 
           {/* Ubicaciones */}
           <div className="max-w-6xl mx-auto">
@@ -200,16 +185,7 @@ const Location = () => {
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         <div className="animate-fade-in-up">
           {/* Título */}
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-6">
-              <LocationIcon
-                size={28}
-                className="text-accent mr-3 opacity-80"
-              />
-              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-            </div>
-            <div className="title-decorative-line"></div>
-          </div>
+          <T1SectionTitle icon={<LocationIcon size={24} />} title={t('title')} />
 
           {/* Ubicaciones */}
           <div className="max-w-6xl mx-auto">

@@ -9,6 +9,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { CountdownIcon } from '../icons';
+import { T1SectionTitle, T1_COLORS } from './ui';
 
 interface TimeLeft {
   days: number;
@@ -111,31 +112,8 @@ const Countdown = () => {
           </div>
         ) : (
           <>
-            {/* Título con línea decorativa */}
-            <motion.div 
-              className="mb-12"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            >
-              <div className="flex items-center justify-center mb-6">
-                <CountdownIcon 
-                  size={28} 
-                  className="text-accent mr-3 opacity-80" 
-                />
-                <h2 className="section-title text-stone-600 opacity-90">
-                  {t('subtitle')}
-                </h2>
-              </div>
-              <motion.div 
-                className="title-decorative-line"
-                initial={{ width: 0 }}
-                whileInView={{ width: 64 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-              ></motion.div>
-            </motion.div>
+            {/* Título con divisor clásico (doble filete + florón) */}
+            <T1SectionTitle icon={<CountdownIcon size={24} />} title={t('subtitle')} />
 
             {/* Números de cuenta regresiva horizontales */}
             <motion.div 
@@ -146,92 +124,69 @@ const Countdown = () => {
               transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
             >
               {/* Días */}
-              <motion.div 
-                className="text-center"
+              <motion.div
+                className="text-center px-3 py-4 sm:px-5 sm:py-5"
+                style={{ background: '#fffdf9', border: `1px solid ${T1_COLORS.border}` }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
               >
-                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 font-body" style={{ fontFamily: "'Cormorant Garamond', serif", color: T1_COLORS.dark }}>
                   {String(timeLeft.days).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium tracking-widest" style={{ color: '#9a8f7c' }}>
                   {t('days')}
                 </div>
               </motion.div>
 
-              {/* Separador */}
-              <motion.div 
-                className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 0.7 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.3, delay: 0.6, ease: "easeOut" }}
-              >:</motion.div>
-
               {/* Horas */}
-              <motion.div 
-                className="text-center"
+              <motion.div
+                className="text-center px-3 py-4 sm:px-5 sm:py-5"
+                style={{ background: '#fffdf9', border: `1px solid ${T1_COLORS.border}` }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
               >
-                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 font-body" style={{ fontFamily: "'Cormorant Garamond', serif", color: T1_COLORS.dark }}>
                   {String(timeLeft.hours).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium tracking-widest" style={{ color: '#9a8f7c' }}>
                   {t('hours')}
                 </div>
               </motion.div>
 
-              {/* Separador */}
-              <motion.div 
-                className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 0.7 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.3, delay: 0.8, ease: "easeOut" }}
-              >:</motion.div>
-
               {/* Minutos */}
-              <motion.div 
-                className="text-center"
+              <motion.div
+                className="text-center px-3 py-4 sm:px-5 sm:py-5"
+                style={{ background: '#fffdf9', border: `1px solid ${T1_COLORS.border}` }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
               >
-                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 font-body" style={{ fontFamily: "'Cormorant Garamond', serif", color: T1_COLORS.dark }}>
                   {String(timeLeft.minutes).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium tracking-widest" style={{ color: '#9a8f7c' }}>
                   {t('minutes')}
                 </div>
               </motion.div>
 
-              {/* Separador */}
-              <motion.div 
-                className="text-base sm:text-lg md:text-xl text-stone-600 font-light mx-1 opacity-70"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 0.7 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.3, delay: 1.0, ease: "easeOut" }}
-              >:</motion.div>
-
               {/* Segundos */}
-              <motion.div 
-                className="text-center"
+              <motion.div
+                className="text-center px-3 py-4 sm:px-5 sm:py-5"
+                style={{ background: '#fffdf9', border: `1px solid ${T1_COLORS.border}` }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5, delay: 1.1, ease: "easeOut" }}
               >
-                <div className="text-2xl sm:text-3xl md:text-4xl font-light text-stone-600 mb-2 font-body opacity-70">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2 font-body" style={{ fontFamily: "'Cormorant Garamond', serif", color: T1_COLORS.dark }}>
                   {String(timeLeft.seconds).padStart(2, '0')}
                 </div>
-                <div className="text-xs md:text-sm font-body font-medium text-gray-600 tracking-widest">
+                <div className="text-xs md:text-sm font-body font-medium tracking-widest" style={{ color: '#9a8f7c' }}>
                   {t('seconds')}
                 </div>
               </motion.div>

@@ -11,6 +11,7 @@ import { useThemePatterns } from '../../lib/theme-context';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
 import { AboutIcon } from '../icons';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
+import { T1SectionTitle } from './ui';
 
 const About = () => {
   const { t } = useTranslations('about');
@@ -42,24 +43,7 @@ const About = () => {
     >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
         {/* Título principal - manteniendo estilo original */}
-        <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <div className="flex items-center justify-center mb-6">
-            <AboutIcon 
-              size={28} 
-              className="text-accent mr-3 opacity-80" 
-            />
-            <h2 className="section-title text-stone-600 opacity-90">
-              {t('title')}
-            </h2>
-          </div>
-          <div className="title-decorative-line"></div>
-        </motion.div>
+        <T1SectionTitle icon={<AboutIcon size={24} />} title={t('title')} />
 
         <div className="max-w-6xl mx-auto">
           {/* Cita romántica - centrada y elegante */}
@@ -85,7 +69,7 @@ const About = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
             >
-              <div className="relative overflow-hidden rounded-lg shadow-lg group">
+              <div className="relative overflow-hidden group" style={{ border: '1px solid #d9c6a8' }}>
                 <Image
                   src={coupleImage}
                   alt={`${couple?.bride.name || 'Novia'} y ${couple?.groom.name || 'Novio'}`}
@@ -114,9 +98,9 @@ const About = () => {
               
               {/* Elemento decorativo sutil */}
               <div className="flex items-center space-x-3 pt-4">
-                <div className="w-12 h-0.5 bg-accent"></div>
-                <div className="w-2 h-2 bg-accent rounded-full"></div>
-                <div className="w-12 h-0.5 bg-accent"></div>
+                <div className="w-12 h-0.5" style={{ background: '#c9a86a' }}></div>
+                <div className="w-2 h-2 rounded-full" style={{ background: '#c9a86a' }}></div>
+                <div className="w-12 h-0.5" style={{ background: '#c9a86a' }}></div>
               </div>
             </motion.div>
           </div>

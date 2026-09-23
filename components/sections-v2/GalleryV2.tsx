@@ -10,7 +10,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
-import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title, V2PillButton } from './ui';
+import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title } from './ui';
 
 export default function GalleryV2() {
   const { t } = useTranslations('gallery');
@@ -425,17 +425,15 @@ export default function GalleryV2() {
           <V2StaggerItem>
             <div className="mt-10">
               <V2Card className="p-8 md:p-10 text-center">
-                <h3 className="font-serif text-xl text-[#3b342b]">{t('shareMessage')}</h3>
+                <h3 className="font-bold text-xl text-[#3b342b]">{t('shareMessage')}</h3>
                 <p className="mt-4 text-sm md:text-base text-[#6f6254]">
                   {t('cameraMessage')} <span className="font-medium text-[#3b342b]">{hashtag}</span> {t('hashtagPrompt')}
                 </p>
                 <div className="mt-6 flex justify-center">
-                  <V2PillButton onClick={() => {}} className="pointer-events-none select-none">
-                    <span className="inline-flex items-center gap-2">
-                      <Camera className="w-4 h-4" />
-                      {hashtag}
-                    </span>
-                  </V2PillButton>
+                  <span className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold bg-[#f3ece2] text-[#3b342b]">
+                    <Camera className="w-4 h-4" />
+                    {hashtag}
+                  </span>
                 </div>
               </V2Card>
             </div>

@@ -12,6 +12,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { RSVPIcon } from '../icons';
+import { T1SectionTitle, T1_COLORS } from './ui';
 
 import { guestService } from '../../services/guestService';
 import { FirebaseRSVP, FirebaseGuest } from '../../src/types/wedding';
@@ -288,19 +289,12 @@ const RSVPContent = () => {
         style={getBackgroundStyle(3, '160px')}
       >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-6">
-              <RSVPIcon 
-                size={28} 
-                className="text-accent mr-3 opacity-80" 
-              />
-              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-            </div>
-            <div className="title-decorative-line mb-6"></div>
+          <div className="text-center">
+            <T1SectionTitle icon={<RSVPIcon size={24} />} title={t('title')} />
           </div>
 
           <div className="max-w-md mx-auto text-center">
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
+            <div className="p-8" style={{ background: '#fffdf9', border: `1px solid ${T1_COLORS.border}` }}>
               <div className="animate-spin w-8 h-8 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-text font-body">Cargando información del invitado...</p>
             </div>
@@ -319,25 +313,19 @@ const RSVPContent = () => {
         style={getBackgroundStyle(3, '160px')}
       >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-6">
-              <RSVPIcon 
-                size={28} 
-                className="text-accent mr-3 opacity-80" 
-              />
-              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-            </div>
-            <div className="title-decorative-line mb-6"></div>
+          <div className="text-center">
+            <T1SectionTitle icon={<RSVPIcon size={24} />} title={t('title')} />
           </div>
 
           <div className="max-w-md mx-auto text-center">
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
+            <div className="p-8" style={{ background: '#fffdf9', border: `1px solid ${T1_COLORS.border}` }}>
               <p className="text-text font-body mb-6">
                 {error}
               </p>
               <button
                 onClick={() => window.location.reload()}
-                className="px-6 py-2 bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors font-body font-medium"
+                className="px-6 py-2 font-body font-medium text-xs tracking-[0.18em] uppercase"
+                style={{ border: `1.5px solid ${T1_COLORS.primary}`, background: T1_COLORS.primary, color: '#FFF7EC' }}
               >
                 Reintentar
               </button>
@@ -357,22 +345,15 @@ const RSVPContent = () => {
       >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
           {/* Título */}
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-6">
-              <RSVPIcon 
-                size={28} 
-                className="text-accent mr-3 opacity-80" 
-              />
-              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-            </div>
-            <div className="title-decorative-line mb-6"></div>
+          <div className="text-center">
+            <T1SectionTitle icon={<RSVPIcon size={24} />} title={t('title')} />
             <p className="section-subtitle font-body">
               {t('description')}
             </p>
           </div>
 
           <div className="max-w-md mx-auto text-center">
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
+            <div className="p-8" style={{ background: '#fffdf9', border: `1px solid ${T1_COLORS.border}` }}>
               <h2 className="text-2xl font-blockquote font-semibold text-primary mb-4">
                 {existingRSVP?.attending ? t('confirmation.received') : t('confirmation.registered')}
               </h2>
@@ -399,15 +380,8 @@ const RSVPContent = () => {
               >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
           {/* Título */}
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-6">
-              <RSVPIcon 
-                size={28} 
-                className="text-accent mr-3 opacity-80" 
-              />
-              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-            </div>
-            <div className="title-decorative-line mb-6"></div>
+          <div className="text-center">
+            <T1SectionTitle icon={<RSVPIcon size={24} />} title={t('title')} />
             <p className="section-subtitle font-body">
               {t('description')}
             </p>
@@ -415,7 +389,7 @@ const RSVPContent = () => {
 
           <div className="max-w-lg mx-auto space-y-8">
             {/* Formulario */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <div className="p-6" style={{ background: '#fffdf9', border: `1px solid ${T1_COLORS.border}` }}>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 {/* Campos de nombre y email removidos para mantener consistencia entre mobile y desktop */}
 
@@ -427,7 +401,7 @@ const RSVPContent = () => {
                   <div className="relative">
                     <select
                       {...register('attendance')}
-                      className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none font-body"
+                      className="w-full px-4 py-3 pr-10 border border-[#d9c6a8] rounded-none focus:ring-0 focus:border-[#8B5E34] transition-colors bg-white appearance-none font-body"
                     >
                       <option value=""></option>
                       <option value="yes">{t('form.attendanceOptions.yes')}</option>
@@ -450,7 +424,7 @@ const RSVPContent = () => {
                       <select
                         {...register('guestCount')}
                         disabled={watch('attendance') === 'no'}
-                        className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none font-body disabled:bg-gray-100 disabled:text-gray-500"
+                        className="w-full px-4 py-3 pr-10 border border-[#d9c6a8] rounded-none focus:ring-0 focus:border-[#8B5E34] transition-colors bg-white appearance-none font-body disabled:bg-gray-100 disabled:text-gray-500"
                         defaultValue="1"
                       >
                         <option value="1">{t('form.guestCountOptions.1')}</option>
@@ -478,7 +452,7 @@ const RSVPContent = () => {
                       <select
                         {...register('dietaryRestriction')}
                         disabled={watch('attendance') === 'no'}
-                        className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none font-body disabled:bg-gray-100 disabled:text-gray-500"
+                        className="w-full px-4 py-3 pr-10 border border-[#d9c6a8] rounded-none focus:ring-0 focus:border-[#8B5E34] transition-colors bg-white appearance-none font-body disabled:bg-gray-100 disabled:text-gray-500"
                       >
                         <option value=""></option>
                         <option value="vegetarian">{t('form.dietaryOptions.vegetarian')}</option>
@@ -501,7 +475,7 @@ const RSVPContent = () => {
                   <textarea
                     {...register('message')}
                     rows={3}
-                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none font-body"
+                    className="w-full px-4 py-3 border border-[#d9c6a8] rounded-none focus:ring-0 focus:border-[#8B5E34] transition-colors resize-none font-body"
                     placeholder=""
                   />
                 </div>
@@ -510,11 +484,12 @@ const RSVPContent = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-transparent border-accent text-accent hover:text-accent-dark hover:border-accent-dark font-body font-medium py-4 px-6 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  className="w-full font-body font-medium py-4 px-6 text-xs tracking-[0.18em] uppercase transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  style={{ border: `1.5px solid ${T1_COLORS.primary}`, background: T1_COLORS.primary, color: '#FFF7EC' }}
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-5 h-5 border-accent border-t-transparent rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-white border-t-transparent rounded-full animate-spin" />
                       <span className="font-body">{t('form.submitting')}</span>
                     </>
                   ) : (
@@ -566,14 +541,7 @@ const RSVPContent = () => {
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
-            <div className="flex items-center justify-center mb-6">
-              <RSVPIcon 
-                size={28} 
-                className="text-accent mr-3 opacity-80" 
-              />
-              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-            </div>
-            <div className="title-decorative-line mb-6"></div>
+            <T1SectionTitle icon={<RSVPIcon size={24} />} title={t('title')} className="mb-0" />
             <p className="section-subtitle font-body">
               {t('description')}
             </p>
@@ -582,7 +550,7 @@ const RSVPContent = () => {
           <div className="max-w-2xl mx-auto">
             {/* Formulario */}
             <div className="animation-delay-600">
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="p-8" style={{ background: '#fffdf9', border: `1px solid ${T1_COLORS.border}` }}>
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* Campos de nombre y email removidos para mantener consistencia entre mobile y desktop */}
 
@@ -594,7 +562,7 @@ const RSVPContent = () => {
                       <div className="relative">
                         <select
                           {...register('attendance')}
-                          className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none font-body"
+                          className="w-full px-4 py-3 pr-10 border border-[#d9c6a8] rounded-none focus:ring-0 focus:border-[#8B5E34] transition-colors bg-white appearance-none font-body"
                         >
                           <option value=""></option>
                           <option value="yes">{t('form.attendanceOptions.yes')}</option>
@@ -617,7 +585,7 @@ const RSVPContent = () => {
                           <select
                             {...register('guestCount')}
                             disabled={watch('attendance') === 'no'}
-                            className="w-full px-4 py-3 pr-10 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors bg-white appearance-none font-body disabled:bg-gray-100 disabled:text-gray-500"
+                            className="w-full px-4 py-3 pr-10 border border-[#d9c6a8] rounded-none focus:ring-0 focus:border-[#8B5E34] transition-colors bg-white appearance-none font-body disabled:bg-gray-100 disabled:text-gray-500"
                             defaultValue="1"
                           >
                             <option value="1">{t('form.guestCountOptions.1')}</option>
@@ -643,7 +611,7 @@ const RSVPContent = () => {
                       <textarea
                         {...register('message')}
                         rows={4}
-                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-transparent transition-colors resize-none font-body"
+                        className="w-full px-4 py-3 border border-[#d9c6a8] rounded-none focus:ring-0 focus:border-[#8B5E34] transition-colors resize-none font-body"
                         placeholder=""
                       />
                     </div>
@@ -652,11 +620,12 @@ const RSVPContent = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-transparent border-accent text-accent hover:text-accent-dark hover:border-accent-dark font-body font-medium py-4 px-6 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
+                      className="w-full font-body font-medium py-4 px-6 text-xs tracking-[0.18em] uppercase transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
+                      style={{ border: `1.5px solid ${T1_COLORS.primary}`, background: T1_COLORS.primary, color: '#FFF7EC' }}
                     >
                       {isSubmitting ? (
                         <>
-                          <div className="w-6 h-6 border-accent border-t-transparent rounded-full animate-spin" />
+                          <div className="w-6 h-6 border-white border-t-transparent rounded-full animate-spin" />
                           <span className="font-body">{t('form.submitting')}</span>
                         </>
                       ) : (

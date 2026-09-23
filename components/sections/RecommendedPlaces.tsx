@@ -11,6 +11,7 @@ import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
 import { RecommendedPlace } from '../../src/types/wedding';
 import { RecommendedPlacesIcon } from '../icons';
+import { T1SectionTitle } from './ui';
 
 const RecommendedPlaces = () => {
   const { t } = useTranslations('recommendedPlaces');
@@ -87,38 +88,10 @@ const RecommendedPlaces = () => {
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
         
         {/* Título con animaciones suaves */}
-        <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <motion.div 
-            className="flex items-center justify-center mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          >
-            <RecommendedPlacesIcon 
-              size={28} 
-              className="text-accent mr-3 opacity-80" 
-            />
-            <h2 className="section-title text-stone-600 opacity-90">
-              {t('title')}
-            </h2>
-          </motion.div>
-          
-          <motion.div 
-            className="title-decorative-line mb-6"
-            initial={{ width: 0 }}
-            whileInView={{ width: 64 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          />
-          
-          <motion.p 
+        <div className="text-center mb-12">
+          <T1SectionTitle icon={<RecommendedPlacesIcon size={24} />} title={t('title')} className="mb-6" />
+
+          <motion.p
             className="section-subtitle"
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -137,15 +110,15 @@ const RecommendedPlaces = () => {
           >
             {t('description')}
           </motion.p>
-        </motion.div>
+        </div>
 
         {/* Grid de lugares con animaciones escalonadas */}
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {places.map((place, index) => (
-              <motion.div 
+              <motion.div
                 key={place.id}
-                className="bg-white rounded-lg shadow-sm border border-stone-100 p-6 hover:shadow-md transition-all duration-300 hover:border-stone-200"
+                className="bg-[#fffdf9] border border-[#d9c6a8] p-6 transition-all duration-300"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}

@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
-import { Heart, Instagram, Facebook, Mail, MessageCircle } from 'lucide-react';
+import { Instagram, Facebook, Mail, MessageCircle } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useTheme } from '../../lib/theme-context';
+import { T1Monogram } from './ui';
 
 const Footer = () => {
   const { t } = useTranslations('footer');
@@ -139,7 +140,7 @@ const Footer = () => {
                     />
                   </div>
                 ) : (
-                  <Heart className="w-4 h-4 text-white/60" />
+                  <T1Monogram size={28} initials={`${brideName.charAt(0)}${groomName.charAt(0)}`} spin={false} />
                 )}
                 <div className="w-8 h-px bg-white/40"></div>
               </div>
@@ -247,7 +248,8 @@ const Footer = () => {
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
               <motion.h3
-                className="text-2xl font-heading font-light mb-4"
+                className="text-2xl font-light mb-4"
+                style={{ fontFamily: "'Allura', cursive" }}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, margin: "-100px" }}
@@ -278,7 +280,7 @@ const Footer = () => {
                     />
                   </motion.div>
                 ) : (
-                  <Heart className={`w-5 h-5 ${footerAccentClass}`} />
+                  <T1Monogram size={34} initials={`${brideName.charAt(0)}${groomName.charAt(0)}`} spin={false} />
                 )}
                 <div className={`w-12 h-px ${isThemeWithCustomColors ? 'bg-theme-accent' : 'bg-accent'} opacity-60`}></div>
               </motion.div>

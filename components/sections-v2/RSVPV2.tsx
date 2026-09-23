@@ -284,7 +284,7 @@ const RSVPContentV2 = () => {
             <V2StaggerItem>
               <div className="mt-10 max-w-3xl mx-auto">
                 <V2Card className="p-10">
-                  <h3 className="font-serif text-2xl text-[#3b342b] mb-3">
+                  <h3 className="font-bold text-2xl text-[#3b342b] mb-3">
                     {existingRSVP?.attending ? t('confirmation.received') : t('confirmation.registered')}
                   </h3>
                   <p className="text-sm md:text-base text-[#6f6254] leading-relaxed">

@@ -11,6 +11,7 @@ import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
 import { GalleryIcon } from '../icons';
+import { T1SectionTitle } from './ui';
 
 const Gallery = () => {
   const { t } = useTranslations('gallery');
@@ -141,24 +142,10 @@ const Gallery = () => {
     >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
         {/* Título */}
-        <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="flex items-center justify-center mb-6">
-            <GalleryIcon 
-              size={28} 
-              className="text-accent mr-3 opacity-80" 
-            />
-            <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-          </div>
-          <div className="title-decorative-line mb-6"></div>
-          <p className="section-subtitle">
-            {t('subtitle')}
-          </p>
-        </motion.div>
+        <T1SectionTitle icon={<GalleryIcon size={24} />} title={t('title')} className="mb-6" />
+        <p className="section-subtitle text-center -mt-6 mb-12">
+          {t('subtitle')}
+        </p>
 
         {/* Carousel Container */}
         <div className="max-w-6xl mx-auto">
