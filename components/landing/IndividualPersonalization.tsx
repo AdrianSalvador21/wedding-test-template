@@ -4,9 +4,9 @@ import React from 'react';
 import { fraunces, LSection, LReveal, LStagger, LStaggerItem, LCard } from './ui';
 
 const examples = [
-  { name: 'Juan & María', seats: '2 lugares' },
+  { name: 'Juan y María', seats: '2 lugares' },
   { name: 'Carlos', seats: '1 lugar' },
-  { name: 'The Smith Family', seats: '4 lugares' },
+  { name: 'Familia Torres', seats: '4 lugares' },
 ];
 
 export default function IndividualPersonalization() {
