@@ -7,7 +7,7 @@ import { fraunces, LSection, LSolidButton, LTextLink } from './ui';
 const WHATSAPP_LINK_INTRO =
   'https://wa.me/529602460590?text=Hola!%20Me%20interesa%20conocer%20m%C3%A1s%20sobre%20las%20invitaciones%20digitales%20de%20Invyta.';
 
-const chips = ['3 diseños', 'RSVP automático', 'Listo en 7 días'];
+const chips = ['Diseño personalizado', 'Confirmación automática', 'Listo en 7 días'];
 
 export default function Hero() {
   return (

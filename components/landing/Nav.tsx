@@ -33,7 +33,7 @@ export default function Nav() {
             </a>
           ))}
           <LSolidButton href={WHATSAPP_LINK} target="_blank" variant="dark" className="px-6 py-3 text-[14px]">
-            Comenzar ahora
+            Crea tu invitación
           </LSolidButton>
         </nav>
 
@@ -76,7 +76,7 @@ export default function Nav() {
             className="w-full text-[15px]"
             onClick={() => setOpen(false)}
           >
-            Comenzar ahora
+            Crea tu invitación
           </LSolidButton>
         </nav>
       )}

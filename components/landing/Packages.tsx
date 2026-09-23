@@ -19,7 +19,7 @@ const basicoGroups = [
     text: 'Mesa de regalos, hospedaje recomendado y sección de solo adultos.',
   },
   {
-    title: 'RSVP y gestión',
+    title: 'Confirmación y gestión',
     text: 'Formulario de confirmación y gestión de invitados confirmados.',
   },
 ];
@@ -110,7 +110,7 @@ export default function Packages() {
             <div className="absolute top-7 -right-2 bg-[#C6663C] text-[#FBF7F1] px-[18px] py-2 rounded-l-full text-xs font-bold tracking-wide uppercase">
               Recomendado
             </div>
-            <div className="flex flex-col gap-1.5 mt-2">
+            <div className="flex flex-col gap-1.5 mt-8 md:mt-2">
               <span className="text-2xl" style={fraunces}>
                 Paquete Personalizado
               </span>

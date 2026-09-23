@@ -26,6 +26,9 @@ export default function Footer() {
           <a href="#paquetes" className="text-sm text-[#A79E92] hover:text-white transition-colors">
             Paquetes
           </a>
+          <a href="#faq" className="text-sm text-[#A79E92] hover:text-white transition-colors">
+            FAQ
+          </a>
         </div>
         <div className="flex flex-col gap-3">
           <span className="text-sm font-bold text-[#FBF7F1]">Contacto</span>

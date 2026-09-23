@@ -16,7 +16,7 @@ export default function PlannerCta() {
           Tenemos beneficios especiales para ti y para tus clientes.
         </p>
         <LSolidButton href={WHATSAPP_LINK} target="_blank" variant="ivory" className="mt-1">
-          Comenzar ahora
+          Habla con nosotros
         </LSolidButton>
         <span className="text-[13px] text-[#FBEADD]">Respuesta en menos de 24 horas</span>
       </LReveal>
