@@ -77,7 +77,7 @@ export default function RecommendedPlacesV2() {
             {places.map((place) => (
               <V2StaggerItem key={place.id}>
                 <V2Card className="p-6">
-                  <h3 className="font-serif text-lg text-[#3b342b]">
+                  <h3 className="font-bold text-lg text-[#3b342b]">
                     {place.name}
                   </h3>
                   <p className="mt-3 text-sm text-[#6f6254] leading-relaxed">

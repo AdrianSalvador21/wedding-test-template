@@ -123,7 +123,7 @@ export default function TimelineV2() {
                               <span className="text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b]">{event.time}</span>
                             </div>
                           </div>
-                          <h3 className="font-serif text-lg text-[#3b342b]">{event.title}</h3>
+                          <h3 className="font-bold text-lg text-[#3b342b]">{event.title}</h3>
                           {event.description && (
                             <p className="mt-3 text-sm text-[#6f6254] leading-relaxed">{event.description}</p>
                           )}
@@ -184,7 +184,7 @@ export default function TimelineV2() {
                             <span className="text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b]">{event.time}</span>
                           </div>
                         </div>
-                        <h3 className="mt-3 font-serif text-base text-[#3b342b]">{event.title}</h3>
+                        <h3 className="mt-3 font-bold text-base text-[#3b342b]">{event.title}</h3>
                         {event.description && (
                           <p className="mt-2 text-sm text-[#6f6254] leading-relaxed">{event.description}</p>
                         )}

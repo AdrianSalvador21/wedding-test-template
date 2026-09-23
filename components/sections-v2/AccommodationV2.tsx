@@ -61,7 +61,7 @@ export default function AccommodationV2() {
             {accommodationOptions.map((hotel, index) => (
               <V2StaggerItem key={index}>
                 <V2Card className="p-6">
-                  <h3 className="font-serif text-lg text-[#3b342b] leading-snug">
+                  <h3 className="font-bold text-lg text-[#3b342b] leading-snug">
                     {hotel.name}
                   </h3>
 

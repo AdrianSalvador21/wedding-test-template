@@ -8,7 +8,7 @@ import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddi
 import { useThemePatterns } from '../../lib/theme-context';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
-import { V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title } from './ui';
+import { V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title, V2LeafAccent } from './ui';
 
 export default function AboutV2() {
   const { t } = useTranslations('about');
@@ -45,7 +45,7 @@ export default function AboutV2() {
           <div className="mt-10 max-w-5xl mx-auto">
             {quoteText && (
               <V2StaggerItem>
-                <blockquote className="text-center font-serif italic text-[#6f6254] text-lg md:text-xl leading-relaxed px-2 md:px-10">
+                <blockquote className="text-center font-medium text-[#6f6254] text-lg md:text-xl leading-relaxed px-2 md:px-10">
                   &ldquo;{formatTextWithLineBreaks(quoteText)}&rdquo;
                 </blockquote>
               </V2StaggerItem>
@@ -59,6 +59,8 @@ export default function AboutV2() {
 
             <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
               <V2StaggerItem className="lg:col-span-5">
+                <div className="relative">
+                  <V2LeafAccent size={64} className="absolute -left-6 -top-6 text-[#b79a7a] opacity-60 hidden md:block" />
                 <div className="relative overflow-hidden rounded-[28px] border border-[#e7dccf] bg-white">
                   <Image
                     src={coupleImage}
@@ -67,6 +69,7 @@ export default function AboutV2() {
                     height={1100}
                     className="object-cover w-full h-full"
                   />
+                </div>
                 </div>
               </V2StaggerItem>
 

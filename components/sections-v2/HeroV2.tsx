@@ -7,6 +7,7 @@ import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
+import { V2Rings, V2LeafAccent, V2Monogram } from './ui';
 
 interface HeroV2Props {
   overlayVisible: boolean;
@@ -138,6 +139,7 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
     <section
       className="hero-section relative overflow-hidden md:flex md:items-center md:justify-center text-white"
       style={{
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
         ...(isChromeIOS
           ? {
               height: '812px',
@@ -167,7 +169,7 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
               right: '-6px',
               bottom: '-6px',
               background:
-                'linear-gradient(to bottom, rgba(251,247,241,0) 0%, rgba(251,247,241,0.65) 49%, rgba(251,247,241,1) 90%)',
+                'linear-gradient(to bottom, rgba(251,247,241,0) 0%, rgba(251,247,241,0.05) 22%, rgba(251,247,241,0.22) 42%, rgba(251,247,241,0.5) 60%, rgba(251,247,241,0.8) 76%, rgba(251,247,241,0.96) 90%, rgba(251,247,241,1) 100%)',
             }}
           />
         </div>
@@ -193,7 +195,7 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
 
             <motion.h1
               key={`hero-names-mobile-${animationKey}`}
-              className="mt-6 text-[42px] leading-[1.05] font-serif font-light"
+              className="mt-6 text-[42px] leading-[1.05] font-bold tracking-tight"
               initial={{ opacity: 0, scale: 0.92, y: 16 }}
               animate={{
                 opacity: overlayVisible ? 0 : 1,
@@ -212,7 +214,7 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
               </motion.span>
               <motion.span
                 key={`hero-ampersand-mobile-${animationKey}`}
-                className="mx-3 font-serif italic text-[#b79a7a]"
+                className="mx-3 font-bold text-[#b79a7a]"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: overlayVisible ? 0 : 1, scale: overlayVisible ? 0.9 : 1 }}
                 transition={{ duration: 0.6, ease: 'easeOut', delay: overlayVisible ? 0 : 0.45 }}
@@ -248,7 +250,7 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
                 animate={{ opacity: overlayVisible ? 0 : 1, y: overlayVisible ? 10 : 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut', delay: overlayVisible ? 0 : 0.85 }}
               >
-                <span className="font-serif font-normal tracking-wide">{t('cta')}</span>
+                <span className="font-bold tracking-wide">{t('cta')}</span>
               </motion.button>
             )}
           </div>
@@ -258,27 +260,44 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
 
       <div className="hidden md:block absolute inset-0 z-0 overflow-hidden">
         <img src={heroImageUrl} alt={heroImageAlt} className="hero-background-image" />
-        <div className="absolute inset-0 bg-black/35 z-10" />
+        {/* Degradado natural: casi transparente arriba, se acentúa hacia abajo donde va el texto,
+            más un leve viñeteado en los bordes en vez de un tinte plano uniforme */}
+        <div
+          className="absolute inset-0 z-10"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(15,12,8,.08) 0%, rgba(15,12,8,.1) 30%, rgba(15,12,8,.28) 58%, rgba(15,12,8,.52) 80%, rgba(15,12,8,.62) 100%)',
+          }}
+        />
+        <div
+          className="absolute inset-0 z-10"
+          style={{
+            background:
+              'radial-gradient(120% 90% at 50% 42%, rgba(0,0,0,0) 45%, rgba(15,12,8,.22) 100%)',
+          }}
+        />
+        <V2Rings size={260} className="absolute left-14 top-14 opacity-50 z-10" />
+        <V2LeafAccent size={110} className="absolute right-20 top-28 opacity-40 z-10 text-white" />
       </div>
 
       <div className="hidden md:block relative z-10 text-center px-6 max-w-4xl mx-auto">
         <div className="relative z-10">
-          {monogramExists && (
-            <motion.div
-              key={`hero-monogram-${animationKey}`}
-              className="mb-10 flex justify-center"
-              initial={{ opacity: 0, y: -30, scale: 0.8 }}
-              animate={{
-                opacity: overlayVisible ? 0 : 1,
-                y: overlayVisible ? -30 : 0,
-                scale: overlayVisible ? 0.8 : 1,
-              }}
-              transition={{
-                duration: 1.2,
-                ease: [0.25, 0.46, 0.45, 0.94],
-                delay: overlayVisible ? 0 : 0.1,
-              }}
-            >
+          <motion.div
+            key={`hero-monogram-${animationKey}`}
+            className="mb-10 flex justify-center"
+            initial={{ opacity: 0, y: -30, scale: 0.8 }}
+            animate={{
+              opacity: overlayVisible ? 0 : 1,
+              y: overlayVisible ? -30 : 0,
+              scale: overlayVisible ? 0.8 : 1,
+            }}
+            transition={{
+              duration: 1.2,
+              ease: [0.25, 0.46, 0.45, 0.94],
+              delay: overlayVisible ? 0 : 0.1,
+            }}
+          >
+            {monogramExists ? (
               <motion.div
                 className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28"
                 initial={{ rotate: -5 }}
@@ -293,8 +312,10 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
                   style={{ filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.8)) brightness(0.95)' }}
                 />
               </motion.div>
-            </motion.div>
-          )}
+            ) : (
+              <V2Monogram size={96} initials={`${brideName.charAt(0)}${groomName.charAt(0)}`} />
+            )}
+          </motion.div>
 
           <motion.div
             key={`hero-title-${animationKey}`}
@@ -328,7 +349,7 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
 
               <motion.h1
                 key={`hero-names-${animationKey}`}
-                className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-light tracking-wide leading-tight"
+                className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-tight"
                 style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.9)', opacity: 0.95 }}
                 initial={{ opacity: 0, scale: 0.8, y: 30 }}
                 animate={{
@@ -352,7 +373,7 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
                 </motion.span>
                 <motion.span
                   key={`hero-ampersand-${animationKey}`}
-                  className="mx-4 md:mx-6 font-serif italic text-[#b79a7a]/90"
+                  className="mx-4 md:mx-6 font-bold text-[#b79a7a]/90"
                   initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
                   animate={{ opacity: overlayVisible ? 0 : 1, scale: overlayVisible ? 0.5 : 1, rotate: overlayVisible ? -10 : 0 }}
                   transition={{ duration: 0.6, ease: 'easeOut', delay: overlayVisible ? 0 : 1.2, type: 'spring', stiffness: 200 }}
@@ -413,7 +434,7 @@ export default function HeroV2({ overlayVisible }: HeroV2Props) {
                 animate={{ opacity: overlayVisible ? 0 : 1 }}
                 transition={{ duration: 0.6, ease: 'easeOut', delay: overlayVisible ? 0 : 2.4 }}
               >
-                <span className="font-serif font-normal tracking-wide">{t('cta')}</span>
+                <span className="font-bold tracking-wide">{t('cta')}</span>
               </motion.button>
             </motion.div>
           )}

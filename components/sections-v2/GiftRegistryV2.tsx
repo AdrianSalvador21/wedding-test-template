@@ -67,7 +67,7 @@ export default function GiftRegistryV2() {
                     onClick={() => setIsRegistryExpanded(!isRegistryExpanded)}
                     className="w-full px-6 py-5 flex items-center justify-between"
                   >
-                    <span className="font-serif text-base text-[#3b342b]">{t('onlineRegistries')}</span>
+                    <span className="font-bold text-base text-[#3b342b]">{t('onlineRegistries')}</span>
                     {isRegistryExpanded ? (
                       <ChevronUp className="w-5 h-5 text-[#6f6254]" />
                     ) : (
@@ -85,7 +85,7 @@ export default function GiftRegistryV2() {
                             rel="noopener noreferrer"
                             className="rounded-[22px] border border-[#e7dccf] bg-white/70 px-4 py-4 text-center hover:opacity-90 transition-opacity"
                           >
-                            <span className="font-serif text-[#3b342b]">{registry.name}</span>
+                            <span className="font-semibold text-[#3b342b]">{registry.name}</span>
                           </a>
                         ))}
                       </div>
@@ -102,7 +102,7 @@ export default function GiftRegistryV2() {
                     onClick={() => setIsBankExpanded(!isBankExpanded)}
                     className="w-full px-6 py-5 flex items-center justify-between"
                   >
-                    <span className="font-serif text-base text-[#3b342b]">{t('bankTransfer')}</span>
+                    <span className="font-bold text-base text-[#3b342b]">{t('bankTransfer')}</span>
                     {isBankExpanded ? (
                       <ChevronUp className="w-5 h-5 text-[#6f6254]" />
                     ) : (

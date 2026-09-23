@@ -66,7 +66,7 @@ export default function LocationV2() {
         <p className="text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b]">
           {title}
         </p>
-        <h3 className="mt-3 text-lg md:text-xl font-serif font-normal text-[#3b342b]">
+        <h3 className="mt-3 text-lg md:text-xl font-bold text-[#3b342b]">
           {venue}
         </h3>
         {!!address && (

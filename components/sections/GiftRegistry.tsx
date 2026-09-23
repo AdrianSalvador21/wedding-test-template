@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
 import { GiftRegistryIcon } from '../icons';
+import { T1SectionTitle } from './ui';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
 
 export default function GiftRegistry() {
@@ -60,27 +61,8 @@ export default function GiftRegistry() {
     >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-12">
         {/* Título */}
-        <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <div className="flex items-center justify-center mb-6">
-            <GiftRegistryIcon 
-              size={28} 
-              className="text-accent mr-3 opacity-80" 
-            />
-            <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-          </div>
-          <motion.div 
-            className="title-decorative-line mb-6"
-            initial={{ width: 0 }}
-            whileInView={{ width: 64 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          ></motion.div>
+        <div className="text-center mb-12">
+          <T1SectionTitle icon={<GiftRegistryIcon size={24} />} title={t('title')} className="mb-6" />
           {giftMessage && (
             <motion.p 
               className="section-subtitle"
@@ -92,7 +74,7 @@ export default function GiftRegistry() {
               {formatTextWithLineBreaks(giftMessage)}
             </motion.p>
           )}
-        </motion.div>
+        </div>
 
         {/* Mesas de Regalos Online */}
         {giftRegistry.registries.length > 0 && (

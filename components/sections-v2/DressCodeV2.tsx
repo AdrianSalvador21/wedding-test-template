@@ -58,7 +58,7 @@ export default function DressCodeV2() {
               <V2Card className="p-8 md:p-10">
                 <div className="inline-flex items-center rounded-full border border-[#eadfd3] bg-white px-5 py-2 text-sm text-[#6f6254]">
                   <span className="h-2 w-2 rounded-full bg-[#b79a7a] mr-2" />
-                  <span className="font-serif">{formatTextWithLineBreaks(displayStyle)}</span>
+                  <span className="font-semibold">{formatTextWithLineBreaks(displayStyle)}</span>
                 </div>
                 <p className="mt-6 text-sm md:text-base leading-relaxed text-[#6f6254]">
                   {formatTextWithLineBreaks(displayDescription)}

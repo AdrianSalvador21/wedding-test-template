@@ -103,6 +103,30 @@ Con guests:
 - /wedding/roberto-patricia-2025?guest=guest-402 (Family Member)
 ```
 
+**6. Sofía & Diego (Template01 - demo)**
+```
+Boda: template-01-demo
+URL base: /wedding/template-01-demo
+Template: template-01 (template principal)
+```
+
+**7. Camila & Andrés (Template02 - demo)**
+```
+Boda: template-02-demo
+URL base: /wedding/template-02-demo
+Template: template-02
+```
+
+**8. Valentina & Mateo (Template03 - Botánica Editorial)**
+```
+Boda: valentina-mateo-2026
+URL base: /wedding/valentina-mateo-2026
+Template: template-03 (rediseño "Botánica Editorial")
+
+NOTA: Sin ?guest= en la URL, el RSVP entra en modo demo local (no escribe a
+Firebase) para poder probar el formulario completo sin un invitado real.
+```
+
 ### **🌐 Ejemplos de URLs Completas:**
 
 **En Español:**

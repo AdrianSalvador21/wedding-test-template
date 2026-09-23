@@ -105,7 +105,7 @@ export default function CountdownV2() {
             <div className="mt-10 max-w-4xl mx-auto">
               {isEventPassed ? (
                 <V2Card className="p-10 text-center">
-                  <p className="font-serif text-2xl text-[#b79a7a]">{t('eventPassed')}</p>
+                  <p className="font-bold text-2xl text-[#b79a7a]">{t('eventPassed')}</p>
                   <p className="mt-4 text-sm md:text-base text-[#6f6254]">{t('thankYou')}</p>
                 </V2Card>
               ) : (
@@ -118,7 +118,7 @@ export default function CountdownV2() {
                       { label: t('seconds'), value: timeLeft.seconds },
                     ] as const).map((item) => (
                       <V2Card key={item.label} className="px-4 py-4 text-center w-[82px] rounded-[22px]">
-                        <div className="text-2xl md:text-3xl font-serif font-light text-[#3b342b] leading-none">
+                        <div className="text-2xl md:text-3xl font-bold text-[#3b342b] leading-none">
                           {String(item.value).padStart(2, '0')}
                         </div>
                         <div className="mt-2 text-[10px] tracking-[0.26em] uppercase text-[#8a7c6b]">

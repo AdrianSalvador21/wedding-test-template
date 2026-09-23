@@ -1,5 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Lora:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&family=Lora:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Allura&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -711,4 +713,19 @@ body {
 
 .top-34 {
   top: 34%;
+}
+
+/* Template03 (Botánica Editorial) — estados que no se pueden expresar con style inline */
+.v3-pill:hover {
+  background-color: #B5643A;
+  color: #FAF6EF;
+  box-shadow: 0 14px 30px -12px rgba(181, 100, 58, 0.55);
+}
+
+.v3-gallery-item:hover .v3-gallery-zoom {
+  transform: scale(1.08);
+}
+
+.v3-gallery-item:hover .v3-gallery-caption {
+  opacity: 1;
 }

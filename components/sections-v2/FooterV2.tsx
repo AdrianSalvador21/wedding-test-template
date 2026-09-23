@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Instagram, Facebook, Mail, MessageCircle, Heart } from 'lucide-react';
+import { Instagram, Facebook, Mail, MessageCircle } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { openExternalLink } from '@/lib/utils';
 import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { V2Stagger, V2StaggerItem } from './ui';
+import { V2Stagger, V2StaggerItem, V2Monogram } from './ui';
 
 export default function FooterV2() {
   const { t } = useTranslations('footer');
@@ -101,7 +101,7 @@ export default function FooterV2() {
   }
 
   return (
-    <footer className="bg-[#f1e6d8] text-[#3b342b] border-t border-[#e7dccf]">
+    <footer className="bg-[#f1e6d8] text-[#3b342b] border-t border-[#e7dccf]" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <div className="max-w-6xl mx-auto px-6 py-14">
         <V2Stagger>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
@@ -109,7 +109,7 @@ export default function FooterV2() {
               <p className="text-xs tracking-[0.22em] uppercase text-[#8a7c6b]">
                 {hashtag}
               </p>
-              <h3 className="mt-3 text-3xl md:text-4xl font-serif font-light">
+              <h3 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight">
                 {brideName} <span className="text-[#8a7c6b]">&</span> {groomName}
               </h3>
               <p className="mt-6 text-sm md:text-base text-[#6f6254] leading-relaxed">
@@ -128,7 +128,7 @@ export default function FooterV2() {
                         className="w-8 h-8 object-contain opacity-80"
                       />
                     ) : (
-                      <Heart className="w-5 h-5 text-[#b79a7a]" />
+                      <V2Monogram size={32} initials={`${brideName.charAt(0)}${groomName.charAt(0)}`} />
                     )}
                     <p className="text-sm text-[#6f6254]">
                       {t('copyright').replace('{brideName}', brideName).replace('{groomName}', groomName)}

@@ -10,6 +10,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { TimelineIcon } from '../icons';
+import { T1SectionTitle } from './ui';
 
 const Timeline = () => {
   const { t } = useTranslations('timeline');
@@ -93,14 +94,7 @@ const Timeline = () => {
         >
           {/* Título y descripción */}
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-6">
-              <TimelineIcon 
-                size={28} 
-                className="text-accent mr-3 opacity-80" 
-              />
-              <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-            </div>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <T1SectionTitle icon={<TimelineIcon size={24} />} title={t('title')} className="mb-6" />
             {/* Mensaje final elegante */}
             <motion.div 
               className="text-center mt-12 bg-white/80 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-stone-100"

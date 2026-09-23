@@ -2077,6 +2077,493 @@ export const mockWeddingCorporate: WeddingData = {
   updatedAt: '2025-01-01T00:00:00.000Z'
 };
 
+// Mock data para Valentina & Mateo (ID: valentina-mateo-2026) - Template03 "Botánica Editorial"
+export const mockWeddingValentinaMateo: WeddingData = {
+  id: 'valentina-mateo-2026',
+  couple: {
+    bride: {
+      name: 'Valentina',
+      fullName: 'Valentina Ríos Salazar',
+      phone: '+51 984 111-222',
+      email: 'valentina@email.com',
+      instagram: '@valentina.rios',
+      facebook: 'valentina.rios'
+    },
+    groom: {
+      name: 'Mateo',
+      fullName: 'Mateo Cárdenas Prado',
+      phone: '+51 984 333-444',
+      email: 'mateo@email.com',
+      instagram: '@mateo.cardenas',
+      facebook: 'mateo.cardenas'
+    },
+    coupleEmail: 'valentina.mateo@email.com',
+    hashtag: '#ValentinaYMateo2026',
+    story: {
+      es: 'Nos conocimos una tarde de otoño en la que ninguno de los dos esperaba encontrar nada especial. Entre amigos en común y coincidencias que hoy parecen destino, empezamos una historia que no ha dejado de crecer desde entonces. Hoy, después de tantos caminos recorridos juntos, queremos compartir contigo el día en que decidimos decir que sí para siempre.',
+      en: 'We met one autumn afternoon when neither of us expected to find anything special. Between mutual friends and coincidences that now feel like destiny, we began a story that has kept growing ever since. Today, after so many roads traveled together, we want to share with you the day we decided to say yes forever.'
+    },
+    quote: {
+      es: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.',
+      en: 'Love is not just looking at each other, but looking together in the same direction.'
+    }
+  },
+  event: {
+    weddingId: 'valentina-mateo-2026',
+    date: '2026-12-12T16:00:00.000Z',
+    time: '16:00',
+    ceremony: {
+      time: '16:00',
+      duration: 45
+    },
+    reception: {
+      time: '19:00',
+      duration: 360
+    },
+    ceremonyVenue: {
+      name: {
+        es: 'Hacienda San Rafael - Capilla',
+        en: 'Hacienda San Rafael - Chapel'
+      },
+      address: 'Camino a la Hacienda San Rafael s/n, Cusco',
+      coordinates: {
+        lat: -13.5320,
+        lng: -71.9675
+      },
+      description: 'Capilla de piedra rodeada de jardines, a los pies de las montañas de Cusco.',
+      mapsUrl: 'https://maps.google.com/maps?q=Hacienda+San+Rafael+Cusco'
+    },
+    receptionVenue: {
+      name: {
+        es: 'Hacienda San Rafael',
+        en: 'Hacienda San Rafael'
+      },
+      address: 'Camino a la Hacienda San Rafael s/n, Cusco',
+      coordinates: {
+        lat: -13.5320,
+        lng: -71.9675
+      },
+      description: 'Una hacienda andina restaurada, con jardines botánicos, salón de piedra y vista a las montañas.',
+      mapsUrl: 'https://maps.google.com/maps?q=Hacienda+San+Rafael+Cusco',
+      features: [
+        'Jardines botánicos para el cóctel',
+        'Salón de piedra climatizado',
+        'Vista panorámica a las montañas',
+        'Capilla privada',
+        'Estacionamiento amplio',
+        'Música y sonido profesional'
+      ]
+    },
+    dressCode: {
+      style: {
+        es: 'Formal elegante',
+        en: 'Elegant formal'
+      },
+      description: {
+        es: 'Una celebración editorial y cálida: tonos tierra, terracota y salvia son bienvenidos.',
+        en: 'A warm, editorial celebration: earth tones, terracotta and sage are welcome.'
+      },
+      recommendations: {
+        ladies: [
+          'Vestidos midi o largos en tonos tierra',
+          'Conjuntos elegantes en paleta cálida',
+          'Zapatos cómodos para jardín'
+        ],
+        gentlemen: [
+          'Traje completo en tonos neutros',
+          'Camisa de vestir, corbata opcional',
+          'Zapatos de vestir formales'
+        ]
+      },
+      colors: {
+        recommended: ['#B5643A', '#85906E', '#E7DECD', '#8C8172'],
+        avoid: ['#ffffff', '#f8f8ff']
+      }
+    },
+    rsvpDeadline: '2026-11-01T23:59:59.000Z'
+  },
+  timeline: [
+    {
+      id: 'ceremony',
+      time: '16:00',
+      title: { es: 'Ceremonia religiosa', en: 'Religious ceremony' },
+      description: { es: 'Capilla San Rafael', en: 'San Rafael Chapel' },
+      icon: 'Heart',
+      isHighlight: true
+    },
+    {
+      id: 'cocktail',
+      time: '17:30',
+      title: { es: 'Cóctel de bienvenida', en: 'Welcome cocktail' },
+      description: { es: 'Jardín principal', en: 'Main garden' },
+      icon: 'Wine'
+    },
+    {
+      id: 'reception',
+      time: '19:00',
+      title: { es: 'Recepción y cena', en: 'Reception and dinner' },
+      description: { es: 'Salón Hacienda', en: 'Hacienda hall' },
+      icon: 'Utensils'
+    },
+    {
+      id: 'party',
+      time: '21:30',
+      title: { es: 'Fiesta', en: 'Party' },
+      description: { es: 'Hasta que el cuerpo aguante', en: 'Until we drop' },
+      icon: 'Music'
+    }
+  ],
+  gallery: [
+    { id: 'vm1', url: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Valentina y Mateo', cols: 2, rows: 2 },
+    { id: 'vm2', url: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Momento romántico', cols: 1, rows: 1 },
+    { id: 'vm3', url: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Caminando juntos', cols: 1, rows: 1 },
+    { id: 'vm4', url: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'En el campo', cols: 1, rows: 2 },
+    { id: 'vm5', url: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Momento íntimo', cols: 1, rows: 1 },
+    { id: 'vm6', url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Sonrisas compartidas', cols: 1, rows: 1 }
+  ],
+  heroImage: {
+    url: 'https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+    alt: 'Valentina y Mateo - Imagen principal de boda'
+  },
+  specialMoments: [
+    { year: '2021', title: 'Primer encuentro', description: 'Nos conocimos entre amigos en común' },
+    { year: '2023', title: 'Primer viaje juntos', description: 'Descubrimos que queríamos ver el mundo juntos' },
+    { year: '2025', title: 'La propuesta', description: 'Mateo le propuso matrimonio a Valentina en Cusco' }
+  ],
+  relationshipStats: {
+    yearsTogther: 5,
+    adventures: 38,
+    memories: 980,
+    dreams: 14
+  },
+  accommodation: {
+    hotels: [
+      {
+        name: 'Hotel Boutique San Rafael',
+        distance: '5 min del lugar',
+        price: 'Desde $110/noche',
+        phone: '+51 984 555-666',
+        amenities: ['WiFi gratuito', 'Desayuno incluido', 'Vista a las montañas']
+      },
+      {
+        name: 'Hotel Sonesta Cusco',
+        distance: '20 min del lugar',
+        price: 'Desde $150/noche',
+        phone: '+51 984 777-888',
+        amenities: ['Spa', 'Restaurante', 'Estacionamiento']
+      }
+    ],
+    recommendedPlaces: []
+  },
+  transport: {
+    parking: true,
+    valetParking: true,
+    shuttleService: {
+      available: true,
+      pickupPoints: ['Hotel Boutique San Rafael', 'Centro de Cusco'],
+      schedule: ['15:00', '15:15', '15:30']
+    },
+    publicTransport: 'Servicio de transporte privado disponible',
+    rideshare: true
+  },
+  giftRegistry: {
+    enabled: true,
+    message: {
+      es: 'Tu presencia es nuestro regalo más valioso, pero si deseas hacernos un obsequio, hemos preparado algunas opciones:',
+      en: 'Your presence is our most valuable gift, but if you would like to give us something, here are a few options:'
+    },
+    registries: [
+      {
+        id: 'liverpool',
+        name: 'Liverpool',
+        url: 'https://mesaderegalos.liverpool.com.mx/milistaderegalos/valentina-mateo',
+        description: 'Mesa de regalos con artículos para nuestro nuevo hogar'
+      },
+      {
+        id: 'amazon',
+        name: 'Amazon',
+        url: 'https://www.amazon.com/wedding/valentina-mateo',
+        description: 'Lista de deseos con productos prácticos'
+      }
+    ],
+    bankAccount: {
+      bankName: 'Banco BCP',
+      accountName: 'Valentina Ríos Salazar',
+      accountNumber: '1234567890',
+      clabe: '00212345678901234567',
+      description: 'También puedes contribuir directamente a nuestra cuenta bancaria'
+    }
+  },
+  adultOnlyEvent: {
+    enabled: true,
+    message: {
+      es: 'Aunque adoramos a los pequeños de la familia, hemos decidido que nuestra celebración sea solo para adultos. Esperamos que puedan acompañarnos en esta noche especial.',
+      en: 'Although we adore the little ones in the family, we have decided that our celebration will be adults-only. We hope you can join us on this special night.'
+    }
+  },
+  recommendedPlaces: {
+    enabled: true,
+    title: 'Lugares recomendados',
+    subtitle: 'Guía especial de lugares para nuestros invitados',
+    places: [
+      {
+        id: 'cafe-cusco',
+        name: 'Café San Blas',
+        category: 'restaurante',
+        description: 'Café de especialidad con vista al barrio de San Blas',
+        address: 'Carmen Alto 200, San Blas, Cusco',
+        distance: '3 km del evento',
+        priceRange: '$',
+        coordinates: { lat: -13.5183, lng: -71.9793 }
+      },
+      {
+        id: 'museo-inca',
+        name: 'Museo Inca',
+        category: 'atraccion',
+        description: 'Colección de arte y arqueología incaica en el centro de Cusco',
+        address: 'Cuesta del Almirante 103, Cusco',
+        distance: '5 km del evento',
+        coordinates: { lat: -13.5164, lng: -71.9788 }
+      }
+    ]
+  },
+  rsvp: {
+    enabled: true,
+    deadline: '2026-11-01',
+    maxGuests: 2,
+    dietaryOptions: true,
+    customQuestions: []
+  },
+  selectedGuestTickets: true,
+  hasDiet: true,
+  showConfirmCta: true,
+  showRecommendedPlaces: true,
+  theme: {
+    id: 'classic'
+  },
+  template: {
+    id: 'template-03'
+  },
+  status: 'draft',
+  languages: ['es', 'en'],
+  defaultLanguage: 'es',
+  isActive: true,
+  createdAt: '2026-09-22T00:00:00.000Z',
+  updatedAt: '2026-09-22T00:00:00.000Z'
+};
+
+// Mock data de demostración para Template01 (ID: template-01-demo)
+export const mockWeddingTemplate01Demo: WeddingData = {
+  id: 'template-01-demo',
+  couple: {
+    bride: {
+      name: 'Sofía',
+      fullName: 'Sofía Herrera Campos',
+      phone: '+52 55 4321-0000',
+      email: 'sofia@email.com',
+      instagram: '@sofia.herrera',
+      facebook: 'sofia.herrera'
+    },
+    groom: {
+      name: 'Diego',
+      fullName: 'Diego Fuentes Ramos',
+      phone: '+52 55 4321-0001',
+      email: 'diego@email.com',
+      instagram: '@diego.fuentes',
+      facebook: 'diego.fuentes'
+    },
+    coupleEmail: 'sofia.diego@email.com',
+    hashtag: '#SofiaYDiego2026',
+    story: {
+      es: 'Nos conocimos en un viaje con amigos y desde ese momento no nos volvimos a separar. Después de varios años construyendo una vida juntos, llegó el momento de dar el siguiente paso y decir que sí para siempre.',
+      en: 'We met on a trip with friends and never parted ways since. After several years building a life together, the time has come to take the next step and say yes forever.'
+    },
+    quote: {
+      es: 'El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección.',
+      en: 'Love is not just looking at each other, but looking together in the same direction.'
+    }
+  },
+  event: {
+    weddingId: 'template-01-demo',
+    date: '2026-10-17T17:00:00.000Z',
+    time: '17:00',
+    ceremony: { time: '17:00', duration: 45 },
+    reception: { time: '19:30', duration: 300 },
+    ceremonyVenue: {
+      name: { es: 'Parroquia de San Miguel', en: 'San Miguel Parish' },
+      address: 'Av. de los Santos 200, Ciudad de México',
+      coordinates: { lat: 19.4260, lng: -99.1670 },
+      description: 'Templo colonial en el corazón de la ciudad'
+    },
+    receptionVenue: {
+      name: { es: 'Villa Toscana', en: 'Villa Toscana' },
+      address: 'Camino a los Viñedos 88, Ciudad de México',
+      coordinates: { lat: 19.4185, lng: -99.1750 },
+      description: 'Una villa de estilo italiano rodeada de jardines y olivos, ideal para una celebración clásica.',
+      features: ['Jardines exteriores', 'Salón principal climatizado', 'Estacionamiento amplio', 'Terraza con vista panorámica']
+    },
+    dressCode: {
+      style: { es: 'Formal / Cocktail', en: 'Formal / Cocktail' },
+      description: { es: 'Queremos que te sientas elegante y cómodo en nuestra celebración', en: 'We want you to feel elegant and comfortable at our celebration' },
+      recommendations: {
+        ladies: ['Vestidos midi o largos elegantes', 'Vestidos cóctel o de fiesta'],
+        gentlemen: ['Traje completo (saco y pantalón)', 'Camisa de vestir, corbata opcional']
+      },
+      colors: { recommended: ['#8b7355', '#a67c5a', '#d4af8c'], avoid: ['#ffffff', '#f8f8ff'] }
+    },
+    rsvpDeadline: '2026-09-17T23:59:59.000Z'
+  },
+  timeline: [
+    { id: 'ceremony', time: '17:00', title: { es: 'Ceremonia religiosa', en: 'Religious ceremony' }, description: { es: 'Parroquia de San Miguel', en: 'San Miguel Parish' }, icon: 'Heart', isHighlight: true },
+    { id: 'cocktail', time: '18:30', title: { es: 'Cóctel de bienvenida', en: 'Welcome cocktail' }, description: { es: 'Jardines de Villa Toscana', en: 'Villa Toscana gardens' }, icon: 'Wine' },
+    { id: 'reception', time: '19:30', title: { es: 'Cena y baile', en: 'Dinner and dance' }, description: { es: 'Salón principal', en: 'Main hall' }, icon: 'Utensils' }
+  ],
+  gallery: [
+    { id: 't1d1', url: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Sofía y Diego', cols: 2, rows: 2 },
+    { id: 't1d2', url: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Momento especial', cols: 1, rows: 1 },
+    { id: 't1d3', url: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Sonrisas compartidas', cols: 1, rows: 1 }
+  ],
+  heroImage: {
+    url: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+    alt: 'Sofía y Diego - Imagen principal de boda'
+  },
+  specialMoments: [
+    { year: '2020', title: 'Primer encuentro', description: 'Nos conocimos en un viaje con amigos' },
+    { year: '2024', title: 'La propuesta', description: 'Diego le propuso matrimonio a Sofía' }
+  ],
+  relationshipStats: { yearsTogther: 6, adventures: 40, memories: 1100, dreams: 10 },
+  accommodation: {
+    hotels: [
+      { name: 'Hotel Boutique Central', distance: '5 min del lugar', price: 'Desde $120/noche', phone: '+52 55 1111-2222', amenities: ['WiFi gratuito', 'Desayuno incluido'] }
+    ],
+    recommendedPlaces: []
+  },
+  transport: { parking: true, valetParking: true, rideshare: true },
+  giftRegistry: {
+    enabled: true,
+    message: 'Tu presencia es nuestro regalo más valioso, pero si deseas hacernos un obsequio, hemos preparado algunas opciones:',
+    registries: [
+      { id: 'liverpool', name: 'Liverpool', url: 'https://mesaderegalos.liverpool.com.mx/milistaderegalos/sofia-diego', description: 'Mesa de regalos para nuestro nuevo hogar' }
+    ]
+  },
+  adultOnlyEvent: { enabled: false },
+  rsvp: { enabled: true, deadline: '2026-09-17', maxGuests: 2, dietaryOptions: true, customQuestions: [] },
+  theme: { id: 'classic' },
+  template: { id: 'template-01' },
+  status: 'draft',
+  languages: ['es', 'en'],
+  defaultLanguage: 'es',
+  isActive: true,
+  createdAt: '2026-09-22T00:00:00.000Z',
+  updatedAt: '2026-09-22T00:00:00.000Z'
+};
+
+// Mock data de demostración para Template02 (ID: template-02-demo)
+export const mockWeddingTemplate02Demo: WeddingData = {
+  id: 'template-02-demo',
+  couple: {
+    bride: {
+      name: 'Camila',
+      fullName: 'Camila Ortiz Reyes',
+      phone: '+52 55 5678-0000',
+      email: 'camila@email.com',
+      instagram: '@camila.ortiz',
+      facebook: 'camila.ortiz'
+    },
+    groom: {
+      name: 'Andrés',
+      fullName: 'Andrés Molina Vera',
+      phone: '+52 55 5678-0001',
+      email: 'andres@email.com',
+      instagram: '@andres.molina',
+      facebook: 'andres.molina'
+    },
+    coupleEmail: 'camila.andres@email.com',
+    hashtag: '#CamilaYAndres2026',
+    story: {
+      es: 'Lo nuestro empezó como una amistad que poco a poco se transformó en algo más grande. Hoy, después de compartir tantos momentos juntos, queremos celebrar el inicio de esta nueva etapa rodeados de las personas que más queremos.',
+      en: 'Ours started as a friendship that slowly grew into something bigger. Today, after sharing so many moments together, we want to celebrate the start of this new chapter surrounded by the people we love most.'
+    },
+    quote: {
+      es: 'El amor verdadero no tiene final, porque el verdadero amor nunca termina.',
+      en: 'True love has no ending, because true love never ends.'
+    }
+  },
+  event: {
+    weddingId: 'template-02-demo',
+    date: '2026-11-07T18:00:00.000Z',
+    time: '18:00',
+    ceremony: { time: '18:00', duration: 45 },
+    reception: { time: '20:00', duration: 300 },
+    ceremonyVenue: {
+      name: { es: 'Capilla Jardines del Bosque', en: 'Jardines del Bosque Chapel' },
+      address: 'Camino al Bosque 45, Guadalajara',
+      coordinates: { lat: 20.6597, lng: -103.3496 },
+      description: 'Capilla de cristal rodeada de árboles centenarios'
+    },
+    receptionVenue: {
+      name: { es: 'Jardines del Bosque', en: 'Jardines del Bosque' },
+      address: 'Camino al Bosque 45, Guadalajara',
+      coordinates: { lat: 20.6597, lng: -103.3496 },
+      description: 'Un espacio contemporáneo entre jardines y arquitectura minimalista, perfecto para una celebración moderna.',
+      features: ['Jardines iluminados', 'Salón de cristal', 'Terraza panorámica', 'Estacionamiento con valet']
+    },
+    dressCode: {
+      style: { es: 'Semi-formal / Garden Party', en: 'Semi-formal / Garden Party' },
+      description: { es: 'Un estilo elegante pero relajado, perfecto para una celebración al aire libre', en: 'An elegant but relaxed style, perfect for an outdoor celebration' },
+      recommendations: {
+        ladies: ['Vestidos florales o de colores pasteles', 'Zapatos cómodos'],
+        gentlemen: ['Camisa elegante', 'Pantalón de vestir, saco opcional']
+      },
+      colors: { recommended: ['#2d3748', '#4a5568', '#68d391'], avoid: ['#ffffff', '#000000'] }
+    },
+    rsvpDeadline: '2026-10-07T23:59:59.000Z'
+  },
+  timeline: [
+    { id: 'ceremony', time: '18:00', title: { es: 'Ceremonia civil', en: 'Civil ceremony' }, description: { es: 'Capilla de cristal', en: 'Glass chapel' }, icon: 'Heart', isHighlight: true },
+    { id: 'cocktail', time: '19:00', title: { es: 'Cóctel', en: 'Cocktail' }, description: { es: 'Jardines iluminados', en: 'Illuminated gardens' }, icon: 'Wine' },
+    { id: 'party', time: '21:00', title: { es: 'Fiesta', en: 'Party' }, description: { es: 'Música y baile', en: 'Music and dancing' }, icon: 'Music' }
+  ],
+  gallery: [
+    { id: 't2d1', url: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Camila y Andrés', cols: 2, rows: 1 },
+    { id: 't2d2', url: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Momento íntimo', cols: 1, rows: 2 },
+    { id: 't2d3', url: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80', alt: 'Sonrisas genuinas', cols: 1, rows: 1 }
+  ],
+  heroImage: {
+    url: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+    alt: 'Camila y Andrés - Imagen principal de boda'
+  },
+  specialMoments: [
+    { year: '2021', title: 'Primer encuentro', description: 'Empezamos como amigos en la universidad' },
+    { year: '2025', title: 'La propuesta', description: 'Andrés le propuso matrimonio a Camila' }
+  ],
+  relationshipStats: { yearsTogther: 5, adventures: 55, memories: 1800, dreams: 15 },
+  accommodation: {
+    hotels: [
+      { name: 'Hotel Boutique Bosque', distance: '10 min del lugar', price: 'Desde $95/noche', phone: '+52 33 2222-3333', amenities: ['Alberca', 'Desayuno incluido'] }
+    ],
+    recommendedPlaces: []
+  },
+  transport: { parking: true, valetParking: true, rideshare: true },
+  giftRegistry: {
+    enabled: true,
+    message: 'Tu presencia es nuestro regalo más preciado, pero si deseas contribuir a nuestro futuro juntos:',
+    registries: [
+      { id: 'amazon', name: 'Amazon', url: 'https://www.amazon.com.mx/wedding/camila-andres', description: 'Lista de deseos con productos prácticos' }
+    ]
+  },
+  adultOnlyEvent: { enabled: false },
+  rsvp: { enabled: true, deadline: '2026-10-07', maxGuests: 2, dietaryOptions: true, customQuestions: [] },
+  theme: { id: 'modern' },
+  template: { id: 'template-02' },
+  status: 'draft',
+  languages: ['es', 'en'],
+  defaultLanguage: 'es',
+  isActive: true,
+  createdAt: '2026-09-22T00:00:00.000Z',
+  updatedAt: '2026-09-22T00:00:00.000Z'
+};
+
 // Mapa de bodas disponibles para desarrollo
 export const mockWeddings: Record<string, WeddingData> = {
   'maria-carlos-2025': mockWeddingMariaCarlos,
@@ -2084,7 +2571,10 @@ export const mockWeddings: Record<string, WeddingData> = {
   'isabella-alexander-2025': mockWeddingLuxury,
   'valentina-sebastian-2025': mockWeddingPremium,
   'roberto-patricia-2025': mockWeddingCorporate,
-  'friends-test': mockWeddingFriendsTest
+  'template-01-demo': mockWeddingTemplate01Demo,
+  'template-02-demo': mockWeddingTemplate02Demo,
+  'friends-test': mockWeddingFriendsTest,
+  'valentina-mateo-2026': mockWeddingValentinaMateo
 };
 
 // Función para obtener datos mock

@@ -9,6 +9,7 @@ import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { AdultOnlyIcon } from '../icons';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
+import { T1SectionTitle } from './ui';
 
 const AdultOnlyEvent = () => {
   const { t } = useTranslations('adultOnlyEvent');
@@ -36,28 +37,7 @@ const AdultOnlyEvent = () => {
     >
       <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
         {/* Título */}
-        <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <div className="flex items-center justify-center mb-6">
-            <AdultOnlyIcon 
-              size={28} 
-              className="text-accent mr-3 opacity-80" 
-            />
-            <h2 className="section-title text-stone-600 opacity-90">{t('title')}</h2>
-          </div>
-          <motion.div 
-            className="w-16 h-0.5 bg-accent mx-auto"
-            initial={{ width: 0 }}
-            whileInView={{ width: 64 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          ></motion.div>
-        </motion.div>
+        <T1SectionTitle icon={<AdultOnlyIcon size={24} />} title={t('title')} />
 
         {/* Contenido principal */}
         <div className="max-w-4xl mx-auto text-center">
@@ -80,9 +60,9 @@ const AdultOnlyEvent = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
           >
-            <div className="w-12 h-0.5 bg-accent"></div>
-            <div className="w-2 h-2 bg-accent rounded-full"></div>
-            <div className="w-12 h-0.5 bg-accent"></div>
+            <div className="w-12 h-0.5" style={{ background: '#c9a86a' }}></div>
+            <div className="w-2 h-2 rounded-full" style={{ background: '#c9a86a' }}></div>
+            <div className="w-12 h-0.5" style={{ background: '#c9a86a' }}></div>
           </motion.div>
         </div>
       </div>

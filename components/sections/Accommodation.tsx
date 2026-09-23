@@ -11,6 +11,7 @@ import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
 import { AccommodationIcon } from '../icons';
+import { T1SectionTitle } from './ui';
 
 const Accommodation = () => {
   const { t } = useTranslations('accommodation');
@@ -41,28 +42,9 @@ const Accommodation = () => {
       >
         <div className="max-w-7xl mx-auto px-8 sm:px-8 lg:px-12 py-16">
           {/* Título */}
-          <motion.div 
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <div className="flex items-center justify-center mb-6">
-              <AccommodationIcon 
-                size={28} 
-                className="text-accent mr-3 opacity-80" 
-              />
-              <h2 className="section-title">{t('title')}</h2>
-            </div>
-            <motion.div 
-              className="title-decorative-line mb-6"
-              initial={{ width: 0 }}
-              whileInView={{ width: 64 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-            ></motion.div>
-            <motion.p 
+          <div className="text-center mb-12">
+            <T1SectionTitle icon={<AccommodationIcon size={24} />} title={t('title')} className="mb-6" />
+            <motion.p
               className="section-subtitle"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -71,15 +53,15 @@ const Accommodation = () => {
             >
               {t('subtitle')}
             </motion.p>
-          </motion.div>
+          </div>
 
           {/* Grid de hoteles con cards elegantes */}
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {accommodationOptions.map((hotel, index) => (
-                <motion.div 
-                  key={index} 
-                  className="bg-white rounded-lg shadow-sm border border-stone-100 p-6 hover:shadow-md transition-all duration-300 hover:border-stone-200"
+                <motion.div
+                  key={index}
+                  className="bg-[#fffdf9] border border-[#d9c6a8] p-6 transition-all duration-300"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
@@ -148,14 +130,7 @@ const Accommodation = () => {
         <div className="animate-fade-in-up">
           {/* Título */}
           <div className="text-center mb-12 animation-delay-200">
-            <div className="flex items-center justify-center mb-6">
-              <AccommodationIcon 
-                size={28} 
-                className="text-accent mr-3 opacity-80" 
-              />
-              <h2 className="section-title">{t('title')}</h2>
-            </div>
-            <div className="w-16 h-0.5 bg-accent mx-auto mb-6"></div>
+            <T1SectionTitle icon={<AccommodationIcon size={24} />} title={t('title')} className="mb-6" />
             <p className="section-subtitle">
               {t('subtitle')}
             </p>
@@ -177,9 +152,9 @@ const Accommodation = () => {
               {/* Grid de hoteles con cards elegantes */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {accommodationOptions.map((hotel, index) => (
-                  <div 
-                    key={index} 
-                    className="bg-white rounded-lg shadow-sm border border-stone-100 p-6 hover:shadow-md transition-all duration-300 hover:border-stone-200"
+                  <div
+                    key={index}
+                    className="bg-[#fffdf9] border border-[#d9c6a8] p-6 transition-all duration-300"
                   >
                     {/* Nombre del hotel */}
                     <h3 className="text-base font-body font-semibold text-stone-700 mb-3 leading-tight">

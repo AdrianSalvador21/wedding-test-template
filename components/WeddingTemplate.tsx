@@ -13,6 +13,7 @@ import InvitationOverlay from './InvitationOverlay';
 import MusicPlayer from './MusicPlayer';
 import Template01 from './templates/Template01';
 import Template02 from './templates/Template02';
+import Template03 from './templates/Template03';
 
 interface WeddingTemplateProps {
   guestId?: string | null;
@@ -83,12 +84,15 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
   useEffect(() => {
     if (!guestId && currentWedding && !guestLoading) {
       // Solo mostrar demo si estamos usando datos mock (no datos reales de Firebase)
-      const isMockData = currentWedding.id === 'friends-test' || 
+      const isMockData = currentWedding.id === 'friends-test' ||
                         currentWedding.id === 'maria-carlos-2025' ||
                         currentWedding.id === 'ana-luis-2024' ||
                         currentWedding.id === 'luxury-wedding' ||
                         currentWedding.id === 'premium-wedding' ||
-                        currentWedding.id === 'corporate-event';
+                        currentWedding.id === 'corporate-event' ||
+                        currentWedding.id === 'valentina-mateo-2026' ||
+                        currentWedding.id === 'template-01-demo' ||
+                        currentWedding.id === 'template-02-demo';
       
       if (isMockData) {
         // Mostrar overlay de demo después de 1 segundo
@@ -152,11 +156,18 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
   return (
     <ThemeProvider weddingTheme={weddingTheme}>
       <main className="min-h-screen">
-        {(currentWedding.template?.id || 'template-01') === 'template-02' ? (
-          <Template02 overlayVisible={showOverlay || showDemoOverlay} />
-        ) : (
-          <Template01 overlayVisible={showOverlay || showDemoOverlay} />
-        )}
+        {(() => {
+          const templateId = currentWedding.template?.id || 'template-01';
+          const overlayVisible = showOverlay || showDemoOverlay;
+
+          if (templateId === 'template-03') {
+            return <Template03 overlayVisible={overlayVisible} />;
+          }
+          if (templateId === 'template-02') {
+            return <Template02 overlayVisible={overlayVisible} />;
+          }
+          return <Template01 overlayVisible={overlayVisible} />;
+        })()}
         
         {/* Overlay de invitación personalizada */}
         {showOverlay && guestId && currentWedding && (

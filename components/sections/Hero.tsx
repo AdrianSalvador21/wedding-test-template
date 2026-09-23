@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, Heart } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
+import { T1Monogram, T1LeafSprig, T1_COLORS } from './ui';
 
 interface HeroProps {
   overlayVisible?: boolean;
@@ -234,23 +235,23 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
         {/* Contenido del texto */}
         <div className="relative z-10">
 
-          {/* Monograma SVG - Solo si existe */}
-          {monogramExists && (
-            <motion.div
-              key={`hero-monogram-${animationKey}`}
-              className="mb-12 flex justify-center"
-              initial={{ opacity: 0, y: -30, scale: 0.8 }}
-              animate={{
-                opacity: overlayVisible ? 0 : 1,
-                y: overlayVisible ? -30 : 0,
-                scale: overlayVisible ? 0.8 : 1
-              }}
-              transition={{
-                duration: 1.2,
-                ease: [0.25, 0.46, 0.45, 0.94],
-                delay: overlayVisible ? 0 : 0.1
-              }}
-            >
+          {/* Monograma personalizado si existe; si no, el sello de Template01 como respaldo */}
+          <motion.div
+            key={`hero-monogram-${animationKey}`}
+            className="mb-12 flex justify-center"
+            initial={{ opacity: 0, y: -30, scale: 0.8 }}
+            animate={{
+              opacity: overlayVisible ? 0 : 1,
+              y: overlayVisible ? -30 : 0,
+              scale: overlayVisible ? 0.8 : 1
+            }}
+            transition={{
+              duration: 1.2,
+              ease: [0.25, 0.46, 0.45, 0.94],
+              delay: overlayVisible ? 0 : 0.1
+            }}
+          >
+            {monogramExists ? (
               <motion.div
                 className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40"
                 initial={{ rotate: -5 }}
@@ -277,8 +278,19 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
                   }}
                 />
               </motion.div>
-            </motion.div>
-          )}
+            ) : (
+              <T1Monogram
+                size={112}
+                initials={`${brideName.charAt(0)}${groomName.charAt(0)}`}
+                className="md:scale-125 lg:scale-150"
+              />
+            )}
+          </motion.div>
+
+          {/* Hojas flotantes: reemplazan los corazones genéricos anteriores */}
+          <T1LeafSprig size={26} className="absolute top-20 left-10 opacity-30 hidden md:block" />
+          <T1LeafSprig size={18} className="absolute top-40 right-16 opacity-25 hidden md:block" />
+          <T1LeafSprig size={22} className="absolute bottom-32 left-20 opacity-20 hidden md:block" />
 
           {/* "NUESTRA BODA" - Animación de entrada suave */}
           <motion.div
@@ -319,8 +331,8 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
               {/* Nombres con animación elegante */}
               <motion.h1
                 key={`hero-names-${animationKey}`}
-                className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl font-heading text-white tracking-wide leading-tight drop-shadow-2xl opacity-90"
-                style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.9)', opacity: 0.9 }}
+                className="text-4xl md:text-7xl lg:text-8xl xl:text-9xl text-white tracking-wide leading-tight drop-shadow-2xl opacity-90"
+                style={{ fontFamily: "'Allura', cursive", textShadow: '3px 3px 6px rgba(0,0,0,0.9)', opacity: 0.9 }}
                 initial={{ opacity: 0, scale: 0.8, y: 30 }}
                 animate={{
                   opacity: overlayVisible ? 0 : 0.9,
@@ -427,7 +439,8 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
               <motion.button
                 key={`hero-cta-button-${animationKey}`}
                 onClick={() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-stone-400 bg-opacity-70 text-white font-body font-medium py-3 px-8 md:py-3.5 md:px-10 rounded-full text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm border border-white border-opacity-30"
+                className="inline-flex items-center gap-2 font-body font-medium py-3.5 px-10 text-xs md:text-sm tracking-[0.2em] uppercase transition-colors duration-300"
+                style={{ border: `1.5px solid ${T1_COLORS.accent}`, color: '#fff', background: 'transparent' }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: overlayVisible ? 0 : 1 }}
                 transition={{
@@ -473,104 +486,6 @@ const Hero = ({ overlayVisible = false }: HeroProps) => {
             </motion.div>
           </motion.div>
       </div> {/* Cierre del contenido del texto */}
-
-      {/* Decorative elements - Corazones flotantes elegantes */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <motion.div
-          initial={{ opacity: 0, scale: 0, rotate: -45 }}
-          animate={{
-            opacity: [0.15, 0.3, 0.15],
-            scale: [0.8, 1.2, 0.8],
-            rotate: [0, 10, 0],
-            y: [0, -10, 0]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 3.5
-          }}
-          className="absolute top-20 left-10"
-        >
-          <Heart className="w-8 h-8 text-white" />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0, rotate: 45 }}
-          animate={{
-            opacity: [0.2, 0.4, 0.2],
-            scale: [1, 1.3, 1],
-            rotate: [0, -15, 0],
-            x: [0, 5, 0]
-          }}
-          transition={{
-            duration: 3.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 4
-          }}
-          className="absolute top-40 right-16"
-        >
-          <Heart className="w-6 h-6 text-white" />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0, rotate: -30 }}
-          animate={{
-            opacity: [0.1, 0.25, 0.1],
-            scale: [0.9, 1.4, 0.9],
-            rotate: [0, 20, 0],
-            y: [0, -15, 0],
-            x: [0, -5, 0]
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 4.5
-          }}
-          className="absolute bottom-32 left-20"
-        >
-          <Heart className="w-10 h-10 text-white" />
-        </motion.div>
-
-        {/* Corazones adicionales para más elegancia */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{
-            opacity: [0.05, 0.15, 0.05],
-            scale: [1, 1.1, 1],
-            rotate: [0, 360, 0]
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "linear",
-            delay: 5
-          }}
-          className="absolute top-1/3 right-8"
-        >
-          <Heart className="w-4 h-4 text-white" />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{
-            opacity: [0.08, 0.2, 0.08],
-            scale: [0.8, 1.2, 0.8],
-            y: [0, -20, 0]
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 5.5
-          }}
-          className="absolute bottom-1/4 right-1/4"
-        >
-          <Heart className="w-5 h-5 text-white" />
-        </motion.div>
-      </div>
     </div>
     </section >
   );
