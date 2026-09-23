@@ -36,7 +36,7 @@ export default function DesignGallery() {
             Elige tu diseño
           </h2>
           <p className="text-base text-[#5A534B] max-w-[560px]">
-            Tres estilos completos, cada uno con sus propias secciones, confirmación de asistencia y panel de
+            Estilos completos, cada uno con sus propias secciones, confirmación de asistencia y panel de
             administración.
           </p>
         </LReveal>
