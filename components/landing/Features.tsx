@@ -30,8 +30,8 @@ const features = [
     variant: 'accent' as const,
   },
   {
-    title: 'Envíos ilimitados',
-    description: 'Comparte tu invitación con cuantos invitados necesites, sin costo extra.',
+    title: 'Invitaciones y envíos ilimitados',
+    description: 'Comparte tu invitación con cuantos invitados necesites.',
     variant: 'default' as const,
   },
 ];

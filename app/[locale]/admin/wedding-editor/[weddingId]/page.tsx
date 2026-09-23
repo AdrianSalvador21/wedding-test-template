@@ -6,7 +6,8 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../../lib/firebase';
 import { WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
-import { 
+import { AdminTopBar, AdminPageNav, AdminSidebarNavItem, AdminSectionChip, AdminButton, manrope, displayFont } from '../../../../../components/admin/ui';
+import {
   Save, 
   User, 
   Calendar, 
@@ -15,8 +16,7 @@ import {
   Heart, 
   Gift, 
   Settings,
-  Loader2,
-  Check
+  Loader2
 } from 'lucide-react';
 
 // Función para migrar/completar datos bilingües faltantes
@@ -276,7 +276,8 @@ const createInitialWeddingData = (weddingId: string): WeddingData => ({
 export default function WeddingEditorPage() {
   const params = useParams();
   const weddingId = params.weddingId as string;
-  
+  const locale = (params.locale as string) || 'es';
+
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -502,12 +503,6 @@ export default function WeddingEditorPage() {
     }
   };
 
-  // Verificar si todas las secciones están completas
-  const isAllSectionsComplete = (): boolean => {
-    const allSections = ['couple', 'event', 'venues', 'timeline', 'accommodation', 'recommendedPlaces', 'gifts', 'social', 'settings'];
-    return allSections.every(section => isSectionComplete(section));
-  };
-
   // NOTA: Galería OCULTA según solicitud del usuario
   const tabs = [
     { id: 'couple', label: 'Pareja', icon: Heart },
@@ -523,10 +518,10 @@ export default function WeddingEditorPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-amber-600 mx-auto mb-4" />
-          <p className="text-gray-600">Cargando editor...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-[#111111] mx-auto mb-4" />
+          <p className="text-[#3F3F46]" style={manrope}>Cargando editor...</p>
         </div>
       </div>
     );
@@ -538,230 +533,183 @@ export default function WeddingEditorPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700"
-          >
-            Reintentar
-          </button>
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+        <div className="text-center" style={manrope}>
+          <p className="text-[#B91C1C] mb-4">{error}</p>
+          <AdminButton onClick={() => window.location.reload()}>Reintentar</AdminButton>
         </div>
       </div>
     );
   }
 
+  const completedCount = tabs.filter((tab) => isSectionComplete(tab.id)).length;
+
   return (
-    <div className="min-h-screen bg-gray-50 font-['Quicksand',sans-serif]">
-      {/* Navbar Invyta */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-3">
-            <a
-              href="/"
-              className="text-2xl font-serif font-bold text-black hover:opacity-80 transition-opacity"
-            >
-              invyta
-            </a>
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#FAFAFA]" style={manrope}>
+      {/* Navbar Invyta — mismo padding horizontal que AdminTopBar para que el logo quede alineado con el título de abajo */}
+      <div className="bg-white border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 py-3.5 flex items-center justify-between gap-4">
+        <a
+          href="/"
+          className="text-xl sm:text-2xl text-[#0A0A0A] hover:opacity-70 transition-opacity"
+          style={displayFont}
+        >
+          invyta
+        </a>
+        {weddingId && <AdminPageNav weddingId={weddingId} locale={locale} active="editor" />}
       </div>
 
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-4 sm:space-y-0">
-            <div className="flex-1">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Editor de Invitación</h1>
-              <div className="space-y-2">
-                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">ID:</span>
-                    <span className="text-xs sm:text-sm font-medium text-gray-900">{weddingId}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Estado:</span>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      weddingData?.status === 'active' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {weddingData?.status === 'active' ? '✓ Activa' : 'Borrador'}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Completado:</span>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      isAllSectionsComplete() 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {isAllSectionsComplete() ? '✓ Completado' : '⏳ No completado'}
-                    </span>
-                  </div>
-                </div>
-              </div>
+      <AdminTopBar
+        title="Editor de Invitación"
+        meta={
+          <div className="flex items-center gap-3 w-full max-w-[300px]">
+            <div className="flex-1 h-1.5 rounded-full bg-[#E4E4E7] overflow-hidden">
+              <div
+                className="h-full rounded-full bg-[#111111] transition-all"
+                style={{ width: `${(completedCount / tabs.length) * 100}%` }}
+              />
             </div>
-            
-            <div className="flex items-center justify-end space-x-2 sm:space-x-4">
-              {saveMessage && (
-                <div className="hidden sm:flex items-center text-green-600 text-sm">
-                  <Check className="h-4 w-4 mr-2" />
-                  {saveMessage}
-                </div>
+            <span className="text-xs font-bold text-[#3F3F46] whitespace-nowrap">
+              {completedCount}/{tabs.length} secciones
+            </span>
+          </div>
+        }
+        actions={
+          <>
+            {saveMessage && (
+              <span className="hidden sm:inline text-sm font-semibold text-[#15803D]">{saveMessage}</span>
+            )}
+            <AdminButton onClick={handleSave} disabled={saving}>
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="hidden sm:inline">Guardando...</span>
+                  <span className="sm:hidden">...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  <span className="hidden sm:inline">Guardar cambios</span>
+                  <span className="sm:hidden">Guardar</span>
+                </>
               )}
-              
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="inline-flex items-center px-3 sm:px-4 py-2 bg-amber-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50"
-              >
-                {saving ? (
-                  <>
-                    <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
-                    <span className="hidden sm:inline">Guardando...</span>
-                    <span className="sm:hidden">...</span>
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Guardar Cambios</span>
-                    <span className="sm:hidden">Guardar</span>
-                  </>
-                )}
-              </button>
-            </div>
+            </AdminButton>
+          </>
+        }
+      />
+
+      <div className="flex flex-col md:flex-row md:items-start">
+        {/* Sidebar de navegación — escritorio */}
+        <div className="hidden md:flex md:w-[260px] md:flex-shrink-0 md:flex-col bg-white border-r border-[rgba(0,0,0,0.08)] p-4 md:sticky md:top-0 md:min-h-[calc(100vh-129px)]">
+          <div className="text-[11px] font-extrabold uppercase tracking-widest text-[#71717A] px-2.5 mb-2">
+            Contenido de la boda
+          </div>
+          <div className="flex flex-col gap-1">
+            {tabs.map((tab) => (
+              <AdminSidebarNavItem
+                key={tab.id}
+                icon={tab.icon}
+                label={tab.label}
+                active={activeTab === tab.id}
+                complete={isSectionComplete(tab.id)}
+                onClick={() => setActiveTab(tab.id)}
+              />
+            ))}
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
-        <div className="bg-white rounded-lg shadow">
-          {/* Tabs */}
-          <div className="border-b border-gray-200">
-            <div className="px-3 sm:px-6 py-3 sm:py-4">
-              {/* Desktop tabs */}
-              <div className="hidden md:flex space-x-1 overflow-x-auto pb-2">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon;
-                  const isComplete = isSectionComplete(tab.id);
-                  const isActive = activeTab === tab.id;
-                  
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`relative flex items-center px-3 py-2 text-xs font-medium rounded-lg whitespace-nowrap transition-colors flex-shrink-0 ${
-                        isActive
-                          ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      <Icon className="h-3 w-3 mr-1.5" />
-                      {tab.label}
-                      {isComplete && (
-                        <Check className="h-3 w-3 ml-1.5 text-amber-600" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+        {/* Chips de sección — móvil */}
+        <div className="md:hidden bg-white border-b border-[rgba(0,0,0,0.08)] px-4 py-3 flex gap-2 overflow-x-auto">
+          {tabs.map((tab) => (
+            <AdminSectionChip
+              key={tab.id}
+              icon={tab.icon}
+              label={tab.label}
+              active={activeTab === tab.id}
+              onClick={() => setActiveTab(tab.id)}
+            />
+          ))}
+        </div>
 
-              {/* Mobile tabs */}
-              <div className="md:hidden">
-                <div className="flex space-x-1 overflow-x-auto pb-2 scrollbar-hide">
-                  {tabs.map((tab) => {
-                    const Icon = tab.icon;
-                    const isComplete = isSectionComplete(tab.id);
-                    const isActive = activeTab === tab.id;
-                    
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`relative flex flex-col items-center px-2 py-2 text-xs font-medium rounded-lg transition-colors flex-shrink-0 min-w-[70px] ${
-                          isActive
-                            ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                        }`}
-                      >
-                        <div className="relative mb-1">
-                          <Icon className="h-4 w-4" />
-                          {isComplete && (
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-600 rounded-full flex items-center justify-center">
-                              <Check className="h-2 w-2 text-white stroke-[3]" />
-                            </div>
-                          )}
-                        </div>
-                        <span className="text-[10px] leading-tight text-center px-1">{tab.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="p-4 sm:p-6">
+        {/* Contenido de la sección activa */}
+        <div className="flex-1 min-w-0 p-4 sm:p-8 pb-28 md:pb-8">
+          <div className="max-w-5xl">
             {activeTab === 'couple' && (
-              <CoupleSection 
+              <CoupleSection
                 data={(weddingData?.couple || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`couple.${field}`, value)}
               />
             )}
             {activeTab === 'event' && (
-              <EventSection 
+              <EventSection
                 data={(weddingData?.event || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`event.${field}`, value)}
               />
             )}
             {activeTab === 'venues' && (
-              <VenuesSection 
+              <VenuesSection
                 ceremonyVenue={(weddingData?.event?.ceremonyVenue || {}) as Record<string, unknown>}
                 receptionVenue={(weddingData?.event?.receptionVenue || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`event.${field}`, value)}
               />
             )}
             {activeTab === 'timeline' && (
-              <TimelineSection 
+              <TimelineSection
                 data={(weddingData?.timeline || []) as unknown as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(field, value)}
               />
             )}
             {activeTab === 'accommodation' && (
-              <AccommodationSection 
+              <AccommodationSection
                 data={(weddingData?.accommodation || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`accommodation.${field}`, value)}
               />
             )}
             {activeTab === 'recommendedPlaces' && (
-              <RecommendedPlacesSection 
+              <RecommendedPlacesSection
                 data={(weddingData?.accommodation || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`accommodation.${field}`, value)}
               />
             )}
             {activeTab === 'gifts' && (
-              <GiftsSection 
+              <GiftsSection
                 data={(weddingData || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(field, value)}
               />
             )}
             {activeTab === 'social' && (
-              <SocialSection 
+              <SocialSection
                 data={(weddingData?.couple || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`couple.${field}`, value)}
               />
             )}
             {activeTab === 'settings' && (
-              <SettingsSection 
+              <SettingsSection
                 data={(weddingData || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(field, value)}
               />
             )}
           </div>
         </div>
+      </div>
+
+      {/* Barra fija de guardado — móvil */}
+      <div
+        className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[rgba(0,0,0,0.08)] px-4 pt-3 z-40"
+        style={{ paddingBottom: 'calc(12px + env(safe-area-inset-bottom))' }}
+      >
+        <AdminButton onClick={handleSave} disabled={saving} className="w-full">
+          {saving ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Guardando...
+            </>
+          ) : (
+            <>
+              <Save className="h-4 w-4" />
+              Guardar cambios
+            </>
+          )}
+        </AdminButton>
       </div>
     </div>
   );
@@ -796,33 +744,33 @@ interface VenuesSectionProps {
 function CoupleSection({ data, onChange }: SectionProps) {
   return (
     <div className="space-y-6 sm:space-y-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Información de la Pareja</h2>
+      <h2 className="text-[26px] text-[#0A0A0A] mb-6" style={displayFont}>Información de la Pareja</h2>
       
       {/* Nombres */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Nombres</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Nombres</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Nombre de la persona 2
             </label>
             <input
               type="text"
               value={getSafeValue(data, 'bride.name')}
               onChange={(e) => onChange('bride.name', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="María"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Nombre de la persona 1
             </label>
             <input
               type="text"
               value={getSafeValue(data, 'groom.name')}
               onChange={(e) => onChange('groom.name', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Carlos"
             />
           </div>
@@ -831,29 +779,29 @@ function CoupleSection({ data, onChange }: SectionProps) {
 
       {/* Teléfonos */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Teléfonos</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Teléfonos</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Teléfono de la persona 2
             </label>
             <input
               type="tel"
               value={getSafeValue(data, 'bride.phone')}
               onChange={(e) => onChange('bride.phone', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="+52 55 1234-5678"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Teléfono de la persona 1
             </label>
             <input
               type="tel"
               value={getSafeValue(data, 'groom.phone')}
               onChange={(e) => onChange('groom.phone', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="+52 55 8765-4321"
             />
           </div>
@@ -862,29 +810,29 @@ function CoupleSection({ data, onChange }: SectionProps) {
 
       {/* Historia de amor */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Historia de Amor</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Historia de Amor</h3>
         <div className="space-y-4 sm:space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Historia en Español
             </label>
             <textarea
               rows={4}
               value={getSafeValue(data, 'story.es')}
               onChange={(e) => onChange('story.es', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Hace más de 6 años, el destino nos unió en una cafetería de la ciudad..."
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Historia en Inglés
             </label>
             <textarea
               rows={4}
               value={getSafeValue(data, 'story.en')}
               onChange={(e) => onChange('story.en', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="More than 6 years ago, destiny brought us together in a city café..."
             />
           </div>
@@ -893,29 +841,29 @@ function CoupleSection({ data, onChange }: SectionProps) {
 
       {/* Frase especial */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Frase Especial</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Frase Especial</h3>
         <div className="space-y-4 sm:space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Frase en Español
             </label>
             <input
               type="text"
               value={getSafeValue(data, 'quote.es')}
               onChange={(e) => onChange('quote.es', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección."
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Frase en Inglés
             </label>
             <input
               type="text"
               value={getSafeValue(data, 'quote.en')}
               onChange={(e) => onChange('quote.en', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Love is not just looking at each other, but looking together in the same direction."
             />
           </div>
@@ -928,32 +876,32 @@ function CoupleSection({ data, onChange }: SectionProps) {
 function EventSection({ data, onChange }: SectionProps) {
   return (
     <div className="space-y-6 sm:space-y-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Información del Evento</h2>
+      <h2 className="text-[26px] text-[#0A0A0A] mb-6" style={displayFont}>Información del Evento</h2>
       
       {/* Fecha y hora */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Fecha y Hora</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Fecha y Hora</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Fecha de la boda
             </label>
             <input
               type="date"
               value={getSafeValue(data, 'date') ? getSafeValue(data, 'date').split('T')[0] : ''}
               onChange={(e) => onChange('date', e.target.value + 'T16:00:00.000Z')}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Hora del evento
             </label>
             <input
               type="time"
               value={getSafeValue(data, 'time')}
               onChange={(e) => onChange('time', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
             />
           </div>
         </div>
@@ -961,29 +909,29 @@ function EventSection({ data, onChange }: SectionProps) {
 
       {/* Código de vestimenta */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Código de Vestimenta</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Código de Vestimenta</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Estilo en Español
             </label>
             <input
               type="text"
               value={getSafeValue(data, 'dressCode.style.es')}
               onChange={(e) => onChange('dressCode.style.es', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Formal / Cocktail"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Estilo en Inglés
             </label>
             <input
               type="text"
               value={getSafeValue(data, 'dressCode.style.en')}
               onChange={(e) => onChange('dressCode.style.en', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Formal / Cocktail"
             />
           </div>
@@ -991,26 +939,26 @@ function EventSection({ data, onChange }: SectionProps) {
 
         <div className="space-y-4 sm:space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Descripción en Español
             </label>
             <textarea
               rows={3}
               value={getSafeValue(data, 'dressCode.description.es')}
               onChange={(e) => onChange('dressCode.description.es', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Queremos que te sientas elegante y cómodo en nuestra celebración"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Descripción en Inglés
             </label>
             <textarea
               rows={3}
               value={getSafeValue(data, 'dressCode.description.en')}
               onChange={(e) => onChange('dressCode.description.en', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="We want you to feel elegant and comfortable at our celebration"
             />
           </div>
@@ -1023,33 +971,33 @@ function EventSection({ data, onChange }: SectionProps) {
 function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectionProps) {
   return (
     <div className="space-y-6 sm:space-y-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Lugares del Evento</h2>
+      <h2 className="text-[26px] text-[#0A0A0A] mb-6" style={displayFont}>Lugares del Evento</h2>
       
       {/* Lugar de ceremonia */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Ceremonia</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Ceremonia</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Nombre en Español
             </label>
             <input
               type="text"
               value={getSafeValue(ceremonyVenue, 'name.es')}
               onChange={(e) => onChange('ceremonyVenue.name.es', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Iglesia del Sagrado Corazón"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Nombre en Inglés
             </label>
             <input
               type="text"
               value={getSafeValue(ceremonyVenue, 'name.en')}
               onChange={(e) => onChange('ceremonyVenue.name.en', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Sacred Heart Church"
             />
           </div>
@@ -1057,26 +1005,26 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Dirección
             </label>
             <input
               type="text"
               value={getSafeValue(ceremonyVenue, 'address')}
               onChange={(e) => onChange('ceremonyVenue.address', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Calle de los Santos 456, Ciudad, Estado 12345"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               URL de Google Maps
             </label>
             <input
               type="url"
               value={getSafeValue(ceremonyVenue, 'mapsUrl')}
               onChange={(e) => onChange('ceremonyVenue.mapsUrl', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="https://maps.google.com/..."
             />
           </div>
@@ -1085,29 +1033,29 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
 
       {/* Lugar de recepción */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Recepción</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Recepción</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Nombre en Español
             </label>
             <input
               type="text"
               value={getSafeValue(receptionVenue, 'name.es')}
               onChange={(e) => onChange('receptionVenue.name.es', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Jardines del Edén"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Nombre en Inglés
             </label>
             <input
               type="text"
               value={getSafeValue(receptionVenue, 'name.en')}
               onChange={(e) => onChange('receptionVenue.name.en', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Eden Gardens"
             />
           </div>
@@ -1115,26 +1063,26 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Dirección
             </label>
             <input
               type="text"
               value={getSafeValue(receptionVenue, 'address')}
               onChange={(e) => onChange('receptionVenue.address', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Av. Principal 123, Ciudad, Estado 12345"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               URL de Google Maps
             </label>
             <input
               type="url"
               value={getSafeValue(receptionVenue, 'mapsUrl')}
               onChange={(e) => onChange('receptionVenue.mapsUrl', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="https://maps.google.com/..."
             />
           </div>
@@ -1189,17 +1137,17 @@ function TimelineSection({ data, onChange }: SectionProps) {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 className="text-xl font-semibold text-gray-900">Cronograma del Evento</h2>
+        <h2 className="text-[26px] text-[#0A0A0A]" style={displayFont}>Cronograma del Evento</h2>
       </div>
 
       <div className="space-y-4">
         {timelineData.map((event: {id: string; title?: {es: string; en: string}; time?: string; description?: {es: string; en: string}; icon?: string}, index: number) => (
-          <div key={event.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
+          <div key={event.id} className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-              <h3 className="text-base font-medium text-gray-800">Evento #{index + 1}</h3>
+              <h3 className="text-base font-bold text-[#0A0A0A]">Evento #{index + 1}</h3>
               <button
                 onClick={() => removeTimelineEvent(index)}
-                className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                className="self-start sm:self-center text-[#B91C1C] hover:text-[#7F1D1D] text-sm font-semibold px-3 py-1 border border-[rgba(185,28,28,0.3)] rounded-full hover:bg-[rgba(185,28,28,0.06)] transition-colors"
               >
                 Eliminar
               </button>
@@ -1207,24 +1155,24 @@ function TimelineSection({ data, onChange }: SectionProps) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                   Hora
                 </label>
                 <input
                   type="time"
                   value={event.time}
                   onChange={(e) => updateTimelineEvent(index, 'time', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                   Icono
                 </label>
                 <select
                   value={event.icon}
                   onChange={(e) => updateTimelineEvent(index, 'icon', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                 >
                   {iconOptions.map((icon) => (
                     <option key={icon} value={icon}>{icon}</option>
@@ -1235,50 +1183,50 @@ function TimelineSection({ data, onChange }: SectionProps) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                   Título (Español)
                 </label>
                 <input
                   type="text"
                   value={getSafeValue(event, 'title.es')}
                   onChange={(e) => updateTimelineEvent(index, 'title.es', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                   Título (Inglés)
                 </label>
                 <input
                   type="text"
                   value={getSafeValue(event, 'title.en')}
                   onChange={(e) => updateTimelineEvent(index, 'title.en', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                   Descripción (Español)
                 </label>
                 <textarea
                   rows={2}
                   value={getSafeValue(event, 'description.es')}
                   onChange={(e) => updateTimelineEvent(index, 'description.es', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                   Descripción (Inglés)
                 </label>
                 <textarea
                   rows={2}
                   value={getSafeValue(event, 'description.en')}
                   onChange={(e) => updateTimelineEvent(index, 'description.en', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                 />
               </div>
             </div>
@@ -1286,18 +1234,18 @@ function TimelineSection({ data, onChange }: SectionProps) {
         ))}
 
         {timelineData.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-[#71717A]">
             <p className="mb-4">No hay eventos en el cronograma</p>
             <p className="text-sm mb-6">Crea el primer evento para comenzar a construir tu cronograma</p>
           </div>
         ) : null}
 
         {/* Botón para agregar evento - siempre visible */}
-        <div className="text-center pt-4 border-t border-gray-200 mt-6">
+        <div className="text-center pt-4 border-t border-[rgba(0,0,0,0.08)] mt-6">
           <button
             type="button"
             onClick={addTimelineEvent}
-            className="inline-flex items-center px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors text-sm font-medium shadow-sm cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#111111] text-white rounded-full hover:bg-black focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold shadow-[0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
           >
             + {timelineData.length === 0 ? 'Agregar Primer Evento' : 'Agregar Evento'}
           </button>
@@ -1336,10 +1284,10 @@ function AccommodationSection({ data, onChange }: SectionProps) {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 className="text-xl font-semibold text-gray-900">Hoteles Recomendados</h2>
+        <h2 className="text-[26px] text-[#0A0A0A]" style={displayFont}>Hoteles Recomendados</h2>
         <button
           onClick={addHotel}
-          className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors text-sm font-medium"
+          className="bg-[#111111] text-white px-4 py-2 rounded-full hover:bg-black focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold"
         >
           + Agregar Hotel
         </button>
@@ -1351,12 +1299,12 @@ function AccommodationSection({ data, onChange }: SectionProps) {
           const descriptionEn = typeof hotel.description === 'object' ? hotel.description?.en || '' : '';
           
           return (
-            <div key={hotel.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
+            <div key={hotel.id} className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-                <h3 className="text-base font-medium text-gray-800">Hotel #{index + 1}</h3>
+                <h3 className="text-base font-bold text-[#0A0A0A]">Hotel #{index + 1}</h3>
                 <button
                   onClick={() => removeHotel(index)}
-                  className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                  className="self-start sm:self-center text-[#B91C1C] hover:text-[#7F1D1D] text-sm font-semibold px-3 py-1 border border-[rgba(185,28,28,0.3)] rounded-full hover:bg-[rgba(185,28,28,0.06)] transition-colors"
                 >
                   Eliminar
                 </button>
@@ -1364,21 +1312,21 @@ function AccommodationSection({ data, onChange }: SectionProps) {
 
               <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                     Nombre del Hotel
                   </label>
                   <input
                     type="text"
                     value={hotel.name || ''}
                     onChange={(e) => updateHotel(index, 'name', e.target.value)}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                     placeholder="Hotel Boutique Plaza"
                   />
                 </div>
                 
                 {/* Descripción en Español */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                     Descripción (Español)
                   </label>
                   <textarea
@@ -1388,14 +1336,14 @@ function AccommodationSection({ data, onChange }: SectionProps) {
                       es: e.target.value, 
                       en: descriptionEn 
                     })}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                     placeholder="Descripción del hotel en español..."
                   />
                 </div>
                 
                 {/* Descripción en Inglés */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                     Descripción (English)
                   </label>
                   <textarea
@@ -1405,20 +1353,20 @@ function AccommodationSection({ data, onChange }: SectionProps) {
                       es: descriptionEs, 
                       en: e.target.value 
                     })}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                     placeholder="Hotel description in English..."
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                     URL de Google Maps
                   </label>
                   <input
                     type="url"
                     value={hotel.mapsUrl || ''}
                     onChange={(e) => updateHotel(index, 'mapsUrl', e.target.value)}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                     placeholder="https://maps.google.com/..."
                   />
                 </div>
@@ -1428,7 +1376,7 @@ function AccommodationSection({ data, onChange }: SectionProps) {
         })}
 
         {hotelsData.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-[#71717A]">
             <p className="mb-4">No hay hoteles agregados</p>
             <p className="text-sm">Agrega el primer hotel para comenzar</p>
           </div>
@@ -1467,10 +1415,10 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 className="text-xl font-semibold text-gray-900">Lugares Recomendados</h2>
+        <h2 className="text-[26px] text-[#0A0A0A]" style={displayFont}>Lugares Recomendados</h2>
         <button
           onClick={addPlace}
-          className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors text-sm font-medium"
+          className="bg-[#111111] text-white px-4 py-2 rounded-full hover:bg-black focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold"
         >
           + Agregar Lugar
         </button>
@@ -1482,12 +1430,12 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
           const descriptionEn = typeof place.description === 'object' ? place.description?.en || '' : '';
           
           return (
-            <div key={place.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
+            <div key={place.id} className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-                <h3 className="text-base font-medium text-gray-800">Lugar #{index + 1}</h3>
+                <h3 className="text-base font-bold text-[#0A0A0A]">Lugar #{index + 1}</h3>
                 <button
                   onClick={() => removePlace(index)}
-                  className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                  className="self-start sm:self-center text-[#B91C1C] hover:text-[#7F1D1D] text-sm font-semibold px-3 py-1 border border-[rgba(185,28,28,0.3)] rounded-full hover:bg-[rgba(185,28,28,0.06)] transition-colors"
                 >
                   Eliminar
                 </button>
@@ -1495,21 +1443,21 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
 
               <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                     Nombre del Lugar
                   </label>
                   <input
                     type="text"
                     value={place.name || ''}
                     onChange={(e) => updatePlace(index, 'name', e.target.value)}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                     placeholder="Restaurante La Terraza"
                   />
                 </div>
                 
                 {/* Descripción en Español */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                     Descripción (Español)
                   </label>
                   <textarea
@@ -1519,14 +1467,14 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
                       es: e.target.value, 
                       en: descriptionEn 
                     })}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                     placeholder="Descripción del lugar en español..."
                   />
                 </div>
                 
                 {/* Descripción en Inglés */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                     Descripción (English)
                   </label>
                   <textarea
@@ -1536,20 +1484,20 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
                       es: descriptionEs, 
                       en: e.target.value 
                     })}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                     placeholder="Place description in English..."
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                     URL de Google Maps
                   </label>
                   <input
                     type="url"
                     value={place.mapsUrl || ''}
                     onChange={(e) => updatePlace(index, 'mapsUrl', e.target.value)}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                     placeholder="https://maps.google.com/..."
                   />
                 </div>
@@ -1559,7 +1507,7 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
         })}
 
         {placesData.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-[#71717A]">
             <p className="mb-4">No hay lugares agregados</p>
             <p className="text-sm">Agrega el primer lugar para comenzar</p>
           </div>
@@ -1619,7 +1567,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Mesa de Regalos</h2>
+      <h2 className="text-[26px] text-[#0A0A0A] mb-6" style={displayFont}>Mesa de Regalos</h2>
       
       {/* Habilitar mesa de regalos */}
       <div className="space-y-4 sm:space-y-6">
@@ -1629,9 +1577,9 @@ function GiftsSection({ data, onChange }: SectionProps) {
             id="gift-registry-enabled"
             checked={giftRegistryData.enabled}
             onChange={(e) => onChange('giftRegistry.enabled', e.target.checked)}
-            className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+            className="h-4 w-4 accent-[#111111] border-[rgba(0,0,0,0.2)] rounded"
           />
-          <label htmlFor="gift-registry-enabled" className="ml-2 block text-sm text-gray-900">
+          <label htmlFor="gift-registry-enabled" className="ml-2 block text-sm font-semibold text-[#0A0A0A]">
             Habilitar mesa de regalos
           </label>
         </div>
@@ -1641,7 +1589,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
             {/* Mensaje bilingüe */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                   Mensaje para los invitados (Español)
                 </label>
                 <textarea
@@ -1651,12 +1599,12 @@ function GiftsSection({ data, onChange }: SectionProps) {
                     const currentMessage = typeof giftRegistryData.message === 'object' ? giftRegistryData.message : { es: giftRegistryData.message || '', en: '' };
                     onChange('giftRegistry.message', { ...currentMessage, es: e.target.value });
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                  className="w-full px-3 py-2 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
                   placeholder="Tu presencia es nuestro regalo más valioso, pero si deseas hacernos un obsequio, hemos preparado algunas opciones:"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                   Mensaje para los invitados (English)
                 </label>
                 <textarea
@@ -1666,7 +1614,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                     const currentMessage = typeof giftRegistryData.message === 'object' ? giftRegistryData.message : { es: giftRegistryData.message || '', en: '' };
                     onChange('giftRegistry.message', { ...currentMessage, en: e.target.value });
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                  className="w-full px-3 py-2 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
                   placeholder="Your presence is our most valuable gift, but if you wish to give us a present, we have prepared some options:"
                 />
               </div>
@@ -1675,10 +1623,10 @@ function GiftsSection({ data, onChange }: SectionProps) {
             {/* Lista de registros */}
             <div className="space-y-4 sm:space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h3 className="text-base font-medium text-gray-800">Tiendas de Regalos</h3>
+                <h3 className="text-base font-bold text-[#0A0A0A]">Tiendas de Regalos</h3>
                 <button
                   onClick={addRegistry}
-                  className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors text-sm font-medium"
+                  className="bg-[#111111] text-white px-4 py-2 rounded-full hover:bg-black focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold"
                 >
                   + Agregar Tienda
                 </button>
@@ -1690,12 +1638,12 @@ function GiftsSection({ data, onChange }: SectionProps) {
                   const descriptionEn = typeof registry.description === 'object' ? registry.description?.en || '' : '';
                   
                   return (
-                    <div key={registry.id} className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
+                    <div key={registry.id} className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-                        <h4 className="text-base font-medium text-gray-800">Tienda #{index + 1}</h4>
+                        <h4 className="text-base font-bold text-[#0A0A0A]">Tienda #{index + 1}</h4>
                         <button
                           onClick={() => removeRegistry(index)}
-                          className="self-start sm:self-center text-red-600 hover:text-red-800 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                          className="self-start sm:self-center text-[#B91C1C] hover:text-[#7F1D1D] text-sm font-semibold px-3 py-1 border border-[rgba(185,28,28,0.3)] rounded-full hover:bg-[rgba(185,28,28,0.06)] transition-colors"
                         >
                           Eliminar
                         </button>
@@ -1703,33 +1651,33 @@ function GiftsSection({ data, onChange }: SectionProps) {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                             Nombre de la Tienda
                           </label>
                           <input
                             type="text"
                             value={registry.name || ''}
                             onChange={(e) => updateRegistry(index, 'name', e.target.value)}
-                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                             placeholder="Liverpool, El Palacio de Hierro, Amazon..."
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                             URL de la Mesa de Regalos
                           </label>
                           <input
                             type="url"
                             value={registry.url || ''}
                             onChange={(e) => updateRegistry(index, 'url', e.target.value)}
-                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                             placeholder="https://mesaderegalos.liverpool.com.mx/..."
                           />
                         </div>
                         
                         {/* Descripción en Español */}
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                             Descripción (Español)
                           </label>
                           <textarea
@@ -1739,14 +1687,14 @@ function GiftsSection({ data, onChange }: SectionProps) {
                               es: e.target.value, 
                               en: descriptionEn 
                             })}
-                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                             placeholder="Mesa de regalos con todo lo que necesitamos para nuestro hogar"
                           />
                         </div>
                         
                         {/* Descripción en Inglés */}
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                             Descripción (English)
                           </label>
                           <textarea
@@ -1756,7 +1704,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                               es: descriptionEs, 
                               en: e.target.value 
                             })}
-                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                             placeholder="Gift registry with everything we need for our home"
                           />
                         </div>
@@ -1766,7 +1714,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                 })}
 
                 {giftRegistryData.registries.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-[#71717A]">
                     <p className="mb-4">No hay tiendas agregadas</p>
                     <p className="text-sm">Agrega la primera tienda para comenzar tu mesa de regalos</p>
                   </div>
@@ -1782,70 +1730,70 @@ function GiftsSection({ data, onChange }: SectionProps) {
                   id="bank-account-enabled"
                   checked={!!giftRegistryData.bankAccount}
                   onChange={(e) => enableBankAccount(e.target.checked)}
-                  className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                  className="h-4 w-4 accent-[#111111] border-[rgba(0,0,0,0.2)] rounded"
                 />
-                <label htmlFor="bank-account-enabled" className="ml-2 block text-sm text-gray-900">
+                <label htmlFor="bank-account-enabled" className="ml-2 block text-sm font-semibold text-[#0A0A0A]">
                   Agregar cuenta bancaria
                 </label>
               </div>
 
               {!!giftRegistryData.bankAccount && (
-                <div className="bg-gray-50 p-3 sm:p-4 lg:p-6 rounded-lg border">
-                  <h4 className="text-base font-medium text-gray-800 mb-4">Información Bancaria</h4>
+                <div className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
+                  <h4 className="text-base font-bold text-[#0A0A0A] mb-4">Información Bancaria</h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                         Nombre del Banco
                       </label>
                       <input
                         type="text"
                         value={getSafeValue(giftRegistryData.bankAccount as Record<string, unknown>, 'bankName')}
                         onChange={(e) => updateBankAccount('bankName', e.target.value)}
-                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                         placeholder="Banco BBVA, Santander, Banorte..."
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                         Titular de la Cuenta
                       </label>
                       <input
                         type="text"
                         value={getSafeValue(giftRegistryData.bankAccount as Record<string, unknown>, 'accountName')}
                         onChange={(e) => updateBankAccount('accountName', e.target.value)}
-                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                         placeholder="Nombre completo del titular"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                         Número de Cuenta
                       </label>
                       <input
                         type="text"
                         value={getSafeValue(giftRegistryData.bankAccount as Record<string, unknown>, 'accountNumber')}
                         onChange={(e) => updateBankAccount('accountNumber', e.target.value)}
-                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                         placeholder="1234567890"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                         CLABE Interbancaria
                       </label>
                       <input
                         type="text"
                         value={getSafeValue(giftRegistryData.bankAccount as Record<string, unknown>, 'clabe')}
                         onChange={(e) => updateBankAccount('clabe', e.target.value)}
-                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                         placeholder="012345678901234567"
                         maxLength={18}
                       />
                     </div>
                     {/* Descripción en Español */}
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                         Descripción (Español)
                       </label>
                       <textarea
@@ -1860,14 +1808,14 @@ function GiftsSection({ data, onChange }: SectionProps) {
                           const currentDescription = typeof bankAccount?.description === 'object' ? bankAccount.description as {es: string; en: string} : { es: bankAccount?.description as string || '', en: '' };
                           updateBankAccount('description', { ...currentDescription, es: e.target.value });
                         }}
-                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                         placeholder="También puedes contribuir directamente a nuestra cuenta bancaria"
                       />
                     </div>
                     
                     {/* Descripción en Inglés */}
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                         Descripción (English)
                       </label>
                       <textarea
@@ -1882,7 +1830,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                           const currentDescription = typeof bankAccount?.description === 'object' ? bankAccount.description as {es: string; en: string} : { es: bankAccount?.description as string || '', en: '' };
                           updateBankAccount('description', { ...currentDescription, en: e.target.value });
                         }}
-                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                         placeholder="You can also contribute directly to our bank account"
                       />
                     </div>
@@ -1900,23 +1848,23 @@ function GiftsSection({ data, onChange }: SectionProps) {
 function SocialSection({ data, onChange }: SectionProps) {
   return (
     <div className="space-y-6 sm:space-y-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Redes Sociales</h2>
+      <h2 className="text-[26px] text-[#0A0A0A] mb-6" style={displayFont}>Redes Sociales</h2>
       
       {/* Hashtag de la boda */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Hashtag de la Boda</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Hashtag de la Boda</h3>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
             Hashtag Principal
           </label>
           <input
             type="text"
             value={getSafeValue(data, 'hashtag')}
             onChange={(e) => onChange('hashtag', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+            className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
             placeholder="#MariaYCarlos2025"
           />
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-[#71717A] mt-2">
             Este hashtag aparecerá en la invitación para que los invitados lo usen en redes sociales
           </p>
         </div>
@@ -1924,31 +1872,31 @@ function SocialSection({ data, onChange }: SectionProps) {
 
       {/* Redes sociales de la pareja */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Redes Sociales de la Pareja</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Redes Sociales de la Pareja</h3>
         
         {/* Instagram de la novia */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Instagram de la Novia
             </label>
             <input
               type="text"
               value={getSafeValue(data, 'bride.instagram')}
               onChange={(e) => onChange('bride.instagram', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="@maria_gonzalez"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Instagram del Novio
             </label>
             <input
               type="text"
               value={getSafeValue(data, 'groom.instagram')}
               onChange={(e) => onChange('groom.instagram', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="@carlos_lopez"
             />
           </div>
@@ -1957,26 +1905,26 @@ function SocialSection({ data, onChange }: SectionProps) {
         {/* Facebook de la pareja */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Facebook de la Novia
             </label>
             <input
               type="text"
               value={getSafeValue(data, 'bride.facebook')}
               onChange={(e) => onChange('bride.facebook', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Maria Gonzalez"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
               Facebook del Novio
             </label>
             <input
               type="text"
               value={getSafeValue(data, 'groom.facebook')}
               onChange={(e) => onChange('groom.facebook', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Carlos Lopez"
             />
           </div>
@@ -1985,19 +1933,19 @@ function SocialSection({ data, onChange }: SectionProps) {
 
       {/* Email de contacto */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Contacto</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Contacto</h3>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
             Email de la Pareja
           </label>
           <input
             type="email"
             value={getSafeValue(data, 'coupleEmail')}
             onChange={(e) => onChange('coupleEmail', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+            className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
             placeholder="maria.carlos@ejemplo.com"
           />
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-[#71717A] mt-2">
             Email de contacto para preguntas sobre la boda
           </p>
         </div>
@@ -2013,11 +1961,11 @@ function SettingsSection({ data, onChange }: SectionProps) {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Configuración</h2>
+      <h2 className="text-[26px] text-[#0A0A0A] mb-6" style={displayFont}>Configuración</h2>
       
       {/* Evento solo para adultos */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">Evento Solo para Adultos</h3>
+        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Evento Solo para Adultos</h3>
         
         <div className="flex items-center">
           <input
@@ -2025,9 +1973,9 @@ function SettingsSection({ data, onChange }: SectionProps) {
             id="adult-only-enabled"
             checked={adultOnlyData.enabled}
             onChange={(e) => onChange('adultOnlyEvent.enabled', e.target.checked)}
-            className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+            className="h-4 w-4 accent-[#111111] border-[rgba(0,0,0,0.2)] rounded"
           />
-          <label htmlFor="adult-only-enabled" className="ml-2 block text-sm text-gray-900">
+          <label htmlFor="adult-only-enabled" className="ml-2 block text-sm font-semibold text-[#0A0A0A]">
             Este evento es solo para adultos
           </label>
         </div>
@@ -2036,7 +1984,7 @@ function SettingsSection({ data, onChange }: SectionProps) {
           <div className="space-y-4">
             {/* Mensaje en Español */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                 Mensaje para los invitados (Español)
               </label>
               <textarea
@@ -2046,14 +1994,14 @@ function SettingsSection({ data, onChange }: SectionProps) {
                   const currentMessage = typeof adultOnlyData.message === 'object' ? adultOnlyData.message : { es: adultOnlyData.message || '', en: '' };
                   onChange('adultOnlyEvent.message', { ...currentMessage, es: e.target.value });
                 }}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
                 placeholder="Aunque adoramos a los pequeños de la familia, hemos decidido que nuestra celebración sea solo para adultos. Esperamos que puedan acompañarnos en esta noche especial."
               />
             </div>
             
             {/* Mensaje en Inglés */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                 Mensaje para los invitados (English)
               </label>
               <textarea
@@ -2063,12 +2011,12 @@ function SettingsSection({ data, onChange }: SectionProps) {
                   const currentMessage = typeof adultOnlyData.message === 'object' ? adultOnlyData.message : { es: adultOnlyData.message || '', en: '' };
                   onChange('adultOnlyEvent.message', { ...currentMessage, en: e.target.value });
                 }}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
                 placeholder="Although we adore the little ones in our family, we have decided that our celebration will be adults only. We hope you can join us for this special night."
               />
             </div>
             
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[#71717A]">
               Este mensaje aparecerá en la invitación para informar a los invitados sobre la política de solo adultos
             </p>
           </div>

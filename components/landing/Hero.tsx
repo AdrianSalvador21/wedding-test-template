@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { fraunces, LSection, LSolidButton, LTextLink, LCheckIcon } from './ui';
+import { fraunces, LSection, LSolidButton, LTextLink } from './ui';
 
 const WHATSAPP_LINK_INTRO =
   'https://wa.me/529602460590?text=Hola!%20Me%20interesa%20conocer%20m%C3%A1s%20sobre%20las%20invitaciones%20digitales%20de%20Invyta.';
@@ -66,7 +66,7 @@ export default function Hero() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/landing/design-template-03.jpg"
+              src="/assets/landing/design-template-03-2.png"
               alt="Template Botánica Editorial"
               className="w-full h-full object-cover"
               style={{ objectPosition: '50% 15%' }}
@@ -110,13 +110,13 @@ export default function Hero() {
               style={{ objectPosition: '50% 30%' }}
             />
           </div>
-          <div
+          {/*<div
             className="absolute bg-white rounded-2xl px-4 py-3 shadow-[0_20px_40px_rgba(43,38,34,0.18)] flex items-center gap-2.5"
             style={{ bottom: '2%', left: '22%', zIndex: 3 }}
           >
             <LCheckIcon />
             <span className="text-[13px] font-bold text-[#211D19] whitespace-nowrap">3 diseños para elegir</span>
-          </div>
+          </div>*/}
         </motion.div>
       </div>
     </LSection>
