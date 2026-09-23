@@ -34,7 +34,7 @@ export default function AdminProof() {
               <LCard variant="ivory" className="p-6 flex flex-col gap-4">
                 <div className="rounded-2xl overflow-hidden h-[400px] bg-white shadow-[0_20px_40px_rgba(43,38,34,0.1)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={panel.image} alt={panel.alt} className="w-full h-full object-cover object-top" />
+                  <img src={panel.image} alt={panel.alt} className="w-full h-full object-cover object-left-top" />
                 </div>
                 <span className="text-[19px] text-[#211D19]" style={fraunces}>
                   {panel.title}

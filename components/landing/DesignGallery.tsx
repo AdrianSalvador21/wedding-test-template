@@ -36,7 +36,8 @@ export default function DesignGallery() {
             Elige tu diseño
           </h2>
           <p className="text-base text-[#5A534B] max-w-[560px]">
-            Tres estilos completos, cada uno con sus propias secciones, RSVP y panel de administración.
+            Tres estilos completos, cada uno con sus propias secciones, confirmación de asistencia y panel de
+            administración.
           </p>
         </LReveal>
         <LStagger className="grid md:grid-cols-3 gap-7">

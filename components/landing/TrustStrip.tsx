@@ -5,7 +5,7 @@ import { LSection, LClockIcon, LCheckIcon, LGlobeIcon, LHostingIcon } from './ui
 
 const items = [
   { icon: LClockIcon, label: 'Entrega en 7 días hábiles' },
-  { icon: LCheckIcon, label: 'RSVP en tiempo real' },
+  { icon: LCheckIcon, label: 'Confirmaciones en tiempo real' },
   { icon: LGlobeIcon, label: 'Disponible en Español e Inglés' },
   { icon: LHostingIcon, label: 'Hosting incluido' },
 ];
