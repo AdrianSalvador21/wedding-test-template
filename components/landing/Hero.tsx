@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { fraunces, LSection, LSolidButton, LTextLink, LCheckIcon } from './ui';
+import { fraunces, LSection, LSolidButton, LTextLink } from './ui';
 
 const WHATSAPP_LINK_INTRO =
   'https://wa.me/529602460590?text=Hola!%20Me%20interesa%20conocer%20m%C3%A1s%20sobre%20las%20invitaciones%20digitales%20de%20Invyta.';
