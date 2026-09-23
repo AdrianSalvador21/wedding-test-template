@@ -35,7 +35,7 @@ export default function Hero() {
             <span className="italic text-[#C6663C]">Nosotros armamos tu invitación.</span>
           </h1>
           <p className="text-lg text-[#5A534B] leading-relaxed max-w-[480px]">
-            Tres diseños listos para tu boda, con confirmación de asistencia automática y todo gestionado desde un
+            Diseños listos para tu boda, con confirmación de asistencia automática y todo gestionado desde un
             panel simple — sin apps que descargar.
           </p>
           <div className="flex flex-wrap items-center gap-6 mt-1">
