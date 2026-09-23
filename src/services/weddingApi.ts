@@ -106,8 +106,9 @@ export class WeddingApiService {
         // Simular delay de red
         await simulateDelay(800);
         
-        // Usar siempre friends-test como fallback cuando no hay datos en Firebase
-        const mockData = getMockWeddingData('friends-test');
+        // Buscar primero el mock que corresponde al id solicitado; si no existe
+        // (id desconocido para el catálogo mock), usar friends-test como respaldo.
+        const mockData = getMockWeddingData(id) || getMockWeddingData('friends-test');
         if (mockData) {
           // Asignar el ID correcto al mock
           const fallbackData = { ...mockData, id };

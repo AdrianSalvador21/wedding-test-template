@@ -22,6 +22,10 @@ export default {
       fontFamily: {
         heading: ['Cormorant Garamond', 'serif'],
         body: ['Lora', 'serif'],
+        jost: ['Jost', 'sans-serif'],
+        // Nombre distinto de "heading": app/globals.css define una clase .font-heading
+        // propia (Allura cursive) que pisaría la utilidad de Tailwind con ese nombre.
+        cormorant: ['Cormorant Garamond', 'serif'],
       },
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #8b7355 0%, #a67c5a 100%)',
