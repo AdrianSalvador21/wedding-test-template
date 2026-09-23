@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare, ChevronUp, ChevronDown, ArrowUpDown, Search, Users, Clock } from 'lucide-react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../../../lib/firebase';
 import { guestService } from '../../../../../services/guestService';
 import { FirebaseGuest, WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
+import { AdminTopBar, AdminPageNav, AdminStatCard, AdminStatusPill, AdminButton, AdminCard, manrope, displayFont } from '../../../../../components/admin/ui';
 
 interface GuestStats {
   total: number;
@@ -30,6 +31,7 @@ interface GuestFormData {
 const AdminGuestsPage = () => {
   const params = useParams();
   const weddingId = params.weddingId as string;
+  const locale = (params.locale as string) || 'es';
 
   const [guests, setGuests] = useState<FirebaseGuest[]>([]);
   const [stats, setStats] = useState<GuestStats>({ total: 0, totalGuestCount: 0, totalConfirmedPersons: 0, confirmed: 0, declined: 0, pending: 0 });
@@ -42,6 +44,7 @@ const AdminGuestsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copiedGuestId, setCopiedGuestId] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'confirmed' | 'declined' | 'pending'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<string>('');
   const [sortBy, setSortBy] = useState<'name' | 'language' | 'status' | 'createdAt'>('createdAt');
@@ -474,8 +477,13 @@ const AdminGuestsPage = () => {
   };
 
   const filteredAndSortedGuests = guests.filter(guest => {
+    const term = searchTerm.trim().toLowerCase();
+    if (term && !guest.name.toLowerCase().includes(term) && !(guest.email || '').toLowerCase().includes(term)) {
+      return false;
+    }
+
     if (filterStatus === 'all') return true;
-    
+
     // Usar lógica basada en rsvpConfirmation.attending
     if (filterStatus === 'confirmed') {
       return guest.rsvpConfirmation?.attending === true;
@@ -484,7 +492,7 @@ const AdminGuestsPage = () => {
     } else if (filterStatus === 'pending') {
       return !guest.rsvpConfirmation || guest.rsvpConfirmation.attending === undefined;
     }
-    
+
     return true;
   }).sort((a, b) => {
     let comparison = 0;
@@ -510,10 +518,10 @@ const AdminGuestsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-amber-600 rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando invitados...</p>
+          <div className="animate-spin w-8 h-8 border-2 border-[rgba(0,0,0,0.14)] border-t-[#111111] rounded-full mx-auto mb-4"></div>
+          <p className="text-[#3F3F46]" style={manrope}>Cargando invitados...</p>
         </div>
       </div>
     );
@@ -525,152 +533,98 @@ const AdminGuestsPage = () => {
 
   if (error && !showForm) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
         <div className="text-center py-12">
-          <div className="text-6xl text-gray-300 mb-6">⚠</div>
-          <h3 className="text-2xl text-gray-600 mb-3">Error</h3>
-          <p className="text-gray-500">{error}</p>
+          <div className="text-6xl text-[#D4D4D8] mb-6">⚠</div>
+          <h3 className="text-2xl text-[#0A0A0A] mb-3" style={displayFont}>Error</h3>
+          <p className="text-[#3F3F46]">{error}</p>
         </div>
       </div>
     );
   }
 
+  const filterChipClass = (active: boolean) =>
+    `px-3.5 py-2 text-[13px] font-bold rounded-full border transition-colors ${
+      active
+        ? 'bg-[#111111] text-white border-[#111111]'
+        : 'bg-[#FAFAFA] text-[#3F3F46] border-[rgba(0,0,0,0.1)] hover:bg-white'
+    }`;
+
   return (
-    <div className="min-h-screen bg-gray-50 font-['Quicksand',sans-serif]">
-      {/* Navbar Invyta */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-3">
-            <a
-              href="/"
-              className="text-2xl font-serif font-bold text-black hover:opacity-80 transition-opacity"
-            >
-              invyta
-            </a>
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#FAFAFA]" style={manrope}>
+      {/* Navbar Invyta — mismo padding horizontal que AdminTopBar para que el logo quede alineado con el título de abajo */}
+      <div className="bg-white border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 py-3.5 flex items-center justify-between gap-4">
+        <a
+          href="/"
+          className="text-xl sm:text-2xl text-[#0A0A0A] hover:opacity-70 transition-opacity"
+          style={displayFont}
+        >
+          invyta
+        </a>
+        {weddingId && <AdminPageNav weddingId={weddingId} locale={locale} active="guests" />}
       </div>
 
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-4 sm:space-y-0">
-            <div className="flex-1">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Gestión de Invitados</h1>
-              
-              {/* Métricas en el header */}
-              <div className="space-y-2">
-                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Total Invitaciones:</span>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {stats.total}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Invitaciones Confirmadas:</span>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      {stats.confirmed}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Invitaciones Pendientes:</span>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                      {stats.pending}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Total Personas Invitadas:</span>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      {stats.totalGuestCount}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs sm:text-sm text-gray-600">Total Personas Confirmadas:</span>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                      {stats.totalConfirmedPersons}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Botón Nuevo Invitado en el header */}
-            <div className="flex items-center justify-end">
-              <button
-                onClick={() => setShowForm(true)}
-                disabled={isLoading}
-                className="inline-flex items-center px-3 sm:px-4 py-2 bg-amber-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Nuevo Invitado</span>
-                <span className="sm:hidden">Nuevo</span>
-              </button>
-            </div>
-          </div>
+      <AdminTopBar
+        title="Gestión de Invitados"
+        actions={
+          <AdminButton onClick={() => setShowForm(true)} disabled={isLoading}>
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Nuevo Invitado</span>
+            <span className="sm:hidden">Nuevo</span>
+          </AdminButton>
+        }
+      />
+
+      <div className="px-4 sm:px-10 py-8">
+
+        {/* Estadísticas */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+          <AdminStatCard icon={Users} label="Total invitaciones" value={stats.total} tone="ink" />
+          <AdminStatCard icon={Check} label="Confirmadas" value={stats.confirmed} tone="success" />
+          <AdminStatCard icon={Clock} label="Pendientes" value={stats.pending} tone="pending" />
+          <AdminStatCard icon={Users} label="Personas invitadas" value={stats.totalGuestCount} tone="accent" />
+          <AdminStatCard icon={Check} label="Personas confirmadas" value={stats.totalConfirmedPersons} tone="success" />
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        {/* Filtros */}
-        <div className="bg-white rounded-lg shadow mb-6">
-          <div className="p-4">
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setFilterStatus('all')}
-                className={`px-3 py-1 text-sm rounded-full ${
-                  filterStatus === 'all' 
-                    ? 'bg-amber-100 text-amber-800' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Todos ({stats.total})
-              </button>
-              <button
-                onClick={() => setFilterStatus('confirmed')}
-                className={`px-3 py-1 text-sm rounded-full ${
-                  filterStatus === 'confirmed' 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Confirmados ({stats.confirmed})
-              </button>
-              <button
-                onClick={() => setFilterStatus('declined')}
-                className={`px-3 py-1 text-sm rounded-full ${
-                  filterStatus === 'declined' 
-                    ? 'bg-red-100 text-red-800' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Declinaron ({stats.declined})
-              </button>
-              <button
-                onClick={() => setFilterStatus('pending')}
-                className={`px-3 py-1 text-sm rounded-full ${
-                  filterStatus === 'pending' 
-                    ? 'bg-yellow-100 text-yellow-800' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Pendientes ({stats.pending})
-              </button>
-            </div>
+        {/* Búsqueda y filtros */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+          <div className="relative flex-1 sm:max-w-xs">
+            <Search className="h-4 w-4 text-[#71717A] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar por nombre o email"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-[rgba(0,0,0,0.14)] text-sm text-[#0A0A0A] bg-white focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => setFilterStatus('all')} className={filterChipClass(filterStatus === 'all')}>
+              Todos ({stats.total})
+            </button>
+            <button onClick={() => setFilterStatus('confirmed')} className={filterChipClass(filterStatus === 'confirmed')}>
+              Confirmados ({stats.confirmed})
+            </button>
+            <button onClick={() => setFilterStatus('pending')} className={filterChipClass(filterStatus === 'pending')}>
+              Pendientes ({stats.pending})
+            </button>
+            <button onClick={() => setFilterStatus('declined')} className={filterChipClass(filterStatus === 'declined')}>
+              No asisten ({stats.declined})
+            </button>
           </div>
         </div>
 
-        {/* Tabla Responsiva */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full lg:min-w-[1200px] divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+        {/* Lista de invitados */}
+        <AdminCard className="overflow-hidden">
+          {/* Tabla — escritorio */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full divide-y divide-[rgba(0,0,0,0.08)]">
+              <thead className="bg-[#FAFAFA]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <button 
+                  <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                    <button
                       onClick={() => handleSort('name')}
-                      className="flex items-center space-x-1 hover:text-gray-700 transition-colors text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-bold text-[#71717A] uppercase tracking-wider"
                     >
                       <span>Invitado</span>
                       {sortBy === 'name' ? (
@@ -680,16 +634,16 @@ const AdminGuestsPage = () => {
                       )}
                     </button>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
                     Contacto
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
                     Personas
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <button 
+                  <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                    <button
                       onClick={() => handleSort('status')}
-                      className="flex items-center space-x-1 hover:text-gray-700 transition-colors text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-bold text-[#71717A] uppercase tracking-wider"
                     >
                       <span>Estado</span>
                       {sortBy === 'status' ? (
@@ -700,14 +654,14 @@ const AdminGuestsPage = () => {
                     </button>
                   </th>
                   {weddingData?.hasDiet && (
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
                       Restricción Dietética
                     </th>
                   )}
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <button 
+                  <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                    <button
                       onClick={() => handleSort('language')}
-                      className="flex items-center space-x-1 hover:text-gray-700 transition-colors text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-bold text-[#71717A] uppercase tracking-wider"
                     >
                       <span>Idioma</span>
                       {sortBy === 'language' ? (
@@ -717,32 +671,32 @@ const AdminGuestsPage = () => {
                       )}
                     </button>
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-bold text-[#71717A] uppercase tracking-wider">
                     Acciones
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-[rgba(0,0,0,0.06)]">
                 {filteredAndSortedGuests.map((guest) => (
-                  <tr key={guest.id} className="hover:bg-gray-50">
+                  <tr key={guest.id} className="hover:bg-[#FAFAFA] transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{guest.name}</div>
+                      <div className="text-sm font-bold text-[#0A0A0A]">{guest.name}</div>
                       {guest.coupleMessage && (
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                        <div className="text-sm text-[#71717A] truncate max-w-xs">
                           {guest.coupleMessage}
                         </div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{guest.email}</div>
-                      <div className="text-sm text-gray-500">{guest.phone}</div>
+                      <div className="text-sm text-[#0A0A0A]">{guest.email}</div>
+                      <div className="text-sm text-[#71717A]">{guest.phone}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#0A0A0A]">
                       {weddingData?.selectedGuestTickets ? (
                         // Si selectedGuestTickets es true, mostrar el número seleccionado por el usuario o "Pendiente"
-                        guest.rsvpConfirmation?.attending ? 
-                          (guest.rsvpConfirmation?.guestCount || 1) : 
-                          <span className="text-gray-500 italic">Pendiente</span>
+                        guest.rsvpConfirmation?.attending ?
+                          (guest.rsvpConfirmation?.guestCount || 1) :
+                          <span className="text-[#71717A] italic">Pendiente</span>
                       ) : (
                         // Comportamiento normal
                         guest.guestCount
@@ -750,55 +704,57 @@ const AdminGuestsPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          guest.rsvpConfirmation?.attending === true
-                            ? 'bg-green-100 text-green-800'
-                            : guest.rsvpConfirmation?.attending === false
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {guest.rsvpConfirmation?.attending === true ? 'Confirmado' : 
+                        <AdminStatusPill
+                          tone={
+                            guest.rsvpConfirmation?.attending === true
+                              ? 'confirmed'
+                              : guest.rsvpConfirmation?.attending === false
+                              ? 'declined'
+                              : 'pending'
+                          }
+                        >
+                          {guest.rsvpConfirmation?.attending === true ? 'Confirmado' :
                            guest.rsvpConfirmation?.attending === false ? 'Declinó' : 'Pendiente'}
-                        </span>
+                        </AdminStatusPill>
                         {guest.rsvpConfirmation?.message && (
                           <button
                             onClick={() => handleShowMessage(guest.rsvpConfirmation!.message!)}
-                            className="p-1 hover:bg-blue-50 rounded-full transition-colors"
+                            className="p-1 hover:bg-[rgba(0,0,0,0.06)] rounded-full transition-colors"
                             title="Ver mensaje del invitado"
                           >
-                            <MessageSquare className="h-4 w-4 text-blue-500 hover:text-blue-600" />
+                            <MessageSquare className="h-4 w-4 text-[#111111]" />
                           </button>
                         )}
                       </div>
                     </td>
                     {weddingData?.hasDiet && (
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#0A0A0A]">
                         {guest.rsvpConfirmation?.attending === true ? (
                           guest.rsvpConfirmation?.dietaryRestriction ? (
-                            <span className="text-sm text-gray-900">
+                            <span className="text-sm text-[#0A0A0A]">
                               {guest.rsvpConfirmation.dietaryRestriction === 'vegetarian' ? 'Vegetariano' :
                                guest.rsvpConfirmation.dietaryRestriction === 'glutenFree' ? 'Sin gluten' :
                                guest.rsvpConfirmation.dietaryRestriction === 'other' ? 'Otro' :
                                'Otro'}
                             </span>
                           ) : (
-                            <span className="text-sm text-gray-900">Otro</span>
+                            <span className="text-sm text-[#0A0A0A]">Otro</span>
                           )
                         ) : guest.rsvpConfirmation?.attending === false ? (
-                          <span className="text-gray-400 italic">-</span>
+                          <span className="text-[#D4D4D8] italic">-</span>
                         ) : (
-                          <span className="text-gray-500 italic">Pendiente</span>
+                          <span className="text-[#71717A] italic">Pendiente</span>
                         )}
                       </td>
                     )}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#0A0A0A]">
                       {guest.language === 'es' ? 'Español' : 'English'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end space-x-2">
+                      <div className="flex items-center justify-end space-x-1">
                         <button
                           onClick={() => handleCopyLink(guest)}
-                          className="text-amber-600 hover:text-amber-900 p-1"
+                          className="text-[#3F3F46] hover:text-[#111111] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
                           title="Copiar enlace"
                         >
                           {copiedGuestId === guest.id ? (
@@ -809,14 +765,14 @@ const AdminGuestsPage = () => {
                         </button>
                         <button
                           onClick={() => handleEdit(guest)}
-                          className="text-blue-600 hover:text-blue-900 p-1"
+                          className="text-[#3F3F46] hover:text-[#0A0A0A] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
                           title="Editar"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(guest.id)}
-                          className="text-red-600 hover:text-red-900 p-1"
+                          className="text-[#B91C1C] hover:text-[#7F1D1D] p-2 rounded-lg hover:bg-[rgba(185,28,28,0.06)] transition-colors"
                           title="Eliminar"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -829,48 +785,125 @@ const AdminGuestsPage = () => {
             </table>
           </div>
 
+          {/* Tarjetas — móvil */}
+          <div className="md:hidden divide-y divide-[rgba(0,0,0,0.06)]">
+            {filteredAndSortedGuests.map((guest) => (
+              <div key={guest.id} className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-[#0A0A0A] truncate">{guest.name}</div>
+                    {guest.email && <div className="text-xs text-[#71717A] mt-1 truncate">{guest.email}</div>}
+                    {guest.phone && <div className="text-xs text-[#71717A] truncate">{guest.phone}</div>}
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-none">
+                    <AdminStatusPill
+                      tone={
+                        guest.rsvpConfirmation?.attending === true
+                          ? 'confirmed'
+                          : guest.rsvpConfirmation?.attending === false
+                          ? 'declined'
+                          : 'pending'
+                      }
+                    >
+                      {guest.rsvpConfirmation?.attending === true ? 'Confirmado' :
+                       guest.rsvpConfirmation?.attending === false ? 'Declinó' : 'Pendiente'}
+                    </AdminStatusPill>
+                    {guest.rsvpConfirmation?.message && (
+                      <button
+                        onClick={() => handleShowMessage(guest.rsvpConfirmation!.message!)}
+                        className="p-1 hover:bg-[rgba(0,0,0,0.06)] rounded-full transition-colors flex-none"
+                        title="Ver mensaje del invitado"
+                      >
+                        <MessageSquare className="h-4 w-4 text-[#111111]" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {guest.coupleMessage && (
+                  <div className="text-xs text-[#71717A] mt-2 line-clamp-2">{guest.coupleMessage}</div>
+                )}
+
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-[rgba(0,0,0,0.06)]">
+                  <div className="text-xs text-[#71717A]">
+                    {(weddingData?.selectedGuestTickets
+                      ? (guest.rsvpConfirmation?.attending ? (guest.rsvpConfirmation?.guestCount || 1) : 'Pendiente')
+                      : guest.guestCount)}{' '}
+                    {weddingData?.selectedGuestTickets && !guest.rsvpConfirmation?.attending ? '' : 'personas'}
+                    {' · '}
+                    {guest.language === 'es' ? 'ES' : 'EN'}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleCopyLink(guest)}
+                      className="text-[#3F3F46] hover:text-[#111111] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
+                      title="Copiar enlace"
+                    >
+                      {copiedGuestId === guest.id ? <Check className="h-4 w-4" /> : <Link className="h-4 w-4" />}
+                    </button>
+                    <button
+                      onClick={() => handleEdit(guest)}
+                      className="text-[#3F3F46] hover:text-[#0A0A0A] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
+                      title="Editar"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(guest.id)}
+                      className="text-[#B91C1C] hover:text-[#7F1D1D] p-2 rounded-lg hover:bg-[rgba(185,28,28,0.06)] transition-colors"
+                      title="Eliminar"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
           {filteredAndSortedGuests.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-gray-400 text-4xl mb-4">👥</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {filterStatus === 'all' ? 'No hay invitados' : `No hay invitados ${
+              <div className="text-[#D4D4D8] text-4xl mb-4">👥</div>
+              <h3 className="text-lg text-[#0A0A0A] mb-2" style={displayFont}>
+                {filterStatus === 'all' && !searchTerm ? 'No hay invitados' : `No hay invitados ${
                   filterStatus === 'confirmed' ? 'confirmados' :
-                  filterStatus === 'declined' ? 'que hayan declinado' : 'pendientes'
+                  filterStatus === 'declined' ? 'que hayan declinado' :
+                  filterStatus === 'pending' ? 'pendientes' : 'que coincidan'
                 }`}
               </h3>
-              <p className="text-gray-600">
-                {filterStatus === 'all' ? 'Agrega tu primer invitado para comenzar' : 'Cambia el filtro para ver otros invitados'}
+              <p className="text-[#3F3F46]">
+                {filterStatus === 'all' && !searchTerm ? 'Agrega tu primer invitado para comenzar' : 'Cambia el filtro o la búsqueda para ver otros invitados'}
               </p>
             </div>
           )}
-        </div>
+        </AdminCard>
       </div>
 
       {/* Modal del Formulario */}
       {showForm && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 z-50 overflow-y-auto" style={manrope}>
           <div className="flex items-center justify-center min-h-screen pt-0 px-0 pb-0 text-center sm:pt-4 sm:px-4 sm:pb-20 sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={resetForm}></div>
+            <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] transition-opacity" onClick={resetForm}></div>
 
-            <div className="inline-block align-bottom bg-white w-full h-full sm:rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:h-auto">
+            <div className="inline-block align-bottom bg-white w-full h-full sm:rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:h-auto">
               <form onSubmit={handleSubmit} className="h-full flex flex-col sm:h-auto sm:block">
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 flex-1 overflow-y-auto sm:flex-none sm:overflow-visible">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    <h3 className="text-[22px] text-[#0A0A0A]" style={displayFont}>
                       {editingGuest ? 'Editar Invitado' : 'Nuevo Invitado'}
                     </h3>
                     <button
                       type="button"
                       onClick={resetForm}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-[#71717A] hover:text-[#0A0A0A] p-1 rounded-lg hover:bg-[#FAFAFA] transition-colors"
                     >
-                      <X className="h-6 w-6" />
+                      <X className="h-5 w-5" />
                     </button>
                   </div>
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-1.5">
                         Nombre *
                       </label>
                       <input
@@ -878,14 +911,14 @@ const AdminGuestsPage = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3.5 py-2.5 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
                         placeholder="Nombre del invitado"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-1.5">
                         Email
                       </label>
                       <input
@@ -893,13 +926,13 @@ const AdminGuestsPage = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3.5 py-2.5 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
                         placeholder="correo@ejemplo.com"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-1.5">
                         Teléfono
                       </label>
                       <input
@@ -907,7 +940,7 @@ const AdminGuestsPage = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3.5 py-2.5 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
                         placeholder="+52 999 123 4567"
                       />
                     </div>
@@ -915,7 +948,7 @@ const AdminGuestsPage = () => {
                     {/* Solo mostrar número de personas si selectedGuestTickets no está activo */}
                     {!weddingData?.selectedGuestTickets && (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-[13px] font-semibold text-[#27272A] mb-1.5">
                           Número de Personas
                         </label>
                         <input
@@ -925,20 +958,20 @@ const AdminGuestsPage = () => {
                           onChange={handleInputChange}
                           min="1"
                           max="10"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                          className="w-full px-3.5 py-2.5 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
                         />
                       </div>
                     )}
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-1.5">
                         Idioma de la Invitación
                       </label>
                       <select
                         name="language"
                         value={formData.language}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3.5 py-2.5 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
                       >
                         <option value="es">Español</option>
                         <option value="en">English</option>
@@ -946,7 +979,7 @@ const AdminGuestsPage = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-[13px] font-semibold text-[#27272A] mb-1.5">
                         Mensaje Personal (Opcional)
                       </label>
                       <textarea
@@ -954,44 +987,36 @@ const AdminGuestsPage = () => {
                         value={formData.coupleMessage}
                         onChange={handleInputChange}
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        className="w-full px-3.5 py-2.5 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
                         placeholder="Un mensaje especial para este invitado..."
                       />
                     </div>
                   </div>
 
                   {error && (
-                    <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <div className="mt-4 p-3 bg-[rgba(185,28,28,0.08)] border border-[rgba(185,28,28,0.3)] text-[#B91C1C] rounded-lg text-sm">
                       {error}
                     </div>
                   )}
                 </div>
 
-                <div className="bg-gray-50 px-4 py-3 sm:px-6 flex flex-col sm:flex-row-reverse gap-3 sm:gap-0 flex-shrink-0">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-amber-600 text-base font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
-                  >
+                <div className="bg-[#FAFAFA] px-4 py-3 sm:px-6 flex flex-col sm:flex-row-reverse gap-3 sm:gap-3 flex-shrink-0">
+                  <AdminButton type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
                     {isSubmitting ? (
                       <>
-                        <div className="animate-spin -ml-1 mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         {editingGuest ? 'Actualizando...' : 'Guardando...'}
                       </>
                     ) : (
                       <>
-                        <Save className="h-4 w-4 mr-2" />
+                        <Save className="h-4 w-4" />
                         {editingGuest ? 'Actualizar' : 'Guardar'}
                       </>
                     )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                  >
+                  </AdminButton>
+                  <AdminButton type="button" variant="ghost" onClick={resetForm} className="w-full sm:w-auto">
                     Cancelar
-                  </button>
+                  </AdminButton>
                 </div>
               </form>
             </div>
@@ -1001,39 +1026,34 @@ const AdminGuestsPage = () => {
 
       {/* Modal para mostrar mensaje del invitado */}
       {showMessageModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
-            <div className="mt-3">
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] overflow-y-auto h-full w-full z-50" style={manrope}>
+          <div className="relative top-20 mx-auto p-6 w-11/12 max-w-md shadow-xl rounded-xl bg-white">
+            <div>
               {/* Header del modal */}
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-gray-900">
+                <h3 className="text-[19px] text-[#0A0A0A]" style={displayFont}>
                   Mensaje del Invitado
                 </h3>
                 <button
                   onClick={handleCloseModal}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-[#71717A] hover:text-[#0A0A0A] p-1 rounded-lg hover:bg-[#FAFAFA] transition-colors"
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5" />
                 </button>
               </div>
-              
+
               {/* Contenido del mensaje */}
               <div className="mb-6">
-                <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500">
-                  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                <div className="bg-[#FAFAFA] rounded-xl p-4 border-l-4 border-[#111111]">
+                  <p className="text-[#27272A] leading-relaxed whitespace-pre-wrap">
                     &ldquo;{selectedMessage}&rdquo;
                   </p>
                 </div>
               </div>
-              
+
               {/* Footer del modal */}
               <div className="flex justify-end">
-                <button
-                  onClick={handleCloseModal}
-                  className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                >
-                  Cerrar
-                </button>
+                <AdminButton onClick={handleCloseModal}>Cerrar</AdminButton>
               </div>
             </div>
           </div>

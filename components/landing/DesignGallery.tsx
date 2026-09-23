@@ -21,7 +21,7 @@ const designs = [
   {
     id: 'template-03',
     name: 'Botánica Editorial',
-    description: 'Hero en arco, motivos botánicos dibujados a mano y countdown en vivo.',
+    description: 'Fotografía de novios en arco, motivos botánicos dibujados a mano y countdown en vivo.',
     demoHref: '/es/wedding/valentina-mateo-2026',
     image: '/assets/landing/design-template-03.jpg',
   },
@@ -36,7 +36,7 @@ export default function DesignGallery() {
             Elige tu diseño
           </h2>
           <p className="text-base text-[#5A534B] max-w-[560px]">
-            Tres estilos completos, cada uno con sus propias 13 secciones, RSVP y panel de administración.
+            Tres estilos completos, cada uno con sus propias secciones, RSVP y panel de administración.
           </p>
         </LReveal>
         <LStagger className="grid md:grid-cols-3 gap-7">

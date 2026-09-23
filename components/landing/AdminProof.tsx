@@ -6,12 +6,12 @@ import { fraunces, LSection, LReveal, LStagger, LStaggerItem, LCard } from './ui
 const panels = [
   {
     title: 'Editor de Invitación',
-    image: '/assets/landing/admin-boda.png',
+    image: '/assets/landing/editor-imagen.png',
     alt: 'Editor de invitación',
   },
   {
     title: 'Gestión de Invitados',
-    image: '/assets/landing/admin-invitados.png',
+    image: '/assets/landing/invitados-imagen.png',
     alt: 'Gestión de invitados',
   },
 ];
