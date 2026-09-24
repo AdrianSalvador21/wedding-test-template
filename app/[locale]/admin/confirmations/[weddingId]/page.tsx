@@ -6,6 +6,7 @@ import { XCircle } from 'lucide-react';
 import { rsvpService } from '../../../../../services/rsvpService';
 import { FirebaseRSVP } from '../../../../../src/types/wedding';
 import { AdminButton, manrope, displayFont } from '../../../../../components/admin/ui';
+import AuthGuard from '../../../../../components/admin/AuthGuard';
 
 interface AdminStats {
   total: number;
@@ -13,7 +14,7 @@ interface AdminStats {
   notAttending: number;
 }
 
-const AdminConfirmationsPage = () => {
+const AdminConfirmationsContent = () => {
   const params = useParams();
   const weddingId = params.weddingId as string;
   
@@ -352,6 +353,15 @@ const AdminConfirmationsPage = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const AdminConfirmationsPage = () => {
+  const params = useParams();
+  return (
+    <AuthGuard weddingId={params.weddingId as string}>
+      <AdminConfirmationsContent />
+    </AuthGuard>
   );
 };
 

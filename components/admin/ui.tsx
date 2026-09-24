@@ -1,7 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import AccountControls from './AccountControls';
+import { useAuthOptional } from '../../lib/auth-context';
 
 // Tokens de paleta "Dashboard Neutral" (blanco / negro / grises, sin serif ni
 // acentos cálidos) — ver specs/04-rediseno-paneles-admin.md, decisión tomada
@@ -44,20 +47,59 @@ export function AdminPageNav({
   locale: string;
   active: 'editor' | 'guests';
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const auth = useAuthOptional();
+  const showAllLink = !!auth && (auth.isAdmin || auth.weddings.length > 1);
+
   const linkClass = (isActive: boolean) =>
     `text-sm px-3.5 py-1.5 rounded-lg font-semibold transition-colors ${
       isActive ? 'bg-[#F4F4F5] text-[#0A0A0A]' : 'text-[#71717A] hover:text-[#0A0A0A] hover:bg-[#FAFAFA]'
     }`;
 
-  return (
-    <nav className="flex items-center gap-1" style={manrope}>
+  const links = (
+    <>
       <a href={`/${locale}/admin/wedding-editor/${weddingId}`} className={linkClass(active === 'editor')}>
         Editor de invitación
       </a>
       <a href={`/${locale}/admin/guests/${weddingId}`} className={linkClass(active === 'guests')}>
         Invitados
       </a>
-    </nav>
+      {showAllLink && (
+        <a href={`/${locale}/admin`} className={linkClass(false)}>
+          Mis invitaciones
+        </a>
+      )}
+    </>
+  );
+
+  return (
+    <div className="relative flex items-center gap-2 sm:gap-4" style={manrope}>
+      <nav className="hidden md:flex items-center gap-1">{links}</nav>
+      <div className="hidden md:block">
+        <AccountControls />
+      </div>
+      <button
+        type="button"
+        onClick={() => setMenuOpen((o) => !o)}
+        aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+        aria-expanded={menuOpen}
+        className="md:hidden h-11 w-11 flex items-center justify-center rounded-lg text-[#0A0A0A] hover:bg-[#FAFAFA]"
+      >
+        {menuOpen ? <X className="h-[22px] w-[22px]" /> : <Menu className="h-[22px] w-[22px]" />}
+      </button>
+      {menuOpen && (
+        <div className="md:hidden absolute right-0 top-full mt-2 w-[min(88vw,320px)] bg-white border border-[rgba(0,0,0,0.08)] rounded-xl shadow-lg p-3 z-50 flex flex-col gap-1">
+          <div className="flex flex-col gap-1">{links}</div>
+          {auth?.user && (
+            <div className="mt-2 pt-3 border-t border-[rgba(0,0,0,0.08)] flex flex-col gap-2">
+              <div className="text-xs text-[#71717A]">Sesión iniciada como</div>
+              <div className="text-sm font-bold text-[#0A0A0A] break-all">{auth.email}</div>
+              <AccountControls compact />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
