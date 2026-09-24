@@ -45,7 +45,7 @@ export default function StructuredData() {
         "@type": "Offer",
         "name": "Paquete Básico",
         "description": "Invitación digital elegante con funcionalidades esenciales",
-        "price": "2000",
+        "price": "2200",
         "priceCurrency": "MXN",
         "availability": "https://schema.org/InStock"
       },
@@ -53,7 +53,7 @@ export default function StructuredData() {
         "@type": "Offer",
         "name": "Paquete Personalizado",
         "description": "Invitación digital premium con diseño personalizado y funcionalidades avanzadas",
-        "price": "2400",
+        "price": "2600",
         "priceCurrency": "MXN",
         "availability": "https://schema.org/InStock"
       }

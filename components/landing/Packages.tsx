@@ -25,7 +25,7 @@ const basicoGroups = [
 ];
 
 const basicoNoIncluye =
-  'Personalización por invitado (URL, mensaje, idioma, boletos o canción individuales).';
+  'Personalización por invitado (URL, mensaje, idioma, boletos o canción individuales) ni el asistente con IA.';
 
 const personalizadoGroups = [
   {
@@ -43,6 +43,11 @@ const personalizadoGroups = [
   {
     title: 'Panel de edición y gestión',
     text: 'Cambia tu invitación y controla confirmaciones e invitados cuando quieras, sin depender de nosotros.',
+  },
+  {
+    title: 'Asistente con IA',
+    text: 'Redacta tu historia y tu código de vestimenta, traduce a inglés y sugiere itinerario, hoteles y lugares para tus invitados.',
+    isNew: true,
   },
   {
     title: 'Personalización 1:1',
@@ -74,7 +79,7 @@ export default function Packages() {
               </span>
               <div>
                 <span className="text-[38px] text-[#211D19]" style={fraunces}>
-                  $2,000
+                  $2,200
                 </span>
                 <span className="text-[15px] text-[#8A837A]"> MXN</span>
               </div>
@@ -116,7 +121,7 @@ export default function Packages() {
               </span>
               <div>
                 <span className="text-[38px]" style={fraunces}>
-                  $2,400
+                  $2,600
                 </span>
                 <span className="text-[15px] text-[#D8CFC4]"> MXN</span>
               </div>
@@ -125,12 +130,26 @@ export default function Packages() {
             <LDivider tone="dark" />
             <div className="flex flex-col gap-3.5">
               {personalizadoGroups.map((group) => (
-                <div key={group.title} className="flex items-start gap-2.5">
+                <div
+                  key={group.title}
+                  className={`flex items-start gap-2.5 ${
+                    'isNew' in group
+                      ? '-mx-3.5 px-3.5 py-3.5 rounded-xl bg-[rgba(227,164,131,0.12)] border border-[rgba(227,164,131,0.4)]'
+                      : ''
+                  }`}
+                >
                   <LCheckIcon color="#E3A483" className="flex-shrink-0 mt-1" />
-                  <span className="text-sm leading-relaxed">
-                    <span className="font-semibold">{group.title}: </span>
-                    {group.text}
-                  </span>
+                  <div className="flex flex-col gap-2 items-start">
+                    {'isNew' in group && (
+                      <span className="bg-[#E3A483] text-[#211D19] text-[11px] font-extrabold tracking-wider uppercase px-2.5 py-0.5 rounded-full">
+                        Nuevo
+                      </span>
+                    )}
+                    <span className="text-sm leading-relaxed">
+                      <span className="font-semibold">{group.title}: </span>
+                      {group.text}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

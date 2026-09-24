@@ -294,6 +294,9 @@ export interface WeddingData {
   showGuestsInput?: boolean; // Si es false, oculta campo de número de invitados en RSVP
   showRecommendedPlaces?: boolean; // Si es false, oculta sección de lugares recomendados
   showConfirmCta?: boolean; // Si es false, oculta botón de confirmación en Hero
+  hasEnglish?: boolean; // Si es true, el editor muestra inputs EN y traducción con IA (spec 07)
+  aiUsage?: Record<string, unknown>; // Contadores de uso de IA por boda (spec 07)
+  i18nMeta?: Record<string, string>; // Español fuente de cada traducción hecha con IA, para avisar si cambió (spec 07)
   music?: MusicConfig;
   recommendedPlaces?: RecommendedPlacesConfig;
   theme: {

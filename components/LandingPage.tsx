@@ -10,6 +10,7 @@ import DesignGallery from './landing/DesignGallery';
 import IndividualPersonalization from './landing/IndividualPersonalization';
 import Features from './landing/Features';
 import AdminProof from './landing/AdminProof';
+import AiSection from './landing/AiSection';
 import Packages from './landing/Packages';
 import PlannerCta from './landing/PlannerCta';
 import FAQ from './landing/FAQ';
@@ -27,6 +28,7 @@ const LandingPage = () => {
       <IndividualPersonalization />
       <Features />
       <AdminProof />
+      <AiSection />
       <Packages />
       <PlannerCta />
       <FAQ />

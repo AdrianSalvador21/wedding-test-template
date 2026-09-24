@@ -290,3 +290,62 @@ export function AdminCard({
 }) {
   return <div className={`bg-white border border-[rgba(0,0,0,0.08)] rounded-xl ${className}`}>{children}</div>;
 }
+
+// Tokens violeta reservados a las acciones de IA del editor (spec 07) — no se
+// mezclan con la paleta "Dashboard Neutral" de `A` para que se distingan
+// claramente como acciones generativas, no como controles del panel.
+export const aiTone = {
+  accent: '#6D28D9',
+  accentHover: '#5B21B6',
+  soft: '#F5F3FF',
+};
+
+export function AiButton({
+  children,
+  onClick,
+  type = 'button',
+  variant = 'solid',
+  disabled,
+  className = '',
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  type?: 'button' | 'submit';
+  variant?: 'solid' | 'ghost';
+  disabled?: boolean;
+  className?: string;
+}) {
+  const variantClass = {
+    solid: 'bg-[#6D28D9] text-white border border-transparent hover:bg-[#5B21B6]',
+    ghost: 'bg-white text-[#6D28D9] border border-[rgba(109,40,217,0.3)] hover:bg-[#F5F3FF]',
+  }[variant];
+
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`inline-flex items-center justify-center gap-1.5 font-bold text-[13px] rounded-lg px-3.5 py-2 min-h-[36px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variantClass} ${className}`}
+      style={manrope}
+    >
+      {children}
+    </button>
+  );
+}
+
+export function AiBadge({
+  children = 'Generado con IA',
+  className = '',
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full ${className}`}
+      style={{ color: '#6D28D9', background: '#F5F3FF' }}
+    >
+      {children}
+    </span>
+  );
+}
