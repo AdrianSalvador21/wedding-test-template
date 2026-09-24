@@ -10,6 +10,8 @@ import { guestService } from '../../../../../services/guestService';
 import { FirebaseGuest, WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
 import { resolveHasEnglish } from '../../../../../lib/wedding-language';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
+import AuthGuard from '../../../../../components/admin/AuthGuard';
+import { createInitialWeddingData, isValidWeddingId } from '../../../../../lib/wedding-defaults';
 import { AdminTopBar, AdminPageNav, AdminStatCard, AdminStatusPill, AdminButton, AdminCard, manrope, displayFont } from '../../../../../components/admin/ui';
 
 interface GuestStats {
@@ -30,7 +32,7 @@ interface GuestFormData {
   coupleMessage: string;
 }
 
-const AdminGuestsPage = () => {
+const AdminGuestsContent = () => {
   const params = useParams();
   const weddingId = params.weddingId as string;
   const locale = (params.locale as string) || 'es';
@@ -176,53 +178,6 @@ const AdminGuestsPage = () => {
     }
     
     return migrated as WeddingData;
-  };
-
-  // Crear datos iniciales para nueva boda
-  const createInitialWeddingData = (weddingId: string): WeddingData => ({
-    id: weddingId,
-    couple: {
-      bride: { name: '', fullName: '', phone: '', email: '', instagram: '', facebook: '' },
-      groom: { name: '', fullName: '', phone: '', email: '', instagram: '', facebook: '' },
-      coupleEmail: '', hashtag: '', story: { es: '', en: '' }, quote: { es: '', en: '' }
-    },
-    event: {
-      weddingId: weddingId, date: '', time: '16:00', rsvpDeadline: '',
-      ceremony: { time: '16:00', duration: 45 }, reception: { time: '19:30', duration: 300 },
-      ceremonyVenue: { name: { es: '', en: '' }, address: '', coordinates: { lat: 0, lng: 0 }, description: '', mapsUrl: '' },
-      receptionVenue: { name: { es: '', en: '' }, address: '', coordinates: { lat: 0, lng: 0 }, description: '', mapsUrl: '', features: [] },
-      dressCode: { style: { es: '', en: '' }, description: { es: '', en: '' }, recommendations: { ladies: [], gentlemen: [] }, colors: { recommended: [], avoid: [] } }
-    },
-    timeline: [], accommodation: { hotels: [], recommendedPlaces: [] },
-    giftRegistry: { enabled: false, message: '', registries: [] },
-    adultOnlyEvent: { enabled: false, message: '' },
-    rsvp: { enabled: true, deadline: '', maxGuests: 2, dietaryOptions: true, customQuestions: [] },
-    selectedGuestTickets: true, // Mantener funcionalidad de selección de boletos
-    hasDiet: false, // Campo de restricción dietética
-    hasInstagram: true, // Mostrar iconos de Instagram por defecto
-    hasFacebook: true, // Mostrar iconos de Facebook por defecto
-    showGuestsInput: true, // Mostrar campo de número de invitados por defecto
-    showRecommendedPlaces: true, // Mostrar lugares recomendados por defecto
-    showConfirmCta: true, // Mostrar botón de confirmación en Hero por defecto
-    gallery: [], heroImage: { url: '', alt: '' }, specialMoments: [], relationshipStats: { yearsTogther: 0, adventures: 0, memories: 0, dreams: 0 },
-    transport: { parking: false, valetParking: false, shuttleService: { available: false, pickupPoints: [], schedule: [] }, publicTransport: '', rideshare: false },
-    music: { enabled: false, spotifyTrackId: '', spotifyPlaylistId: '', fileName: '', title: '', artist: '', autoplay: false, volume: 0.5, showControls: true, startTime: 0 },
-    recommendedPlaces: { enabled: false, title: '', subtitle: '', places: [] },
-    theme: { id: 'classic' }, status: 'draft', languages: ['es', 'en'], defaultLanguage: 'es', isActive: false,
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-  });
-
-  // Validar si el ID de la boda es válido
-  const isValidWeddingId = (id: string): boolean => {
-    // Validaciones básicas del ID
-    if (!id || id.length < 3 || id.length > 50) return false;
-    if (!/^[a-zA-Z0-9\-_]+$/.test(id)) return false;
-    
-    // IDs reservados o no válidos
-    const reservedIds = ['admin', 'api', 'auth', 'login', 'register', 'demo', 'test', 'null', 'undefined'];
-    if (reservedIds.includes(id.toLowerCase())) return false;
-    
-    return true;
   };
 
   // Cargar invitados
@@ -1068,6 +1023,15 @@ const AdminGuestsPage = () => {
         </div>
       )}
     </div>
+  );
+};
+
+const AdminGuestsPage = () => {
+  const params = useParams();
+  return (
+    <AuthGuard weddingId={params.weddingId as string}>
+      <AdminGuestsContent />
+    </AuthGuard>
   );
 };
 
