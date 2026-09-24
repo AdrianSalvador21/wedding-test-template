@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminAuth } from './firebase-admin';
+import { AdminConfigError, getAdminAuth } from './firebase-admin';
 
 export interface VerifiedUser {
   uid: string;
@@ -34,7 +34,8 @@ export async function authenticate(request: NextRequest): Promise<AuthResult> {
     adminAuth = getAdminAuth();
   } catch (error) {
     console.error('Configuración de firebase-admin:', error instanceof Error ? error.message : error);
-    return { ok: false, response: NextResponse.json({ error: 'server_misconfigured' }, { status: 500 }) };
+    const reason = error instanceof AdminConfigError ? error.reason : 'unknown';
+    return { ok: false, response: NextResponse.json({ error: 'server_misconfigured', reason }, { status: 500 }) };
   }
 
   try {

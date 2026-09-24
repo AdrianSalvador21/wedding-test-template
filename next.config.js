@@ -21,7 +21,8 @@ const nextConfig = {
     optimizePackageImports: ['framer-motion', 'lucide-react'],
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    // Se conservan los console.error para poder diagnosticar fallas de servidor en producción.
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
   },
   async headers() {
     return [
