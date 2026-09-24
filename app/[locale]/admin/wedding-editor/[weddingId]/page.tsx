@@ -1,22 +1,40 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
+import { saveWeddingDoc } from '../../../../../lib/weddingSave';
 import { db } from '../../../../../lib/firebase';
 import { WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
-import { AdminTopBar, AdminPageNav, AdminSidebarNavItem, AdminSectionChip, AdminButton, manrope, displayFont } from '../../../../../components/admin/ui';
+import { AdminTopBar, AdminPageNav, AdminSidebarNavItem, AdminSectionChip, AdminButton, AiButton, AiBadge, manrope, displayFont } from '../../../../../components/admin/ui';
+import { getEnglishProgress, resolveHasEnglish, setByPath } from '../../../../../lib/wedding-language';
+import { flattenUsage, limitForKey } from '../../../../../lib/aiLimits';
 import {
-  Save, 
-  User, 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  Heart, 
-  Gift, 
+  EditorAiProvider,
+  EnField,
+  EnglishPanel,
+  AiStoryModal,
+  requestDraft,
+  postAi,
+  usageHint,
+  useAiPlaceSuggestions,
+  useEditorAi,
+  AI_TEXT,
+} from './ai-parts';
+import {
+  Save,
+  User,
+  Calendar,
+  Clock,
+  MapPin,
+  Heart,
+  Gift,
   Settings,
-  Loader2
+  Loader2,
+  Sparkles,
+  Globe,
+  Info
 } from 'lucide-react';
 
 // Función para migrar/completar datos bilingües faltantes
@@ -285,6 +303,30 @@ export default function WeddingEditorPage() {
   const [error, setError] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [aiUsage, setAiUsage] = useState<Record<string, number>>({});
+  const [englishPanelOpen, setEnglishPanelOpen] = useState(false);
+  const hasEnglish = resolveHasEnglish(weddingData);
+
+  // Usos de IA restantes por contador (los consumidos vienen del documento y de cada respuesta del servidor).
+  const remaining = (key: string) => Math.max(0, limitForKey(key) - (aiUsage[key] ?? 0));
+  const setUsage = (key: string, used: number) => setAiUsage((prev) => ({ ...prev, [key]: used }));
+  const translateLimit = remaining('translate') <= 0;
+
+  // Cambios sin guardar: compara contra lo último cargado o guardado. Los usos de IA
+  // consumen intentos, así que perder un borrador sin guardar cuesta algo real.
+  const savedSnapshot = useRef<string | null>(null);
+  const serializeForDirty = (d: WeddingData | null) => (d ? JSON.stringify({ ...d, aiUsage: undefined, updatedAt: undefined }) : '');
+  const isDirty = !!weddingData && savedSnapshot.current !== null && serializeForDirty(weddingData) !== savedSnapshot.current;
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [isDirty]);
 
   // Validar si el ID de la boda es válido
   const isValidWeddingId = (id: string): boolean => {
@@ -315,6 +357,7 @@ export default function WeddingEditorPage() {
       
       if (docSnap.exists()) {
         const data = docSnap.data() as WeddingData;
+        setAiUsage(flattenUsage(data.aiUsage));
         
         // Verificar si la boda tiene información básica
         const hasBasicInfo = data.couple?.bride?.name || data.couple?.groom?.name || data.event?.date;
@@ -334,14 +377,16 @@ export default function WeddingEditorPage() {
           });
           
           setWeddingData(migratedData);
+          savedSnapshot.current = serializeForDirty(migratedData);
           
           // Guardar datos migrados en Firebase
-          await setDoc(docRef, migratedData);
+          await saveWeddingDoc(docRef, migratedData);
         } else {
           // Existe pero sin información, crear estructura base
           const initialData = createInitialWeddingData(weddingId);
           setWeddingData(initialData);
-          await setDoc(docRef, initialData);
+          savedSnapshot.current = serializeForDirty(initialData);
+          await saveWeddingDoc(docRef, initialData);
         }
       } else {
         // No existe el documento en Firebase → 404
@@ -385,8 +430,9 @@ export default function WeddingEditorPage() {
         updatedAt: new Date().toISOString()
       };
       
-      await setDoc(docRef, updatedData);
+      await saveWeddingDoc(docRef, updatedData);
       setWeddingData(updatedData);
+      savedSnapshot.current = serializeForDirty(updatedData);
       setSaveMessage('¡Cambios guardados exitosamente!');
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (err) {
@@ -401,19 +447,42 @@ export default function WeddingEditorPage() {
   const updateWeddingData = (path: string, value: string | number | boolean | object | null) => {
     if (!weddingData) return;
     
-    const keys = path.split('.');
-    const newData = JSON.parse(JSON.stringify(weddingData));
-    
-    let current = newData;
-    for (let i = 0; i < keys.length - 1; i++) {
-      if (!current[keys[i]]) {
-        current[keys[i]] = {};
+    // Actualización funcional: varias llamadas seguidas (ej. story.es y story.en)
+    // parten del estado más reciente en vez de pisarse entre sí.
+    setWeddingData((prev) => {
+      if (!prev) return prev;
+      const newData = JSON.parse(JSON.stringify(prev));
+      setByPath(newData, path, value);
+      return newData;
+    });
+  };
+
+  const setI18nMeta = (key: string, source: string | null) => {
+    setWeddingData((prev) => {
+      if (!prev) return prev;
+      const meta = { ...(prev.i18nMeta || {}) };
+      if (source === null) {
+        if (!(key in meta)) return prev;
+        delete meta[key];
+      } else {
+        meta[key] = source;
       }
-      current = current[keys[i]];
-    }
-    
-    current[keys[keys.length - 1]] = value;
-    setWeddingData(newData);
+      return { ...prev, i18nMeta: meta };
+    });
+  };
+
+  const applyEnglish = (rows: { field: { id: string; path: string; es: string }; en: string }[]) => {
+    setWeddingData((prev) => {
+      if (!prev) return prev;
+      const newData = JSON.parse(JSON.stringify(prev));
+      const meta = { ...(newData.i18nMeta || {}) };
+      rows.forEach((row) => {
+        setByPath(newData, row.field.path, row.en);
+        meta[row.field.id] = row.field.es;
+      });
+      newData.i18nMeta = meta;
+      return newData;
+    });
   };
 
   // Verificar si una sección está completa
@@ -446,8 +515,8 @@ export default function WeddingEditorPage() {
           weddingData.accommodation?.hotels && 
           weddingData.accommodation.hotels.length > 0 &&
           weddingData.accommodation.hotels.every((hotel: {name?: string; description?: string | { es: string; en: string }; mapsUrl?: string}) => {
-            const hasDescription = typeof hotel.description === 'object' 
-              ? (hotel.description.es && hotel.description.en) 
+            const hasDescription = typeof hotel.description === 'object'
+              ? (hotel.description.es && (!hasEnglish || hotel.description.en))
               : hotel.description;
             return hotel.name && hasDescription && hotel.mapsUrl;
           })
@@ -457,8 +526,8 @@ export default function WeddingEditorPage() {
           weddingData.accommodation?.recommendedPlaces && 
           weddingData.accommodation.recommendedPlaces.length > 0 &&
           weddingData.accommodation.recommendedPlaces.every((place: {name?: string; description?: string | { es: string; en: string }; mapsUrl?: string}) => {
-            const hasDescription = typeof place.description === 'object' 
-              ? (place.description.es && place.description.en) 
+            const hasDescription = typeof place.description === 'object'
+              ? (place.description.es && (!hasEnglish || place.description.en))
               : place.description;
             return place.name && hasDescription && place.mapsUrl;
           })
@@ -493,7 +562,7 @@ export default function WeddingEditorPage() {
         const message = weddingData.adultOnlyEvent.message;
         if (typeof message === 'object') {
           // Si es bilingüe, ambos idiomas deben estar completos
-          return !!(message.es && message.es.trim() && message.en && message.en.trim());
+          return !!(message.es && message.es.trim() && (!hasEnglish || (message.en && message.en.trim())));
         } else {
           // Si es string simple, debe estar completo
           return !!(message && message.trim());
@@ -513,7 +582,7 @@ export default function WeddingEditorPage() {
     { id: 'recommendedPlaces', label: 'Lugares Recomendados', icon: MapPin },
     { id: 'gifts', label: 'Regalos', icon: Gift },
     { id: 'social', label: 'Social', icon: User },
-    { id: 'settings', label: 'Configuración', icon: Settings }
+    { id: 'settings', label: 'Solo adultos', icon: Settings }
   ];
 
   if (loading) {
@@ -543,9 +612,33 @@ export default function WeddingEditorPage() {
   }
 
   const completedCount = tabs.filter((tab) => isSectionComplete(tab.id)).length;
+  const englishProgress = getEnglishProgress(weddingData);
+  const ceremonyInfo = {
+    name: weddingData?.event?.ceremonyVenue?.name?.es || '',
+    address: weddingData?.event?.ceremonyVenue?.address || '',
+  };
+  const receptionInfo = {
+    name: weddingData?.event?.receptionVenue?.name?.es || '',
+    address: weddingData?.event?.receptionVenue?.address || '',
+  };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]" style={manrope}>
+    <EditorAiProvider
+      value={{
+        weddingId,
+        hasEnglish,
+        meta: weddingData?.i18nMeta || {},
+        setMeta: setI18nMeta,
+        translateLimit,
+        setTranslateLimit: (v) => {
+          if (v) setUsage('translate', limitForKey('translate'));
+        },
+        setUsage,
+        remaining,
+        goToTab: setActiveTab,
+      }}
+    >
+    <div className="admin-form min-h-screen bg-[#FAFAFA]" style={manrope}>
       {/* Navbar Invyta — mismo padding horizontal que AdminTopBar para que el logo quede alineado con el título de abajo */}
       <div className="bg-white border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 py-3.5 flex items-center justify-between gap-4">
         <a
@@ -575,8 +668,28 @@ export default function WeddingEditorPage() {
         }
         actions={
           <>
-            {saveMessage && (
+            {isDirty && !saving && (
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-[#71717A]">
+                <span className="h-2 w-2 rounded-full bg-[#6D28D9]" />
+                Cambios sin guardar
+              </span>
+            )}
+            {saveMessage && !isDirty && (
               <span className="hidden sm:inline text-sm font-semibold text-[#15803D]">{saveMessage}</span>
+            )}
+            {hasEnglish && (
+              <button
+                type="button"
+                onClick={() => setEnglishPanelOpen(true)}
+                aria-pressed={englishPanelOpen}
+                className="inline-flex items-center gap-2 h-11 pl-4 pr-2 rounded-full bg-[#F5F3FF] text-[#6D28D9] border border-[rgba(109,40,217,0.25)] hover:bg-[#EDE9FE] text-[13px] font-bold transition-colors"
+              >
+                <Globe className="h-[15px] w-[15px]" />
+                Inglés
+                <span className="inline-flex items-center h-7 px-2.5 rounded-full bg-white text-[12px]">
+                  {englishProgress.done}/{englishProgress.total}
+                </span>
+              </button>
             )}
             <AdminButton onClick={handleSave} disabled={saving}>
               {saving ? (
@@ -637,6 +750,7 @@ export default function WeddingEditorPage() {
               <CoupleSection
                 data={(weddingData?.couple || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`couple.${field}`, value)}
+                onRootChange={(field, value) => updateWeddingData(field, value)}
               />
             )}
             {activeTab === 'event' && (
@@ -656,18 +770,25 @@ export default function WeddingEditorPage() {
               <TimelineSection
                 data={(weddingData?.timeline || []) as unknown as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(field, value)}
+                ceremonyTime={weddingData?.event?.time || ''}
+                ceremony={ceremonyInfo}
+                reception={receptionInfo}
               />
             )}
             {activeTab === 'accommodation' && (
               <AccommodationSection
                 data={(weddingData?.accommodation || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`accommodation.${field}`, value)}
+                ceremony={ceremonyInfo}
+                reception={receptionInfo}
               />
             )}
             {activeTab === 'recommendedPlaces' && (
               <RecommendedPlacesSection
                 data={(weddingData?.accommodation || {}) as Record<string, unknown>}
                 onChange={(field, value) => updateWeddingData(`accommodation.${field}`, value)}
+                ceremony={ceremonyInfo}
+                reception={receptionInfo}
               />
             )}
             {activeTab === 'gifts' && (
@@ -697,6 +818,8 @@ export default function WeddingEditorPage() {
         className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[rgba(0,0,0,0.08)] px-4 pt-3 z-40"
         style={{ paddingBottom: 'calc(12px + env(safe-area-inset-bottom))' }}
       >
+        {isDirty && !saving && <p className="text-center text-xs font-semibold text-[#71717A] mb-2">Cambios sin guardar</p>}
+        {isDirty && !saving && <p className="text-center text-xs font-semibold text-[#71717A] mb-2">Cambios sin guardar</p>}
         <AdminButton onClick={handleSave} disabled={saving} className="w-full">
           {saving ? (
             <>
@@ -711,7 +834,17 @@ export default function WeddingEditorPage() {
           )}
         </AdminButton>
       </div>
+
+      <EnglishPanel
+        open={englishPanelOpen}
+        onClose={() => setEnglishPanelOpen(false)}
+        done={englishProgress.done}
+        total={englishProgress.total}
+        pending={englishProgress.pending}
+        onApply={applyEnglish}
+      />
     </div>
+    </EditorAiProvider>
   );
 }
 
@@ -735,13 +868,27 @@ interface SectionProps {
   onChange: (field: string, value: string | number | boolean | object | null) => void;
 }
 
+interface VenueInfo {
+  name: string;
+  address: string;
+}
+
 interface VenuesSectionProps {
   ceremonyVenue: Record<string, unknown>;
   receptionVenue: Record<string, unknown>;
   onChange: (field: string, value: string | number | boolean | object | null) => void;
 }
 
-function CoupleSection({ data, onChange }: SectionProps) {
+function CoupleSection({
+  data,
+  onChange,
+  onRootChange,
+}: SectionProps & { onRootChange: SectionProps['onChange'] }) {
+  const ai = useEditorAi();
+  const [showStoryModal, setShowStoryModal] = useState(false);
+  const storyLimitReached = ai.remaining('storyGenerate') <= 0;
+  const [storyGeneratedByAi, setStoryGeneratedByAi] = useState(false);
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <h2 className="text-[26px] text-[#0A0A0A] mb-6" style={displayFont}>Información de la Pareja</h2>
@@ -808,9 +955,45 @@ function CoupleSection({ data, onChange }: SectionProps) {
         </div>
       </div>
 
+      {/* ¿Invitaciones en inglés? */}
+      <div className="border border-[rgba(0,0,0,0.1)] bg-white rounded-xl px-4 sm:px-5 py-4 space-y-3">
+        <div className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="has-english"
+            checked={ai.hasEnglish}
+            onChange={(e) => onRootChange('hasEnglish', e.target.checked)}
+            className="h-[18px] w-[18px] mt-0.5 accent-[#111111] flex-shrink-0"
+          />
+          <label htmlFor="has-english" className="flex flex-col gap-1 cursor-pointer">
+            <span className="text-[15px] font-bold text-[#0A0A0A]">¿Tendrás invitaciones en inglés?</span>
+            <span className="text-[13px] leading-relaxed text-[#71717A]">
+              Por defecto tus invitados ven la invitación solo en español. Actívalo si alguno la necesitará en inglés.
+            </span>
+          </label>
+        </div>
+        {ai.hasEnglish && (
+          <div className="flex items-start gap-2.5 bg-[#F5F3FF] border border-[rgba(109,40,217,0.25)] rounded-[10px] px-3.5 py-3 text-[13px] leading-relaxed text-[#4C1D95]">
+            <Globe className="h-4 w-4 flex-shrink-0 mt-0.5 text-[#6D28D9]" />
+            <span>
+              Ahora verás campos en inglés en cada sección. Tradúcelos con IA campo por campo, o todos a la vez desde el botón <strong>Inglés</strong> de la barra superior.
+            </span>
+          </div>
+        )}
+      </div>
+
       {/* Historia de amor */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Historia de Amor</h3>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[rgba(0,0,0,0.08)] pb-2">
+          <div className="flex items-center gap-2">
+            <h3 className="text-[15px] font-bold text-[#0A0A0A]">Historia de Amor</h3>
+            {storyGeneratedByAi && <AiBadge>Generado con IA</AiBadge>}
+          </div>
+          <AiButton onClick={() => setShowStoryModal(true)} disabled={storyLimitReached}>
+            <Sparkles className="h-3.5 w-3.5" />
+            {storyLimitReached ? 'Ya usaste tus 5 generaciones para esto' : `Redactor de textos con IA${usageHint(ai, 'storyGenerate')}`}
+          </AiButton>
+        </div>
         <div className="space-y-4 sm:space-y-6">
           <div>
             <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
@@ -819,25 +1002,39 @@ function CoupleSection({ data, onChange }: SectionProps) {
             <textarea
               rows={4}
               value={getSafeValue(data, 'story.es')}
-              onChange={(e) => onChange('story.es', e.target.value)}
+              onChange={(e) => { onChange('story.es', e.target.value); setStoryGeneratedByAi(false); }}
               className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
               placeholder="Hace más de 6 años, el destino nos unió en una cafetería de la ciudad..."
             />
           </div>
-          <div>
-            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-              Historia en Inglés
-            </label>
-            <textarea
-              rows={4}
-              value={getSafeValue(data, 'story.en')}
-              onChange={(e) => onChange('story.en', e.target.value)}
-              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
-              placeholder="More than 6 years ago, destiny brought us together in a city café..."
-            />
-          </div>
+          <EnField
+            label="Historia en Inglés"
+            rows={4}
+            value={getSafeValue(data, 'story.en')}
+            onChange={(v) => onChange('story.en', v)}
+            source={getSafeValue(data, 'story.es')}
+            metaKey="couple|story"
+            placeholder="More than 6 years ago, destiny brought us together in a city café..."
+          />
         </div>
       </div>
+
+      {showStoryModal && (
+        <AiStoryModal
+          weddingId={ai.weddingId}
+          withEnglish={ai.hasEnglish}
+          onClose={() => setShowStoryModal(false)}
+          onUseText={(es, en) => {
+            onChange('story.es', es);
+            if (en !== null) {
+              onChange('story.en', en);
+              ai.setMeta('couple|story', es);
+            }
+            setStoryGeneratedByAi(true);
+            setShowStoryModal(false);
+          }}
+        />
+      )}
 
       {/* Frase especial */}
       <div className="space-y-4 sm:space-y-6">
@@ -855,18 +1052,14 @@ function CoupleSection({ data, onChange }: SectionProps) {
               placeholder="El amor no es solo mirarse el uno al otro, sino mirar juntos en la misma dirección."
             />
           </div>
-          <div>
-            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-              Frase en Inglés
-            </label>
-            <input
-              type="text"
-              value={getSafeValue(data, 'quote.en')}
-              onChange={(e) => onChange('quote.en', e.target.value)}
-              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
-              placeholder="Love is not just looking at each other, but looking together in the same direction."
-            />
-          </div>
+          <EnField
+            label="Frase en Inglés"
+            value={getSafeValue(data, 'quote.en')}
+            onChange={(v) => onChange('quote.en', v)}
+            source={getSafeValue(data, 'quote.es')}
+            metaKey="couple|quote"
+            placeholder="Love is not just looking at each other, but looking together in the same direction."
+          />
         </div>
       </div>
     </div>
@@ -874,10 +1067,39 @@ function CoupleSection({ data, onChange }: SectionProps) {
 }
 
 function EventSection({ data, onChange }: SectionProps) {
+  const ai = useEditorAi();
+  const [dresscodeLoading, setDresscodeLoading] = useState(false);
+  const [dresscodeError, setDresscodeError] = useState<string | null>(null);
+  const dresscodeLimitReached = ai.remaining('dresscodeGenerate') <= 0;
+  const [dresscodeGeneratedByAi, setDresscodeGeneratedByAi] = useState(false);
+
+  const handleGenerateDresscode = async () => {
+    setDresscodeLoading(true);
+    setDresscodeError(null);
+    const result = await requestDraft(ai, '/api/ai/dresscode', {
+      weddingId: ai.weddingId,
+      style: getSafeValue(data, 'dressCode.style.es'),
+      withEnglish: ai.hasEnglish,
+    });
+    if (result.ok) {
+      onChange('dressCode.description.es', result.es);
+      if (ai.hasEnglish && result.en) {
+        onChange('dressCode.description.en', result.en);
+        ai.setMeta('dressCode|description', result.es);
+      }
+      setDresscodeGeneratedByAi(true);
+    } else if (result.limit) {
+      setDresscodeError(AI_TEXT.LIMIT_TEXT);
+    } else {
+      setDresscodeError(AI_TEXT.ERROR_TEXT);
+    }
+    setDresscodeLoading(false);
+  };
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <h2 className="text-[26px] text-[#0A0A0A] mb-6" style={displayFont}>Información del Evento</h2>
-      
+
       {/* Fecha y hora */}
       <div className="space-y-4 sm:space-y-6">
         <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Fecha y Hora</h3>
@@ -923,45 +1145,55 @@ function EventSection({ data, onChange }: SectionProps) {
               placeholder="Formal / Cocktail"
             />
           </div>
-          <div>
-            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-              Estilo en Inglés
-            </label>
-            <input
-              type="text"
-              value={getSafeValue(data, 'dressCode.style.en')}
-              onChange={(e) => onChange('dressCode.style.en', e.target.value)}
-              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
-              placeholder="Formal / Cocktail"
-            />
-          </div>
+          <EnField
+            label="Estilo en Inglés"
+            value={getSafeValue(data, 'dressCode.style.en')}
+            onChange={(v) => onChange('dressCode.style.en', v)}
+            source={getSafeValue(data, 'dressCode.style.es')}
+            metaKey="dressCode|style"
+            placeholder="Formal / Cocktail"
+          />
         </div>
 
         <div className="space-y-4 sm:space-y-6">
           <div>
-            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-              Descripción en Español
-            </label>
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2">
+                <label className="block text-[13px] font-semibold text-[#27272A]">
+                  Descripción en Español
+                </label>
+                {dresscodeGeneratedByAi && <AiBadge>Generado con IA</AiBadge>}
+              </div>
+              <AiButton onClick={handleGenerateDresscode} disabled={dresscodeLoading || dresscodeLimitReached}>
+                <Sparkles className="h-3.5 w-3.5" />
+                {dresscodeLoading
+                  ? 'Redactando...'
+                  : dresscodeLimitReached
+                    ? 'Ya usaste tus 5 generaciones para esto'
+                    : `Redactar con IA${usageHint(ai, 'dresscodeGenerate')}`}
+              </AiButton>
+            </div>
             <textarea
               rows={3}
               value={getSafeValue(data, 'dressCode.description.es')}
-              onChange={(e) => onChange('dressCode.description.es', e.target.value)}
-              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
+              onChange={(e) => { onChange('dressCode.description.es', e.target.value); setDresscodeGeneratedByAi(false); }}
+              readOnly={dresscodeLoading}
+              className={`w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors ${dresscodeLoading ? 'ai-field-loading' : ''}`}
               placeholder="Queremos que te sientas elegante y cómodo en nuestra celebración"
             />
+            {dresscodeError && (
+              <p className="mt-1.5 text-[12px] font-semibold text-[#B91C1C]">{dresscodeError}</p>
+            )}
           </div>
-          <div>
-            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-              Descripción en Inglés
-            </label>
-            <textarea
-              rows={3}
-              value={getSafeValue(data, 'dressCode.description.en')}
-              onChange={(e) => onChange('dressCode.description.en', e.target.value)}
-              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
-              placeholder="We want you to feel elegant and comfortable at our celebration"
-            />
-          </div>
+          <EnField
+            label="Descripción en Inglés"
+            rows={3}
+            value={getSafeValue(data, 'dressCode.description.en')}
+            onChange={(v) => onChange('dressCode.description.en', v)}
+            source={getSafeValue(data, 'dressCode.description.es')}
+            metaKey="dressCode|description"
+            placeholder="We want you to feel elegant and comfortable at our celebration"
+          />
         </div>
       </div>
     </div>
@@ -989,18 +1221,14 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
               placeholder="Iglesia del Sagrado Corazón"
             />
           </div>
-          <div>
-            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-              Nombre en Inglés
-            </label>
-            <input
-              type="text"
-              value={getSafeValue(ceremonyVenue, 'name.en')}
-              onChange={(e) => onChange('ceremonyVenue.name.en', e.target.value)}
-              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
-              placeholder="Sacred Heart Church"
-            />
-          </div>
+          <EnField
+            label="Nombre en Inglés"
+            value={getSafeValue(ceremonyVenue, 'name.en')}
+            onChange={(v) => onChange('ceremonyVenue.name.en', v)}
+            source={getSafeValue(ceremonyVenue, 'name.es')}
+            metaKey="ceremonyVenue|name"
+            placeholder="Sacred Heart Church"
+          />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -1047,18 +1275,14 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
               placeholder="Jardines del Edén"
             />
           </div>
-          <div>
-            <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-              Nombre en Inglés
-            </label>
-            <input
-              type="text"
-              value={getSafeValue(receptionVenue, 'name.en')}
-              onChange={(e) => onChange('receptionVenue.name.en', e.target.value)}
-              className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
-              placeholder="Eden Gardens"
-            />
-          </div>
+          <EnField
+            label="Nombre en Inglés"
+            value={getSafeValue(receptionVenue, 'name.en')}
+            onChange={(v) => onChange('receptionVenue.name.en', v)}
+            source={getSafeValue(receptionVenue, 'name.es')}
+            metaKey="receptionVenue|name"
+            placeholder="Eden Gardens"
+          />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -1092,9 +1316,80 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
   );
 }
 
-function TimelineSection({ data, onChange }: SectionProps) {
+interface TimelineSuggestion {
+  time: string;
+  title: { es: string; en: string };
+  description: { es: string; en: string };
+  icon: string;
+}
+
+function TimelineSection({
+  data,
+  onChange,
+  ceremonyTime,
+  ceremony,
+  reception,
+}: SectionProps & { ceremonyTime: string; ceremony: VenueInfo; reception: VenueInfo }) {
+  const ai = useEditorAi();
   // Asegurar que data sea siempre un array
   const timelineData = Array.isArray(data) ? data : [];
+
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [suggestError, setSuggestError] = useState<string | null>(null);
+  const suggestLimitReached = ai.remaining('timelineSuggest') <= 0;
+  const [suggestions, setSuggestions] = useState<TimelineSuggestion[]>([]);
+
+  const handleSuggest = async () => {
+    setSuggestLoading(true);
+    setSuggestError(null);
+    try {
+      const { status, data: json } = await postAi(ai, '/api/ai/timeline-suggest', {
+        weddingId: ai.weddingId,
+        ceremonyTime,
+        ceremony,
+        reception,
+        withEnglish: ai.hasEnglish,
+        existingEvents: timelineData.map((e: { time?: string }) => ({ time: e.time || '', title: getSafeValue(e as Record<string, unknown>, 'title.es') })),
+      });
+      if (status === 429) {
+        setSuggestError(AI_TEXT.LIMIT_TEXT);
+        return;
+      }
+      if (status !== 200) throw new Error('request failed');
+      setSuggestions(Array.isArray(json.events) ? (json.events as TimelineSuggestion[]) : []);
+    } catch {
+      setSuggestError(AI_TEXT.ERROR_TEXT);
+    } finally {
+      setSuggestLoading(false);
+    }
+  };
+
+  const toEvent = (event: TimelineSuggestion, index: number) => ({
+    id: `event-${Date.now()}-${index}`,
+    time: event.time,
+    title: event.title,
+    description: event.description,
+    icon: event.icon,
+  });
+
+  // Los eventos sugeridos se insertan en su lugar por hora, no al final.
+  const byTime = (list: { time?: string }[]) => [...list].sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')));
+
+  const acceptSuggestion = (index: number) => {
+    onChange('timeline', byTime([...timelineData, toEvent(suggestions[index], index)]));
+    setSuggestions((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const discardSuggestion = (index: number) => {
+    setSuggestions((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const acceptAllSuggestions = () => {
+    onChange('timeline', byTime([...timelineData, ...suggestions.map(toEvent)]));
+    setSuggestions([]);
+  };
+
+  const discardAllSuggestions = () => setSuggestions([]);
 
   const addTimelineEvent = () => {
     const newEvent = {
@@ -1138,7 +1433,92 @@ function TimelineSection({ data, onChange }: SectionProps) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-[26px] text-[#0A0A0A]" style={displayFont}>Cronograma del Evento</h2>
+        <AiButton onClick={handleSuggest} disabled={suggestLoading || suggestLimitReached}>
+          <Sparkles className="h-3.5 w-3.5" />
+          {suggestLoading
+            ? 'Generando...'
+            : suggestLimitReached
+              ? 'Ya usaste tus 5 generaciones para esto'
+              : `Sugerir itinerario con IA${usageHint(ai, 'timelineSuggest')}`}
+        </AiButton>
       </div>
+
+      {suggestError && <p className="text-[13px] font-semibold text-[#B91C1C]">{suggestError}</p>}
+
+      {suggestLoading && <div className="h-28 rounded-xl ai-field-loading" />}
+
+      {(suggestions.length > 0 || suggestLoading) && (
+        <div className="flex items-start gap-2.5 bg-[#F5F3FF] border border-[rgba(109,40,217,0.25)] rounded-[10px] px-3.5 py-3 text-[13px] leading-relaxed text-[#4C1D95]">
+          <Info className="h-4 w-4 flex-shrink-0 mt-0.5 text-[#6D28D9]" />
+          <span className="flex-1">
+            <strong>Basado en tu información:</strong> hora del evento {ceremonyTime || 'sin definir'}
+            {(ceremony.name || ceremony.address) && <> · ceremonia en {ceremony.name || ceremony.address}</>}
+            {(reception.name || reception.address) && <> · recepción en {[reception.name, reception.address].filter(Boolean).join(', ')}</>}.
+          </span>
+          <button type="button" onClick={() => ai.goToTab('event')} className="font-bold text-[#6D28D9] hover:text-[#5B21B6] whitespace-nowrap">
+            Editar en Evento
+          </button>
+        </div>
+      )}
+
+      {suggestions.length > 0 && (
+        <div className="bg-[#F5F3FF] border border-[rgba(109,40,217,0.2)] rounded-xl p-3 sm:p-4 lg:p-6 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-base font-bold text-[#6D28D9]">Itinerario sugerido</h3>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={acceptAllSuggestions}
+                className="text-[12px] font-bold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3 py-1.5 rounded-full transition-colors"
+              >
+                Agregar todas
+              </button>
+              <button
+                type="button"
+                onClick={discardAllSuggestions}
+                className="text-[12px] font-bold text-[#6D28D9] border border-[rgba(109,40,217,0.3)] hover:bg-white px-3 py-1.5 rounded-full transition-colors"
+              >
+                Descartar todas
+              </button>
+            </div>
+          </div>
+          <div className="space-y-3">
+            {suggestions.map((event, index) => (
+              <div
+                key={`${event.time}-${index}`}
+                className="bg-white rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-[rgba(109,40,217,0.15)]"
+              >
+                <div>
+                  <div className="text-[12px] font-bold text-[#6D28D9]">{event.time} · {event.icon}</div>
+                  <div className="text-sm font-bold text-[#0A0A0A]">{event.title.es}</div>
+                  <div className="text-[13px] text-[#3F3F46]">{event.description.es}</div>
+                  {event.title.en && (
+                    <div className="text-[12px] text-[#71717A]">
+                      <span className="font-bold">EN</span> {event.title.en} · {event.description.en}
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-2 self-start sm:self-center">
+                  <button
+                    type="button"
+                    onClick={() => acceptSuggestion(index)}
+                    className="text-[12px] font-bold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3 py-1.5 rounded-full transition-colors"
+                  >
+                    Agregar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => discardSuggestion(index)}
+                    className="text-[12px] font-bold text-[#71717A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] px-3 py-1.5 rounded-full transition-colors"
+                  >
+                    Descartar
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         {timelineData.map((event: {id: string; title?: {es: string; en: string}; time?: string; description?: {es: string; en: string}; icon?: string}, index: number) => (
@@ -1193,17 +1573,14 @@ function TimelineSection({ data, onChange }: SectionProps) {
                   className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                 />
               </div>
-              <div>
-                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-                  Título (Inglés)
-                </label>
-                <input
-                  type="text"
-                  value={getSafeValue(event, 'title.en')}
-                  onChange={(e) => updateTimelineEvent(index, 'title.en', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
-                />
-              </div>
+              <EnField
+                size="sm"
+                label="Título (Inglés)"
+                value={getSafeValue(event, 'title.en')}
+                onChange={(v) => updateTimelineEvent(index, 'title.en', v)}
+                source={getSafeValue(event, 'title.es')}
+                metaKey={`timeline|${event.id}|title`}
+              />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -1218,17 +1595,15 @@ function TimelineSection({ data, onChange }: SectionProps) {
                   className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                 />
               </div>
-              <div>
-                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-                  Descripción (Inglés)
-                </label>
-                <textarea
-                  rows={2}
-                  value={getSafeValue(event, 'description.en')}
-                  onChange={(e) => updateTimelineEvent(index, 'description.en', e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
-                />
-              </div>
+              <EnField
+                size="sm"
+                rows={2}
+                label="Descripción (Inglés)"
+                value={getSafeValue(event, 'description.en')}
+                onChange={(v) => updateTimelineEvent(index, 'description.en', v)}
+                source={getSafeValue(event, 'description.es')}
+                metaKey={`timeline|${event.id}|description`}
+              />
             </div>
           </div>
         ))}
@@ -1255,7 +1630,16 @@ function TimelineSection({ data, onChange }: SectionProps) {
   );
 }
 
-function AccommodationSection({ data, onChange }: SectionProps) {
+function venuesLabel(ceremony: VenueInfo, reception: VenueInfo): string {
+  return [ceremony.name || ceremony.address, reception.name || reception.address].filter(Boolean).join(' y ');
+}
+
+function AccommodationSection({
+  data,
+  onChange,
+  ceremony,
+  reception,
+}: SectionProps & { ceremony: VenueInfo; reception: VenueInfo }) {
   const hotelsData = Array.isArray(data?.hotels) ? data.hotels : [];
 
   const addHotel = () => {
@@ -1281,23 +1665,42 @@ function AccommodationSection({ data, onChange }: SectionProps) {
     onChange('hotels', newData);
   };
 
+  const suggest = useAiPlaceSuggestions({
+    endpoint: '/api/ai/hotels-suggest',
+    usageKey: 'hotelsSuggest',
+    idPrefix: 'hotel',
+    buttonLabel: 'Sugerir hoteles con IA',
+    heading: 'Hoteles sugeridos',
+    subtitle: `Cerca de ${venuesLabel(ceremony, reception)}`,
+    helpText: 'Agrega la dirección de la ceremonia o de la recepción para recibir sugerencias de hoteles con IA.',
+    existingNames: hotelsData.map((h: { name?: string }) => h.name || ''),
+    ceremony,
+    reception,
+    onAdd: (items) => onChange('hotels', [...hotelsData, ...items]),
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-[26px] text-[#0A0A0A]" style={displayFont}>Hoteles Recomendados</h2>
-        <button
-          onClick={addHotel}
-          className="bg-[#111111] text-white px-4 py-2 rounded-full hover:bg-black focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold"
-        >
-          + Agregar Hotel
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {suggest.button}
+          <button
+            onClick={addHotel}
+            className="bg-[#111111] text-white px-4 py-2 rounded-full hover:bg-black focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold"
+          >
+            + Agregar Hotel
+          </button>
+        </div>
       </div>
+
+      {suggest.panel}
 
       <div className="space-y-4">
         {hotelsData.map((hotel: {id: string; name?: string; description?: string | { es: string; en: string }; mapsUrl?: string}, index: number) => {
           const descriptionEs = typeof hotel.description === 'object' ? hotel.description?.es || '' : hotel.description || '';
           const descriptionEn = typeof hotel.description === 'object' ? hotel.description?.en || '' : '';
-          
+
           return (
             <div key={hotel.id} className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
@@ -1323,7 +1726,7 @@ function AccommodationSection({ data, onChange }: SectionProps) {
                     placeholder="Hotel Boutique Plaza"
                   />
                 </div>
-                
+
                 {/* Descripción en Español */}
                 <div>
                   <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
@@ -1332,32 +1735,27 @@ function AccommodationSection({ data, onChange }: SectionProps) {
                   <textarea
                     rows={3}
                     value={descriptionEs}
-                    onChange={(e) => updateHotel(index, 'description', { 
-                      es: e.target.value, 
-                      en: descriptionEn 
+                    onChange={(e) => updateHotel(index, 'description', {
+                      es: e.target.value,
+                      en: descriptionEn
                     })}
                     className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                     placeholder="Descripción del hotel en español..."
                   />
                 </div>
-                
+
                 {/* Descripción en Inglés */}
-                <div>
-                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-                    Descripción (English)
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={descriptionEn}
-                    onChange={(e) => updateHotel(index, 'description', { 
-                      es: descriptionEs, 
-                      en: e.target.value 
-                    })}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
-                    placeholder="Hotel description in English..."
-                  />
-                </div>
-                
+                <EnField
+                  size="sm"
+                  rows={3}
+                  label="Descripción (English)"
+                  value={descriptionEn}
+                  onChange={(v) => updateHotel(index, 'description', { es: descriptionEs, en: v })}
+                  source={descriptionEs}
+                  metaKey={`hotels|${hotel.id}|description`}
+                  placeholder="Hotel description in English..."
+                />
+
                 <div>
                   <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                     URL de Google Maps
@@ -1386,8 +1784,18 @@ function AccommodationSection({ data, onChange }: SectionProps) {
   );
 }
 
-function RecommendedPlacesSection({ data, onChange }: SectionProps) {
+function RecommendedPlacesSection({
+  data,
+  onChange,
+  ceremony,
+  reception,
+}: SectionProps & { ceremony: VenueInfo; reception: VenueInfo }) {
+  const ai = useEditorAi();
   const placesData = Array.isArray(data?.recommendedPlaces) ? data.recommendedPlaces : [];
+  const hotelsData = Array.isArray(data?.hotels) ? data.hotels : [];
+
+  const [placeGenerateLoading, setPlaceGenerateLoading] = useState<Record<string, boolean>>({});
+  const [placeGenerateError, setPlaceGenerateError] = useState<Record<string, string>>({});
 
   const addPlace = () => {
     const newPlace = {
@@ -1412,23 +1820,68 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
     onChange('recommendedPlaces', newData);
   };
 
+  const handleGeneratePlaceDescription = async (placeId: string, placeName: string, index: number) => {
+    setPlaceGenerateLoading((prev) => ({ ...prev, [placeId]: true }));
+    setPlaceGenerateError((prev) => ({ ...prev, [placeId]: '' }));
+    const result = await requestDraft(ai, '/api/ai/place-description', {
+      weddingId: ai.weddingId,
+      placeId,
+      placeName,
+      withEnglish: ai.hasEnglish,
+    });
+    if (result.ok) {
+      const currentDescription = placesData[index]?.description;
+      const currentEn = typeof currentDescription === 'object' ? currentDescription?.en || '' : '';
+      const useEn = ai.hasEnglish && result.en;
+      updatePlace(index, 'description', { es: result.es, en: useEn ? result.en : currentEn });
+      if (useEn) ai.setMeta(`places|${placeId}|description`, result.es);
+    } else if (result.limit) {
+      setPlaceGenerateError((prev) => ({ ...prev, [placeId]: AI_TEXT.LIMIT_TEXT }));
+    } else {
+      setPlaceGenerateError((prev) => ({ ...prev, [placeId]: AI_TEXT.ERROR_TEXT }));
+    }
+    setPlaceGenerateLoading((prev) => ({ ...prev, [placeId]: false }));
+  };
+
+  const suggest = useAiPlaceSuggestions({
+    endpoint: '/api/ai/places-suggest',
+    usageKey: 'placesSuggest',
+    idPrefix: 'place',
+    buttonLabel: 'Sugerir lugares con IA',
+    heading: 'Lugares sugeridos',
+    subtitle: 'Para visitar cerca de la boda. Los hoteles van en su propia sección.',
+    helpText: 'Agrega la dirección de la ceremonia o de la recepción para recibir sugerencias de lugares con IA.',
+    existingNames: [
+      ...placesData.map((p: { name?: string }) => p.name || ''),
+      ...hotelsData.map((h: { name?: string }) => h.name || ''),
+    ],
+    ceremony,
+    reception,
+    onAdd: (items) => onChange('recommendedPlaces', [...placesData, ...items]),
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-[26px] text-[#0A0A0A]" style={displayFont}>Lugares Recomendados</h2>
-        <button
-          onClick={addPlace}
-          className="bg-[#111111] text-white px-4 py-2 rounded-full hover:bg-black focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold"
-        >
-          + Agregar Lugar
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {suggest.button}
+          <button
+            onClick={addPlace}
+            className="bg-[#111111] text-white px-4 py-2 rounded-full hover:bg-black focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold"
+          >
+            + Agregar Lugar
+          </button>
+        </div>
       </div>
+
+      {suggest.panel}
 
       <div className="space-y-4">
         {placesData.map((place: {id: string; name?: string; description?: string | { es: string; en: string }; mapsUrl?: string}, index: number) => {
           const descriptionEs = typeof place.description === 'object' ? place.description?.es || '' : place.description || '';
           const descriptionEn = typeof place.description === 'object' ? place.description?.en || '' : '';
-          
+
           return (
             <div key={place.id} className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
@@ -1454,41 +1907,53 @@ function RecommendedPlacesSection({ data, onChange }: SectionProps) {
                     placeholder="Restaurante La Terraza"
                   />
                 </div>
-                
+
                 {/* Descripción en Español */}
                 <div>
-                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-                    Descripción (Español)
-                  </label>
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <label className="block text-[13px] font-semibold text-[#27272A]">
+                      Descripción (Español)
+                    </label>
+                    <AiButton
+                      onClick={() => handleGeneratePlaceDescription(place.id, place.name || '', index)}
+                      disabled={!!placeGenerateLoading[place.id] || ai.remaining(`placeGenerate.${place.id}`) <= 0}
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {placeGenerateLoading[place.id]
+                        ? 'Redactando...'
+                        : ai.remaining(`placeGenerate.${place.id}`) <= 0
+                          ? 'Ya usaste tus 5 generaciones para esto'
+                          : `Redactar con IA${usageHint(ai, `placeGenerate.${place.id}`)}`}
+                    </AiButton>
+                  </div>
                   <textarea
                     rows={3}
                     value={descriptionEs}
-                    onChange={(e) => updatePlace(index, 'description', { 
-                      es: e.target.value, 
-                      en: descriptionEn 
+                    onChange={(e) => updatePlace(index, 'description', {
+                      es: e.target.value,
+                      en: descriptionEn
                     })}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
+                    readOnly={!!placeGenerateLoading[place.id]}
+                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] ${placeGenerateLoading[place.id] ? 'ai-field-loading' : ''}`}
                     placeholder="Descripción del lugar en español..."
                   />
+                  {placeGenerateError[place.id] && (
+                    <p className="mt-1.5 text-[12px] font-semibold text-[#B91C1C]">{placeGenerateError[place.id]}</p>
+                  )}
                 </div>
-                
+
                 {/* Descripción en Inglés */}
-                <div>
-                  <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-                    Descripción (English)
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={descriptionEn}
-                    onChange={(e) => updatePlace(index, 'description', { 
-                      es: descriptionEs, 
-                      en: e.target.value 
-                    })}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
-                    placeholder="Place description in English..."
-                  />
-                </div>
-                
+                <EnField
+                  size="sm"
+                  rows={3}
+                  label="Descripción (English)"
+                  value={descriptionEn}
+                  onChange={(v) => updatePlace(index, 'description', { es: descriptionEs, en: v })}
+                  source={descriptionEs}
+                  metaKey={`places|${place.id}|description`}
+                  placeholder="Place description in English..."
+                />
+
                 <div>
                   <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
                     URL de Google Maps
@@ -1603,21 +2068,19 @@ function GiftsSection({ data, onChange }: SectionProps) {
                   placeholder="Tu presencia es nuestro regalo más valioso, pero si deseas hacernos un obsequio, hemos preparado algunas opciones:"
                 />
               </div>
-              <div>
-                <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-                  Mensaje para los invitados (English)
-                </label>
-                <textarea
-                  rows={3}
-                  value={typeof giftRegistryData.message === 'object' ? giftRegistryData.message?.en || '' : ''}
-                  onChange={(e) => {
-                    const currentMessage = typeof giftRegistryData.message === 'object' ? giftRegistryData.message : { es: giftRegistryData.message || '', en: '' };
-                    onChange('giftRegistry.message', { ...currentMessage, en: e.target.value });
-                  }}
-                  className="w-full px-3 py-2 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
-                  placeholder="Your presence is our most valuable gift, but if you wish to give us a present, we have prepared some options:"
-                />
-              </div>
+              <EnField
+                rows={3}
+                size="sm"
+                label="Mensaje para los invitados (English)"
+                value={typeof giftRegistryData.message === 'object' ? giftRegistryData.message?.en || '' : ''}
+                onChange={(v) => {
+                  const currentMessage = typeof giftRegistryData.message === 'object' ? giftRegistryData.message : { es: giftRegistryData.message || '', en: '' };
+                  onChange('giftRegistry.message', { ...currentMessage, en: v });
+                }}
+                source={typeof giftRegistryData.message === 'object' ? giftRegistryData.message?.es || '' : giftRegistryData.message || ''}
+                metaKey="gifts|message"
+                placeholder="Your presence is our most valuable gift, but if you wish to give us a present, we have prepared some options:"
+              />
             </div>
 
             {/* Lista de registros */}
@@ -1694,17 +2157,14 @@ function GiftsSection({ data, onChange }: SectionProps) {
                         
                         {/* Descripción en Inglés */}
                         <div className="md:col-span-2">
-                          <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-                            Descripción (English)
-                          </label>
-                          <textarea
+                          <EnField
                             rows={2}
+                            size="sm"
+                            label="Descripción (English)"
                             value={descriptionEn}
-                            onChange={(e) => updateRegistry(index, 'description', { 
-                              es: descriptionEs, 
-                              en: e.target.value 
-                            })}
-                            className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
+                            onChange={(v) => updateRegistry(index, 'description', { es: descriptionEs, en: v })}
+                            source={descriptionEs}
+                            metaKey={`registries|${registry.id}|description`}
                             placeholder="Gift registry with everything we need for our home"
                           />
                         </div>
@@ -1815,22 +2275,24 @@ function GiftsSection({ data, onChange }: SectionProps) {
                     
                     {/* Descripción en Inglés */}
                     <div className="md:col-span-2">
-                      <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-                        Descripción (English)
-                      </label>
-                      <textarea
+                      <EnField
                         rows={2}
+                        size="sm"
+                        label="Descripción (English)"
                         value={(() => {
-                          const bankAccount = giftRegistryData.bankAccount as Record<string, unknown>;
-                          const description = bankAccount?.description;
+                          const description = (giftRegistryData.bankAccount as Record<string, unknown>)?.description;
                           return typeof description === 'object' && description ? (description as {es: string; en: string}).en || '' : '';
                         })()}
-                        onChange={(e) => {
+                        onChange={(v) => {
                           const bankAccount = giftRegistryData.bankAccount as Record<string, unknown>;
                           const currentDescription = typeof bankAccount?.description === 'object' ? bankAccount.description as {es: string; en: string} : { es: bankAccount?.description as string || '', en: '' };
-                          updateBankAccount('description', { ...currentDescription, en: e.target.value });
+                          updateBankAccount('description', { ...currentDescription, en: v });
                         }}
-                        className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
+                        source={(() => {
+                          const description = (giftRegistryData.bankAccount as Record<string, unknown>)?.description;
+                          return typeof description === 'object' && description ? (description as {es: string; en: string}).es || '' : typeof description === 'string' ? description : '';
+                        })()}
+                        metaKey="bank|description"
                         placeholder="You can also contribute directly to our bank account"
                       />
                     </div>
@@ -1961,7 +2423,7 @@ function SettingsSection({ data, onChange }: SectionProps) {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <h2 className="text-[26px] text-[#0A0A0A] mb-6" style={displayFont}>Configuración</h2>
+      <h2 className="text-[26px] text-[#0A0A0A] mb-6" style={displayFont}>Solo adultos</h2>
       
       {/* Evento solo para adultos */}
       <div className="space-y-4 sm:space-y-6">
@@ -2000,21 +2462,18 @@ function SettingsSection({ data, onChange }: SectionProps) {
             </div>
             
             {/* Mensaje en Inglés */}
-            <div>
-              <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
-                Mensaje para los invitados (English)
-              </label>
-              <textarea
+            <EnField
                 rows={4}
+                label="Mensaje para los invitados (English)"
                 value={typeof adultOnlyData.message === 'object' ? adultOnlyData.message?.en || '' : ''}
-                onChange={(e) => {
+                onChange={(v) => {
                   const currentMessage = typeof adultOnlyData.message === 'object' ? adultOnlyData.message : { es: adultOnlyData.message || '', en: '' };
-                  onChange('adultOnlyEvent.message', { ...currentMessage, en: e.target.value });
+                  onChange('adultOnlyEvent.message', { ...currentMessage, en: v });
                 }}
-                className="w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
+                source={typeof adultOnlyData.message === 'object' ? adultOnlyData.message?.es || '' : adultOnlyData.message || ''}
+                metaKey="adults|message"
                 placeholder="Although we adore the little ones in our family, we have decided that our celebration will be adults only. We hope you can join us for this special night."
               />
-            </div>
             
             <p className="text-sm text-[#71717A]">
               Este mensaje aparecerá en la invitación para informar a los invitados sobre la política de solo adultos

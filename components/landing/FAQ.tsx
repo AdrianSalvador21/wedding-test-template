@@ -38,6 +38,16 @@ const faqItems = [
     question: '¿Puedo tener mi invitación en otro idioma?',
     answer: 'Sí, en el Paquete Personalizado puedes personalizar el idioma de tu invitación, eligiendo entre español e inglés para cada uno de tus invitados.',
   },
+  {
+    question: '¿La IA publica cosas en mi invitación sin que yo lo sepa?',
+    answer:
+      'Nunca. Todo lo que genera aparece como borrador en tu editor y solo se publica cuando tú das clic en Guardar.',
+  },
+  {
+    question: '¿La IA viene en el Paquete Básico?',
+    answer:
+      'No, es parte del Paquete Personalizado, junto con el panel de edición y las invitaciones individuales por invitado.',
+  },
 ];
 
 export default function FAQ() {

@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare, ChevronUp, ChevronDown, ArrowUpDown, Search, Users, Clock } from 'lucide-react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
+import { saveWeddingDoc } from '../../../../../lib/weddingSave';
 import { db } from '../../../../../lib/firebase';
 import { guestService } from '../../../../../services/guestService';
 import { FirebaseGuest, WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
+import { resolveHasEnglish } from '../../../../../lib/wedding-language';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
 import { AdminTopBar, AdminPageNav, AdminStatCard, AdminStatusPill, AdminButton, AdminCard, manrope, displayFont } from '../../../../../components/admin/ui';
 
@@ -48,6 +50,7 @@ const AdminGuestsPage = () => {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<string>('');
   const [sortBy, setSortBy] = useState<'name' | 'language' | 'status' | 'createdAt'>('createdAt');
+  const hasEnglish = resolveHasEnglish(weddingData);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const [formData, setFormData] = useState<GuestFormData>({
@@ -255,12 +258,12 @@ const AdminGuestsPage = () => {
           if (hasBasicInfo) {
             // Tiene información, migrar datos si es necesario
             const migratedData = migrateWeddingData(data as unknown as Record<string, unknown>);
-            await setDoc(docRef, migratedData);
+            await saveWeddingDoc(docRef, migratedData);
             setWeddingData(migratedData);
           } else {
             // Existe pero sin información, crear estructura base
             const initialData = createInitialWeddingData(weddingId);
-            await setDoc(docRef, initialData);
+            await saveWeddingDoc(docRef, initialData);
             setWeddingData(initialData);
           }
         } else {
@@ -551,7 +554,7 @@ const AdminGuestsPage = () => {
     }`;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]" style={manrope}>
+    <div className="admin-form min-h-screen bg-[#FAFAFA]" style={manrope}>
       {/* Navbar Invyta — mismo padding horizontal que AdminTopBar para que el logo quede alineado con el título de abajo */}
       <div className="bg-white border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 py-3.5 flex items-center justify-between gap-4">
         <a
@@ -658,19 +661,21 @@ const AdminGuestsPage = () => {
                       Restricción Dietética
                     </th>
                   )}
-                  <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
-                    <button
-                      onClick={() => handleSort('language')}
-                      className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-bold text-[#71717A] uppercase tracking-wider"
-                    >
-                      <span>Idioma</span>
-                      {sortBy === 'language' ? (
-                        sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                      ) : (
-                        <ArrowUpDown className="w-3 h-3 opacity-40" />
-                      )}
-                    </button>
-                  </th>
+                  {hasEnglish && (
+                    <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                      <button
+                        onClick={() => handleSort('language')}
+                        className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-bold text-[#71717A] uppercase tracking-wider"
+                      >
+                        <span>Idioma</span>
+                        {sortBy === 'language' ? (
+                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                        ) : (
+                          <ArrowUpDown className="w-3 h-3 opacity-40" />
+                        )}
+                      </button>
+                    </th>
+                  )}
                   <th className="px-6 py-3 text-right text-xs font-bold text-[#71717A] uppercase tracking-wider">
                     Acciones
                   </th>
@@ -747,9 +752,11 @@ const AdminGuestsPage = () => {
                         )}
                       </td>
                     )}
+                    {hasEnglish && (
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#0A0A0A]">
                       {guest.language === 'es' ? 'Español' : 'English'}
                     </td>
+                    )}
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-1">
                         <button
@@ -830,8 +837,7 @@ const AdminGuestsPage = () => {
                       ? (guest.rsvpConfirmation?.attending ? (guest.rsvpConfirmation?.guestCount || 1) : 'Pendiente')
                       : guest.guestCount)}{' '}
                     {weddingData?.selectedGuestTickets && !guest.rsvpConfirmation?.attending ? '' : 'personas'}
-                    {' · '}
-                    {guest.language === 'es' ? 'ES' : 'EN'}
+                    {hasEnglish && <>{' · '}{guest.language === 'es' ? 'ES' : 'EN'}</>}
                   </div>
                   <div className="flex items-center gap-1">
                     <button
@@ -963,6 +969,7 @@ const AdminGuestsPage = () => {
                       </div>
                     )}
 
+                    {hasEnglish && (
                     <div>
                       <label className="block text-[13px] font-semibold text-[#27272A] mb-1.5">
                         Idioma de la Invitación
@@ -977,6 +984,7 @@ const AdminGuestsPage = () => {
                         <option value="en">English</option>
                       </select>
                     </div>
+                    )}
 
                     <div>
                       <label className="block text-[13px] font-semibold text-[#27272A] mb-1.5">
