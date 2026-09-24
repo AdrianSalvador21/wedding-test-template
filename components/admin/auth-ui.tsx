@@ -339,6 +339,7 @@ export function AuthErrorScreen() {
     <AuthScreen>
       <IconBadge icon={AlertCircle} />
       <AuthHead title="No pudimos cargar tus invitaciones" sub="Revisa tu conexión e inténtalo de nuevo. Si el problema sigue, escríbenos." />
+      {auth.errorCode && <p className="m-0 text-xs text-[#71717A]">Código: <span className="font-mono">{auth.errorCode}</span></p>}
       <div className="flex flex-col gap-2.5">
         <AuthButton onClick={retry} loading={retrying}>
           Reintentar

@@ -21,6 +21,8 @@ interface AuthValue {
   email: string;
   isAdmin: boolean;
   weddings: LinkedWedding[];
+  // Código corto de la última falla al cargar las bodas (para diagnosticar), si la hubo
+  errorCode: string | null;
   signOut: () => Promise<void>;
   // Vuelve a consultar las bodas ligadas (Reintentar). Con silent no muestra el estado de carga
   // ni cambia la pantalla si falla: sirve para actualizar la lista tras crear o editar.
@@ -39,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [weddings, setWeddings] = useState<LinkedWedding[]>([]);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
 
   const load = useCallback(async (u: User, silent = false) => {
     if (!u.emailVerified) {
@@ -59,14 +62,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await firebaseSignOut(auth);
         return;
       }
-      if (!res.ok) throw new Error('link-weddings failed');
+      if (!res.ok) {
+        const failure = await res.json().catch(() => ({}));
+        const detail = [failure.error, failure.reason || failure.code].filter(Boolean).join(':');
+        throw new Error(detail || `http_${res.status}`);
+      }
+      setErrorCode(null);
       const data = await res.json();
       const linked: LinkedWedding[] = Array.isArray(data.weddings) ? data.weddings : [];
       setIsAdmin(data.isAdmin === true);
       setWeddings(linked);
       setStatus(data.isAdmin === true || linked.length > 0 ? 'ready' : 'noWeddings');
-    } catch {
-      if (!silent) setStatus('error');
+    } catch (err) {
+      if (!silent) {
+        setErrorCode(err instanceof Error && err.message ? err.message : 'network');
+        setStatus('error');
+      }
     }
   }, []);
 
@@ -90,6 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: user?.email?.toLowerCase() ?? '',
       isAdmin,
       weddings,
+      errorCode,
       signOut: () => firebaseSignOut(auth),
       refresh: async (opts) => {
         if (auth.currentUser) await load(auth.currentUser, opts?.silent === true);
@@ -116,7 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return fetch(input, { ...init, headers });
       },
     }),
-    [status, user, isAdmin, weddings, load]
+    [status, user, isAdmin, weddings, errorCode, load]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -61,6 +61,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ email, isAdmin, weddings });
   } catch (error) {
     console.error('Error en /api/auth/link-weddings:', error);
-    return NextResponse.json({ error: 'server_error' }, { status: 500 });
+    // Solo el código de la falla (ej. PERMISSION_DENIED de Firestore), nunca el mensaje completo.
+    const code = error && typeof error === 'object' && 'code' in error ? String((error as { code: unknown }).code) : 'unknown';
+    return NextResponse.json({ error: 'server_error', code }, { status: 500 });
   }
 }
