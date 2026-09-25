@@ -19,6 +19,8 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['framer-motion', 'lucide-react'],
+    // firebase-admin depende de módulos nativos y de gRPC: debe cargarse desde node_modules en el servidor.
+    serverComponentsExternalPackages: ['firebase-admin'],
   },
   compiler: {
     // Se conservan los console.error para poder diagnosticar fallas de servidor en producción.

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '../../../../../lib/firebase-admin';
 import { requireAdmin } from '../../../../../lib/serverAuth';
 import { isValidWeddingId } from '../../../../../lib/wedding-defaults';
 import { isTemplateId } from '../../../../../lib/admin-validation';
@@ -29,6 +28,7 @@ export async function GET(request: NextRequest, { params }: { params: { weddingI
   if (!isValidWeddingId(params.weddingId)) return notFound();
 
   try {
+    const { getAdminDb } = await import('../../../../../lib/firebase-admin');
     const db = getAdminDb();
     const snap = await db.collection('weddings').doc(params.weddingId).get();
     if (!snap.exists) return notFound();
@@ -67,7 +67,14 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
   if (newId !== undefined && !isValidWeddingId(newId)) return invalid('newWeddingId');
   if (!hasTemplate && !renaming) return invalid('body');
 
-  const db = getAdminDb();
+  let db: FirebaseFirestore.Firestore;
+  try {
+    const { getAdminDb } = await import('../../../../../lib/firebase-admin');
+    db = getAdminDb();
+  } catch (error) {
+    console.error('Configuración de firebase-admin:', error);
+    return NextResponse.json({ error: 'server_misconfigured' }, { status: 500 });
+  }
   const oldRef = db.collection('weddings').doc(id);
   const now = new Date().toISOString();
 

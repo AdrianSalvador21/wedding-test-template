@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (!res.ok) {
         const failure = await res.json().catch(() => ({}));
-        const detail = [failure.error, failure.reason || failure.code].filter(Boolean).join(':');
+        const detail = [[failure.error, failure.reason || failure.code].filter(Boolean).join(':'), failure.detail].filter(Boolean).join(' — ');
         throw new Error(detail || `http_${res.status}`);
       }
       setErrorCode(null);

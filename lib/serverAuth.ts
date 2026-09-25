@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AdminConfigError, getAdminAuth } from './firebase-admin';
 
 export interface VerifiedUser {
   uid: string;
@@ -29,13 +28,18 @@ export async function authenticate(request: NextRequest): Promise<AuthResult> {
   }
 
   // Una configuración faltante (cuenta de servicio) es un error del servidor, no una sesión inválida.
-  let adminAuth: ReturnType<typeof getAdminAuth>;
+  // Import dinámico: si el módulo no carga en el servidor (empaquetado), se responde JSON con el motivo
+  // en vez de una caída sin cuerpo.
+  let adminAuth: import('firebase-admin/auth').Auth;
   try {
+    const { getAdminAuth } = await import('./firebase-admin');
     adminAuth = getAdminAuth();
   } catch (error) {
-    console.error('Configuración de firebase-admin:', error instanceof Error ? error.message : error);
-    const reason = error instanceof AdminConfigError ? error.reason : 'unknown';
-    return { ok: false, response: NextResponse.json({ error: 'server_misconfigured', reason }, { status: 500 }) };
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Configuración de firebase-admin:', message);
+    const reason = error && typeof error === 'object' && 'reason' in error ? String((error as { reason: unknown }).reason) : 'module_load';
+    const detail = reason === 'module_load' ? message.slice(0, 200) : undefined;
+    return { ok: false, response: NextResponse.json({ error: 'server_misconfigured', reason, detail }, { status: 500 }) };
   }
 
   try {

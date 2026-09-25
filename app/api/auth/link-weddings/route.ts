@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '../../../../lib/firebase-admin';
 import { authenticate, isAdminEmail, normalizeEmail } from '../../../../lib/serverAuth';
 
 export const runtime = 'nodejs';
@@ -36,6 +35,7 @@ export async function POST(request: NextRequest) {
   try {
     const email = auth.user.email;
     const isAdmin = isAdminEmail(email);
+    const { getAdminDb } = await import('../../../../lib/firebase-admin');
     const db = getAdminDb();
     const ownersSnap = await db.collection('weddingOwners').get();
 
@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
     console.error('Error en /api/auth/link-weddings:', error);
     // Solo el código de la falla (ej. PERMISSION_DENIED de Firestore), nunca el mensaje completo.
     const code = error && typeof error === 'object' && 'code' in error ? String((error as { code: unknown }).code) : 'unknown';
-    return NextResponse.json({ error: 'server_error', code }, { status: 500 });
+    const detail = code === 'unknown' && error instanceof Error ? error.message.slice(0, 200) : undefined;
+    return NextResponse.json({ error: 'server_error', code, detail }, { status: 500 });
   }
 }

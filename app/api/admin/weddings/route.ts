@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '../../../../lib/firebase-admin';
 import { requireAdmin } from '../../../../lib/serverAuth';
 import { createInitialWeddingData, isValidWeddingId } from '../../../../lib/wedding-defaults';
 import { isTemplateId, isValidEmail, isValidIsoDate, normalizeEmailList } from '../../../../lib/admin-validation';
@@ -51,6 +50,7 @@ export async function POST(request: NextRequest) {
   wedding.template = { id: body.templateId };
 
   try {
+    const { getAdminDb } = await import('../../../../lib/firebase-admin');
     const db = getAdminDb();
     const batch = db.batch();
     batch.create(db.collection('weddings').doc(weddingId), wedding as unknown as FirebaseFirestore.DocumentData);

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '../../../../../../lib/firebase-admin';
 import { requireAdmin } from '../../../../../../lib/serverAuth';
 import { isValidWeddingId } from '../../../../../../lib/wedding-defaults';
 import { MAX_OWNER_EMAILS, normalizeEmailList } from '../../../../../../lib/admin-validation';
@@ -13,6 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { weddingI
   if (!isValidWeddingId(params.weddingId)) return NextResponse.json({ error: 'not_found' }, { status: 404 });
 
   try {
+    const { getAdminDb } = await import('../../../../../../lib/firebase-admin');
     const snap = await getAdminDb().collection('weddingOwners').doc(params.weddingId).get();
     const emails = Array.isArray(snap.data()?.emails) ? (snap.data()?.emails as unknown[]).filter((e): e is string => typeof e === 'string') : [];
     return NextResponse.json({ emails });
@@ -38,6 +38,7 @@ export async function PUT(request: NextRequest, { params }: { params: { weddingI
   if (!emails) return NextResponse.json({ error: 'invalid_input', field: 'emails' }, { status: 400 });
 
   try {
+    const { getAdminDb } = await import('../../../../../../lib/firebase-admin');
     const db = getAdminDb();
     const wedding = await db.collection('weddings').doc(params.weddingId).get();
     if (!wedding.exists) return NextResponse.json({ error: 'not_found' }, { status: 404 });
