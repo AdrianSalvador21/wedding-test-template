@@ -2,62 +2,12 @@
 
 import React from 'react';
 import { fraunces, LSection, LReveal, LCard, LDivider, LSolidButton, LCheckIcon, LXIcon } from './ui';
+import { getPackage, formatPrice } from '../../lib/marketing-content';
 
 const WHATSAPP_LINK = 'https://wa.me/529602460590';
 
-const basicoGroups = [
-  {
-    title: 'Tu página web',
-    text: 'Página tipo plantilla, enlace único para compartir, dominio/hosting incluido hasta 15 días después del evento, entrega en 7 días hábiles.',
-  },
-  {
-    title: 'Contenido de tu boda',
-    text: 'Bienvenida, cuenta regresiva, detalles del evento, nuestra historia, galería de fotos, cronograma y código de vestimenta.',
-  },
-  {
-    title: 'Logística para invitados',
-    text: 'Mesa de regalos, hospedaje recomendado y sección de solo adultos.',
-  },
-  {
-    title: 'Confirmación y gestión',
-    text: 'Formulario de confirmación y gestión de invitados confirmados.',
-  },
-];
-
-const basicoNoIncluye =
-  'Personalización por invitado (URL, mensaje, idioma, boletos o canción individuales) ni el asistente con IA.';
-
-const personalizadoGroups = [
-  {
-    title: 'Tu página web',
-    text: 'Completamente personalizada, enlace único para redes, dominio/hosting incluido, entrega rápida en 7 días hábiles.',
-  },
-  {
-    title: 'Contenido a tu medida',
-    text: 'Bienvenida personalizada, cuenta regresiva dinámica, detalles completos, nuestra historia, galería profesional, cronograma detallado y código de vestimenta elegante.',
-  },
-  {
-    title: 'Logística para invitados',
-    text: 'Mesa de regalos integrada, hospedaje recomendado y sección solo adultos.',
-  },
-  {
-    title: 'Panel de edición y gestión',
-    text: 'Cambia tu invitación y controla confirmaciones e invitados cuando quieras, sin depender de nosotros.',
-  },
-  {
-    title: 'Asistente con IA',
-    text: 'Redacta tu historia y tu código de vestimenta, traduce a inglés y sugiere itinerario, hoteles y lugares para tus invitados.',
-    isNew: true,
-  },
-  {
-    title: 'Personalización 1:1',
-    text: 'URL y bienvenida únicas por invitado, idioma (ES/EN) y canción en la invitación.',
-  },
-  {
-    title: 'Soporte',
-    text: 'Extendido, 7 días antes del evento.',
-  },
-];
+const basico = getPackage('basico');
+const personalizado = getPackage('personalizado');
 
 export default function Packages() {
   return (
@@ -75,19 +25,19 @@ export default function Packages() {
           <LCard variant="default" className="p-9 flex flex-col gap-5 shadow-[0_24px_48px_rgba(43,38,34,0.08)]">
             <div className="flex flex-col gap-1.5">
               <span className="text-2xl text-[#211D19]" style={fraunces}>
-                Paquete Básico
+                {basico.name}
               </span>
               <div>
                 <span className="text-[38px] text-[#211D19]" style={fraunces}>
-                  $2,200
+                  {formatPrice(basico.price)}
                 </span>
-                <span className="text-[15px] text-[#8A837A]"> MXN</span>
+                <span className="text-[15px] text-[#8A837A]"> {basico.currency}</span>
               </div>
-              <span className="text-sm text-[#8A837A]">Perfecto para bodas tradicionales</span>
+              <span className="text-sm text-[#8A837A]">{basico.forWho}</span>
             </div>
             <LDivider />
             <div className="flex flex-col gap-3.5">
-              {basicoGroups.map((group) => (
+              {basico.groups.map((group) => (
                 <div key={group.title} className="flex items-start gap-2.5">
                   <LCheckIcon color="#7C8363" className="flex-shrink-0 mt-1" />
                   <span className="text-sm text-[#4A433C] leading-relaxed">
@@ -102,7 +52,7 @@ export default function Packages() {
               <LXIcon className="flex-shrink-0 mt-1" />
               <span className="text-sm text-[#6B655C] leading-relaxed">
                 <span className="font-medium text-[#211D19]">No incluye: </span>
-                {basicoNoIncluye}
+                {basico.notIncluded}
               </span>
             </div>
             <LSolidButton href={WHATSAPP_LINK} target="_blank" variant="dark" className="mt-2 w-full">
@@ -117,30 +67,30 @@ export default function Packages() {
             </div>
             <div className="flex flex-col gap-1.5 mt-8 md:mt-2">
               <span className="text-2xl" style={fraunces}>
-                Paquete Personalizado
+                {personalizado.name}
               </span>
               <div>
                 <span className="text-[38px]" style={fraunces}>
-                  $2,600
+                  {formatPrice(personalizado.price)}
                 </span>
-                <span className="text-[15px] text-[#D8CFC4]"> MXN</span>
+                <span className="text-[15px] text-[#D8CFC4]"> {personalizado.currency}</span>
               </div>
-              <span className="text-sm text-[#D8CFC4]">Experiencia completamente personalizada</span>
+              <span className="text-sm text-[#D8CFC4]">{personalizado.forWho}</span>
             </div>
             <LDivider tone="dark" />
             <div className="flex flex-col gap-3.5">
-              {personalizadoGroups.map((group) => (
+              {personalizado.groups.map((group) => (
                 <div
                   key={group.title}
                   className={`flex items-start gap-2.5 ${
-                    'isNew' in group
+                    group.isNew
                       ? '-mx-3.5 px-3.5 py-3.5 rounded-xl bg-[rgba(227,164,131,0.12)] border border-[rgba(227,164,131,0.4)]'
                       : ''
                   }`}
                 >
                   <LCheckIcon color="#E3A483" className="flex-shrink-0 mt-1" />
                   <div className="flex flex-col gap-2 items-start">
-                    {'isNew' in group && (
+                    {group.isNew && (
                       <span className="bg-[#E3A483] text-[#211D19] text-[11px] font-extrabold tracking-wider uppercase px-2.5 py-0.5 rounded-full">
                         Nuevo
                       </span>

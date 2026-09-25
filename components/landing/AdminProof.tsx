@@ -1,18 +1,19 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { fraunces, LSection, LReveal, LStagger, LStaggerItem, LCard } from './ui';
 
 const panels = [
   {
     title: 'Editor de Invitación',
     image: '/assets/landing/editor-imagen.png',
-    alt: 'Editor de invitación',
+    alt: 'Panel para editar la invitación de boda: textos, fotos, cronograma y código de vestimenta',
   },
   {
     title: 'Gestión de Invitados',
     image: '/assets/landing/invitados-imagen.png',
-    alt: 'Gestión de invitados',
+    alt: 'Panel de gestión de invitados con la lista de confirmaciones de asistencia',
   },
 ];
 
@@ -32,9 +33,14 @@ export default function AdminProof() {
           {panels.map((panel) => (
             <LStaggerItem key={panel.title}>
               <LCard variant="ivory" className="p-6 flex flex-col gap-4">
-                <div className="rounded-2xl overflow-hidden h-[400px] bg-white shadow-[0_20px_40px_rgba(43,38,34,0.1)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={panel.image} alt={panel.alt} className="w-full h-full object-cover object-left-top" />
+                <div className="relative rounded-2xl overflow-hidden h-[400px] bg-white shadow-[0_20px_40px_rgba(43,38,34,0.1)]">
+                  <Image
+                    src={panel.image}
+                    alt={panel.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 560px"
+                    className="object-cover object-left-top"
+                  />
                 </div>
                 <span className="text-[19px] text-[#211D19]" style={fraunces}>
                   {panel.title}

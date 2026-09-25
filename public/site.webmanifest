@@ -1,52 +1,27 @@
 {
   "name": "Invyta - Invitaciones Digitales para Bodas",
   "short_name": "Invyta",
-  "description": "Crea invitaciones digitales elegantes para tu boda con Invyta",
+  "description": "Invitaciones digitales para boda con confirmación de asistencia en tiempo real",
   "icons": [
     {
-      "src": "/android-chrome-192x192.png",
+      "src": "/icons/192",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/android-chrome-512x512.png",
+      "src": "/icons/512",
       "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "/favicon-16x16.png",
-      "sizes": "16x16",
-      "type": "image/png"
-    },
-    {
-      "src": "/favicon-32x32.png",
-      "sizes": "32x32",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "theme_color": "#d97706",
-  "background_color": "#ffffff",
+  "theme_color": "#C6663C",
+  "background_color": "#FBF7F1",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "es-MX",
-  "categories": ["lifestyle", "social", "productivity"],
-  "screenshots": [
-    {
-      "src": "/assets/landing/screenshot-desktop.jpg",
-      "sizes": "1280x720",
-      "type": "image/jpeg",
-      "form_factor": "wide",
-      "label": "Invyta Desktop"
-    },
-    {
-      "src": "/assets/landing/screenshot-mobile.jpg",
-      "sizes": "375x812",
-      "type": "image/jpeg",
-      "form_factor": "narrow",
-      "label": "Invyta Mobile"
-    }
-  ]
+  "categories": ["lifestyle", "social"]
 }
-

@@ -1,57 +1,43 @@
-'use client';
-
 import './globals.css';
-import { Inter } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import { Inter, Fraunces, Manrope } from 'next/font/google';
 import ReduxProvider from '../src/components/providers/ReduxProvider';
-import { useEffect } from 'react';
-import { useAppDispatch } from '../src/store/hooks';
-import { fetchWeddingData } from '../src/store/slices/weddingSlice';
-import { usePathname } from 'next/navigation';
+import DataInitializer from '../src/components/providers/DataInitializer';
+import { SITE } from '../lib/site';
 
 const inter = Inter({ subsets: ['latin'] });
 
-function DataInitializer({ children }: { children: React.ReactNode }) {
-  const dispatch = useAppDispatch();
-  const pathname = usePathname();
+// Fuentes de la marca (landing, páginas de marketing y paneles de admin).
+// Se exponen como variables CSS; lib/brand.ts y components/admin/ui.tsx las usan.
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
+  display: 'swap',
+  variable: '--font-fraunces',
+});
+const manrope = Manrope({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-manrope',
+});
 
-  useEffect(() => {
-    // Solo cargar datos de boda para rutas específicas de wedding, no para la landing
-    if (pathname === '/en') {
-      dispatch(fetchWeddingData({ weddingId: 'maria-carlos-2025' }));
-    }
-    // No cargar datos para '/' ya que es la landing page
-  }, [dispatch, pathname]);
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
+  // Las etiquetas solo se emiten si la variable existe (spec 10, paso 16).
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    other: process.env.BING_SITE_VERIFICATION
+      ? { 'msvalidate.01': process.env.BING_SITE_VERIFICATION }
+      : undefined,
+  },
+};
 
-  // Solución para viewport height en iOS
-  useEffect(() => {
-    const setViewportHeight = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-
-    // Establecer altura inicial
-    setViewportHeight();
-
-    // Actualizar en resize (pero throttled para performance)
-    let resizeTimer: NodeJS.Timeout;
-    const handleResize = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(setViewportHeight, 100);
-    };
-
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', setViewportHeight);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', setViewportHeight);
-      clearTimeout(resizeTimer);
-    };
-  }, []);
-
-  return <>{children}</>;
-}
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: SITE.themeColor,
+};
 
 export default function RootLayout({
   children,
@@ -59,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
+    <html lang="es" className={`${fraunces.variable} ${manrope.variable}`}>
       <body className={inter.className}>
         <ReduxProvider>
           <DataInitializer>
