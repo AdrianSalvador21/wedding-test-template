@@ -6,19 +6,11 @@ import { motion, useReducedMotion, type Variants } from 'framer-motion';
 // Tokens de paleta "Romance Editorial" (ver specs/03-rediseno-landing.md).
 // Uso: valores dinámicos en `style={{ color: L.terracota }}`. Las clases de
 // Tailwind con estos mismos hex se escriben literales (no interpoladas) para
-// que el JIT las detecte, y viven únicamente en este archivo.
-export const L = {
-  ivory: '#FBF7F1',
-  charcoal: '#211D19',
-  charcoalSoft: '#2B2622',
-  terracota: '#C6663C',
-  terracotaDark: '#AE5730',
-  sage: '#7C8363',
-  muted: '#5A534B',
-};
+// que el JIT las detecte. Los tokens viven en lib/brand.ts (spec 10) para que
+// también los usen los Server Components de las páginas de marketing.
+import { L, fraunces, manrope } from '../../lib/brand';
 
-export const fraunces = { fontFamily: "'Fraunces', serif" };
-export const manrope = { fontFamily: "'Manrope', sans-serif" };
+export { L, fraunces, manrope };
 
 export function LSection({
   id,
@@ -179,13 +171,16 @@ export function LSolidButton({
   href?: string;
   onClick?: () => void;
   target?: string;
-  variant?: 'dark' | 'terracota' | 'ivory';
+  variant?: 'dark' | 'terracota' | 'terracotaDark' | 'ivory' | 'ivoryDark';
   className?: string;
 }) {
   const variantClass = {
     dark: 'bg-[#211D19] text-[#FBF7F1] hover:bg-[#171310]',
     terracota: 'bg-[#C6663C] text-[#FBF7F1] hover:bg-[#AE5730] shadow-[0_12px_28px_rgba(198,102,60,0.3)]',
     ivory: 'bg-[#FBF7F1] text-[#C6663C] hover:bg-[#F3E7D8]',
+    // Variantes de las páginas de marketing (spec 10): contraste AA con texto pequeño.
+    terracotaDark: 'bg-[#AE5730] text-[#FBF7F1] hover:bg-[#8F4524] shadow-[0_12px_28px_rgba(198,102,60,0.3)]',
+    ivoryDark: 'bg-[#FBF7F1] text-[#AE5730] hover:bg-[#F3E7D8]',
   }[variant];
   const classes = `inline-flex items-center justify-center rounded-full px-8 py-4 text-[15px] font-semibold transition-colors ${variantClass} ${className}`;
 

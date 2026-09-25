@@ -1,6 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { isNonLocalizedPath } from './lib/site';
 
 // Configuración directa en el middleware
 const intlMiddleware = createMiddleware({
@@ -12,23 +13,15 @@ const intlMiddleware = createMiddleware({
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Excluir la landing page (/) del middleware de internacionalización
-  if (pathname === '/') {
-    return NextResponse.next();
-  }
-
-  // Excluir assets estáticos - IMPORTANTE para que las imágenes funcionen
-  if (pathname.startsWith('/assets/') || 
-      pathname.startsWith('/.well-known/') ||
-      pathname === '/favicon.ico' ||
-      pathname.startsWith('/robots.txt') ||
-      pathname.startsWith('/sitemap.xml')) {
+  // Landing, páginas de marketing (/paquetes, /disenos/*, etc.) y archivos
+  // generados (íconos, imagen para compartir) no llevan prefijo de idioma.
+  if (isNonLocalizedPath(pathname)) {
     return NextResponse.next();
   }
 
   // Bloquear requests innecesarios que pueden causar problemas de rendimiento
-  if (pathname.includes('/wp-admin') || 
-      pathname.includes('/xmlrpc.php') || 
+  if (pathname.includes('/wp-admin') ||
+      pathname.includes('/xmlrpc.php') ||
       pathname.includes('/.env')) {
     return new NextResponse('Not Found', { status: 404 });
   }
@@ -44,9 +37,11 @@ export const config = {
      * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
      * - assets (public assets like images)
+     * ni cualquier ruta con extensión de archivo (favicon.ico, robots.txt,
+     * sitemap.xml, site.webmanifest, .well-known/…): esos archivos no pasan
+     * por la reescritura de idioma.
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|assets).*)',
+    '/((?!api|_next/static|_next/image|assets|.*\\..*).*)',
   ],
 };

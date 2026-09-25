@@ -1,4 +1,7 @@
 import type { Metadata, Viewport } from "next";
+import { notFound } from "next/navigation";
+import { locales } from "../../i18n";
+import "./invitation-fonts.css";
 
 export const metadata: Metadata = {
   title: "Invitación de Boda Digital",
@@ -19,8 +22,16 @@ export const viewport: Viewport = {
 
 export default function LocaleLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: { locale: string };
 }>) {
+  // Sin esta validación, /favicon.ico o /cualquier.cosa coincidía con
+  // app/[locale]/page.tsx y respondía 200 con HTML (soft 404).
+  if (!(locales as readonly string[]).includes(params.locale)) {
+    notFound();
+  }
+
   return children;
-} 
+}

@@ -21,17 +21,19 @@ const LandingPage = () => {
     <div className="min-h-screen">
       <StructuredData />
       <Nav />
-      <Hero />
-      <HowItWorks />
-      <TrustStrip />
-      <DesignGallery />
-      <IndividualPersonalization />
-      <Features />
-      <AdminProof />
-      <AiSection />
-      <Packages />
-      <PlannerCta />
-      <FAQ />
+      <main>
+        <Hero />
+        <HowItWorks />
+        <TrustStrip />
+        <DesignGallery />
+        <IndividualPersonalization />
+        <Features />
+        <AdminProof />
+        <AiSection />
+        <Packages />
+        <PlannerCta />
+        <FAQ />
+      </main>
       <Footer />
     </div>
   );

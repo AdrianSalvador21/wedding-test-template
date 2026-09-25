@@ -1,5 +1,24 @@
 const withNextIntl = require('next-intl/plugin')('./i18n.ts');
 
+// Rutas que nunca deben indexarse (invitaciones, demos, paneles, login y API).
+// El encabezado refuerza la meta `noindex` de app/[locale]/layout.tsx; sirve
+// también donde no hay HTML (API) y para las rutas sin prefijo de idioma.
+const NOINDEX_SOURCES = [
+  '/:locale(es|en)/wedding/:path*',
+  '/wedding/:path*',
+  '/:locale(es|en)/admin/:path*',
+  '/admin/:path*',
+  '/:locale(es|en)/login',
+  '/login',
+  '/:locale(es|en)/invitation',
+  '/invitation',
+  '/:locale(es|en)/demo',
+  '/demo',
+  '/:locale(es|en)/typography-test',
+  '/typography-test',
+  '/api/:path*',
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -26,6 +45,14 @@ const nextConfig = {
     // Se conservan los console.error para poder diagnosticar fallas de servidor en producción.
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
   },
+  async redirects() {
+    return [
+      // /favicon.ico se sirve como el ícono generado en app/icon.tsx.
+      { source: '/favicon.ico', destination: '/icon', permanent: true },
+      // /disenos no es una página: la galería de diseños es una sección de la landing.
+      { source: '/disenos', destination: '/#disenos', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {
@@ -45,6 +72,10 @@ const nextConfig = {
           },
         ],
       },
+      ...NOINDEX_SOURCES.map((source) => ({
+        source,
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      })),
       {
         source: '/.well-known/:path*',
         headers: [

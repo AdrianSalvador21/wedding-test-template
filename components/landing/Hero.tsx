@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { fraunces, LSection, LSolidButton, LTextLink } from './ui';
 
 const WHATSAPP_LINK_INTRO =
@@ -13,12 +13,9 @@ export default function Hero() {
   return (
     <LSection id="inicio" className="pt-32 pb-16 md:pt-40 md:pb-20">
       <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-16 items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col gap-6"
-        >
+        {/* Entrada con CSS (globals.css), no con framer-motion: el texto y las imágenes del hero
+            son visibles en el HTML inicial y no esperan a la hidratación de React (LCP). */}
+        <div className="flex flex-col gap-6 hero-in-up">
           <div className="flex flex-nowrap items-center gap-1.5 md:gap-2">
             {chips.map((chip) => (
               <span
@@ -29,10 +26,13 @@ export default function Hero() {
               </span>
             ))}
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-[54px] leading-[1.1] tracking-tight text-[#211D19]" style={fraunces}>
-            Elige el estilo.
-            <br />
-            <span className="italic text-[#C6663C]">Nosotros armamos tu invitación.</span>
+          <h1 className="tracking-tight text-[#211D19]" style={fraunces}>
+            <span className="block text-4xl md:text-5xl lg:text-[54px] leading-[1.1]">
+              Invitaciones digitales para boda
+            </span>
+            <span className="block mt-3 text-2xl md:text-[28px] leading-[1.25] italic text-[#C6663C]">
+              Elige el estilo. Nosotros armamos tu invitación.
+            </span>
           </h1>
           <p className="text-lg text-[#5A534B] leading-relaxed max-w-[480px]">
             Diseños listos para tu boda, con confirmación de asistencia automática y todo gestionado desde un
@@ -44,13 +44,10 @@ export default function Hero() {
             </LSolidButton>
             <LTextLink href="#disenos">Ver los diseños →</LTextLink>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative mx-auto w-full max-w-[460px]"
+        <div
+          className="relative mx-auto w-full max-w-[460px] hero-in-left"
           style={{ height: 'clamp(360px, 46vw, 600px)' }}
         >
           <div
@@ -64,11 +61,12 @@ export default function Hero() {
               zIndex: 1,
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/assets/landing/design-template-03-2.png"
-              alt="Template Botánica Editorial"
-              className="w-full h-full object-cover"
+              alt="Invitación de boda digital con el diseño Botánica Editorial vista en el celular"
+              fill
+              sizes="(max-width: 768px) 40vw, 250px"
+              className="object-cover"
               style={{ objectPosition: '50% 15%' }}
             />
           </div>
@@ -83,11 +81,13 @@ export default function Hero() {
               zIndex: 2,
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/assets/landing/design-template-01.jpg"
-              alt="Template Clásico"
-              className="w-full h-full object-cover"
+              alt="Invitación de boda digital con el diseño Clásico vista en el celular"
+              fill
+              sizes="(max-width: 768px) 40vw, 250px"
+              priority
+              className="object-cover"
               style={{ objectPosition: '50% 25%' }}
             />
           </div>
@@ -102,11 +102,12 @@ export default function Hero() {
               zIndex: 1,
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/assets/landing/design-template-02.jpg"
-              alt="Template Moderno"
-              className="w-full h-full object-cover"
+              alt="Invitación de boda digital con el diseño Moderno vista en el celular"
+              fill
+              sizes="(max-width: 768px) 40vw, 250px"
+              className="object-cover"
               style={{ objectPosition: '50% 30%' }}
             />
           </div>
@@ -117,7 +118,7 @@ export default function Hero() {
             <LCheckIcon />
             <span className="text-[13px] font-bold text-[#211D19] whitespace-nowrap">3 diseños para elegir</span>
           </div>*/}
-        </motion.div>
+        </div>
       </div>
     </LSection>
   );

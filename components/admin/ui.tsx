@@ -33,7 +33,7 @@ export const A = {
 // Manrope — se mantiene el nombre `displayFont` (no `fraunces`) para que el
 // código no sugiera una fuente que ya no se usa.
 export const displayFont = { fontWeight: 800, letterSpacing: '-0.01em' };
-export const manrope = { fontFamily: "'Manrope', sans-serif" };
+export const manrope = { fontFamily: 'var(--font-manrope), sans-serif' };
 
 // Navegación entre los paneles de una misma boda (Editor de invitación /
 // Gestión de invitados), para poder compartir un enlace y que la otra

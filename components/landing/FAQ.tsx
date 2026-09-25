@@ -2,53 +2,9 @@
 
 import React, { useState } from 'react';
 import { fraunces, LSection, LReveal } from './ui';
+import { FAQ_ITEMS } from '../../lib/marketing-content';
 
-const faqItems = [
-  {
-    question: '¿Tengo que diseñar mi invitación?',
-    answer: 'No. Tú eliges un diseño, completamos juntos la información de tu boda, y nosotros la preparamos.',
-  },
-  {
-    question: '¿Mis invitados necesitan descargar una aplicación?',
-    answer: 'No. La invitación funciona directo desde el navegador del celular.',
-  },
-  {
-    question: '¿Cómo reciben la invitación mis invitados?',
-    answer: 'Por WhatsApp, mensaje, correo o el medio que prefieras — es un enlace único.',
-  },
-  {
-    question: '¿Puedo saber quién confirmó?',
-    answer: 'Sí. Las confirmaciones aparecen en tu panel en tiempo real.',
-  },
-  {
-    question: '¿Puedo limitar cuántos invitados puede llevar cada persona?',
-    answer:
-      'Sí, en el Paquete Personalizado, que incluye invitaciones individuales con número de lugares por invitado.',
-  },
-  {
-    question: '¿Puedo cambiar la información después de publicar?',
-    answer:
-      'Sí, tú editas tu invitación y gestionas tus invitados cuando quieras, sin depender de nosotros.',
-  },
-  {
-    question: '¿Cuánto tarda la entrega?',
-    answer: '7 días hábiles.',
-  },
-  {
-    question: '¿Puedo tener mi invitación en otro idioma?',
-    answer: 'Sí, en el Paquete Personalizado puedes personalizar el idioma de tu invitación, eligiendo entre español e inglés para cada uno de tus invitados.',
-  },
-  {
-    question: '¿La IA publica cosas en mi invitación sin que yo lo sepa?',
-    answer:
-      'Nunca. Todo lo que genera aparece como borrador en tu editor y solo se publica cuando tú das clic en Guardar.',
-  },
-  {
-    question: '¿La IA viene en el Paquete Básico?',
-    answer:
-      'No, es parte del Paquete Personalizado, junto con el panel de edición y las invitaciones individuales por invitado.',
-  },
-];
+const faqItems = FAQ_ITEMS.filter((item) => item.onLanding);
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
