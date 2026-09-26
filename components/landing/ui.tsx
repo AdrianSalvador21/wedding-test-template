@@ -119,10 +119,13 @@ export function LCard({
   children,
   className = '',
   variant = 'default',
+  trackPackage,
 }: {
   children: React.ReactNode;
   className?: string;
   variant?: 'default' | 'dark' | 'accent' | 'ivory';
+  // Marca la tarjeta como un paquete para la analítica (spec 11: `data-track-package`).
+  trackPackage?: 'basico' | 'personalizado';
 }) {
   const variantClass = {
     default: 'bg-white border border-[rgba(43,38,34,0.1)] text-[#2B2622]',
@@ -131,7 +134,11 @@ export function LCard({
     ivory: 'bg-[#FBF7F1] border border-[rgba(43,38,34,0.08)] text-[#2B2622]',
   }[variant];
 
-  return <div className={`rounded-2xl ${variantClass} ${className}`}>{children}</div>;
+  return (
+    <div data-track-package={trackPackage} className={`rounded-2xl ${variantClass} ${className}`}>
+      {children}
+    </div>
+  );
 }
 
 export function LDivider({ className = '', tone = 'light' }: { className?: string; tone?: 'light' | 'dark' }) {

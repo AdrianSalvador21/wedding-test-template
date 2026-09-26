@@ -9,6 +9,8 @@ import { createWeddingTheme } from '../lib/theme-utils';
 import { guestService } from '../services/guestService';
 import { FirebaseGuest } from '../src/types/wedding';
 import { useWeddingMusic } from '../hooks/useWeddingMusic';
+import { SITE } from '../lib/site';
+import { isDemoId } from '../lib/analytics/demos';
 import InvitationOverlay from './InvitationOverlay';
 import MusicPlayer from './MusicPlayer';
 import Template01 from './templates/Template01';
@@ -201,7 +203,7 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
             <a
-              href="https://invyta.me"
+              href={`${SITE.url}/?src=${isDemoId(currentWedding?.id ?? weddingId) ? 'demo' : 'invitacion'}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block hover:opacity-80 transition-opacity"

@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare, ChevronUp, ChevronDown, ArrowUpDown, Search, Users, Clock } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { saveWeddingDoc } from '../../../../../lib/weddingSave';
+import { track } from '../../../../../lib/analytics/client';
 import { db } from '../../../../../lib/firebase';
 import { guestService } from '../../../../../services/guestService';
 import { FirebaseGuest, WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
@@ -325,7 +326,8 @@ const AdminGuestsContent = () => {
         ));
       } else {
         const newGuestId = await guestService.createGuest(guestData);
-        
+        track('guest_added', {});
+
         // Obtener el invitado completo recién creado
         const newGuest = await guestService.getGuest(newGuestId);
         
@@ -400,6 +402,7 @@ const AdminGuestsContent = () => {
       const invitationUrl = `${window.location.origin}/${locale}/wedding/${weddingId}?guest=${guestId}`;
       
       await navigator.clipboard.writeText(invitationUrl);
+      track('guest_link_copied', {});
       setCopiedGuestId(guest.id);
       
       // Limpiar el estado después de 2 segundos

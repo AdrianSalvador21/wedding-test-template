@@ -15,6 +15,7 @@ import { RSVPIcon } from '../icons';
 import { T1SectionTitle, T1_COLORS } from './ui';
 
 import { guestService } from '../../services/guestService';
+import { isDemoId } from '../../lib/analytics/demos';
 import { FirebaseRSVP, FirebaseGuest } from '../../src/types/wedding';
 
 const RSVPContent = () => {
@@ -37,6 +38,10 @@ const RSVPContent = () => {
   const guestId = searchParams.get('guest');
   const weddingId = weddingData?.id || 'friends-test';
 
+  // Demos oficiales sin guestId: el formulario se muestra y funciona en local, sin escribir a
+  // Firebase. Una boda real sin `?guest=` sigue mostrando "Not available".
+  const isDemoMode = !guestId && isDemoId(weddingId);
+
   // Datos dinámicos con fallbacks
   const receptionVenue = weddingData?.event.receptionVenue;
   const venueName = typeof receptionVenue?.name === 'object' && receptionVenue.name
@@ -57,6 +62,12 @@ const RSVPContent = () => {
   // Cargar confirmación RSVP existente al montar el componente
   useEffect(() => {
     const loadExistingRSVP = async () => {
+      if (isDemoMode) {
+        setError(null);
+        setIsLoading(false);
+        return;
+      }
+
       if (!guestId) {
         setError('Not available');
         setIsLoading(false);
@@ -104,7 +115,7 @@ const RSVPContent = () => {
     };
 
     loadExistingRSVP();
-  }, [guestId, weddingId]);
+  }, [isDemoMode, guestId, weddingId]);
 
   // Schema de validación - name y email siempre opcionales ya que no se muestran los campos
   const rsvpSchema = z.object({
@@ -154,6 +165,33 @@ const RSVPContent = () => {
   }, [existingRSVP, setValue]);
 
   const onSubmit = async (data: RSVPFormData) => {
+    if (isDemoMode) {
+      // Modo demo: no escribe a Firebase, solo refleja el envío en el estado local.
+      setIsSubmitting(true);
+      setError(null);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setExistingRSVP({
+        id: 'demo-rsvp',
+        weddingId,
+        guestId: 'demo',
+        guestName: data.name || '',
+        guestEmail: data.email || '',
+        attending: data.attendance === 'yes',
+        guestCount: data.guestCount ? parseInt(data.guestCount, 10) : 1,
+        message: data.message?.trim(),
+        dietaryRestrictions: data.dietaryRestrictions?.trim(),
+        dietaryRestriction: data.dietaryRestriction?.trim(),
+        plusOne: data.plusOneAttendance
+          ? { attending: data.plusOneAttendance === 'yes', name: data.plusOneName?.trim() || undefined }
+          : undefined,
+        submittedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      setIsSubmitted(true);
+      setIsSubmitting(false);
+      return;
+    }
+
     if (!guestId) {
       setError('ID de invitado no disponible');
       return;
@@ -499,6 +537,11 @@ const RSVPContent = () => {
                     </>
                   )}
                 </button>
+                {isDemoMode && (
+                  <p className="text-center text-[11px] font-body text-gray-500 pt-1">
+                    Modo de prueba — esta confirmación no se guarda.
+                  </p>
+                )}
               </form>
             </div>
 
@@ -635,6 +678,11 @@ const RSVPContent = () => {
                         </>
                       )}
                     </button>
+                    {isDemoMode && (
+                      <p className="text-center text-[11px] font-body text-gray-500 pt-1">
+                        Modo de prueba — esta confirmación no se guarda.
+                      </p>
+                    )}
                   </form>
                 </div>
               </div>

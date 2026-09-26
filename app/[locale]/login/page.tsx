@@ -12,6 +12,7 @@ import { Mail } from 'lucide-react';
 import { auth } from '../../../lib/firebase';
 import { useAuth } from '../../../lib/auth-context';
 import { resolveLanding } from '../../../lib/auth-redirect';
+import { track } from '../../../lib/analytics/client';
 import {
   AuthBanner,
   AuthButton,
@@ -108,8 +109,10 @@ function LoginContent() {
     try {
       if (mode === 'signin') {
         await signInWithEmailAndPassword(auth, cleanEmail, password);
+        track('login_completed', {});
       } else if (mode === 'signup') {
         const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
+        track('signup_completed', {});
         await sendEmailVerification(cred.user);
       } else {
         try {
@@ -119,6 +122,7 @@ function LoginContent() {
           const code = errorCode(err);
           if (code !== 'auth/user-not-found') throw err;
         }
+        track('password_reset_requested', {});
         setMode('sent');
       }
     } catch (err) {

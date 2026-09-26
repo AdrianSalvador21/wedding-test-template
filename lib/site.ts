@@ -21,6 +21,7 @@ export const NON_LOCALIZED_PATHS = [
   '/paquetes',
   '/wedding-planners',
   '/preguntas-frecuentes',
+  '/aviso-de-privacidad', // spec 11: aviso de la medición; noindex y fuera de MARKETING_PAGES
   '/disenos',
   '/icon',
   '/apple-icon',

@@ -69,6 +69,7 @@ function PackageCard({ pkg, featured }: { pkg: PackageContent; featured: boolean
   const message = `Hola, me interesa el ${pkg.name} de Invyta.`;
   return (
     <article
+      data-track-package={pkg.id}
       className={`flex flex-col bg-white rounded-3xl p-8 md:p-10 ${
         featured ? 'border-2 border-[#AE5730]' : 'border border-[rgba(43,38,34,0.1)]'
       }`}

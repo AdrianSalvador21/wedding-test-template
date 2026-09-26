@@ -58,6 +58,10 @@ export default function Footer() {
       <div className="border-t border-[rgba(251,247,241,0.1)]">
         <div className="max-w-7xl mx-auto px-6 md:px-12 py-6 text-center text-sm text-[#A79E92]">
           &copy; {new Date().getFullYear()} Invyta. Todos los derechos reservados.
+          {' · '}
+          <a href="/aviso-de-privacidad" className="hover:text-white transition-colors underline underline-offset-2">
+            Aviso de privacidad
+          </a>
         </div>
       </div>
     </LSection>

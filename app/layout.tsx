@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Fraunces, Manrope } from 'next/font/google';
 import ReduxProvider from '../src/components/providers/ReduxProvider';
 import DataInitializer from '../src/components/providers/DataInitializer';
+import AnalyticsProvider from '../components/analytics/AnalyticsProvider';
 import { SITE } from '../lib/site';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -52,6 +53,7 @@ export default function RootLayout({
             {children}
           </DataInitializer>
         </ReduxProvider>
+        <AnalyticsProvider />
       </body>
     </html>
   );

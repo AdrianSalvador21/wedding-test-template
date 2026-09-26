@@ -35,14 +35,10 @@
   /* La altura se setea via inline styles para evitar redimensionamiento */
 }
 
-/* Asegurar que en iOS también use altura fija */
-@supports (-webkit-touch-callout: none) {
-  .hero-section {
-    /* NO forzar alturas dinámicas - usar las del inline style */
-    height: inherit !important;
-    min-height: inherit !important;
-  }
-}
+/* La altura del hero sale SIEMPRE del inline style del componente (px de window.innerHeight).
+   No usar `height: inherit` / `min-height: inherit` en WebKit/iOS: heredan `auto` del contenedor
+   y HeroV2 (Moderno), que se maqueta con porcentajes y posiciones absolutas, colapsa a 0 px en
+   Safari y en los navegadores integrados de Instagram/Facebook/WhatsApp en iOS. */
 
 /* Optimización adicional para evitar layout shifts */
 .hero-section * {
