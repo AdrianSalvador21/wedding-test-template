@@ -22,7 +22,7 @@ export default function Packages() {
 
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
           {/* Paquete Básico */}
-          <LCard variant="default" className="p-9 flex flex-col gap-5 shadow-[0_24px_48px_rgba(43,38,34,0.08)]">
+          <LCard variant="default" trackPackage="basico" className="p-9 flex flex-col gap-5 shadow-[0_24px_48px_rgba(43,38,34,0.08)]">
             <div className="flex flex-col gap-1.5">
               <span className="text-2xl text-[#211D19]" style={fraunces}>
                 {basico.name}
@@ -61,7 +61,7 @@ export default function Packages() {
           </LCard>
 
           {/* Paquete Personalizado */}
-          <LCard variant="dark" className="relative p-9 flex flex-col gap-5 shadow-[0_32px_64px_rgba(43,38,34,0.24)] overflow-hidden">
+          <LCard variant="dark" trackPackage="personalizado" className="relative p-9 flex flex-col gap-5 shadow-[0_32px_64px_rgba(43,38,34,0.24)] overflow-hidden">
             <div className="absolute top-7 -right-2 bg-[#C6663C] text-[#FBF7F1] px-[18px] py-2 rounded-l-full text-xs font-bold tracking-wide uppercase">
               Recomendado
             </div>

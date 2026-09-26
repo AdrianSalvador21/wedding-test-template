@@ -37,7 +37,7 @@ export function PageHero({
   children?: React.ReactNode;
 }) {
   return (
-    <section className="bg-gradient-to-b from-[#FBF7F1] to-[#F3E7D8] py-14 md:py-20" style={manrope}>
+    <section data-track-location="hero" className="bg-gradient-to-b from-[#FBF7F1] to-[#F3E7D8] py-14 md:py-20" style={manrope}>
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col gap-5 items-start">
         <Eyebrow>{eyebrow}</Eyebrow>
         <h1
@@ -104,7 +104,7 @@ export function CtaBand({
   message?: string;
 }) {
   return (
-    <section className="bg-[#AE5730] text-[#FBF7F1] py-16 md:py-20" style={manrope}>
+    <section data-track-location="cta" className="bg-[#AE5730] text-[#FBF7F1] py-16 md:py-20" style={manrope}>
       <div className="max-w-3xl mx-auto px-6 flex flex-col items-center gap-4 text-center">
         <h2 className="text-3xl md:text-[38px] leading-[1.15]" style={fraunces}>
           {title}

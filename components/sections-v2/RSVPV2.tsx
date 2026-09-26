@@ -12,6 +12,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useThemePatterns } from '../../lib/theme-context';
 import { guestService } from '../../services/guestService';
+import { isDemoId } from '../../lib/analytics/demos';
 import { FirebaseRSVP, FirebaseGuest } from '../../src/types/wedding';
 import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title, V2PillButton } from './ui';
 
@@ -34,6 +35,10 @@ const RSVPContentV2 = () => {
   const guestId = searchParams.get('guest');
   const weddingId = weddingData?.id || 'friends-test';
 
+  // Demos oficiales sin guestId: el formulario se muestra y funciona en local, sin escribir a
+  // Firebase. Una boda real sin `?guest=` sigue mostrando "Not available".
+  const isDemoMode = !guestId && isDemoId(weddingId);
+
   const receptionVenue = weddingData?.event.receptionVenue;
   const venueName = typeof receptionVenue?.name === 'object' && receptionVenue.name
     ? (receptionVenue.name[currentLocale as 'es' | 'en'] || receptionVenue.name.es || '')
@@ -51,6 +56,12 @@ const RSVPContentV2 = () => {
 
   useEffect(() => {
     const loadExistingRSVP = async () => {
+      if (isDemoMode) {
+        setError(null);
+        setIsLoading(false);
+        return;
+      }
+
       if (!guestId) {
         setError('Not available');
         setIsLoading(false);
@@ -94,7 +105,7 @@ const RSVPContentV2 = () => {
     };
 
     loadExistingRSVP();
-  }, [guestId, weddingId]);
+  }, [isDemoMode, guestId, weddingId]);
 
   const rsvpSchema = z.object({
     name: z.string().optional(),
@@ -142,6 +153,33 @@ const RSVPContentV2 = () => {
   }, [existingRSVP, setValue]);
 
   const onSubmit = async (data: RSVPFormData) => {
+    if (isDemoMode) {
+      // Modo demo: no escribe a Firebase, solo refleja el envío en el estado local.
+      setIsSubmitting(true);
+      setError(null);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setExistingRSVP({
+        id: 'demo-rsvp',
+        weddingId,
+        guestId: 'demo',
+        guestName: data.name || '',
+        guestEmail: data.email || '',
+        attending: data.attendance === 'yes',
+        guestCount: data.guestCount ? parseInt(data.guestCount, 10) : 1,
+        message: data.message?.trim(),
+        dietaryRestrictions: data.dietaryRestrictions?.trim(),
+        dietaryRestriction: data.dietaryRestriction?.trim(),
+        plusOne: data.plusOneAttendance
+          ? { attending: data.plusOneAttendance === 'yes', name: data.plusOneName?.trim() || undefined }
+          : undefined,
+        submittedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      setIsSubmitted(true);
+      setIsSubmitting(false);
+      return;
+    }
+
     if (!guestId) {
       setError('ID de invitado no disponible');
       return;
@@ -421,6 +459,12 @@ const RSVPContentV2 = () => {
                   </span>
                 )}
               </V2PillButton>
+
+              {isDemoMode && (
+                <p className="text-center text-[11px] text-[#6f6254] pt-1">
+                  Modo de prueba — esta confirmación no se guarda.
+                </p>
+              )}
                 </form>
               </V2Card>
             </div>

@@ -10,6 +10,7 @@ import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { guestService } from '../../services/guestService';
+import { isDemoId } from '../../lib/analytics/demos';
 import { FirebaseRSVP, FirebaseGuest } from '../../src/types/wedding';
 import { V3BgMotif, V3Card, V3Container, V3CornerFlourish, V3EyebrowTitle, V3PillButton, V3Reveal, V3Section, v3Colors } from './ui';
 
@@ -33,10 +34,11 @@ function RSVPContentV3() {
   const guestId = searchParams.get('guest');
   const weddingId = weddingData?.id || 'friends-test';
 
-  // Sin guestId en la URL: modo demo local (no depende de un invitado real en Firebase),
-  // así la boda de prueba se puede probar sin necesitar `?guest=`. Con guestId: mismo
-  // flujo real que RSVP.tsx/RSVPV2.tsx (Firebase vía guestService).
-  const isDemoMode = !guestId;
+  // Demos oficiales sin guestId en la URL: modo demo local (no depende de un invitado real en
+  // Firebase), así se puede probar el formulario sin `?guest=`. Solo aplica a DEMO_IDS: una boda
+  // real sin `?guest=` no debe mostrar un formulario que no guarda (se perderían confirmaciones).
+  // Con guestId: flujo real de Firebase vía guestService (igual que RSVP.tsx y RSVPV2.tsx).
+  const isDemoMode = !guestId && isDemoId(weddingId);
 
   const receptionVenue = weddingData?.event.receptionVenue;
   const venueName = typeof receptionVenue?.name === 'object' && receptionVenue.name
@@ -49,6 +51,12 @@ function RSVPContentV3() {
 
   useEffect(() => {
     if (isDemoMode) {
+      setIsLoading(false);
+      return;
+    }
+
+    if (!guestId) {
+      setError('Not available');
       setIsLoading(false);
       return;
     }

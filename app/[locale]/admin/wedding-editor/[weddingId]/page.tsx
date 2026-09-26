@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { saveWeddingDoc } from '../../../../../lib/weddingSave';
+import { track } from '../../../../../lib/analytics/client';
 import { db } from '../../../../../lib/firebase';
 import { WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
@@ -282,6 +283,7 @@ function WeddingEditorContent() {
       };
       
       await saveWeddingDoc(docRef, updatedData);
+      track('editor_saved', {});
       setWeddingData(updatedData);
       savedSnapshot.current = serializeForDirty(updatedData);
       setSaveMessage('¡Cambios guardados exitosamente!');
@@ -933,6 +935,7 @@ function EventSection({ data, onChange }: SectionProps) {
       withEnglish: ai.hasEnglish,
     });
     if (result.ok) {
+      track('ai_used', { feature: 'dresscode' });
       onChange('dressCode.description.es', result.es);
       if (ai.hasEnglish && result.en) {
         onChange('dressCode.description.en', result.en);
@@ -1207,6 +1210,7 @@ function TimelineSection({
         return;
       }
       if (status !== 200) throw new Error('request failed');
+      track('ai_used', { feature: 'suggest' });
       setSuggestions(Array.isArray(json.events) ? (json.events as TimelineSuggestion[]) : []);
     } catch {
       setSuggestError(AI_TEXT.ERROR_TEXT);
@@ -1681,6 +1685,7 @@ function RecommendedPlacesSection({
       withEnglish: ai.hasEnglish,
     });
     if (result.ok) {
+      track('ai_used', { feature: 'place_description' });
       const currentDescription = placesData[index]?.description;
       const currentEn = typeof currentDescription === 'object' ? currentDescription?.en || '' : '';
       const useEn = ai.hasEnglish && result.en;

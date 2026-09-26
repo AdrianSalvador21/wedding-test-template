@@ -70,7 +70,7 @@ export default function DesignPage({ params }: { params: { slug: string } }) {
     <PageShell active="/#disenos" crumbs={[{ name: design.crumb }]}>
       <JsonLd data={breadcrumbSchema([{ name: design.crumb, path }])} />
 
-      <section className="bg-gradient-to-b from-[#FBF7F1] to-[#F3E7D8] py-14 md:py-20" style={manrope}>
+      <section data-track-location="hero" className="bg-gradient-to-b from-[#FBF7F1] to-[#F3E7D8] py-14 md:py-20" style={manrope}>
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center">
           <div className="flex flex-col gap-5 items-start">
             <Eyebrow>Diseño {design.name}</Eyebrow>

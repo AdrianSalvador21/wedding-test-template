@@ -45,6 +45,17 @@ const nextConfig = {
     // Se conservan los console.error para poder diagnosticar fallas de servidor en producción.
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
   },
+  // PostHog exige que las rutas del proxy no pierdan la barra final (spec 11).
+  skipTrailingSlashRedirect: true,
+  // Proxy de analítica en el propio dominio: los bloqueadores de anuncios filtran los
+  // dominios de PostHog pero no `/ingest`. Región US (spec 11).
+  async rewrites() {
+    return [
+      { source: '/ingest/static/:path*', destination: 'https://us-assets.i.posthog.com/static/:path*' },
+      { source: '/ingest/array/:path*', destination: 'https://us-assets.i.posthog.com/array/:path*' },
+      { source: '/ingest/:path*', destination: 'https://us.i.posthog.com/:path*' },
+    ];
+  },
   async redirects() {
     return [
       // /favicon.ico se sirve como el ícono generado en app/icon.tsx.
