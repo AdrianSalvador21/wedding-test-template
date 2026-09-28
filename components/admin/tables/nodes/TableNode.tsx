@@ -38,7 +38,7 @@ export default function TableNode({ data }: NodeProps<TableNodeData>) {
       onTouchMove={touchHandlers?.onTouchMove}
       onTouchEnd={touchHandlers?.onTouchEnd}
       className="flex flex-col items-center select-none"
-      style={{ touchAction: 'none' }}
+      style={{ touchAction: 'none', WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
     >
       <div
         className="flex flex-col items-center justify-center bg-white transition-transform"

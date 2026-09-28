@@ -87,6 +87,8 @@ export default function FixtureNode({ data }: NodeProps<FixtureNodeData>) {
         transform: armed ? 'scale(1.05)' : 'scale(1)',
         boxShadow: armed ? '0 10px 20px rgba(0,0,0,0.18)' : undefined,
         touchAction: 'none',
+        WebkitTouchCallout: 'none',
+        WebkitUserSelect: 'none',
       }}
     >
       {isRenaming ? (

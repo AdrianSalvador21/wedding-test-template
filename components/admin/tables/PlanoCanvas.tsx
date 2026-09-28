@@ -88,8 +88,7 @@ function PlanoCanvasInner({
     startY: number;
     origX: number;
     origY: number;
-    timer: ReturnType<typeof setTimeout>;
-    armed: boolean;
+    dragging: boolean;
   } | null>(null);
 
   useEffect(() => {
@@ -148,11 +147,19 @@ function PlanoCanvasInner({
     [persistTablePosition, persistFixturePosition]
   );
 
-  // Gesto de "mantener presionado" en pantallas táctiles (spec 12): un toque corto
-  // nunca mueve el nodo (react-flow lo deja como click porque draggable=false);
-  // solo tras ~400ms sosteniendo el dedo se "arma" y empieza a poder arrastrarse,
-  // manejado aquí a mano (no con el drag nativo de react-flow) para no competir
-  // con el pan de una sola mano sobre el lienzo.
+  // Gesto de arrastre en pantallas táctiles (spec 12, ajustado tras spec 14): un
+  // desplazamiento mínimo del dedo (6px) activa el arrastre al instante — igual de
+  // fluido que el demo de la landing (framer-motion `drag`, sin espera artificial).
+  // Antes se requería sostener 400ms sin mover más de 8px para "armarse", pero ese
+  // temblor natural del dedo casi siempre superaba el umbral antes de completarse
+  // el tiempo, cancelando el gesto: en la práctica las mesas casi nunca se movían.
+  // El umbral de 6px sigue distinguiendo un toque corto (abre el panel de detalle,
+  // vía onNodeClick/handleNodeClick) de un arrastre real, sin depender del tiempo.
+  // Al arrancar siempre sobre el nodo (nunca sobre el lienzo vacío) y con
+  // touchAction:'none' + stopPropagation ya puestos en TableNode/FixtureNode, no
+  // compite con el pan de una sola mano del lienzo — la rama de escritorio
+  // (draggable=true, arrastre nativo de react-flow) no se toca.
+  const DRAG_THRESHOLD_PX = 6;
   const makeTouchHandlers = useCallback(
     (nodeId: string) => {
       if (!isCoarsePointerRef.current) return undefined;
@@ -162,20 +169,13 @@ function PlanoCanvasInner({
           const touch = e.touches[0];
           const node = nodesRef.current.find((n) => n.id === nodeId);
           if (!node || !touch) return;
-          const timer = setTimeout(() => {
-            if (touchStateRef.current?.nodeId === nodeId) {
-              touchStateRef.current.armed = true;
-              setArmedNodeId(nodeId);
-            }
-          }, 400);
           touchStateRef.current = {
             nodeId,
             startX: touch.clientX,
             startY: touch.clientY,
             origX: node.position.x,
             origY: node.position.y,
-            timer,
-            armed: false,
+            dragging: false,
           };
         },
         onTouchMove: (e: React.TouchEvent) => {
@@ -184,12 +184,10 @@ function PlanoCanvasInner({
           if (!st || st.nodeId !== nodeId || !touch) return;
           const dx = touch.clientX - st.startX;
           const dy = touch.clientY - st.startY;
-          if (!st.armed) {
-            if (Math.hypot(dx, dy) > 8) {
-              clearTimeout(st.timer);
-              touchStateRef.current = null;
-            }
-            return;
+          if (!st.dragging) {
+            if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
+            st.dragging = true;
+            setArmedNodeId(nodeId);
           }
           e.stopPropagation();
           e.preventDefault();
@@ -201,11 +199,10 @@ function PlanoCanvasInner({
         onTouchEnd: () => {
           const st = touchStateRef.current;
           if (!st || st.nodeId !== nodeId) return;
-          clearTimeout(st.timer);
-          const wasArmed = st.armed;
+          const wasDragging = st.dragging;
           touchStateRef.current = null;
           setArmedNodeId(null);
-          if (wasArmed) {
+          if (wasDragging) {
             const node = nodesRef.current.find((n) => n.id === nodeId);
             if (node) persistNodePosition(nodeId, node.position.x, node.position.y);
           }
