@@ -90,13 +90,21 @@ export interface PackageGroup {
   isNew?: boolean;
 }
 
+// Viñeta corta de las tarjetas de paquetes de la landing (spec 15): `strong` arranca en negritas.
+export interface PackageHighlight {
+  text: string;
+  strong?: string;
+  isNew?: boolean;
+}
+
 export interface PackageContent {
   id: 'basico' | 'personalizado';
   name: string; // "Paquete Básico"
   price: 2200 | 2600; // fuente única del precio: landing, /paquetes y schema
   currency: 'MXN';
   forWho: string;
-  groups: PackageGroup[];
+  groups: PackageGroup[]; // texto largo: /paquetes
+  highlights: PackageHighlight[]; // viñetas cortas: solo components/landing/Packages.tsx
   notIncluded?: string;
 }
 
@@ -125,6 +133,14 @@ export const PACKAGES: PackageContent[] = [
         text: 'Formulario de confirmación y gestión de invitados confirmados.',
       },
     ],
+    highlights: [
+      { text: 'Página con enlace único para compartir' },
+      { text: 'Historia, cuenta regresiva, galería, cronograma y mapa' },
+      { text: 'Regalos, hospedaje, vestimenta y sección solo adultos' },
+      { text: 'Confirmación de asistencia y lista de confirmados' },
+      { text: 'Entrega en 7 días hábiles y hosting hasta 15 días después del evento' },
+      { strong: 'Invyta gestiona los cambios', text: ' de contenido' },
+    ],
     notIncluded:
       'Personalización por invitado (URL, mensaje, idioma, boletos o canción individuales), el asistente con IA ni la gestión de mesas.',
   },
@@ -149,7 +165,7 @@ export const PACKAGES: PackageContent[] = [
       },
       {
         title: 'Panel de edición y gestión',
-        text: 'Cambia tu invitación y controla confirmaciones e invitados cuando quieras, sin depender de nosotros.',
+        text: 'Cambia los datos de tu invitación y controla confirmaciones e invitados cuando quieras.',
       },
       {
         title: 'Gestión de mesas',
@@ -170,6 +186,13 @@ export const PACKAGES: PackageContent[] = [
         text: 'Extendido, 7 días antes del evento.',
       },
     ],
+    highlights: [
+      { strong: 'Panel para editar tú mismo', text: ' tu invitación y gestionar invitados' },
+      { strong: 'Enlace y bienvenida por invitado', text: ', idioma ES/EN y canción' },
+      { strong: 'Gestión de mesas', text: ' con cuadrícula y plano visual', isNew: true },
+      { strong: 'Asistente con IA', text: ' para historia, traducción, itinerario y lugares', isNew: true },
+      { strong: 'Soporte extendido', text: ' durante los 7 días previos al evento' },
+    ],
   },
 ];
 
@@ -184,7 +207,6 @@ export interface FaqItem {
   question: string;
   answer: string;
   group: string;
-  onLanding: boolean; // la landing muestra estas; /preguntas-frecuentes muestra todas
 }
 
 export const FAQ_ITEMS: FaqItem[] = [
@@ -192,152 +214,145 @@ export const FAQ_ITEMS: FaqItem[] = [
     question: '¿Tengo que diseñar mi invitación?',
     answer: 'No. Tú eliges un diseño, completamos juntos la información de tu boda, y nosotros la preparamos.',
     group: 'Antes de empezar',
-    onLanding: true,
   },
   {
     question: '¿Mis invitados necesitan descargar una aplicación?',
     answer: 'No. La invitación funciona directo desde el navegador del celular.',
     group: 'Invitados y confirmaciones',
-    onLanding: true,
   },
   {
     question: '¿Cómo reciben la invitación mis invitados?',
     answer: 'Por WhatsApp, mensaje, correo o el medio que prefieras — es un enlace único.',
     group: 'Invitados y confirmaciones',
-    onLanding: false,
   },
   {
     question: '¿Puedo saber quién confirmó?',
     answer: 'Sí. Las confirmaciones aparecen en tu panel en tiempo real.',
     group: 'Invitados y confirmaciones',
-    onLanding: true,
   },
   {
     question: '¿Puedo limitar cuántos invitados puede llevar cada persona?',
     answer:
       'Sí, en el Paquete Personalizado, que incluye invitaciones individuales con número de lugares por invitado.',
     group: 'Invitados y confirmaciones',
-    onLanding: false,
   },
   {
     question: '¿Puedo cambiar la información después de publicar?',
-    answer: 'Sí, tú editas tu invitación y gestionas tus invitados cuando quieras, sin depender de nosotros.',
+    answer:
+      'Sí. Con el Personalizado ajustas tus datos tú desde tu panel, y si quieres un cambio visual nos escribes; con el Básico, Invyta hace los cambios por ti.',
     group: 'Cambios, idioma y duración',
-    onLanding: true,
   },
   {
     question: '¿Cuánto tarda la entrega?',
     answer: '7 días hábiles.',
     group: 'Antes de empezar',
-    onLanding: true,
   },
   {
     question: '¿Puedo tener mi invitación en otro idioma?',
     answer:
       'Sí, en el Paquete Personalizado puedes personalizar el idioma de tu invitación, eligiendo entre español e inglés para cada uno de tus invitados.',
     group: 'Cambios, idioma y duración',
-    onLanding: false,
   },
   {
     question: '¿La IA publica cosas en mi invitación sin que yo lo sepa?',
     answer:
       'Nunca. Todo lo que genera aparece como borrador en tu editor y solo se publica cuando tú das clic en Guardar.',
     group: 'Asistente con IA',
-    onLanding: true,
   },
   {
     question: '¿La IA viene en el Paquete Básico?',
     answer:
       'No, es parte del Paquete Personalizado, junto con el panel de edición y las invitaciones individuales por invitado.',
     group: 'Asistente con IA',
-    onLanding: false,
   },
   {
     question: '¿La gestión de mesas viene en el Paquete Básico?',
     answer:
       'No, es parte del Paquete Personalizado, junto con el panel de edición, el asistente con IA y las invitaciones individuales por invitado.',
     group: 'Gestión de mesas',
-    onLanding: false,
   },
 ];
 
-// Preguntas que solo muestra /preguntas-frecuentes (la landing conserva sus 10).
+// Más preguntas para /preguntas-frecuentes, que muestra todas. Cuáles y en qué orden va la
+// landing lo define LANDING_FAQ_QUESTIONS (más abajo).
 // Respuestas tomadas de docs/BRAND-FOUNDATIONS.md y de components/landing (Packages).
 FAQ_ITEMS.push(
   {
     question: '¿Cuánto cuesta una invitación digital de boda con Invyta?',
     answer: `El Paquete Básico cuesta ${formatPrice(PACKAGES[0].price)} MXN y el Personalizado ${formatPrice(PACKAGES[1].price)} MXN. No hay costo extra por cada invitación que envíes.`,
     group: 'Antes de empezar',
-    onLanding: false,
   },
   {
     question: '¿Cuál es la diferencia entre el Paquete Básico y el Personalizado?',
     answer:
       'En el Básico, Invyta gestiona los cambios de contenido de tu invitación. El Personalizado suma un panel para que edites tú y gestiones a tus invitados, un asistente con IA, personalización por invitado y soporte extendido durante los 7 días previos al evento.',
     group: 'Antes de empezar',
-    onLanding: false,
   },
   {
     question: '¿Puedo ver cómo se ve antes de contratar?',
     answer: 'Sí, hay tres demos reales que puedes abrir desde el celular.',
     group: 'Antes de empezar',
-    onLanding: false,
   },
   {
     question: '¿Qué diseños puedo elegir?',
     answer: 'Tres: Clásico, Moderno y Botánica Editorial. Puedes abrir una demo real de cada uno desde tu celular.',
     group: 'Antes de empezar',
-    onLanding: false,
   },
   {
     question: '¿Qué información necesito para empezar?',
     answer:
       'Fecha y hora de tu boda, lugar y ubicación, lista de invitados, fotos para tu galería y código de vestimenta.',
     group: 'Antes de empezar',
-    onLanding: false,
   },
   {
     question: '¿Puedo contratar Invyta si soy wedding planner?',
     answer:
       'Sí. Cada boda tiene su propia invitación y su panel de invitados. Cuéntanos cuántas bodas manejas y te explicamos cómo lo organizamos.',
     group: 'Antes de empezar',
-    onLanding: false,
   },
   {
     question: '¿Cuántas invitaciones puedo enviar?',
     answer: 'Todas las que necesites, sin costo extra por invitado.',
     group: 'Invitados y confirmaciones',
-    onLanding: false,
   },
   {
     question: '¿Mis invitados mayores sabrán usarla?',
     answer: 'Se comparte por WhatsApp como cualquier mensaje: un enlace, un toque y se abre.',
     group: 'Invitados y confirmaciones',
-    onLanding: false,
   },
   {
     question: '¿Cuánto tiempo estará activa mi invitación?',
     answer: 'Incluye hosting hasta 15 días después del evento.',
     group: 'Cambios, idioma y duración',
-    onLanding: false,
   },
   {
     question: '¿Qué hace el asistente con IA?',
     answer:
       'Redacta tu historia y tu código de vestimenta, traduce a inglés y sugiere itinerario, hoteles y lugares. Es parte del Paquete Personalizado.',
     group: 'Asistente con IA',
-    onLanding: false,
   },
   {
     question: '¿Qué es la gestión de mesas?',
     answer:
       'Organiza a tus invitados confirmados en mesas desde una vista de cuadrícula o un plano visual de tu salón, con arrastrar y soltar. Es parte del Paquete Personalizado.',
     group: 'Gestión de mesas',
-    onLanding: false,
   },
 );
 
 export const getFaq = (question: string) => FAQ_ITEMS.find((item) => item.question === question)!;
+
+// Preguntas de la landing, en el orden en que se muestran (spec 15). Son textos exactos de
+// FAQ_ITEMS: no se renombran porque /paquetes, /wedding-planners y /disenos las buscan con getFaq.
+export const LANDING_FAQ_QUESTIONS = [
+  '¿Cuánto cuesta una invitación digital de boda con Invyta?',
+  '¿Cuál es la diferencia entre el Paquete Básico y el Personalizado?',
+  '¿Cuánto tarda la entrega?',
+  '¿Puedo cambiar la información después de publicar?',
+  '¿Mis invitados necesitan descargar una aplicación?',
+  '¿Puedo ver cómo se ve antes de contratar?',
+  '¿La IA publica cosas en mi invitación sin que yo lo sepa?',
+  '¿La gestión de mesas viene en el Paquete Básico?',
+];
 
 // Agrupa por tema respetando el orden de primera aparición.
 export function groupFaq(items: FaqItem[]): { group: string; items: FaqItem[] }[] {

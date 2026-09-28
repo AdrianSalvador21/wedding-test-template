@@ -2,30 +2,24 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { fraunces, LSection, LSolidButton, LTextLink } from './ui';
+import { fraunces, LSection, LSolidButton, LTextLink, LCheckIcon } from './ui';
+import { getDesign } from '../../lib/marketing-content';
 
 const WHATSAPP_LINK_INTRO =
   'https://wa.me/529602460590?text=Hola!%20Me%20interesa%20conocer%20m%C3%A1s%20sobre%20las%20invitaciones%20digitales%20de%20Invyta.';
 
-const chips = ['Diseño personalizado', 'Confirmación automática', 'Listo en 7 días'];
+// Demo real de Botánica Editorial: el enlace del hero la abre en pestaña nueva (demo_click se mide solo).
+const DEMO_HREF = getDesign('botanica-editorial')!.demoHref;
+
+const checks = ['Enlace único para compartir', 'Confirmaciones en tiempo real'];
 
 export default function Hero() {
   return (
-    <LSection id="inicio" className="pt-32 pb-16 md:pt-40 md:pb-20">
+    <LSection id="inicio" className="pt-24 pb-10 md:pt-36 md:pb-12">
       <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-16 items-center">
         {/* Entrada con CSS (globals.css), no con framer-motion: el texto y las imágenes del hero
             son visibles en el HTML inicial y no esperan a la hidratación de React (LCP). */}
         <div className="flex flex-col gap-6 hero-in-up">
-          <div className="flex flex-nowrap items-center gap-1.5 md:gap-2">
-            {chips.map((chip) => (
-              <span
-                key={chip}
-                className="bg-[#F0E6D8] text-[#8A5A32] text-[9px] sm:text-[10px] md:text-xs font-bold md:tracking-wide uppercase px-2 py-1 md:px-3.5 md:py-1.5 rounded-full whitespace-nowrap flex-shrink-0"
-              >
-                {chip}
-              </span>
-            ))}
-          </div>
           <h1 className="tracking-tight text-[#211D19]" style={fraunces}>
             <span className="block text-4xl md:text-5xl lg:text-[54px] leading-[1.1]">
               Invitaciones digitales para boda
@@ -39,16 +33,26 @@ export default function Hero() {
             panel simple — sin apps que descargar.
           </p>
           <div className="flex flex-wrap items-center gap-6 mt-1">
-            <LSolidButton href={WHATSAPP_LINK_INTRO} target="_blank" variant="terracota" className="text-base">
+            <LSolidButton href={WHATSAPP_LINK_INTRO} target="_blank" variant="terracotaDark" className="text-base">
               Crea tu invitación
             </LSolidButton>
-            <LTextLink href="#disenos">Ver los diseños →</LTextLink>
+            <LTextLink href={DEMO_HREF} target="_blank">
+              Ver una invitación de ejemplo →
+            </LTextLink>
           </div>
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-[#4A433C]">
+            {checks.map((check) => (
+              <li key={check} className="flex items-center gap-2">
+                <LCheckIcon color="#7C8363" className="flex-shrink-0" />
+                {check}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div
           className="relative mx-auto w-full max-w-[460px] hero-in-left"
-          style={{ height: 'clamp(360px, 46vw, 600px)' }}
+          style={{ height: 'clamp(360px, 46vw, 560px)' }}
         >
           <div
             className="absolute overflow-hidden rounded-[26px] border-[7px] border-white shadow-[0_24px_48px_rgba(43,38,34,0.2)]"

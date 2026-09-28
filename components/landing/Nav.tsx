@@ -7,9 +7,8 @@ const WHATSAPP_LINK = 'https://wa.me/529602460590';
 
 // Los enlaces a secciones llevan `/` para funcionar también desde las páginas de marketing.
 const links = [
-  { href: '/#como-funciona', label: 'Cómo funciona' },
   { href: '/#disenos', label: 'Diseños' },
-  { href: '/#funcionalidades', label: 'Funcionalidades' },
+  { href: '/#como-funciona', label: 'Cómo funciona' },
   { href: '/paquetes', label: 'Paquetes' },
   { href: '/wedding-planners', label: 'Wedding planners' },
   { href: '/preguntas-frecuentes', label: 'Preguntas frecuentes' },
