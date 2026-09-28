@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CalendarDays, Mail, Pencil, Plus, Search, Settings, Users } from 'lucide-react';
+import { CalendarDays, LayoutGrid, Mail, Pencil, Plus, Search, Settings, Users } from 'lucide-react';
 import { manrope, displayFont } from '../../../components/admin/ui';
 import AccountControls from '../../../components/admin/AccountControls';
 import {
@@ -73,6 +73,10 @@ function WeddingCard({
         <a href={`/${locale}/admin/guests/${wedding.id}`} className={`${actionClass} bg-white text-[#0A0A0A] border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA]`}>
           <Users className="h-[15px] w-[15px]" />
           Invitados
+        </a>
+        <a href={`/${locale}/admin/tables/${wedding.id}`} className={`${actionClass} bg-white text-[#0A0A0A] border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA]`}>
+          <LayoutGrid className="h-[15px] w-[15px]" />
+          Mesas
         </a>
       </div>
     </div>

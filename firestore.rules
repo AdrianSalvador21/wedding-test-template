@@ -35,6 +35,18 @@ service cloud.firestore {
       allow write: if true;
     }
     
+    // Reglas para mesas (spec 12)
+    match /tables/{tableId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Reglas para objetos del salón: pista, barra, mesa principal, etc. (spec 12)
+    match /venueFixtures/{fixtureId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
     // Reglas para configuración general del sistema
     match /config/{configId} {
       // Solo lectura pública de configuración

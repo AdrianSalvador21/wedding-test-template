@@ -20,9 +20,13 @@ export default function Packages() {
           <p className="text-base text-[#5A534B]">Elige el paquete que mejor se adapte a tus necesidades.</p>
         </LReveal>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
-          {/* Paquete Básico */}
-          <LCard variant="default" trackPackage="basico" className="p-9 flex flex-col gap-5 shadow-[0_24px_48px_rgba(43,38,34,0.08)]">
+        <div className="grid md:grid-cols-[0.86fr_1.14fr] gap-8 max-w-5xl mx-auto w-full items-start">
+          {/* Paquete Básico — visualmente secundario frente al Personalizado destacado */}
+          <LCard
+            variant="default"
+            trackPackage="basico"
+            className="p-9 flex flex-col gap-5 shadow-[0_24px_48px_rgba(43,38,34,0.08)] md:translate-y-7 md:scale-[0.97] md:opacity-90"
+          >
             <div className="flex flex-col gap-1.5">
               <span className="text-2xl text-[#211D19]" style={fraunces}>
                 {basico.name}
@@ -60,8 +64,12 @@ export default function Packages() {
             </LSolidButton>
           </LCard>
 
-          {/* Paquete Personalizado */}
-          <LCard variant="dark" trackPackage="personalizado" className="relative p-9 flex flex-col gap-5 shadow-[0_32px_64px_rgba(43,38,34,0.24)] overflow-hidden">
+          {/* Paquete Personalizado — más ancho y elevado para que sea el que primero llame la atención */}
+          <LCard
+            variant="dark"
+            trackPackage="personalizado"
+            className="relative p-9 flex flex-col gap-5 shadow-[0_36px_72px_rgba(33,29,25,0.3)] overflow-hidden md:-translate-y-3"
+          >
             <div className="absolute top-7 -right-2 bg-[#C6663C] text-[#FBF7F1] px-[18px] py-2 rounded-l-full text-xs font-bold tracking-wide uppercase">
               Recomendado
             </div>

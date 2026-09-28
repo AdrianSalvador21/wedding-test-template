@@ -1,0 +1,23 @@
+/* Controles de zoom de react-flow a tamaño de pulgar en cualquier viewport (spec 12: mínimo 44x44px). */
+.controlsOverride :global(.react-flow__controls) {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.controlsOverride :global(.react-flow__controls-button) {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.controlsOverride :global(.react-flow__controls-button svg) {
+  width: 16px;
+  height: 16px;
+}
+
+.controlsOverride :global(.react-flow__minimap) {
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}

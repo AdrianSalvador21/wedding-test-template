@@ -22,6 +22,13 @@ export interface AnalyticsEventMap {
   guest_added: NoProps;
   guest_link_copied: NoProps;
   ai_used: { feature: 'dresscode' | 'suggest' | 'place_description' };
+  // Gestión de mesas (spec 12)
+  table_created: NoProps;
+  table_deleted: NoProps;
+  guest_assigned_to_table: NoProps;
+  fixture_created: NoProps;
+  fixture_deleted: NoProps;
+  plano_view_opened: NoProps;
 }
 
 export type AnalyticsEventName = keyof AnalyticsEventMap;

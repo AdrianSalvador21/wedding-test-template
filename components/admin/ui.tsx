@@ -45,7 +45,7 @@ export function AdminPageNav({
 }: {
   weddingId: string;
   locale: string;
-  active: 'editor' | 'guests';
+  active: 'editor' | 'guests' | 'tables';
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const auth = useAuthOptional();
@@ -63,6 +63,9 @@ export function AdminPageNav({
       </a>
       <a href={`/${locale}/admin/guests/${weddingId}`} className={linkClass(active === 'guests')}>
         Invitados
+      </a>
+      <a href={`/${locale}/admin/tables/${weddingId}`} className={linkClass(active === 'tables')}>
+        Mesas
       </a>
       {showAllLink && (
         <a href={`/${locale}/admin`} className={linkClass(false)}>
@@ -151,6 +154,7 @@ const pillToneClass: Record<string, string> = {
   pending: 'text-[#475569] bg-[rgba(71,85,105,0.08)]',
   incomplete: 'text-[#475569] bg-[rgba(71,85,105,0.08)]',
   declined: 'text-[#B91C1C] bg-[rgba(185,28,28,0.08)]',
+  full: 'text-[#B91C1C] bg-[rgba(185,28,28,0.08)]',
 };
 
 export function AdminStatusPill({
@@ -158,7 +162,7 @@ export function AdminStatusPill({
   children,
   className = '',
 }: {
-  tone?: 'active' | 'complete' | 'confirmed' | 'draft' | 'pending' | 'incomplete' | 'declined';
+  tone?: 'active' | 'complete' | 'confirmed' | 'draft' | 'pending' | 'incomplete' | 'declined' | 'full';
   children: React.ReactNode;
   className?: string;
 }) {
@@ -241,21 +245,22 @@ export function AdminStatCard({
   icon: LucideIcon;
   label: string;
   value: React.ReactNode;
-  tone?: 'ink' | 'success' | 'pending' | 'accent';
+  tone?: 'ink' | 'success' | 'pending' | 'accent' | 'danger';
 }) {
   const toneColor: Record<string, string> = {
     ink: '#0A0A0A',
     success: '#15803D',
     pending: '#475569',
     accent: '#0A0A0A',
+    danger: '#B91C1C',
   };
   return (
-    <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-xl px-5 py-4">
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#71717A]">
-        <Icon className="h-[15px] w-[15px]" style={{ color: toneColor[tone] }} />
-        {label}
+    <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-xl px-4 py-3.5 flex items-center justify-between gap-2">
+      <div className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wide text-[#71717A] min-w-0">
+        <Icon className="h-[13px] w-[13px] flex-shrink-0" style={{ color: toneColor[tone] }} />
+        <span className="leading-snug">{label}</span>
       </div>
-      <div className="text-[26px] sm:text-[30px] mt-1.5" style={{ ...displayFont, color: toneColor[tone] }}>
+      <div className="text-[19px] flex-shrink-0" style={{ ...displayFont, color: toneColor[tone] }}>
         {value}
       </div>
     </div>
