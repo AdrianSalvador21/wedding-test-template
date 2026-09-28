@@ -5,9 +5,19 @@ import { fraunces, LSection, LReveal, LStagger, LStaggerItem, LCard } from './ui
 
 const features = [
   {
+    title: 'Gestión de mesas',
+    description: 'Cuadrícula y plano visual de tu salón, sincronizados con tus invitados confirmados.',
+    variant: 'dark' as const,
+  },
+  {
+    title: 'Asistente con IA',
+    description: 'Redacta tu historia, traduce a inglés y sugiere itinerario y lugares cercanos.',
+    variant: 'accent' as const,
+  },
+  {
     title: 'Cronograma y mapa',
     description: 'Ceremonia, recepción e itinerario del día en un mapa interactivo.',
-    variant: 'dark' as const,
+    variant: 'default' as const,
   },
   {
     title: 'Mesa de regalos y hospedaje',
@@ -27,7 +37,7 @@ const features = [
   {
     title: 'Música en tu invitación',
     description: 'Elige la canción que suena mientras tus invitados la abren.',
-    variant: 'accent' as const,
+    variant: 'default' as const,
   },
   {
     title: 'Invitaciones y envíos ilimitados',
@@ -49,7 +59,7 @@ export default function Features() {
             cabos sueltos.
           </p>
         </LReveal>
-        <LStagger className="grid md:grid-cols-3 gap-6">
+        <LStagger className="grid md:grid-cols-4 gap-6">
           {features.map((feature) => (
             <LStaggerItem key={feature.title}>
               <LCard variant={feature.variant} className="p-7 h-full flex flex-col gap-2.5">

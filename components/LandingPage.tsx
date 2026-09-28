@@ -10,6 +10,7 @@ import DesignGallery from './landing/DesignGallery';
 import IndividualPersonalization from './landing/IndividualPersonalization';
 import Features from './landing/Features';
 import AdminProof from './landing/AdminProof';
+import MesasSection from './landing/MesasSection';
 import AiSection from './landing/AiSection';
 import Packages from './landing/Packages';
 import PlannerCta from './landing/PlannerCta';
@@ -26,8 +27,9 @@ const LandingPage = () => {
         <HowItWorks />
         <TrustStrip />
         <DesignGallery />
-        <IndividualPersonalization />
         <Features />
+        <IndividualPersonalization />
+        <MesasSection />
         <AdminProof />
         <AiSection />
         <Packages />

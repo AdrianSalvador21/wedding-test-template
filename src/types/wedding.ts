@@ -46,6 +46,34 @@ export interface FirebaseGuest {
   };
   createdAt: string;
   updatedAt: string;
+  tableId?: string | null; // Mesa asignada (spec 12); ausente o null = "Sin mesa"
+}
+
+// Tipos para gestión de mesas (spec 12)
+export interface FirebaseTable {
+  id: string;
+  weddingId: string;
+  name: string; // "Mesa 1", "Mesa de Honor"
+  capacity: number;
+  shape?: 'round' | 'square' | 'rectangular' | 'imperial'; // decorativo, no afecta la lógica de capacidad
+  posX?: number; // posición en el Plano; ausente = "sin colocar" (bandeja)
+  posY?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Objetos del salón (pista, barra, mesa principal, etc.): sin invitados ni capacidad
+export interface FirebaseVenueFixture {
+  id: string;
+  weddingId: string;
+  type: 'dance_floor' | 'bar' | 'stage' | 'entrance' | 'custom';
+  label: string; // "Pista de baile", "Barra", o texto libre si type = 'custom'
+  posX?: number;
+  posY?: number;
+  width: number;
+  height: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Tipos para la información de la pareja

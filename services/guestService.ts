@@ -12,34 +12,24 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { cleanUndefinedFields } from '../lib/firestore-utils';
 import { FirebaseGuest } from '../src/types/wedding';
+
+/**
+ * Personas a sentar por invitación (spec 12): mismo criterio que
+ * `getWeddingGuestStats` usa para "personas confirmadas" — si ya confirmó
+ * asistencia, el número real que puso en el RSVP; si no, el estimado de la
+ * invitación (`guestCount`).
+ */
+export function getSeatedGuestCount(guest: FirebaseGuest): number {
+  if (guest.rsvpConfirmation?.attending === true) {
+    return guest.rsvpConfirmation.guestCount || 1;
+  }
+  return guest.guestCount || 1;
+}
 
 export class GuestService {
   private readonly GUESTS_COLLECTION = 'guests';
-
-  /**
-   * Limpia campos undefined de un objeto para Firebase
-   */
-  private cleanUndefinedFields(obj: any): any {
-    const cleaned: any = {};
-    
-    Object.keys(obj).forEach(key => {
-      const value = obj[key];
-      
-      if (value !== undefined) {
-        if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-          const cleanedNested = this.cleanUndefinedFields(value);
-          if (Object.keys(cleanedNested).length > 0) {
-            cleaned[key] = cleanedNested;
-          }
-        } else {
-          cleaned[key] = value;
-        }
-      }
-    });
-    
-    return cleaned;
-  }
 
   /**
    * Genera un ID único para el invitado basado en su nombre
@@ -151,7 +141,7 @@ export class GuestService {
     try {
       const now = new Date().toISOString();
       
-      const cleanData = this.cleanUndefinedFields({
+      const cleanData = cleanUndefinedFields({
         ...guestData,
         rsvpStatus: 'pending',
         createdAt: now,
@@ -182,7 +172,7 @@ export class GuestService {
       const now = new Date().toISOString();
       const guestDoc = doc(db, this.GUESTS_COLLECTION, guestId);
       
-      const cleanData = this.cleanUndefinedFields({
+      const cleanData = cleanUndefinedFields({
         ...guestData,
         updatedAt: now
       });
@@ -215,6 +205,14 @@ export class GuestService {
       console.error('Error actualizando estado RSVP del invitado:', error);
       throw new Error('No se pudo actualizar el estado del invitado');
     }
+  }
+
+  /**
+   * Asigna (o quita, con tableId = null) un invitado a una mesa (spec 12).
+   * La validación de capacidad vive en quien la llama (la UI de Mesas), no aquí.
+   */
+  async assignGuestToTable(guestId: string, tableId: string | null): Promise<void> {
+    await this.updateGuest(guestId, { tableId });
   }
 
   /**

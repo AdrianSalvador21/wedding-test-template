@@ -126,7 +126,7 @@ export const PACKAGES: PackageContent[] = [
       },
     ],
     notIncluded:
-      'Personalización por invitado (URL, mensaje, idioma, boletos o canción individuales) ni el asistente con IA.',
+      'Personalización por invitado (URL, mensaje, idioma, boletos o canción individuales), el asistente con IA ni la gestión de mesas.',
   },
   {
     id: 'personalizado',
@@ -150,6 +150,11 @@ export const PACKAGES: PackageContent[] = [
       {
         title: 'Panel de edición y gestión',
         text: 'Cambia tu invitación y controla confirmaciones e invitados cuando quieras, sin depender de nosotros.',
+      },
+      {
+        title: 'Gestión de mesas',
+        text: 'Cuadrícula y plano visual de tu salón: arrastra a tus invitados confirmados a su mesa y ve la ocupación de un vistazo.',
+        isNew: true,
       },
       {
         title: 'Asistente con IA',
@@ -199,7 +204,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     question: '¿Cómo reciben la invitación mis invitados?',
     answer: 'Por WhatsApp, mensaje, correo o el medio que prefieras — es un enlace único.',
     group: 'Invitados y confirmaciones',
-    onLanding: true,
+    onLanding: false,
   },
   {
     question: '¿Puedo saber quién confirmó?',
@@ -212,7 +217,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     answer:
       'Sí, en el Paquete Personalizado, que incluye invitaciones individuales con número de lugares por invitado.',
     group: 'Invitados y confirmaciones',
-    onLanding: true,
+    onLanding: false,
   },
   {
     question: '¿Puedo cambiar la información después de publicar?',
@@ -231,7 +236,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     answer:
       'Sí, en el Paquete Personalizado puedes personalizar el idioma de tu invitación, eligiendo entre español e inglés para cada uno de tus invitados.',
     group: 'Cambios, idioma y duración',
-    onLanding: true,
+    onLanding: false,
   },
   {
     question: '¿La IA publica cosas en mi invitación sin que yo lo sepa?',
@@ -245,7 +250,14 @@ export const FAQ_ITEMS: FaqItem[] = [
     answer:
       'No, es parte del Paquete Personalizado, junto con el panel de edición y las invitaciones individuales por invitado.',
     group: 'Asistente con IA',
-    onLanding: true,
+    onLanding: false,
+  },
+  {
+    question: '¿La gestión de mesas viene en el Paquete Básico?',
+    answer:
+      'No, es parte del Paquete Personalizado, junto con el panel de edición, el asistente con IA y las invitaciones individuales por invitado.',
+    group: 'Gestión de mesas',
+    onLanding: false,
   },
 ];
 
@@ -314,6 +326,13 @@ FAQ_ITEMS.push(
     answer:
       'Redacta tu historia y tu código de vestimenta, traduce a inglés y sugiere itinerario, hoteles y lugares. Es parte del Paquete Personalizado.',
     group: 'Asistente con IA',
+    onLanding: false,
+  },
+  {
+    question: '¿Qué es la gestión de mesas?',
+    answer:
+      'Organiza a tus invitados confirmados en mesas desde una vista de cuadrícula o un plano visual de tu salón, con arrastrar y soltar. Es parte del Paquete Personalizado.',
+    group: 'Gestión de mesas',
     onLanding: false,
   },
 );
