@@ -4,6 +4,7 @@ import { Inter, Fraunces, Manrope } from 'next/font/google';
 import ReduxProvider from '../src/components/providers/ReduxProvider';
 import DataInitializer from '../src/components/providers/DataInitializer';
 import AnalyticsProvider from '../components/analytics/AnalyticsProvider';
+import GoogleAdsTag from '../components/analytics/GoogleAdsTag';
 import { SITE } from '../lib/site';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -54,6 +55,7 @@ export default function RootLayout({
           </DataInitializer>
         </ReduxProvider>
         <AnalyticsProvider />
+        <GoogleAdsTag />
       </body>
     </html>
   );
