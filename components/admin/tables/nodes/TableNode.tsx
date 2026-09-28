@@ -37,7 +37,10 @@ export default function TableNode({ data }: NodeProps<TableNodeData>) {
       onTouchStart={touchHandlers?.onTouchStart}
       onTouchMove={touchHandlers?.onTouchMove}
       onTouchEnd={touchHandlers?.onTouchEnd}
-      className="flex flex-col items-center select-none"
+      // `nopan`: react-flow solo lo pone en nodos draggable; en touch los dejamos
+      // draggable=false (arrastre manual), y sin esta clase el pan del lienzo se
+      // llevaba el toque antes de que el arrastre de la mesa pudiera arrancar.
+      className="nopan flex flex-col items-center select-none"
       style={{ touchAction: 'none', WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
     >
       <div
