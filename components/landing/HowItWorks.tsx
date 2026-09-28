@@ -6,20 +6,21 @@ import { fraunces, LSection, LReveal, LStagger, LStaggerItem } from './ui';
 const steps = [
   {
     number: '01',
-    title: 'Personaliza tu invitación',
-    description: 'Elige uno de los 3 diseños y cuéntanos fecha, lugares, cronograma y fotos de tu boda.',
+    title: 'Elige tu diseño y cuéntanos tu boda',
+    description: 'Escoge entre tres diseños y compártenos fecha, lugares, cronograma y fotos.',
     accent: false,
   },
   {
     number: '02',
-    title: 'Comparte por WhatsApp',
-    description: 'Cada invitado recibe su propio enlace, listo para abrir desde el celular sin instalar nada.',
+    title: 'Nosotros armamos tu invitación',
+    description: 'La preparamos y te la entregamos en 7 días hábiles. Tú no diseñas nada.',
     accent: false,
   },
   {
     number: '03',
-    title: 'Gestiona confirmaciones',
-    description: 'Ve quién confirmó, cuántos boletos y restricciones alimentarias desde un solo panel.',
+    title: 'Compártela y ve quién confirma',
+    description:
+      'La mandas por WhatsApp. Confirmaciones, número de personas y restricciones alimentarias llegan a tu lista en tiempo real.',
     accent: true,
   },
 ];

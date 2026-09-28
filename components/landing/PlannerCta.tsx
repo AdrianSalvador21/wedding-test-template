@@ -2,23 +2,26 @@
 
 import React from 'react';
 import { fraunces, LSection, LReveal, LSolidButton } from './ui';
+import { whatsappUrl } from '../../lib/contact';
 
-const WHATSAPP_LINK = 'https://wa.me/529602460590';
+// Mismo mensaje que el botón de /wedding-planners, para que la analítica de ambos sea comparable.
+const PLANNER_MESSAGE = 'Hola, soy wedding planner y quiero saber cómo trabajan con Invyta.';
 
 export default function PlannerCta() {
   return (
-    <LSection id="planners" tone="terracota" className="py-20">
-      <LReveal className="max-w-4xl mx-auto px-6 flex flex-col items-center gap-5 text-center">
-        <h2 className="text-3xl md:text-[36px]" style={fraunces}>
-          ¿Eres wedding planner?
-        </h2>
-        <p className="text-base text-[#FBEADD] max-w-[520px]">
-          Tenemos beneficios especiales para ti y para tus clientes.
-        </p>
-        <LSolidButton href={WHATSAPP_LINK} target="_blank" variant="ivory" className="mt-1">
-          Habla con nosotros
+    <LSection id="planners" tone="terracotaDark" className="py-16 md:py-20">
+      <LReveal className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-12">
+        <div className="flex flex-col gap-3 max-w-[640px]">
+          <h2 className="text-3xl md:text-[38px] leading-[1.12] tracking-tight" style={fraunces}>
+            ¿Eres wedding planner?
+          </h2>
+          <p className="text-base md:text-lg text-[#FBEADD] leading-relaxed">
+            Una invitación y un panel de invitados por cada cliente, con el mismo cuidado y sin rehacer trabajo.
+          </p>
+        </div>
+        <LSolidButton href={whatsappUrl(PLANNER_MESSAGE)} target="_blank" variant="ivoryDark" className="flex-shrink-0">
+          Cuéntanos cuántas bodas manejas
         </LSolidButton>
-        <span className="text-[13px] text-[#FBEADD]">Respuesta en menos de 24 horas</span>
       </LReveal>
     </LSection>
   );

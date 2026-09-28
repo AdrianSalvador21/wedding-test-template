@@ -23,7 +23,7 @@ export function LSection({
   id?: string;
   children: React.ReactNode;
   className?: string;
-  tone?: 'ivory' | 'white' | 'charcoal' | 'terracota' | 'gradient';
+  tone?: 'ivory' | 'white' | 'charcoal' | 'terracota' | 'terracotaDark' | 'sand' | 'gradient';
   border?: boolean;
   style?: React.CSSProperties;
 }) {
@@ -32,6 +32,9 @@ export function LSection({
     white: 'bg-white text-[#2B2622]',
     charcoal: 'bg-[#211D19] text-[#FBF7F1]',
     terracota: 'bg-[#C6663C] text-[#FBF7F1]',
+    // Contraste AA con texto marfil (4.68:1), a diferencia de #C6663C (3.67:1).
+    terracotaDark: 'bg-[#AE5730] text-[#FBF7F1]',
+    sand: 'bg-[#F6EFE4] text-[#2B2622]',
     gradient: 'bg-gradient-to-b from-[#FBF7F1] to-[#F3E7D8] text-[#2B2622]',
   }[tone];
   const borderClass = border ? 'border-t border-[rgba(43,38,34,0.08)]' : '';

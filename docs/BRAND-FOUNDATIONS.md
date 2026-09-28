@@ -5,7 +5,7 @@ Regla general: solo se afirma lo que el producto hace hoy. Sin testimonios, cifr
 
 ## 1. Estrategia
 
-**Qué es Invyta.** Invitaciones web de boda hechas a la medida: una página propia para la pareja, con enlace único por invitado, confirmación de asistencia (RSVP) en tiempo real y, en el paquete Personalizado, un panel para que la pareja edite todo sin depender de nadie.
+**Qué es Invyta.** Invitaciones web de boda hechas a la medida: una página propia para la pareja, con enlace único por invitado, confirmación de asistencia (RSVP) en tiempo real y, en el paquete Personalizado, un panel para que la pareja ajuste sus datos cuando quiera (para un cambio visual escribe a Invyta por WhatsApp).
 
 **Promesa.** Tu invitación de boda, lista en 7 días hábiles, con confirmaciones en tiempo real.
 
@@ -23,6 +23,8 @@ Regla general: solo se afirma lo que el producto hace hoy. Sin testimonios, cifr
 5. Panel de edición y gestión de invitados (exclusivo del paquete Personalizado).
 6. Asistente con IA (exclusivo del Personalizado): redacta la historia y el código de vestimenta, traduce a inglés y sugiere itinerario, hoteles y lugares.
 7. Entrega en 7 días hábiles, con hosting incluido hasta 15 días después del evento.
+8. Revisiones ilimitadas antes de la entrega (compromiso de negocio, spec 15).
+9. Acompañamiento por WhatsApp durante todo el proceso; en el Personalizado, los cambios visuales después de publicar se piden por WhatsApp y los datos los ajusta la pareja desde su panel (spec 15).
 
 ## 2. Voz y tono
 
@@ -72,7 +74,9 @@ El desglose completo por categorías vive en `components/landing/Packages.tsx`. 
 | Objeción | Respuesta base |
 |---|---|
 | ¿Mis invitados mayores sabrán usarla? | Se comparte por WhatsApp como cualquier mensaje: un enlace, un toque y se abre. |
-| ¿Puedo cambiar algo después? | En el Personalizado editas tú desde tu panel; en el Básico Invyta gestiona los cambios. |
+| ¿Puedo cambiar algo después? | En el Personalizado ajustas tus datos (nombres, fecha, lugares y fotos) desde tu panel, y para un cambio visual nos escribes por WhatsApp; en el Básico Invyta hace los cambios por ti. |
+| ¿Cuántas revisiones tengo? | Las que necesites antes de la entrega: las revisiones son ilimitadas. |
+| ¿Me acompañan durante el proceso? | Sí, por WhatsApp, desde la primera pregunta hasta la entrega. |
 | ¿Cuánto tarda? | 7 días hábiles desde que tenemos tu información. |
 | ¿Cuántas invitaciones puedo mandar? | Todas las que necesites, sin costo extra por invitado. |
 | ¿Cuánto tiempo estará activa? | Incluye hosting hasta 15 días después del evento. |

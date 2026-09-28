@@ -16,7 +16,7 @@ export default function Footer() {
             invyta
           </span>
           <span className="text-sm text-[#A79E92] max-w-xs leading-relaxed">
-            Invitaciones digitales para tu día especial.
+            Tu boda, en una invitación que se siente tuya.
           </span>
         </div>
         <nav aria-label="Producto" className="flex flex-col gap-3">

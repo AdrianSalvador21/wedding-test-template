@@ -4,17 +4,18 @@ import React from 'react';
 import StructuredData from './StructuredData';
 import Nav from './landing/Nav';
 import Hero from './landing/Hero';
-import HowItWorks from './landing/HowItWorks';
-import TrustStrip from './landing/TrustStrip';
+import PriceStrip from './landing/PriceStrip';
 import DesignGallery from './landing/DesignGallery';
-import IndividualPersonalization from './landing/IndividualPersonalization';
+import HowItWorks from './landing/HowItWorks';
 import Features from './landing/Features';
-import AdminProof from './landing/AdminProof';
+import EditorSection from './landing/EditorSection';
 import MesasSection from './landing/MesasSection';
 import AiSection from './landing/AiSection';
 import Packages from './landing/Packages';
-import PlannerCta from './landing/PlannerCta';
+import ProcessSection from './landing/ProcessSection';
 import FAQ from './landing/FAQ';
+import PlannerCta from './landing/PlannerCta';
+import FinalCta from './landing/FinalCta';
 import Footer from './landing/Footer';
 
 const LandingPage = () => {
@@ -24,17 +25,18 @@ const LandingPage = () => {
       <Nav />
       <main>
         <Hero />
-        <HowItWorks />
-        <TrustStrip />
+        <PriceStrip />
         <DesignGallery />
+        <HowItWorks />
         <Features />
-        <IndividualPersonalization />
+        <EditorSection />
         <MesasSection />
-        <AdminProof />
         <AiSection />
         <Packages />
-        <PlannerCta />
+        <ProcessSection />
         <FAQ />
+        <PlannerCta />
+        <FinalCta />
       </main>
       <Footer />
     </div>
