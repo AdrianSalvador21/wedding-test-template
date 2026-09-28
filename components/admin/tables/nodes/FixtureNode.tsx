@@ -77,7 +77,8 @@ export default function FixtureNode({ data }: NodeProps<FixtureNodeData>) {
       onTouchStart={touchHandlers?.onTouchStart}
       onTouchMove={touchHandlers?.onTouchMove}
       onTouchEnd={touchHandlers?.onTouchEnd}
-      className="relative flex items-center justify-center select-none"
+      // `nopan`: ver TableNode — sin esto el pan del lienzo gana el toque en móvil.
+      className="nopan relative flex items-center justify-center select-none"
       style={{
         width: size.width,
         height: size.height,

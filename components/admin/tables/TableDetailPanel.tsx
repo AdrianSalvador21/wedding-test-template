@@ -116,6 +116,27 @@ export default function TableDetailPanel({
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
+  // Móvil: mientras la hoja está abierta, la página de atrás no debe poder desplazarse
+  // (antes, si el dedo no caía justo en la manija, se seguía haciendo scroll afuera).
+  // Solo móvil: el panel de escritorio no cambia.
+  useEffect(() => {
+    if (isDesktop) return;
+    const { body, documentElement: html } = document;
+    const prev = {
+      bodyOverflow: body.style.overflow,
+      htmlOverflow: html.style.overflow,
+      htmlOverscroll: html.style.overscrollBehavior,
+    };
+    body.style.overflow = 'hidden';
+    html.style.overflow = 'hidden';
+    html.style.overscrollBehavior = 'none';
+    return () => {
+      body.style.overflow = prev.bodyOverflow;
+      html.style.overflow = prev.htmlOverflow;
+      html.style.overscrollBehavior = prev.htmlOverscroll;
+    };
+  }, [isDesktop]);
+
   // Escritorio: entra deslizándose desde la derecha. Móvil: sube desde abajo (hoja inferior).
   const panelVariants = isDesktop
     ? { hidden: { x: '100%', opacity: 0.6 }, visible: { x: 0, opacity: 1 } }
@@ -190,6 +211,7 @@ export default function TableDetailPanel({
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
         className="fixed inset-0 bg-black/45 z-30"
+        style={{ touchAction: 'none' }}
         onClick={onClose}
       />
 
@@ -212,13 +234,23 @@ export default function TableDetailPanel({
         }
         style={!isDesktop ? { overscrollBehaviorY: 'contain' } : undefined}
       >
+        {/* Zona de arrastre (solo móvil): manija + header completo inician el gesto de
+            deslizar hacia abajo para cerrar. Si el toque empieza en un botón (editar,
+            borrar, cerrar) no se inicia arrastre, para no quitarle el clic. */}
+        <div
+          onPointerDown={
+            isDesktop
+              ? undefined
+              : (e) => {
+                  if ((e.target as HTMLElement).closest('button')) return;
+                  dragControls.start(e);
+                }
+          }
+          className={`flex-shrink-0 flex flex-col ${isDesktop ? '' : 'cursor-grab active:cursor-grabbing'}`}
+          style={isDesktop ? undefined : { touchAction: 'none' }}
+        >
         {!isDesktop && (
-          <div
-            onPointerDown={(e) => dragControls.start(e)}
-            className="flex justify-center pt-2.5 pb-2.5 flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
-            style={{ touchAction: 'none' }}
-            aria-hidden="true"
-          >
+          <div className="flex justify-center pt-2.5 pb-1 flex-shrink-0" aria-hidden="true">
             <span className="w-9 h-1 rounded-full bg-[#D4D4D8]" />
           </div>
         )}
@@ -249,6 +281,7 @@ export default function TableDetailPanel({
               <X className="w-3.5 h-3.5 text-[#71717A]" />
             </button>
           </div>
+        </div>
         </div>
 
         {table && (

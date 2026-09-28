@@ -120,20 +120,34 @@ function PlanoCanvasInner({
     nodesRef.current = nodes;
   }, [nodes]);
 
+  // Actualización optimista: el estado local se pone con la posición nueva ANTES de esperar
+  // a Firestore. Si no, al soltar (touch) el efecto que reconstruye los nodos volvía a pintar
+  // la posición guardada anterior hasta que respondía la red, y la mesa "regresaba" y luego
+  // saltaba. Si el guardado falla se revierte a la posición previa.
   const persistTablePosition = useCallback(
     async (id: string, x: number, y: number) => {
-      await tableService.updateTablePosition(id, x, y);
       const current = tables.find((t) => t.id === id);
       if (current) onTableUpdated({ ...current, posX: x, posY: y });
+      try {
+        await tableService.updateTablePosition(id, x, y);
+      } catch (err) {
+        if (current) onTableUpdated(current);
+        throw err;
+      }
     },
     [tables, onTableUpdated]
   );
 
   const persistFixturePosition = useCallback(
     async (id: string, x: number, y: number) => {
-      await venueFixtureService.updateFixturePosition(id, x, y);
       const current = fixtures.find((f) => f.id === id);
       if (current) onFixtureUpdated({ ...current, posX: x, posY: y });
+      try {
+        await venueFixtureService.updateFixturePosition(id, x, y);
+      } catch (err) {
+        if (current) onFixtureUpdated(current);
+        throw err;
+      }
     },
     [fixtures, onFixtureUpdated]
   );
