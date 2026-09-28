@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useDragControls, type PanInfo } from 'framer-motion';
 import { X, Search, Edit2, Trash2, GripVertical } from 'lucide-react';
 import {
   DndContext,
@@ -121,6 +121,18 @@ export default function TableDetailPanel({
     ? { hidden: { x: '100%', opacity: 0.6 }, visible: { x: 0, opacity: 1 } }
     : { hidden: { y: '100%' }, visible: { y: 0 } };
 
+  // Deslizar hacia abajo para cerrar (solo móvil): la manija visual ya existía pero no
+  // estaba conectada a ningún gesto, así que el swipe hacia abajo lo interceptaba el
+  // navegador como "pull to refresh" en vez de cerrar la hoja. `dragControls` limita
+  // quién puede iniciar el arrastre a la manija (más abajo), para no competir con el
+  // scroll normal de la lista de invitados. `dragConstraints` con bottom:0 + elástico
+  // solo hacia abajo hace que, al soltar sin pasar el umbral, la hoja rebote sola de
+  // vuelta a su posición (igual que un bottom sheet nativo).
+  const dragControls = useDragControls();
+  const handleSheetDragEnd = (_event: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) => {
+    if (info.offset.y > 120 || info.velocity.y > 500) onClose();
+  };
+
   const sensors = useSensors(
     // Solo mouse + teclado: en móvil la asignación es solo por botones/`<select>` (spec 12, Decisiones).
     useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
@@ -187,14 +199,26 @@ export default function TableDetailPanel({
         exit="hidden"
         variants={panelVariants}
         transition={{ type: 'tween', duration: 0.28, ease: 'easeOut' }}
+        drag={isDesktop ? false : 'y'}
+        dragControls={dragControls}
+        dragListener={false}
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={{ top: 0, bottom: 1 }}
+        onDragEnd={isDesktop ? undefined : handleSheetDragEnd}
         className={
           isDesktop
             ? 'fixed z-40 bg-white border border-[rgba(0,0,0,0.08)] shadow-2xl flex flex-col inset-y-0 right-0 w-[400px]'
             : 'fixed z-40 bg-white border border-[rgba(0,0,0,0.08)] shadow-2xl flex flex-col inset-x-0 bottom-0 rounded-t-2xl max-h-[82vh]'
         }
+        style={!isDesktop ? { overscrollBehaviorY: 'contain' } : undefined}
       >
         {!isDesktop && (
-          <div className="flex justify-center pt-2.5 pb-1 flex-shrink-0">
+          <div
+            onPointerDown={(e) => dragControls.start(e)}
+            className="flex justify-center pt-2.5 pb-2.5 flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
+            style={{ touchAction: 'none' }}
+            aria-hidden="true"
+          >
             <span className="w-9 h-1 rounded-full bg-[#D4D4D8]" />
           </div>
         )}
@@ -242,7 +266,10 @@ export default function TableDetailPanel({
         )}
 
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="px-5 py-3 flex-1 overflow-y-auto flex flex-col gap-4 min-h-0">
+          <div
+            className="px-5 py-3 flex-1 overflow-y-auto flex flex-col gap-4 min-h-0"
+            style={{ overscrollBehaviorY: 'contain' }}
+          >
             {table && (
               <div>
                 <div className="text-[11px] font-bold uppercase tracking-wide text-[#71717A] mb-1.5">
@@ -273,11 +300,11 @@ export default function TableDetailPanel({
               </div>
             )}
 
-            <div className={table ? 'border-t border-[rgba(0,0,0,0.06)] pt-3 flex-1 flex flex-col min-h-0' : 'flex-1 flex flex-col min-h-0'}>
-              <div className="text-[11px] font-bold uppercase tracking-wide text-[#71717A] mb-1.5 flex-shrink-0">
+            <div className={table ? 'border-t border-[rgba(0,0,0,0.06)] pt-3' : ''}>
+              <div className="text-[11px] font-bold uppercase tracking-wide text-[#71717A] mb-1.5">
                 Sin mesa ({guests.filter((g) => !g.tableId).length})
               </div>
-              <div className="flex items-center gap-1.5 bg-[#FAFAFA] border border-[rgba(0,0,0,0.08)] rounded-lg px-2.5 py-1.5 mb-2 flex-shrink-0">
+              <div className="flex items-center gap-1.5 bg-[#FAFAFA] border border-[rgba(0,0,0,0.08)] rounded-lg px-2.5 py-1.5 mb-2">
                 <Search className="w-3.5 h-3.5 text-[#9CA3AF]" />
                 <input
                   type="text"
@@ -287,13 +314,12 @@ export default function TableDetailPanel({
                   className="w-full bg-transparent text-[12.5px] text-[#0A0A0A] placeholder-[#9CA3AF] focus:outline-none"
                 />
               </div>
-              <div className="flex-1 overflow-y-auto min-h-0">
-                <DropZone id="zone:unassigned" disabled={!table}>
-                  {unassignedGuests.length === 0 && (
-                    <p className="text-[12.5px] text-[#9CA3AF] px-2 py-3">Sin resultados.</p>
-                  )}
-                  {unassignedGuests.map((guest) =>
-                    table ? (
+              <DropZone id="zone:unassigned" disabled={!table}>
+                {unassignedGuests.length === 0 && (
+                  <p className="text-[12.5px] text-[#9CA3AF] px-2 py-3">Sin resultados.</p>
+                )}
+                {unassignedGuests.map((guest) =>
+                  table ? (
                       <GuestRow
                         key={guest.id}
                         guest={guest}
@@ -341,8 +367,7 @@ export default function TableDetailPanel({
                       />
                     )
                   )}
-                </DropZone>
-              </div>
+              </DropZone>
             </div>
           </div>
 
