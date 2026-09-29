@@ -12,11 +12,14 @@ export async function generateMetadata({ params }: WeddingPageProps): Promise<Me
   const weddingData = getMockWeddingData(params.id);
   
   if (!weddingData) {
+    // Cubre, entre otras, las bodas reales que solo existen en Firestore (`getMockWeddingData`
+    // no las conoce) — incluidas las gratuitas del spec 16, que no tienen nada que indexar.
     return {
       title: params.locale === 'en' ? 'Wedding Invitation' : 'Invitación de Boda',
-      description: params.locale === 'en' 
+      description: params.locale === 'en'
         ? 'A special celebration awaits you. Love, joy, and unforgettable moments.'
         : 'Una celebración especial te espera. Amor, alegría y momentos inolvidables.',
+      robots: { index: false, follow: false },
     };
   }
 

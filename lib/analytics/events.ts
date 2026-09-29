@@ -29,6 +29,10 @@ export interface AnalyticsEventMap {
   fixture_created: NoProps;
   fixture_deleted: NoProps;
   plano_view_opened: NoProps;
+  // Cuenta gratuita: invitados y mesas sin plantilla (spec 16)
+  free_wedding_created: NoProps;
+  free_wedding_limit_reached: NoProps;
+  free_wedding_upgrade_cta_click: NoProps;
 }
 
 export type AnalyticsEventName = keyof AnalyticsEventMap;

@@ -10,12 +10,15 @@ import { EMAIL_RE, MAX_OWNER_EMAILS, TEMPLATE_OPTIONS, isValidEmail, isValidIsoD
 
 // Alta de invitaciones y edición de correos con acceso (solo operador, spec 08).
 
-const inputClass = (error?: boolean) =>
+export const inputClass = (error?: boolean) =>
   `w-full h-[46px] rounded-lg border bg-white px-4 text-sm text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors ${
     error ? 'border-[#B91C1C]' : 'border-[rgba(0,0,0,0.14)]'
   }`;
 
-function Modal({ title, sub, onClose, children, width = 680 }: { title: string; sub?: ReactNode; onClose: () => void; children: ReactNode; width?: number }) {
+// Modal/Field/Btn se exportan para reutilizarlos fuera de este archivo: spec 16 los usa en
+// components/admin/FreeWeddingTools.tsx (alta y ajustes de autoservicio de bodas gratuitas),
+// mismo patrón visual que el alta y los ajustes del operador.
+export function Modal({ title, sub, onClose, children, width = 680 }: { title: string; sub?: ReactNode; onClose: () => void; children: ReactNode; width?: number }) {
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -53,7 +56,7 @@ function Modal({ title, sub, onClose, children, width = 680 }: { title: string; 
   );
 }
 
-function Field({ label, error, hint, children, htmlFor }: { label: string; error?: string; hint?: string; children: ReactNode; htmlFor: string }) {
+export function Field({ label, error, hint, children, htmlFor }: { label: string; error?: string; hint?: string; children: ReactNode; htmlFor: string }) {
   return (
     <div className="flex flex-col gap-2 min-w-0">
       <label htmlFor={htmlFor} className="text-[13px] font-semibold text-[#27272A]">
@@ -65,7 +68,7 @@ function Field({ label, error, hint, children, htmlFor }: { label: string; error
   );
 }
 
-function Btn({ children, onClick, type = 'button', ghost = false, loading = false, disabled = false }: { children: ReactNode; onClick?: () => void; type?: 'button' | 'submit'; ghost?: boolean; loading?: boolean; disabled?: boolean }) {
+export function Btn({ children, onClick, type = 'button', ghost = false, loading = false, disabled = false }: { children: ReactNode; onClick?: () => void; type?: 'button' | 'submit'; ghost?: boolean; loading?: boolean; disabled?: boolean }) {
   return (
     <button
       type={type}

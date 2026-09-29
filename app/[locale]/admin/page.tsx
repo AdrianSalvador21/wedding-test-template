@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CalendarDays, LayoutGrid, Mail, Pencil, Plus, Search, Settings, Users } from 'lucide-react';
-import { manrope, displayFont } from '../../../components/admin/ui';
+import { CalendarDays, LayoutGrid, Mail, Pencil, Plus, Search, Settings, Sparkles, Users } from 'lucide-react';
+import { manrope, displayFont, AdminStatusPill } from '../../../components/admin/ui';
+import { whatsappUrl } from '../../../lib/contact';
+import { track } from '../../../lib/analytics/client';
 import AccountControls from '../../../components/admin/AccountControls';
 import {
   AuthErrorScreen,
@@ -13,6 +15,7 @@ import {
   formatWeddingDate,
 } from '../../../components/admin/auth-ui';
 import { NewWeddingModal, OwnersModal, SettingsModal } from '../../../components/admin/OperatorTools';
+import { FreeWeddingModal } from '../../../components/admin/FreeWeddingTools';
 import { useAuth, type LinkedWedding } from '../../../lib/auth-context';
 
 function WeddingCard({
@@ -30,6 +33,8 @@ function WeddingCard({
 }) {
   const date = formatWeddingDate(wedding.date);
   const owners = wedding.ownerEmails;
+  // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
+  const tier = wedding.tier ?? 'template';
   const actionClass =
     'inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg text-sm font-bold transition-colors border';
   return (
@@ -48,6 +53,9 @@ function WeddingCard({
             </button>
           )}
         </div>
+        <AdminStatusPill tone={tier} className="w-fit">
+          {tier === 'free' ? 'Gratis' : 'Con plantilla'}
+        </AdminStatusPill>
         {date && (
           <div className="flex items-center gap-2 text-[13px] text-[#3F3F46]">
             <CalendarDays className="h-3.5 w-3.5" />
@@ -66,10 +74,12 @@ function WeddingCard({
         )}
       </div>
       <div className="flex flex-wrap gap-2">
-        <a href={`/${locale}/admin/wedding-editor/${wedding.id}`} className={`${actionClass} bg-[#111111] text-white border-transparent hover:bg-black`}>
-          <Pencil className="h-[15px] w-[15px]" />
-          Editor
-        </a>
+        {tier !== 'free' && (
+          <a href={`/${locale}/admin/wedding-editor/${wedding.id}`} className={`${actionClass} bg-[#111111] text-white border-transparent hover:bg-black`}>
+            <Pencil className="h-[15px] w-[15px]" />
+            Editor
+          </a>
+        )}
         <a href={`/${locale}/admin/guests/${wedding.id}`} className={`${actionClass} bg-white text-[#0A0A0A] border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA]`}>
           <Users className="h-[15px] w-[15px]" />
           Invitados
@@ -79,6 +89,18 @@ function WeddingCard({
           Mesas
         </a>
       </div>
+      {tier === 'free' && (
+        <a
+          href={whatsappUrl(`Hola! Quiero activar mi boda "${wedding.id}" con una invitación digital.`)}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => track('free_wedding_upgrade_cta_click', {})}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0A0A0A] border-t border-[rgba(0,0,0,0.08)] pt-2.5 -mb-0.5"
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          Activa tu invitación digital
+        </a>
+      )}
     </div>
   );
 }
@@ -91,6 +113,7 @@ export default function AdminHomePage() {
 
   const [query, setQuery] = useState('');
   const [showNew, setShowNew] = useState(false);
+  const [showFreeNew, setShowFreeNew] = useState(false);
   const [ownersFor, setOwnersFor] = useState<LinkedWedding | null>(null);
   const [settingsFor, setSettingsFor] = useState<LinkedWedding | null>(null);
 
@@ -193,6 +216,19 @@ export default function AdminHomePage() {
             </>
           )}
 
+          {!auth.isAdmin && (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowFreeNew(true)}
+                className="inline-flex items-center gap-2 h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-bold"
+              >
+                <Plus className="h-4 w-4" />
+                Crear otra boda gratis
+              </button>
+            </div>
+          )}
+
           {!empty && (
             <div className={`grid grid-cols-1 gap-5 ${auth.isAdmin ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2'}`}>
               {filtered.map((w) => (
@@ -212,6 +248,7 @@ export default function AdminHomePage() {
       </div>
 
       {showNew && <NewWeddingModal onClose={() => setShowNew(false)} onCreated={refreshSilently} />}
+      {showFreeNew && <FreeWeddingModal onClose={() => setShowFreeNew(false)} onCreated={refreshSilently} />}
       {ownersFor && <OwnersModal wedding={ownersFor} onClose={() => setOwnersFor(null)} onSaved={refreshSilently} />}
       {settingsFor && <SettingsModal wedding={settingsFor} onClose={() => setSettingsFor(null)} onSaved={refreshSilently} />}
     </div>

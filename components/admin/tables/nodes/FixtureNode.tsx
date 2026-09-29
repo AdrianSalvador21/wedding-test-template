@@ -65,8 +65,13 @@ export default function FixtureNode({ data }: NodeProps<FixtureNodeData>) {
     window.addEventListener('mouseup', onUp);
   };
 
+  // `nodrag`: clase especial de react-flow — su detección de arrastre de nodo (XYDrag)
+  // escucha pointerdown directo en el DOM y busca esta clase antes de decidir si arranca
+  // el drag, sin pasar por la burbuja de eventos de React, así que un simple
+  // e.stopPropagation() en el onMouseDown no alcanzaba para evitar que la mesa/objeto se
+  // moviera en vez de redimensionarse.
   const handleClass =
-    'absolute w-3.5 h-3.5 rounded bg-white border-2 border-[#111111] z-10';
+    'nodrag absolute w-3.5 h-3.5 rounded bg-white border-2 border-[#111111] z-10';
 
   return (
     <div
@@ -105,7 +110,7 @@ export default function FixtureNode({ data }: NodeProps<FixtureNodeData>) {
           onKeyDown={(e) => {
             if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
           }}
-          className="text-[11px] font-bold text-center bg-white border border-[rgba(0,0,0,0.2)] rounded px-1.5 py-0.5 w-[90%]"
+          className="nodrag text-[11px] font-bold text-center bg-white border border-[rgba(0,0,0,0.2)] rounded px-1.5 py-0.5 w-[90%]"
         />
       ) : (
         <span className="text-[11px] font-bold uppercase tracking-wide text-[#3F3F46] px-2 text-center">
@@ -127,7 +132,7 @@ export default function FixtureNode({ data }: NodeProps<FixtureNodeData>) {
                 e.stopPropagation();
                 setIsRenaming(true);
               }}
-              className="text-[9px] font-bold bg-white border border-[rgba(0,0,0,0.12)] rounded px-1.5 py-0.5 text-[#3F3F46]"
+              className="nodrag text-[9px] font-bold bg-white border border-[rgba(0,0,0,0.12)] rounded px-1.5 py-0.5 text-[#3F3F46]"
             >
               Renombrar
             </button>
@@ -137,7 +142,7 @@ export default function FixtureNode({ data }: NodeProps<FixtureNodeData>) {
                 e.stopPropagation();
                 onDelete();
               }}
-              className="text-[9px] font-bold bg-white border border-[rgba(0,0,0,0.12)] rounded px-1.5 py-0.5 text-[#B91C1C]"
+              className="nodrag text-[9px] font-bold bg-white border border-[rgba(0,0,0,0.12)] rounded px-1.5 py-0.5 text-[#B91C1C]"
             >
               Eliminar
             </button>

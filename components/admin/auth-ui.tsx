@@ -2,10 +2,11 @@
 
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
-import { AlertCircle, Loader2, Lock, Mail, MessageCircle } from 'lucide-react';
+import { AlertCircle, Loader2, Lock, Mail, UserPlus } from 'lucide-react';
 import { manrope, displayFont } from './ui';
 import { useAuth } from '../../lib/auth-context';
 import { whatsappUrl } from '../../lib/contact';
+import { FreeWeddingModal } from './FreeWeddingTools';
 
 // Piezas de las pantallas de acceso (login, verificación, sin boda, sin acceso).
 // Siguen el diseño del spec 08 con la paleta neutra de los paneles.
@@ -251,45 +252,41 @@ export function VerifyEmailScreen() {
 
 export function NoWeddingsScreen() {
   const auth = useAuth();
-  const [retrying, setRetrying] = useState(false);
-  const retry = async () => {
-    setRetrying(true);
-    try {
-      await auth.refresh();
-    } finally {
-      setRetrying(false);
-    }
+  const [showFree, setShowFree] = useState(false);
+  // `NoWeddingsScreen` solo se monta dentro de `/admin` (app/[locale]/admin/page.tsx), así que
+  // no hace falta navegar a ningún lado: al refrescar, esa misma página deja de mostrar esta
+  // pantalla y pasa a "Mis invitaciones" con la nueva tarjeta — el organizador elige ahí a
+  // cuál entrar, y desde ahí puede crear otra (hasta el tope de 3 gratuitas).
+  const onFreeCreated = async () => {
+    setShowFree(false);
+    await auth.refresh({ silent: true });
   };
-  const message = `Hola, me registré en Invyta con ${auth.email} y no veo mi invitación.`;
+  const message = `Hola, ya contraté mi invitación con Invyta (correo: ${auth.email}) y no la veo en mi cuenta.`;
   return (
     <AuthScreen showHelp={false}>
-      <IconBadge icon={Mail} />
+      <IconBadge icon={UserPlus} />
       <AuthHead
-        title="Todavía no tienes una invitación ligada a tu cuenta"
+        title="No tienes ninguna invitación"
         sub={
           <>
-            Iniciaste sesión con <strong className="text-[#0A0A0A]">{auth.email}</strong>. Si tu invitación ya está lista, es posible que la registremos con otro correo.
+            Con <strong className="text-[#0A0A0A]">{auth.email}</strong> puedes crear gratis tu lista de invitados y organizar tus mesas, sin plantilla ni editor de invitación.
           </>
         }
       />
       <div className="flex flex-col gap-2.5">
-        <AuthButton onClick={retry} loading={retrying}>
-          Reintentar
-        </AuthButton>
-        <a
-          href={whatsappUrl(message)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full inline-flex items-center justify-center gap-2 h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-bold transition-colors"
-        >
-          <MessageCircle className="h-4 w-4" />
-          Escribirnos por WhatsApp
-        </a>
+        <AuthButton onClick={() => setShowFree(true)}>Crear mi lista de invitados gratis</AuthButton>
       </div>
-      <p className="m-0 text-xs leading-normal text-[#71717A]">Cuando la liguemos, pulsa Reintentar. No necesitas registrarte otra vez.</p>
+      <p className="m-0 text-xs leading-normal text-[#71717A] text-center">
+        ¿Ya contrataste una invitación con diseño?{' '}
+        <a href={whatsappUrl(message)} target="_blank" rel="noopener noreferrer" className="font-bold text-[#0A0A0A] underline">
+          Escríbenos por WhatsApp
+        </a>{' '}
+        para ligarla a tu cuenta.
+      </p>
       <div className="border-t border-[rgba(0,0,0,0.08)] pt-4 text-center">
         <TextLink onClick={() => void auth.signOut()}>Cerrar sesión</TextLink>
       </div>
+      {showFree && <FreeWeddingModal onClose={() => setShowFree(false)} onCreated={onFreeCreated} />}
     </AuthScreen>
   );
 }

@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Menu, X } from 'lucide-react';
+import { Menu, Sparkles, X } from 'lucide-react';
 import AccountControls from './AccountControls';
 import { useAuthOptional } from '../../lib/auth-context';
+import { whatsappUrl } from '../../lib/contact';
+import { track } from '../../lib/analytics/client';
 
 // Tokens de paleta "Dashboard Neutral" (blanco / negro / grises, sin serif ni
 // acentos cálidos) — ver specs/04-rediseno-paneles-admin.md, decisión tomada
@@ -42,10 +44,13 @@ export function AdminPageNav({
   weddingId,
   locale,
   active,
+  tier = 'template',
 }: {
   weddingId: string;
   locale: string;
   active: 'editor' | 'guests' | 'tables';
+  // Spec 16 — 'free' oculta el tab Editor (esa boda no tiene) y muestra el CTA de upgrade.
+  tier?: 'free' | 'template';
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const auth = useAuthOptional();
@@ -58,15 +63,29 @@ export function AdminPageNav({
 
   const links = (
     <>
-      <a href={`/${locale}/admin/wedding-editor/${weddingId}`} className={linkClass(active === 'editor')}>
-        Editor de invitación
-      </a>
+      {tier !== 'free' && (
+        <a href={`/${locale}/admin/wedding-editor/${weddingId}`} className={linkClass(active === 'editor')}>
+          Editor de invitación
+        </a>
+      )}
       <a href={`/${locale}/admin/guests/${weddingId}`} className={linkClass(active === 'guests')}>
         Invitados
       </a>
       <a href={`/${locale}/admin/tables/${weddingId}`} className={linkClass(active === 'tables')}>
         Mesas
       </a>
+      {tier === 'free' && (
+        <a
+          href={whatsappUrl(`Hola! Quiero activar mi boda "${weddingId}" con una invitación digital.`)}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => track('free_wedding_upgrade_cta_click', {})}
+          className="inline-flex items-center gap-1.5 text-sm px-3.5 py-1.5 rounded-lg font-semibold text-[#0A0A0A] border border-dashed border-[rgba(0,0,0,0.22)] hover:bg-[#FAFAFA] transition-colors"
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          Activa tu invitación digital
+        </a>
+      )}
       {showAllLink && (
         <a href={`/${locale}/admin`} className={linkClass(false)}>
           Mis invitaciones
@@ -155,6 +174,10 @@ const pillToneClass: Record<string, string> = {
   incomplete: 'text-[#475569] bg-[rgba(71,85,105,0.08)]',
   declined: 'text-[#B91C1C] bg-[rgba(185,28,28,0.08)]',
   full: 'text-[#B91C1C] bg-[rgba(185,28,28,0.08)]',
+  // Spec 16 — insignia de tier: "Gratis" neutro, "Con plantilla" sólido (misma jerarquía
+  // visual que ya usa el canvas de diseño del spec).
+  free: 'text-[#3F3F46] bg-[#F4F4F5]',
+  template: 'text-white bg-[#111111]',
 };
 
 export function AdminStatusPill({
@@ -162,7 +185,7 @@ export function AdminStatusPill({
   children,
   className = '',
 }: {
-  tone?: 'active' | 'complete' | 'confirmed' | 'draft' | 'pending' | 'incomplete' | 'declined' | 'full';
+  tone?: 'active' | 'complete' | 'confirmed' | 'draft' | 'pending' | 'incomplete' | 'declined' | 'full' | 'free' | 'template';
   children: React.ReactNode;
   className?: string;
 }) {
@@ -256,7 +279,7 @@ export function AdminStatCard({
   };
   return (
     <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-xl px-4 py-3.5 flex items-center justify-between gap-2">
-      <div className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wide text-[#71717A] min-w-0">
+      <div className="flex items-center gap-1.5 text-[13px] font-bold tracking-wide text-[#71717A] min-w-0">
         <Icon className="h-[13px] w-[13px] flex-shrink-0" style={{ color: toneColor[tone] }} />
         <span className="leading-snug">{label}</span>
       </div>

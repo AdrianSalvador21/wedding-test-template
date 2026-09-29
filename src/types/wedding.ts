@@ -333,6 +333,7 @@ export interface WeddingData {
   template?: {
     id: string;
   };
+  tier?: 'free' | 'template'; // Spec 16 — ausente se interpreta como 'template' en todo el código
   status: 'draft' | 'active' | 'archived';
   languages: string[];
   defaultLanguage: string;

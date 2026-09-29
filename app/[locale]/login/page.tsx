@@ -20,7 +20,6 @@ import {
   AuthField,
   AuthHead,
   AuthScreen,
-  EnteringScreen,
   IconBadge,
   LoadingScreen,
   TextLink,
@@ -61,8 +60,12 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const locale = (params?.locale as string) || 'es';
   const next = searchParams.get('next');
+  // Spec 16 — la landing (sección Mesas) enlaza con ?mode=signup para abrir directo en
+  // "Crea tu cuenta"; cualquier otro valor (o ninguno) cae en "Inicia sesión".
+  const modeParam = searchParams.get('mode');
+  const initialMode: Mode = modeParam === 'signup' || modeParam === 'reset' ? modeParam : 'signin';
 
-  const [mode, setMode] = useState<Mode>('signin');
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -137,8 +140,9 @@ function LoginContent() {
   if (status === 'unverified') return <VerifyEmailScreen />;
   if (status === 'error') return <AuthErrorScreen />;
   if (status === 'ready' || status === 'noWeddings') {
-    const single = !isAdmin && weddings.length === 1 ? weddings[0] : null;
-    return single ? <EnteringScreen title={single.title} date={single.date} /> : <LoadingScreen text="Entrando..." />;
+    // El aterrizaje ahora siempre es "Mis invitaciones" (salvo un `next` que apunte a una
+    // boda puntual), así que ya no hay una boda única que anticipar aquí.
+    return <LoadingScreen text="Entrando..." />;
   }
 
   if (mode === 'sent') {
@@ -163,9 +167,9 @@ function LoginContent() {
   const title = mode === 'signin' ? 'Inicia sesión' : mode === 'signup' ? 'Crea tu cuenta' : 'Recupera tu contraseña';
   const sub =
     mode === 'signin'
-      ? 'Entra con el correo con el que registramos tu invitación.'
+      ? 'Entra con el correo de tu cuenta Invyta.'
       : mode === 'signup'
-        ? 'Usa el mismo correo que nos compartiste para que enlacemos tu invitación.'
+        ? 'Crea tu cuenta para ver tus invitaciones, organizar tus invitados y armar tus mesas.'
         : 'Escribe tu correo y te enviaremos un enlace para crear una nueva.';
 
   return (
