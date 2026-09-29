@@ -8,6 +8,8 @@ export interface LinkedWedding {
   id: string;
   title: string;
   date: string;
+  // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
+  tier?: 'free' | 'template';
   // Solo llega para el operador (weddingOwners/<id>.emails)
   ownerEmails?: string[];
 }

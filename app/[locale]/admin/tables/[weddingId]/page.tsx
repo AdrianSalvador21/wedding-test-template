@@ -4,9 +4,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { doc, getDoc } from 'firebase/firestore';
-import { Plus, Search, LayoutGrid, Map as MapIcon, Users } from 'lucide-react';
+import { Plus, Search, LayoutGrid, Map as MapIcon, Users, Settings } from 'lucide-react';
 import { db } from '../../../../../lib/firebase';
-import { guestService } from '../../../../../services/guestService';
+import { guestService, resolveGuestAttendance, getSeatedGuestCount } from '../../../../../services/guestService';
 import { tableService } from '../../../../../services/tableService';
 import { venueFixtureService } from '../../../../../services/venueFixtureService';
 import { track } from '../../../../../lib/analytics/client';
@@ -14,7 +14,8 @@ import { isValidWeddingId } from '../../../../../lib/wedding-defaults';
 import { FirebaseGuest, FirebaseTable, FirebaseVenueFixture } from '../../../../../src/types/wedding';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
 import AuthGuard from '../../../../../components/admin/AuthGuard';
-import { AdminTopBar, AdminPageNav, AdminStatCard, AdminButton, manrope, displayFont } from '../../../../../components/admin/ui';
+import { AdminTopBar, AdminPageNav, AdminStatCard, AdminStatusPill, AdminButton, manrope, displayFont } from '../../../../../components/admin/ui';
+import { FreeWeddingSettingsModal } from '../../../../../components/admin/FreeWeddingTools';
 import TableTile from '../../../../../components/admin/tables/TableTile';
 import TableDetailPanel, { type TableDetailTarget } from '../../../../../components/admin/tables/TableDetailPanel';
 import TableFormModal, { type TableFormValues } from '../../../../../components/admin/tables/TableFormModal';
@@ -32,6 +33,9 @@ const AdminTablesContent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
+  const [tier, setTier] = useState<'free' | 'template'>('template');
+  const [showFreeSettings, setShowFreeSettings] = useState(false);
 
   const [guests, setGuests] = useState<FirebaseGuest[]>([]);
   const [tables, setTables] = useState<FirebaseTable[]>([]);
@@ -69,6 +73,7 @@ const AdminTablesContent = () => {
           setIsLoading(false);
           return;
         }
+        setTier(weddingDoc.data()?.tier === 'free' ? 'free' : 'template');
 
         const [fetchedGuests, fetchedTables, fetchedFixtures] = await Promise.all([
           guestService.getWeddingGuests(weddingId),
@@ -97,9 +102,9 @@ const AdminTablesContent = () => {
   const occupancyByTable = useMemo(() => computeOccupancyByTable(guests), [guests]);
   const unseatedCount = useMemo(() => getUnseatedCount(guests), [guests]);
 
+  // Spec 16 — cuenta también a los confirmados a mano (rsvpStatus), no solo por RSVP público.
   const confirmedPersons = useMemo(
-    () =>
-      guests.reduce((sum, g) => (g.rsvpConfirmation?.attending === true ? sum + (g.rsvpConfirmation.guestCount || 1) : sum), 0),
+    () => guests.reduce((sum, g) => (resolveGuestAttendance(g) === 'confirmed' ? sum + getSeatedGuestCount(g) : sum), 0),
     [guests]
   );
 
@@ -214,11 +219,26 @@ const AdminTablesContent = () => {
         <a href="/" className="text-xl sm:text-2xl text-[#0A0A0A] hover:opacity-70 transition-opacity" style={displayFont}>
           invyta
         </a>
-        {weddingId && <AdminPageNav weddingId={weddingId} locale={locale} active="tables" />}
+        {weddingId && <AdminPageNav weddingId={weddingId} locale={locale} active="tables" tier={tier} />}
       </div>
 
       <AdminTopBar
         title="Gestión de Mesas"
+        meta={
+          tier === 'free' ? (
+            <>
+              <AdminStatusPill tone="free">Gratis</AdminStatusPill>
+              <button
+                type="button"
+                onClick={() => setShowFreeSettings(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#71717A] hover:text-[#0A0A0A]"
+              >
+                <Settings className="h-3.5 w-3.5" />
+                Ajustes
+              </button>
+            </>
+          ) : undefined
+        }
         actions={
           <div className="flex items-center gap-2.5">
             <div className="flex items-center gap-1 bg-[#F4F4F5] rounded-lg p-1">
@@ -249,6 +269,18 @@ const AdminTablesContent = () => {
           </div>
         }
       />
+      {showFreeSettings && (
+        <FreeWeddingSettingsModal
+          weddingId={weddingId}
+          onClose={() => setShowFreeSettings(false)}
+          onSaved={() => window.location.reload()}
+        />
+      )}
+      {tier === 'free' && (
+        <div className="bg-[#F4F4F5] border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 py-2.5 text-[13px] text-[#3F3F46]">
+          La Cuadrícula y el Plano funcionan igual que con una invitación digital.
+        </div>
+      )}
 
       <div className="px-4 sm:px-10 py-6 sm:py-8 flex flex-col gap-5" style={{ minHeight: 'calc(100vh - 140px)' }}>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -332,12 +364,14 @@ const AdminTablesContent = () => {
             weddingId={weddingId}
             tables={tables}
             fixtures={fixtures}
+            guests={guests}
             occupancyByTable={occupancyByTable}
             onSelectTable={(table) => setPanelTarget({ type: 'table', table })}
             onTableUpdated={(updated) => setTables((prev) => prev.map((t) => (t.id === updated.id ? updated : t)))}
             onFixtureCreated={(fixture) => setFixtures((prev) => [...prev, fixture])}
             onFixtureUpdated={(updated) => setFixtures((prev) => prev.map((f) => (f.id === updated.id ? updated : f)))}
             onFixtureDeleted={(id) => setFixtures((prev) => prev.filter((f) => f.id !== id))}
+            onAssign={handleAssign}
           />
         )}
       </div>

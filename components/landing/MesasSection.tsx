@@ -109,8 +109,8 @@ const GUARANTEES = [
     ),
   },
   {
-    title: 'Incluido en tu paquete',
-    text: 'Forma parte del Paquete Personalizado, sin cobros adicionales por usarlo.',
+    title: 'Empieza sin costo',
+    text: 'Crea tu cuenta y organiza invitados y mesas gratis. Si luego quieres tu invitación con diseño, la agregas cuando quieras.',
     icon: (
       <>
         <rect x="4" y="8" width="16" height="12" rx="1.5" />
@@ -154,7 +154,7 @@ export default function MesasSection() {
           <div className="flex items-center gap-2.5">
             <GridIcon />
             <span className="text-xs md:text-[13px] font-bold tracking-[2.5px] md:tracking-[3px] uppercase text-[#AE5730]">
-              Exclusivo Paquete Personalizado
+              Gratis, sin plantilla ni editor
             </span>
           </div>
           <h2 className="text-[30px] md:text-5xl leading-[1.1] tracking-tight text-[#211D19]" style={fraunces}>
@@ -348,18 +348,22 @@ export default function MesasSection() {
           ))}
         </LStagger>
 
-        {/* CTA */}
+        {/* CTA — spec 16: el autoservicio gratuito pasa a ser la acción principal; el Paquete
+            Personalizado (diseño + editor) queda como acción secundaria hacia WhatsApp. */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-center gap-5 md:gap-8 text-center">
+          <a
+            href="/login?mode=signup"
+            className="inline-flex items-center justify-center min-h-[52px] px-8 rounded-full bg-[#AE5730] hover:bg-[#8F4626] text-[#FBF7F1] text-base font-semibold transition-colors"
+          >
+            Crear mi cuenta gratis
+          </a>
           <a
             href={WHATSAPP_LINK_MESAS}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center min-h-[52px] px-8 rounded-full bg-[#AE5730] hover:bg-[#8F4626] text-[#FBF7F1] text-base font-semibold transition-colors"
+            className="self-center text-[15px] font-bold text-[#211D19] border-b border-[#211D19] pb-0.5 w-fit"
           >
-            Quiero organizar mis mesas
-          </a>
-          <a href="#paquetes" className="self-center text-[15px] font-bold text-[#211D19] border-b border-[#211D19] pb-0.5 w-fit">
-            Ver el Paquete Personalizado →
+            Quiero mi invitación con diseño →
           </a>
         </div>
       </div>

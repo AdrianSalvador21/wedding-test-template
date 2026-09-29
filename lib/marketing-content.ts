@@ -266,9 +266,12 @@ export const FAQ_ITEMS: FaqItem[] = [
     group: 'Asistente con IA',
   },
   {
+    // Spec 16: organizar invitados y mesas sin plantilla ya es gratis, con cuenta propia (sin
+    // pasar por ningún paquete); el Paquete Personalizado sigue siendo lo que suma diseño,
+    // panel de edición e IA sobre esa misma boda.
     question: '¿La gestión de mesas viene en el Paquete Básico?',
     answer:
-      'No, es parte del Paquete Personalizado, junto con el panel de edición, el asistente con IA y las invitaciones individuales por invitado.',
+      'Organizar invitados y mesas ya es gratis, sin necesidad de contratar ningún paquete: crea tu cuenta y úsalo de inmediato. Si además quieres tu invitación con diseño, panel de edición e IA, eso es el Paquete Personalizado.',
     group: 'Gestión de mesas',
   },
 ];

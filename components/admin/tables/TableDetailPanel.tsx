@@ -163,8 +163,11 @@ export default function TableDetailPanel({
   const table = target.type === 'table' ? target.table : null;
   const occupied = table ? occupancyByTable.get(table.id) || 0 : 0;
   const capacity = table?.capacity ?? 0;
-  const canAddMore = table ? occupied < capacity : false;
   const state = table ? getOccupancyState(occupied, capacity) : 'empty';
+  // Spec 17 — antes comparaba solo occupied < capacity, lo que dejaba "entrar" a una
+  // invitación de varias personas en una mesa con menos lugares libres que su tamaño.
+  // Ahora se compara contra cuántas personas trae realmente ese invitado.
+  const wouldFit = (guest: FirebaseGuest) => (table ? occupied + getSeatedGuestCount(guest) <= capacity : false);
 
   const atTableGuests = useMemo(
     () => (table ? guests.filter((g) => g.tableId === table.id) : []),
@@ -194,7 +197,8 @@ export default function TableDetailPanel({
 
     if (over.id === 'zone:table') {
       if (data.fromTableId === table.id) return;
-      if (!canAddMore) return; // mesa en su límite: no se acepta el drop (spec 12)
+      const guest = guests.find((g) => g.id === data.guestId);
+      if (!guest || !wouldFit(guest)) return; // no caben sus personas: no se acepta el drop (spec 12/17)
       await onAssign(data.guestId, table.id);
     } else if (over.id === 'zone:unassigned') {
       if (data.fromTableId === null) return;
@@ -360,9 +364,9 @@ export default function TableDetailPanel({
                         rightSlot={
                           <button
                             type="button"
-                            onClick={() => canAddMore && onAssign(guest.id, table.id)}
-                            disabled={!canAddMore}
-                            title={!canAddMore ? `${table.name} está en su capacidad máxima` : undefined}
+                            onClick={() => wouldFit(guest) && onAssign(guest.id, table.id)}
+                            disabled={!wouldFit(guest)}
+                            title={!wouldFit(guest) ? `No caben sus ${getSeatedGuestCount(guest)} personas en ${table.name}` : undefined}
                             aria-label={`Agregar a ${guest.name} a ${table.name}`}
                             className="w-6 h-6 rounded-md flex items-center justify-center border border-[rgba(0,0,0,0.12)] bg-white text-[#0A0A0A] font-bold text-[13px] disabled:opacity-40 disabled:cursor-not-allowed"
                           >
@@ -388,10 +392,10 @@ export default function TableDetailPanel({
                             </option>
                             {tables.map((t) => {
                               const tOccupied = occupancyByTable.get(t.id) || 0;
-                              const full = tOccupied >= t.capacity;
+                              const wontFit = tOccupied + getSeatedGuestCount(guest) > t.capacity;
                               return (
-                                <option key={t.id} value={t.id} disabled={full}>
-                                  {t.name} {full ? '(llena)' : `(${tOccupied}/${t.capacity})`}
+                                <option key={t.id} value={t.id} disabled={wontFit}>
+                                  {t.name} {wontFit ? '(no caben)' : `(${tOccupied}/${t.capacity})`}
                                 </option>
                               );
                             })}

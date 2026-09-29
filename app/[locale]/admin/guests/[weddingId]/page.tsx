@@ -2,18 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare, ChevronUp, ChevronDown, ArrowUpDown, Search, Users, Clock } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare, ChevronUp, ChevronDown, ArrowUpDown, Search, Users, Clock, Settings } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { saveWeddingDoc } from '../../../../../lib/weddingSave';
 import { track } from '../../../../../lib/analytics/client';
 import { db } from '../../../../../lib/firebase';
-import { guestService } from '../../../../../services/guestService';
+import { guestService, resolveGuestAttendance } from '../../../../../services/guestService';
 import { FirebaseGuest, WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
 import { resolveHasEnglish } from '../../../../../lib/wedding-language';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
 import AuthGuard from '../../../../../components/admin/AuthGuard';
 import { createInitialWeddingData, isValidWeddingId } from '../../../../../lib/wedding-defaults';
 import { AdminTopBar, AdminPageNav, AdminStatCard, AdminStatusPill, AdminButton, AdminCard, manrope, displayFont } from '../../../../../components/admin/ui';
+import { FreeWeddingSettingsModal } from '../../../../../components/admin/FreeWeddingTools';
 
 interface GuestStats {
   total: number;
@@ -55,6 +56,9 @@ const AdminGuestsContent = () => {
   const [sortBy, setSortBy] = useState<'name' | 'language' | 'status' | 'createdAt'>('createdAt');
   const hasEnglish = resolveHasEnglish(weddingData);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [showFreeSettings, setShowFreeSettings] = useState(false);
+  // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
+  const tier = weddingData?.tier ?? 'template';
 
   const [formData, setFormData] = useState<GuestFormData>({
     name: '',
@@ -177,7 +181,15 @@ const AdminGuestsContent = () => {
     } else if (migrated.giftRegistry?.bankAccount && !migrated.giftRegistry.bankAccount.description) {
       migrated.giftRegistry.bankAccount.description = { es: '', en: '' };
     }
-    
+
+    // Spec 16 — una boda gratuita no tiene Editor de invitación para apagar
+    // `selectedGuestTickets`, así que se autocorrige aquí: sin esto, el campo "Número de
+    // Personas" quedaría oculto y `guestCount` fijo en 1 para siempre (no llega RSVP público
+    // que lo resuelva). Corrige también bodas gratuitas creadas antes de este ajuste.
+    if (migrated.tier === 'free' && migrated.selectedGuestTickets !== false) {
+      migrated.selectedGuestTickets = false;
+    }
+
     return migrated as WeddingData;
   };
 
@@ -416,6 +428,24 @@ const AdminGuestsContent = () => {
     }
   };
 
+  // Spec 16 — marca la asistencia a mano (antes solo cambiaba cuando el invitado confirmaba
+  // por su enlace público). No toca `rsvpConfirmation`: `resolveGuestAttendance` y
+  // `getSeatedGuestCount` ya usan `rsvpStatus`/`guestCount` como respaldo cuando no hay una
+  // confirmación real, así que esto funciona igual en Mesas y en las estadísticas.
+  const handleStatusChange = async (guest: FirebaseGuest, status: 'pending' | 'confirmed' | 'declined') => {
+    const previousStatus = guest.rsvpStatus;
+    setGuests((prev) => prev.map((g) => (g.id === guest.id ? { ...g, rsvpStatus: status } : g)));
+    try {
+      await guestService.updateGuestStatus(guest.id, status);
+      const fresh = await guestService.getWeddingGuestStats(weddingId);
+      setStats(fresh);
+    } catch (err) {
+      console.error('Error actualizando estado del invitado:', err);
+      setGuests((prev) => prev.map((g) => (g.id === guest.id ? { ...g, rsvpStatus: previousStatus } : g)));
+      setError('No se pudo actualizar el estado del invitado. Intenta de nuevo.');
+    }
+  };
+
   const handleShowMessage = (message: string) => {
     setSelectedMessage(message);
     setShowMessageModal(true);
@@ -522,11 +552,26 @@ const AdminGuestsContent = () => {
         >
           invyta
         </a>
-        {weddingId && <AdminPageNav weddingId={weddingId} locale={locale} active="guests" />}
+        {weddingId && <AdminPageNav weddingId={weddingId} locale={locale} active="guests" tier={tier} />}
       </div>
 
       <AdminTopBar
         title="Gestión de Invitados"
+        meta={
+          tier === 'free' ? (
+            <>
+              <AdminStatusPill tone="free">Gratis</AdminStatusPill>
+              <button
+                type="button"
+                onClick={() => setShowFreeSettings(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#71717A] hover:text-[#0A0A0A]"
+              >
+                <Settings className="h-3.5 w-3.5" />
+                Ajustes
+              </button>
+            </>
+          ) : undefined
+        }
         actions={
           <AdminButton onClick={() => setShowForm(true)} disabled={isLoading}>
             <Plus className="h-4 w-4" />
@@ -535,6 +580,18 @@ const AdminGuestsContent = () => {
           </AdminButton>
         }
       />
+      {showFreeSettings && (
+        <FreeWeddingSettingsModal
+          weddingId={weddingId}
+          onClose={() => setShowFreeSettings(false)}
+          onSaved={() => window.location.reload()}
+        />
+      )}
+      {tier === 'free' && (
+        <div className="bg-[#F4F4F5] border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 py-2.5 text-[12.5px] text-[#3F3F46]">
+          Estás en el plan gratuito: sin enlace público para tus invitados. Anota aquí su asistencia y su mesa con el selector de estado. Para que confirmen por su cuenta, activa una invitación con diseño.
+        </div>
+      )}
 
       <div className="px-4 sm:px-10 py-8">
 
@@ -644,7 +701,7 @@ const AdminGuestsContent = () => {
                   <tr key={guest.id} className="hover:bg-[#FAFAFA] transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-bold text-[#0A0A0A]">{guest.name}</div>
-                      {guest.coupleMessage && (
+                      {tier !== 'free' && guest.coupleMessage && (
                         <div className="text-sm text-[#71717A] truncate max-w-xs">
                           {guest.coupleMessage}
                         </div>
@@ -667,18 +724,22 @@ const AdminGuestsContent = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
-                        <AdminStatusPill
-                          tone={
-                            guest.rsvpConfirmation?.attending === true
-                              ? 'confirmed'
-                              : guest.rsvpConfirmation?.attending === false
-                              ? 'declined'
-                              : 'pending'
-                          }
+                        <select
+                          value={resolveGuestAttendance(guest)}
+                          onChange={(e) => handleStatusChange(guest, e.target.value as 'pending' | 'confirmed' | 'declined')}
+                          title={guest.rsvpConfirmation ? 'Confirmó por su enlace público' : 'Márcalo a mano'}
+                          className={`text-xs font-bold rounded-full pl-2.5 pr-1.5 py-1 border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] ${
+                            resolveGuestAttendance(guest) === 'confirmed'
+                              ? 'text-[#15803D] bg-[rgba(21,128,61,0.1)]'
+                              : resolveGuestAttendance(guest) === 'declined'
+                              ? 'text-[#B91C1C] bg-[rgba(185,28,28,0.08)]'
+                              : 'text-[#475569] bg-[rgba(71,85,105,0.08)]'
+                          }`}
                         >
-                          {guest.rsvpConfirmation?.attending === true ? 'Confirmado' :
-                           guest.rsvpConfirmation?.attending === false ? 'Declinó' : 'Pendiente'}
-                        </AdminStatusPill>
+                          <option value="pending">Pendiente</option>
+                          <option value="confirmed">Confirmado</option>
+                          <option value="declined">No asiste</option>
+                        </select>
                         {guest.rsvpConfirmation?.message && (
                           <button
                             onClick={() => handleShowMessage(guest.rsvpConfirmation!.message!)}
@@ -717,17 +778,19 @@ const AdminGuestsContent = () => {
                     )}
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-1">
-                        <button
-                          onClick={() => handleCopyLink(guest)}
-                          className="text-[#3F3F46] hover:text-[#111111] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
-                          title="Copiar enlace"
-                        >
-                          {copiedGuestId === guest.id ? (
-                            <Check className="h-4 w-4" />
-                          ) : (
-                            <Link className="h-4 w-4" />
-                          )}
-                        </button>
+                        {tier !== 'free' && (
+                          <button
+                            onClick={() => handleCopyLink(guest)}
+                            className="text-[#3F3F46] hover:text-[#111111] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
+                            title="Copiar enlace"
+                          >
+                            {copiedGuestId === guest.id ? (
+                              <Check className="h-4 w-4" />
+                            ) : (
+                              <Link className="h-4 w-4" />
+                            )}
+                          </button>
+                        )}
                         <button
                           onClick={() => handleEdit(guest)}
                           className="text-[#3F3F46] hover:text-[#0A0A0A] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
@@ -761,18 +824,21 @@ const AdminGuestsContent = () => {
                     {guest.phone && <div className="text-xs text-[#71717A] truncate">{guest.phone}</div>}
                   </div>
                   <div className="flex items-center gap-1.5 flex-none">
-                    <AdminStatusPill
-                      tone={
-                        guest.rsvpConfirmation?.attending === true
-                          ? 'confirmed'
-                          : guest.rsvpConfirmation?.attending === false
-                          ? 'declined'
-                          : 'pending'
-                      }
+                    <select
+                      value={resolveGuestAttendance(guest)}
+                      onChange={(e) => handleStatusChange(guest, e.target.value as 'pending' | 'confirmed' | 'declined')}
+                      className={`text-xs font-bold rounded-full pl-2.5 pr-1.5 py-1 border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] ${
+                        resolveGuestAttendance(guest) === 'confirmed'
+                          ? 'text-[#15803D] bg-[rgba(21,128,61,0.1)]'
+                          : resolveGuestAttendance(guest) === 'declined'
+                          ? 'text-[#B91C1C] bg-[rgba(185,28,28,0.08)]'
+                          : 'text-[#475569] bg-[rgba(71,85,105,0.08)]'
+                      }`}
                     >
-                      {guest.rsvpConfirmation?.attending === true ? 'Confirmado' :
-                       guest.rsvpConfirmation?.attending === false ? 'Declinó' : 'Pendiente'}
-                    </AdminStatusPill>
+                      <option value="pending">Pendiente</option>
+                      <option value="confirmed">Confirmado</option>
+                      <option value="declined">No asiste</option>
+                    </select>
                     {guest.rsvpConfirmation?.message && (
                       <button
                         onClick={() => handleShowMessage(guest.rsvpConfirmation!.message!)}
@@ -785,7 +851,7 @@ const AdminGuestsContent = () => {
                   </div>
                 </div>
 
-                {guest.coupleMessage && (
+                {tier !== 'free' && guest.coupleMessage && (
                   <div className="text-xs text-[#71717A] mt-2 line-clamp-2">{guest.coupleMessage}</div>
                 )}
 
@@ -798,13 +864,15 @@ const AdminGuestsContent = () => {
                     {hasEnglish && <>{' · '}{guest.language === 'es' ? 'ES' : 'EN'}</>}
                   </div>
                   <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => handleCopyLink(guest)}
-                      className="text-[#3F3F46] hover:text-[#111111] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
-                      title="Copiar enlace"
-                    >
-                      {copiedGuestId === guest.id ? <Check className="h-4 w-4" /> : <Link className="h-4 w-4" />}
-                    </button>
+                    {tier !== 'free' && (
+                      <button
+                        onClick={() => handleCopyLink(guest)}
+                        className="text-[#3F3F46] hover:text-[#111111] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
+                        title="Copiar enlace"
+                      >
+                        {copiedGuestId === guest.id ? <Check className="h-4 w-4" /> : <Link className="h-4 w-4" />}
+                      </button>
+                    )}
                     <button
                       onClick={() => handleEdit(guest)}
                       className="text-[#3F3F46] hover:text-[#0A0A0A] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
@@ -944,19 +1012,23 @@ const AdminGuestsContent = () => {
                     </div>
                     )}
 
-                    <div>
-                      <label className="block text-[13px] font-semibold text-[#27272A] mb-1.5">
-                        Mensaje Personal (Opcional)
-                      </label>
-                      <textarea
-                        name="coupleMessage"
-                        value={formData.coupleMessage}
-                        onChange={handleInputChange}
-                        rows={3}
-                        className="w-full px-3.5 py-2.5 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
-                        placeholder="Un mensaje especial para este invitado..."
-                      />
-                    </div>
+                    {/* Spec 16 — sin invitación pública que compartir, este mensaje no tiene
+                        dónde mostrarse en una boda gratuita */}
+                    {tier !== 'free' && (
+                      <div>
+                        <label className="block text-[13px] font-semibold text-[#27272A] mb-1.5">
+                          Mensaje Personal (Opcional)
+                        </label>
+                        <textarea
+                          name="coupleMessage"
+                          value={formData.coupleMessage}
+                          onChange={handleInputChange}
+                          rows={3}
+                          className="w-full px-3.5 py-2.5 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
+                          placeholder="Un mensaje especial para este invitado..."
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {error && (

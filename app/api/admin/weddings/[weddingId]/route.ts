@@ -82,7 +82,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
     if (!renaming) {
       const snap = await oldRef.get();
       if (!snap.exists) return notFound();
-      await oldRef.update({ 'template.id': body.templateId, updatedAt: now });
+      // Spec 16: asignar plantilla es el único punto donde una boda pasa de 'free' a 'template'.
+      await oldRef.update({ 'template.id': body.templateId, tier: 'template', updatedAt: now });
       return NextResponse.json({ id });
     }
 
@@ -105,7 +106,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
         id: newId,
         event: { ...(data.event || {}), weddingId: newId },
         updatedAt: now,
-        ...(hasTemplate ? { template: { id: body.templateId } } : {}),
+        ...(hasTemplate ? { template: { id: body.templateId }, tier: 'template' } : {}),
       };
       tx.create(newRef, moved);
       tx.delete(oldRef);

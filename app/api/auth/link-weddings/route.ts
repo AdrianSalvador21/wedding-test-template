@@ -3,12 +3,14 @@ import { authenticate, isAdminEmail, normalizeEmail } from '../../../../lib/serv
 
 export const runtime = 'nodejs';
 
-const FIELDS = ['couple.bride.name', 'couple.groom.name', 'event.date'];
+const FIELDS = ['couple.bride.name', 'couple.groom.name', 'event.date', 'tier'];
 
 interface LinkedWedding {
   id: string;
   title: string;
   date: string;
+  // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
+  tier: 'free' | 'template';
   // Solo para el operador: correos con acceso (weddingOwners/<id>.emails)
   ownerEmails?: string[];
 }
@@ -17,7 +19,8 @@ function toWedding(id: string, data: FirebaseFirestore.DocumentData | undefined)
   const bride = data?.couple?.bride?.name || '';
   const groom = data?.couple?.groom?.name || '';
   const title = bride || groom ? [bride || '…', groom || '…'].join(' y ') : id;
-  return { id, title, date: typeof data?.event?.date === 'string' ? data.event.date : '' };
+  const tier = data?.tier === 'free' ? 'free' : 'template';
+  return { id, title, date: typeof data?.event?.date === 'string' ? data.event.date : '', tier };
 }
 
 const ownerEmailsOf = (data: FirebaseFirestore.DocumentData | undefined): string[] =>

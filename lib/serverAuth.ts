@@ -56,6 +56,25 @@ export async function authenticate(request: NextRequest): Promise<AuthResult> {
   }
 }
 
+// Spec 16 — cuenta las bodas `tier: 'free'` ya ligadas a un correo (weddingOwners.emails),
+// para el tope de 3 bodas gratuitas por cuenta en POST /api/weddings/free.
+export async function countFreeWeddingsForEmail(email: string): Promise<number> {
+  const { getAdminDb } = await import('./firebase-admin');
+  const db = getAdminDb();
+  const normalized = normalizeEmail(email);
+  const ownersSnap = await db.collection('weddingOwners').get();
+  const ids = ownersSnap.docs
+    .filter((d) => {
+      const emails = d.data()?.emails;
+      return Array.isArray(emails) && emails.some((e: unknown) => typeof e === 'string' && normalizeEmail(e) === normalized);
+    })
+    .map((d) => d.id);
+  if (ids.length === 0) return 0;
+  const refs = ids.map((id) => db.collection('weddings').doc(id));
+  const docs = await db.getAll(...refs, { fieldMask: ['tier'] });
+  return docs.filter((d) => d.exists && (d.data()?.tier ?? 'template') === 'free').length;
+}
+
 // Solo el operador: correo verificado y presente en ADMIN_EMAILS.
 export async function requireAdmin(request: NextRequest): Promise<AuthResult> {
   const result = await authenticate(request);

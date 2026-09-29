@@ -28,6 +28,20 @@ export function getSeatedGuestCount(guest: FirebaseGuest): number {
   return guest.guestCount || 1;
 }
 
+/**
+ * Estado de asistencia resuelto (spec 16): el RSVP público (`rsvpConfirmation.attending`) es
+ * la fuente de verdad cuando existe. Si no —el caso permanente de una boda gratuita, y el de
+ * cualquier invitado que todavía no confirma por su enlace— se usa `rsvpStatus`, que ahora
+ * también se puede fijar a mano desde el panel (antes solo lo cambiaba el propio invitado).
+ */
+export function resolveGuestAttendance(guest: FirebaseGuest): 'confirmed' | 'declined' | 'pending' {
+  if (guest.rsvpConfirmation?.attending === true) return 'confirmed';
+  if (guest.rsvpConfirmation?.attending === false) return 'declined';
+  if (guest.rsvpStatus === 'confirmed') return 'confirmed';
+  if (guest.rsvpStatus === 'declined') return 'declined';
+  return 'pending';
+}
+
 export class GuestService {
   private readonly GUESTS_COLLECTION = 'guests';
 
@@ -208,6 +222,27 @@ export class GuestService {
   }
 
   /**
+   * Marca manualmente el estado de asistencia de un invitado desde el panel (spec 16): a
+   * diferencia de `updateGuestRSVPStatus` (que busca por `guestId` público, pensado para el
+   * RSVP), este recibe directo el `id` de Firestore que la tabla de Invitados ya tiene, y
+   * admite volver a 'pending' para poder corregir un error. No toca `rsvpConfirmation`:
+   * `getSeatedGuestCount` ya usa `guestCount` como respaldo cuando no hay una confirmación
+   * real, así que marcar "Confirmado" a mano no cambia cómo se cuenta para Mesas.
+   */
+  async updateGuestStatus(id: string, status: 'pending' | 'confirmed' | 'declined'): Promise<void> {
+    try {
+      const guestDoc = doc(db, this.GUESTS_COLLECTION, id);
+      await updateDoc(guestDoc, {
+        rsvpStatus: status,
+        updatedAt: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error actualizando el estado del invitado:', error);
+      throw new Error('No se pudo actualizar el estado del invitado');
+    }
+  }
+
+  /**
    * Asigna (o quita, con tableId = null) un invitado a una mesa (spec 12).
    * La validación de capacidad vive en quien la llama (la UI de Mesas), no aquí.
    */
@@ -273,15 +308,14 @@ export class GuestService {
           return sum + 1;
         }, 0), // Total personas invitadas (1 por invitación hasta que confirmen/rechacen)
         totalConfirmedPersons: guests.reduce((sum, g) => {
-          // Solo contar personas confirmadas con su número real de invitados
-          if (g.rsvpConfirmation?.attending === true) {
-            return sum + (g.rsvpConfirmation?.guestCount || 1);
-          }
-          return sum;
-        }, 0), // Total personas confirmadas (suma real de guestCount de confirmados)
-        confirmed: guests.filter(g => g.rsvpConfirmation?.attending === true).length, // Invitaciones confirmadas
-        declined: guests.filter(g => g.rsvpConfirmation?.attending === false).length,
-        pending: guests.filter(g => !g.rsvpConfirmation || g.rsvpConfirmation.attending === undefined).length
+          // Cuenta confirmados por RSVP público (número real que puso el invitado) y también
+          // los marcados a mano desde el panel (spec 16), con el estimado de la invitación.
+          if (resolveGuestAttendance(g) !== 'confirmed') return sum;
+          return sum + (g.rsvpConfirmation?.guestCount || g.guestCount || 1);
+        }, 0), // Total personas confirmadas
+        confirmed: guests.filter(g => resolveGuestAttendance(g) === 'confirmed').length, // Invitaciones confirmadas
+        declined: guests.filter(g => resolveGuestAttendance(g) === 'declined').length,
+        pending: guests.filter(g => resolveGuestAttendance(g) === 'pending').length
       };
       
       return stats;

@@ -167,3 +167,20 @@ export const slugifyWeddingNames = (bride: string, groom: string): string => {
       .replace(/^-+|-+$/g, '');
   return [slug(bride), slug(groom)].filter(Boolean).join('-y-');
 };
+
+// Spec 16 — genera automáticamente el ID de una boda gratuita (no se muestra como campo
+// editable: no hay enlace público que dependa de él). Reutiliza `slugifyWeddingNames` y
+// agrega un sufijo numérico si el slug ya existe. No importa `firebase-admin` directamente
+// (este archivo lo usa el cliente): `exists` la provee quien llama, con el SDK que tenga
+// a mano (admin en las rutas de servidor).
+export async function generateFreeWeddingId(bride: string, groom: string, exists: (id: string) => Promise<boolean>): Promise<string> {
+  const slug = slugifyWeddingNames(bride, groom).slice(0, 44);
+  const base = isValidWeddingId(slug) ? slug : `boda-${Date.now().toString(36)}`;
+  let candidate = base;
+  for (let suffix = 2; suffix < 50; suffix += 1) {
+    if (!(await exists(candidate))) return candidate;
+    candidate = `${base}-${suffix}`;
+  }
+  // Extremadamente improbable con nombres reales; última salida para no colgar el alta.
+  return `${base}-${Math.random().toString(36).slice(2, 6)}`;
+}

@@ -11,6 +11,7 @@ import { FirebaseGuest } from '../src/types/wedding';
 import { useWeddingMusic } from '../hooks/useWeddingMusic';
 import { SITE } from '../lib/site';
 import { isDemoId } from '../lib/analytics/demos';
+import InvitationNotActivated from './InvitationNotActivated';
 import InvitationOverlay from './InvitationOverlay';
 import MusicPlayer from './MusicPlayer';
 import Template01 from './templates/Template01';
@@ -146,6 +147,15 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
         </div>
       </div>
     );
+  }
+
+  // Spec 16 — una boda 'free' nunca tiene plantilla que renderizar: sin este corte, caía en
+  // Template01 vacío (currentWedding.template?.id || 'template-01') sin ningún aviso.
+  if ((currentWedding.tier ?? 'template') === 'free') {
+    const bride = currentWedding.couple?.bride?.name;
+    const groom = currentWedding.couple?.groom?.name;
+    const coupleNames = bride && groom ? `${bride} y ${groom}` : undefined;
+    return <InvitationNotActivated coupleNames={coupleNames} weddingId={currentWedding.id} />;
   }
 
   // Crear tema basado en los datos del servicio
