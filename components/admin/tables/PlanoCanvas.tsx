@@ -671,11 +671,16 @@ function PlanoCanvasInner({
         // La solución robusta es no depender de esa cadena: en móvil se le da un alto propio
         // en vh (siempre concreto, no depende de ningún ancestro) en vez de flex-1.
         //
-        // min-h-[90vh] en ambos: el lienzo es el panel principal donde se arrastran mesas e
-        // invitados, así que debe verse grande siempre — aunque eso implique scroll en la
-        // página — en vez de encogerse al contenido disponible.
-        className={`relative rounded-xl overflow-hidden border border-[rgba(0,0,0,0.08)] ${styles.controlsOverride} min-h-[90vh] ${
-          isDesktop ? 'flex-1' : ''
+        // El lienzo es el panel principal donde se arrastran mesas e invitados, así que debe
+        // verse grande siempre (mínimo 90% del alto de pantalla), aunque eso implique scroll
+        // en la página. OJO: en móvil tiene que ser `h-[90vh]` (alto FIJO), no `min-h-[90vh]`
+        // — un min-height sin height, dentro de esta cadena de flex-col anidados, volvió a
+        // caer en el mismo caso de "alto no resuelto" que describe el comentario de arriba, y
+        // React Flow dejaba de dibujar las mesas (mostraba su propio aviso en blanco en su
+        // lugar). En escritorio sí puede ser min-height: el stretch del flex-row ya le da un
+        // alto concreto de por sí, así que min-h solo actúa como piso cuando hay poco espacio.
+        className={`relative rounded-xl overflow-hidden border border-[rgba(0,0,0,0.08)] ${styles.controlsOverride} ${
+          isDesktop ? 'flex-1 min-h-[90vh]' : 'h-[90vh]'
         }`}
       >
         {/* Aviso del flujo "toca y toca" en touch: solo aparece con algo armado desde la
