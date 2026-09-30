@@ -7,7 +7,7 @@ import JsonLd from '../../components/seo/JsonLd';
 import { LCheckIcon, LSolidButton } from '../../components/landing/ui';
 import { fraunces } from '../../lib/brand';
 import { whatsappUrl } from '../../lib/contact';
-import { PACKAGES, formatPrice, getFaq } from '../../lib/marketing-content';
+import { getFaq } from '../../lib/marketing-content';
 import { pageMetadata } from '../../lib/page-metadata';
 import { breadcrumbSchema } from '../../lib/seo-schema';
 
@@ -19,12 +19,12 @@ export const metadata: Metadata = pageMetadata({
 });
 
 const REASONS: { icon: IconName; title: string; text: string }[] = [
-  { icon: 'doc', title: 'Una invitación por cliente', text: 'Cada boda tiene su propia invitación y su propio panel de invitados.' },
   {
     icon: 'users',
-    title: 'Gestión de invitados',
-    text: 'Con el paquete Personalizado, tú o tu cliente editan la invitación y controlan las confirmaciones desde el panel.',
+    title: 'Todas tus bodas, un solo login',
+    text: 'Entra a tu cuenta y ve cada boda de tus clientes: su invitación, sus invitados confirmados y sus mesas, todo junto.',
   },
+  { icon: 'doc', title: 'Una invitación por cliente', text: 'Cada boda tiene su propia invitación y su propio panel de invitados.' },
   { icon: 'clock', title: 'Tiempos claros', text: 'Entrega en 7 días hábiles y hosting incluido hasta 15 días después del evento.' },
   { icon: 'chat', title: 'Atención directa', text: 'Hablas con nosotros por WhatsApp, sin intermediarios.' },
 ];
@@ -62,7 +62,7 @@ export default function WeddingPlannersPage() {
       <PageHero
         eyebrow="Para wedding planners"
         title="Invitaciones digitales para wedding planners"
-        intro="Una invitación para cada cliente, con el mismo cuidado y sin rehacer trabajo."
+        intro="Una invitación para cada cliente y un panel donde ves todas tus bodas con un solo inicio de sesión, sin rehacer trabajo."
       >
         <div className="mt-3">
           <LSolidButton href={whatsappUrl(message)} target="_blank" variant="terracotaDark">
@@ -127,38 +127,6 @@ export default function WeddingPlannersPage() {
               </li>
             ))}
           </ul>
-        </div>
-      </Section>
-
-      <Section tone="white">
-        <SectionHead
-          eyebrow="Paquetes"
-          title="Dos paquetes, sin costo extra por invitación"
-          text="Cuéntanos cuántas bodas manejas y te explicamos cómo lo organizamos."
-        />
-        <div className="grid md:grid-cols-2 gap-6">
-          {PACKAGES.map((pkg) => (
-            <a
-              key={pkg.id}
-              href="/paquetes"
-              className={`flex items-center justify-between gap-6 bg-[#FBF7F1] rounded-[20px] px-7 py-6 transition-shadow hover:shadow-[0_20px_40px_rgba(43,38,34,0.12)] ${
-                pkg.id === 'personalizado' ? 'border-2 border-[#AE5730]' : 'border border-[rgba(43,38,34,0.1)]'
-              }`}
-            >
-              <div className="flex flex-col gap-1.5">
-                <span className="text-2xl leading-tight text-[#211D19]" style={fraunces}>
-                  {pkg.name}
-                </span>
-                <span className="text-sm text-[#5A534B]">{pkg.forWho}</span>
-              </div>
-              <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                <span className="text-[32px] leading-none text-[#211D19]" style={fraunces}>
-                  {formatPrice(pkg.price)} <span className="text-sm font-semibold text-[#5A534B]">{pkg.currency}</span>
-                </span>
-                <span className="text-sm font-bold text-[#AE5730]">Ver qué incluye →</span>
-              </div>
-            </a>
-          ))}
         </div>
       </Section>
 

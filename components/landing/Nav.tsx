@@ -12,6 +12,7 @@ const links = [
   { href: '/paquetes', label: 'Paquetes' },
   { href: '/wedding-planners', label: 'Wedding planners' },
   { href: '/preguntas-frecuentes', label: 'Preguntas frecuentes' },
+  { href: '/login', label: 'Inicia sesión' },
 ];
 
 // `active` marca la página actual (href exacto de `links`) en las páginas de marketing.

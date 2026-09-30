@@ -26,11 +26,11 @@ const LandingPage = () => {
       <main>
         <Hero />
         <PriceStrip />
+        <MesasSection />
         <DesignGallery />
         <HowItWorks />
         <Features />
         <EditorSection />
-        <MesasSection />
         <AiSection />
         <Packages />
         <ProcessSection />

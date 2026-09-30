@@ -2301,6 +2301,17 @@ export const mockWeddingValentinaMateo: WeddingData = {
       en: 'Although we adore the little ones in the family, we have decided that our celebration will be adults-only. We hope you can join us on this special night.'
     }
   },
+  music: {
+    enabled: true,
+    fileName: 'default.mp3', // Música por defecto del repo (/assets/music/default.mp3)
+    title: 'Música de la boda',
+    artist: '',
+    autoplay: true,
+    volume: 0.3,
+    showControls: true,
+    startTime: 0,
+    useRealSpotify: false
+  },
   recommendedPlaces: {
     enabled: true,
     title: 'Lugares recomendados',
@@ -2447,6 +2458,17 @@ export const mockWeddingTemplate01Demo: WeddingData = {
     ]
   },
   adultOnlyEvent: { enabled: false },
+  music: {
+    enabled: true,
+    fileName: 'default.mp3', // Música por defecto del repo (/assets/music/default.mp3)
+    title: 'Música de la boda',
+    artist: '',
+    autoplay: true,
+    volume: 0.3,
+    showControls: true,
+    startTime: 0,
+    useRealSpotify: false
+  },
   rsvp: { enabled: true, deadline: '2026-09-17', maxGuests: 2, dietaryOptions: true, customQuestions: [] },
   theme: { id: 'classic' },
   template: { id: 'template-01' },
@@ -2553,6 +2575,17 @@ export const mockWeddingTemplate02Demo: WeddingData = {
     ]
   },
   adultOnlyEvent: { enabled: false },
+  music: {
+    enabled: true,
+    fileName: 'default.mp3', // Música por defecto del repo (/assets/music/default.mp3)
+    title: 'Música de la boda',
+    artist: '',
+    autoplay: true,
+    volume: 0.3,
+    showControls: true,
+    startTime: 0,
+    useRealSpotify: false
+  },
   rsvp: { enabled: true, deadline: '2026-10-07', maxGuests: 2, dietaryOptions: true, customQuestions: [] },
   theme: { id: 'modern' },
   template: { id: 'template-02' },

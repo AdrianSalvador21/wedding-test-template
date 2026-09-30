@@ -104,7 +104,7 @@ export default function EditorSection() {
             Cambia lo que necesites, <em className="font-normal text-[#AE5730]">cuando lo necesites.</em>
           </h2>
           <p className="text-[15.5px] md:text-[18px] leading-relaxed text-[#5A534B]">
-            Desde tu panel editas nombres, fecha, lugares, cronograma y fotos. Para tus datos no dependes de nadie.
+            Desde tu panel editas nombres, fecha, lugares, cronograma y fotos, sin depender de nadie.
           </p>
           <ul className="flex flex-col gap-4 mt-1.5">
             {points.map((point) => (
@@ -126,11 +126,11 @@ export default function EditorSection() {
             <a href={whatsappUrl(CHANGE_MESSAGE)} target="_blank" rel="noopener noreferrer" className="font-extrabold text-[#AE5730] hover:text-[#8E4222]">
               Escríbenos por WhatsApp
             </a>{' '}
-            y lo vemos juntos.
+            y lo vemos juntos, o revisa qué incluye el{' '}
+            <a href="#paquetes" className="font-extrabold text-[#AE5730] hover:text-[#8E4222]">
+              Paquete Personalizado →
+            </a>
           </p>
-          <a href="#paquetes" className="text-[15px] font-extrabold text-[#AE5730] hover:text-[#8E4222]">
-            Ver Paquete Personalizado →
-          </a>
         </LReveal>
 
         <LReveal className="lg:order-1">
