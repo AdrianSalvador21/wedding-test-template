@@ -30,22 +30,29 @@ export async function POST(request: NextRequest) {
   const groom = text(body.groom, 80);
   const brideEmail = text(body.brideEmail, 120).toLowerCase();
   const groomEmail = text(body.groomEmail, 120).toLowerCase();
+  const plannerEmail = text(body.plannerEmail, 120).toLowerCase();
   const date = text(body.date, 10);
   const weddingId = text(body.weddingId, 50);
 
-  if (!bride) return invalid('bride');
-  if (!groom) return invalid('groom');
-  if (!isValidEmail(brideEmail)) return invalid('brideEmail');
-  if (!isValidEmail(groomEmail)) return invalid('groomEmail');
+  // Spec 17 — bride/groom (nombre y correo) son opcionales de forma independiente: el
+  // staff puede crear la boda de un cliente de un wedding planner solo con el correo
+  // del planner, sin esperar los datos de la pareja.
+  if (brideEmail && !isValidEmail(brideEmail)) return invalid('brideEmail');
+  if (groomEmail && !isValidEmail(groomEmail)) return invalid('groomEmail');
+  if (plannerEmail && !isValidEmail(plannerEmail)) return invalid('plannerEmail');
+  if (plannerEmail && (plannerEmail === brideEmail || plannerEmail === groomEmail)) return invalid('plannerEmail');
   if (!isValidIsoDate(date)) return invalid('date');
   if (!isTemplateId(body.templateId)) return invalid('templateId');
   if (!isValidWeddingId(weddingId)) return invalid('weddingId');
-  const emails = normalizeEmailList([brideEmail, groomEmail], 1, 2);
-  if (!emails) return invalid('brideEmail');
+  const ownerEmails = [brideEmail, groomEmail, plannerEmail].filter(Boolean);
+  if (ownerEmails.length === 0) return invalid('owners');
+  const emails = normalizeEmailList(ownerEmails, 1, 3);
+  if (!emails) return invalid('owners');
 
   const wedding = createInitialWeddingData(weddingId);
-  wedding.couple.bride.name = bride; // "persona 2" en el editor
-  wedding.couple.groom.name = groom; // "persona 1" en el editor
+  if (bride) wedding.couple.bride.name = bride; // "persona 2" en el editor
+  if (groom) wedding.couple.groom.name = groom; // "persona 1" en el editor
+  wedding.plannerEmail = plannerEmail || null; // Spec 17
   wedding.event.date = `${date}T16:00:00.000Z`; // mismo formato que escribe el editor
   wedding.template = { id: body.templateId };
 

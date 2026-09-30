@@ -124,7 +124,15 @@ export default function AdminHomePage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return auth.weddings;
-    return auth.weddings.filter((w) => w.title.toLowerCase().includes(q) || w.id.toLowerCase().includes(q));
+    // Spec 17 — también matchea por ownerEmails/plannerEmail, para que el operador pueda
+    // contar las bodas de un wedding planner escribiendo su correo.
+    return auth.weddings.filter(
+      (w) =>
+        w.title.toLowerCase().includes(q) ||
+        w.id.toLowerCase().includes(q) ||
+        !!w.plannerEmail?.toLowerCase().includes(q) ||
+        !!w.ownerEmails?.some((email) => email.toLowerCase().includes(q))
+    );
   }, [auth.weddings, query]);
 
   if (auth.status === 'loading' || auth.status === 'signedOut') return <LoadingScreen />;

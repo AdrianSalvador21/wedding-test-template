@@ -334,6 +334,7 @@ export interface WeddingData {
     id: string;
   };
   tier?: 'free' | 'template'; // Spec 16 — ausente se interpreta como 'template' en todo el código
+  plannerEmail?: string | null; // Spec 17 — correo del wedding planner atribuido a esta boda, si aplica
   status: 'draft' | 'active' | 'archived';
   languages: string[];
   defaultLanguage: string;

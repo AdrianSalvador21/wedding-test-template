@@ -155,6 +155,7 @@ interface CreatedWedding {
   id: string;
   bride: string;
   groom: string;
+  plannerEmail: string;
   emails: string[];
 }
 
@@ -170,6 +171,7 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
   const [groom, setGroom] = useState('');
   const [brideEmail, setBrideEmail] = useState('');
   const [groomEmail, setGroomEmail] = useState('');
+  const [plannerEmail, setPlannerEmail] = useState('');
   const [date, setDate] = useState('');
   const [templateId, setTemplateId] = useState<TemplateId>('template-01');
   const [weddingId, setWeddingId] = useState('');
@@ -190,6 +192,7 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
     setGroom('');
     setBrideEmail('');
     setGroomEmail('');
+    setPlannerEmail('');
     setDate('');
     setTemplateId('template-01');
     setWeddingId('');
@@ -212,15 +215,26 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
     setSuggestion(null);
 
     const next: Record<string, string> = {};
-    if (!bride.trim()) next.bride = 'Escribe el nombre.';
-    if (!groom.trim()) next.groom = 'Escribe el nombre.';
-    if (!EMAIL_RE.test(brideEmail.trim())) next.brideEmail = 'Escribe un correo válido.';
-    if (!EMAIL_RE.test(groomEmail.trim())) next.groomEmail = 'Escribe un correo válido.';
+    const brideEmailTrim = brideEmail.trim().toLowerCase();
+    const groomEmailTrim = groomEmail.trim().toLowerCase();
+    const plannerEmailTrim = plannerEmail.trim().toLowerCase();
+    // Spec 17 — bride/groom (nombre y correo) son opcionales: solo se valida el formato
+    // de los correos que sí se llenaron, no que existan.
+    if (brideEmailTrim && !EMAIL_RE.test(brideEmailTrim)) next.brideEmail = 'Escribe un correo válido.';
+    if (groomEmailTrim && !EMAIL_RE.test(groomEmailTrim)) next.groomEmail = 'Escribe un correo válido.';
+    if (plannerEmailTrim && !EMAIL_RE.test(plannerEmailTrim)) next.plannerEmail = 'Escribe un correo válido.';
+    if (plannerEmailTrim && !next.plannerEmail && (plannerEmailTrim === brideEmailTrim || plannerEmailTrim === groomEmailTrim)) {
+      next.plannerEmail = 'Debe ser distinto al correo de la pareja.';
+    }
     if (!isValidIsoDate(date)) next.date = 'Elige la fecha de la boda.';
     const idProblem = idError(weddingId.trim());
     if (idProblem) next.weddingId = idProblem;
     setErrors(next);
     if (Object.keys(next).length > 0) return;
+    if (!brideEmailTrim && !groomEmailTrim && !plannerEmailTrim) {
+      setBanner('Agrega al menos un correo: de la novia, el novio o el wedding planner.');
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -232,14 +246,15 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
           groom: groom.trim(),
           brideEmail: brideEmail.trim(),
           groomEmail: groomEmail.trim(),
+          plannerEmail: plannerEmail.trim(),
           date,
           templateId,
           weddingId: weddingId.trim(),
         }),
       });
       if (res.status === 201) {
-        const emails = Array.from(new Set([brideEmail.trim().toLowerCase(), groomEmail.trim().toLowerCase()]));
-        setCreated({ id: weddingId.trim(), bride: bride.trim(), groom: groom.trim(), emails });
+        const emails = Array.from(new Set([brideEmailTrim, groomEmailTrim, plannerEmailTrim].filter(Boolean)));
+        setCreated({ id: weddingId.trim(), bride: bride.trim(), groom: groom.trim(), plannerEmail: plannerEmail.trim(), emails });
         onCreated();
         return;
       }
@@ -247,6 +262,8 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
       if (res.status === 409) {
         setErrors({ weddingId: 'Ya existe una invitación con ese ID.' });
         setSuggestion(`${weddingId.trim()}-2`);
+      } else if (res.status === 400 && data.field === 'owners') {
+        setBanner('Agrega al menos un correo: de la novia, el novio o el wedding planner.');
       } else if (res.status === 400 && typeof data.field === 'string') {
         setErrors({ [data.field]: 'Revisa este campo.' });
       } else {
@@ -263,11 +280,20 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const inviteUrl = `${origin}/es/wedding/${created.id}`;
     const loginUrl = `${origin}/login`;
+    // Spec 17 — sin nombres de pareja (boda creada solo con el correo del planner), el
+    // mensaje se dirige al planner en vez de "Hola {bride} y {groom}...".
+    const hasCouple = !!(created.bride || created.groom);
     const emailsText = created.emails.length > 1 ? `${created.emails[0]} (o ${created.emails[1]})` : created.emails[0];
-    const message = `Hola ${created.bride} y ${created.groom}, ya está lista la base de su invitación en Invyta.\n\nPara editarla:\n1. Entren a ${loginUrl}\n2. Creen su cuenta con este correo: ${emailsText} y verifíquenlo desde el mensaje que les llega.\n3. Al entrar, se abrirá directo su invitación.\n\nSi algo no funciona, respóndanme por aquí.`;
+    const message = hasCouple
+      ? `Hola ${created.bride} y ${created.groom}, ya está lista la base de su invitación en Invyta.\n\nPara editarla:\n1. Entren a ${loginUrl}\n2. Creen su cuenta con este correo: ${emailsText} y verifíquenlo desde el mensaje que les llega.\n3. Al entrar, se abrirá directo su invitación.\n\nSi algo no funciona, respóndanme por aquí.`
+      : `Hola, ya está lista la base de la invitación de tu cliente en Invyta (${created.id}).\n\nPara completarla:\n1. Entra a ${loginUrl}\n2. Crea tu cuenta con este correo: ${created.plannerEmail} y verifícalo desde el mensaje que te llega.\n3. Al entrar, la verás en "Mis invitaciones" junto con tus demás bodas.\n\nAhí puedes agregar los datos de la pareja cuando los tengas.`;
 
     return (
-      <Modal title="Invitación creada" sub={`${created.bride} y ${created.groom} ya pueden entrar con sus correos.`} onClose={onClose}>
+      <Modal
+        title="Invitación creada"
+        sub={hasCouple ? `${created.bride} y ${created.groom} ya pueden entrar con sus correos.` : 'El wedding planner ya puede entrar con su correo.'}
+        onClose={onClose}
+      >
         <CopyRow label="Invitación para los invitados" value={inviteUrl} />
         <CopyRow label="Entrada de la pareja" value={loginUrl} />
         <div className="flex flex-col gap-2">
@@ -326,24 +352,39 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
           </div>
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Nombre de la persona 2" htmlFor={`${uid}-bride`} error={errors.bride}>
+          <Field label="Nombre de la persona 2 (opcional)" htmlFor={`${uid}-bride`} error={errors.bride}>
             <input id={`${uid}-bride`} type="text" value={bride} onChange={(e) => setBride(e.target.value)} className={inputClass(!!errors.bride)} placeholder="María" />
           </Field>
-          <Field label="Nombre de la persona 1" htmlFor={`${uid}-groom`} error={errors.groom}>
+          <Field label="Nombre de la persona 1 (opcional)" htmlFor={`${uid}-groom`} error={errors.groom}>
             <input id={`${uid}-groom`} type="text" value={groom} onChange={(e) => setGroom(e.target.value)} className={inputClass(!!errors.groom)} placeholder="Carlos" />
           </Field>
         </div>
         <div className="flex flex-col gap-2">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Correo de la persona 2" htmlFor={`${uid}-bmail`} error={errors.brideEmail}>
+            <Field label="Correo de la persona 2 (opcional)" htmlFor={`${uid}-bmail`} error={errors.brideEmail}>
               <input id={`${uid}-bmail`} type="email" value={brideEmail} onChange={(e) => setBrideEmail(e.target.value)} className={inputClass(!!errors.brideEmail)} placeholder="maria@correo.com" />
             </Field>
-            <Field label="Correo de la persona 1" htmlFor={`${uid}-gmail`} error={errors.groomEmail}>
+            <Field label="Correo de la persona 1 (opcional)" htmlFor={`${uid}-gmail`} error={errors.groomEmail}>
               <input id={`${uid}-gmail`} type="email" value={groomEmail} onChange={(e) => setGroomEmail(e.target.value)} className={inputClass(!!errors.groomEmail)} placeholder="carlos@correo.com" />
             </Field>
           </div>
-          <span className="text-xs text-[#71717A]">Con estos correos podrán crear su cuenta y entrar a su invitación.</span>
+          <span className="text-xs text-[#71717A]">Con estos correos podrán crear su cuenta y entrar a su invitación. Puedes dejarlos en blanco si la boda queda a cargo de un wedding planner.</span>
         </div>
+        <Field
+          label="Correo del wedding planner (opcional)"
+          htmlFor={`${uid}-planner`}
+          error={errors.plannerEmail}
+          hint="Si esta boda viene de un wedding planner, agrega su correo para que también entre a administrarla. Debe haber al menos un correo entre la pareja y el planner."
+        >
+          <input
+            id={`${uid}-planner`}
+            type="email"
+            value={plannerEmail}
+            onChange={(e) => setPlannerEmail(e.target.value)}
+            className={inputClass(!!errors.plannerEmail)}
+            placeholder="ana@agenciabodas.mx"
+          />
+        </Field>
         <Field label="Fecha de la boda" htmlFor={`${uid}-date`} error={errors.date}>
           <input id={`${uid}-date`} type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClass(!!errors.date)} />
         </Field>
@@ -352,7 +393,7 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
           label="Dirección de la invitación"
           htmlFor={`${uid}-id`}
           error={errors.weddingId}
-          hint="Es la parte que ven los invitados en su enlace. De 3 a 50 caracteres: letras, números y guiones."
+          hint="Es la parte que ven los invitados en su enlace. De 3 a 50 caracteres: letras, números y guiones. Si no hay nombres de pareja para sugerirla, escríbela tú directamente."
         >
           <div className={`flex items-stretch h-[46px] rounded-lg border overflow-hidden bg-white ${errors.weddingId ? 'border-[#B91C1C]' : 'border-[rgba(0,0,0,0.14)]'}`}>
             <span className="flex items-center px-3 bg-[#F4F4F5] text-[13px] text-[#71717A] font-mono">/wedding/</span>
@@ -549,10 +590,12 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
   const uid = useId();
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const [initial, setInitial] = useState<{ templateId: TemplateId; guestCount: number } | null>(null);
+  const [initial, setInitial] = useState<{ templateId: TemplateId; guestCount: number; plannerEmail: string | null } | null>(null);
   const [templateId, setTemplateId] = useState<TemplateId>('template-01');
   const [newId, setNewId] = useState(wedding.id);
+  const [plannerEmail, setPlannerEmail] = useState('');
   const [idProblem, setIdProblem] = useState<string | null>(null);
+  const [plannerEmailError, setPlannerEmailError] = useState<string | null>(null);
   const [suggestion, setSuggestion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -565,8 +608,9 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
         if (!res.ok) throw new Error('load failed');
         const data = await res.json();
         if (cancelled) return;
-        setInitial({ templateId: data.templateId, guestCount: data.guestCount ?? 0 });
+        setInitial({ templateId: data.templateId, guestCount: data.guestCount ?? 0, plannerEmail: data.plannerEmail ?? null });
         setTemplateId(data.templateId);
+        setPlannerEmail(data.plannerEmail || '');
       } catch {
         if (!cancelled) setLoadError(true);
       } finally {
@@ -584,11 +628,14 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
   const trimmedId = newId.trim();
   const idChanged = trimmedId !== wedding.id;
   const templateChanged = !!initial && templateId !== initial.templateId;
-  const changed = templateChanged || (!locked && idChanged);
+  const plannerEmailTrim = plannerEmail.trim().toLowerCase();
+  const plannerEmailChanged = !!initial && plannerEmailTrim !== (initial.plannerEmail || '');
+  const changed = templateChanged || (!locked && idChanged) || plannerEmailChanged;
 
   const save = async () => {
     setError(null);
     setSuggestion(null);
+    setPlannerEmailError(null);
     if (!locked && idChanged) {
       if (trimmedId.length < 3 || trimmedId.length > 50 || !/^[a-zA-Z0-9\-_]+$/.test(trimmedId)) {
         setIdProblem('Usa de 3 a 50 caracteres: letras, números y guiones.');
@@ -600,12 +647,17 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
       }
     }
     setIdProblem(null);
+    if (plannerEmailChanged && plannerEmailTrim && !EMAIL_RE.test(plannerEmailTrim)) {
+      setPlannerEmailError('Escribe un correo válido.');
+      return;
+    }
 
     setSaving(true);
     try {
-      const body: Record<string, string> = {};
+      const body: Record<string, string | null> = {};
       if (templateChanged) body.templateId = templateId;
       if (!locked && idChanged) body.newWeddingId = trimmedId;
+      if (plannerEmailChanged) body.plannerEmail = plannerEmailTrim || null;
       const res = await auth.authedFetch(`/api/admin/weddings/${wedding.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -626,6 +678,10 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
         setSuggestion(`${trimmedId}-2`);
       } else if (res.status === 400 && data.field === 'newWeddingId') {
         setIdProblem('Ese ID no es válido.');
+      } else if (res.status === 400 && data.field === 'plannerEmail') {
+        setPlannerEmailError('Debe ser un correo válido y distinto a los demás correos con acceso.');
+      } else if (res.status === 400 && data.error === 'owners_limit') {
+        setError('Esta invitación ya tiene el máximo de 6 correos con acceso. Quita uno antes de agregar el del planner.');
       } else {
         setError('No pudimos guardar los cambios. Inténtalo de nuevo.');
       }
@@ -655,6 +711,32 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
       {initial && (
         <>
           <TemplatePicker value={templateId} onChange={setTemplateId} name={`${uid}-tpl`} />
+          <Field
+            label="Correo del wedding planner (opcional)"
+            htmlFor={`${uid}-planner`}
+            error={plannerEmailError || undefined}
+            hint="Si quitas este correo, ese planner deja de tener acceso a esta invitación."
+          >
+            <div className="flex gap-2.5">
+              <input
+                id={`${uid}-planner`}
+                type="email"
+                value={plannerEmail}
+                onChange={(e) => setPlannerEmail(e.target.value)}
+                placeholder="ana@agenciabodas.mx"
+                className={`${inputClass(!!plannerEmailError)} flex-1`}
+              />
+              {plannerEmail && (
+                <button
+                  type="button"
+                  onClick={() => setPlannerEmail('')}
+                  className="h-[46px] px-4 rounded-lg bg-white text-[#B91C1C] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-[13px] font-bold whitespace-nowrap"
+                >
+                  Quitar
+                </button>
+              )}
+            </div>
+          </Field>
           <Field
             label="Dirección de la invitación"
             htmlFor={`${uid}-id`}
