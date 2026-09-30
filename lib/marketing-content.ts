@@ -100,7 +100,7 @@ export interface PackageHighlight {
 export interface PackageContent {
   id: 'basico' | 'personalizado';
   name: string; // "Paquete Básico"
-  price: 2200 | 2600; // fuente única del precio: landing, /paquetes y schema
+  price: 2000 | 2400; // fuente única del precio: landing, /paquetes y schema
   currency: 'MXN';
   forWho: string;
   groups: PackageGroup[]; // texto largo: /paquetes
@@ -112,7 +112,7 @@ export const PACKAGES: PackageContent[] = [
   {
     id: 'basico',
     name: 'Paquete Básico',
-    price: 2200,
+    price: 2000,
     currency: 'MXN',
     forWho: 'Perfecto para bodas tradicionales',
     groups: [
@@ -147,7 +147,7 @@ export const PACKAGES: PackageContent[] = [
   {
     id: 'personalizado',
     name: 'Paquete Personalizado',
-    price: 2600,
+    price: 2400,
     currency: 'MXN',
     forWho: 'Experiencia completamente personalizada',
     groups: [
@@ -198,7 +198,7 @@ export const PACKAGES: PackageContent[] = [
 
 export const getPackage = (id: PackageContent['id']) => PACKAGES.find((p) => p.id === id)!;
 
-// "$2,200" — sin depender de la configuración regional del servidor o del navegador.
+// "$2,000" — sin depender de la configuración regional del servidor o del navegador.
 export const formatPrice = (price: number) => `$${String(price).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 
 // ---------- Preguntas frecuentes ----------

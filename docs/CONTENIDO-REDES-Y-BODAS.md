@@ -1,7 +1,7 @@
 # Invyta — Contenido para redes, WhatsApp y Bodas.com.mx
 
 Estado: borrador v1 para aprobación. Complementa `docs/BRAND-FOUNDATIONS.md` (voz, precios, datos de contacto).
-Reglas: tuteo, sin emojis, sin urgencia falsa, solo lo que el producto hace hoy. Precios vigentes: Básico $2,200 MXN, Personalizado $2,600 MXN.
+Reglas: tuteo, sin emojis, sin urgencia falsa, solo lo que el producto hace hoy. Precios vigentes: Básico $2,000 MXN, Personalizado $2,400 MXN.
 Piezas visuales: canvas de Design "Invyta — Piezas de marca" (https://claude.ai/artifact/B5SP1aBS56y19tztVigYof).
 
 ## 1. Bios y perfiles
@@ -33,7 +33,7 @@ Se envían junto con el PDF "Paquetes Invyta" (páginas 1 a 4 del canvas, export
 | Atajo | Mensaje |
 |---|---|
 | `/hola` | Hola, gracias por escribir a Invyta. Hacemos invitaciones web para bodas. ¿Para qué fecha es tu boda? |
-| `/paquetes` | Con gusto. Te comparto los paquetes en este PDF: el Básico cuesta $2,200 MXN y el Personalizado $2,600 MXN. Si me cuentas cómo imaginas tu invitación, te ayudo a elegir. |
+| `/paquetes` | Con gusto. Te comparto los paquetes en este PDF: el Básico cuesta $2,000 MXN y el Personalizado $2,400 MXN. Si me cuentas cómo imaginas tu invitación, te ayudo a elegir. |
 | `/disenos` | Tenemos tres diseños: Clásico, Moderno y Botánica Editorial. Puedes verlos desde tu celular en estos enlaces: [enlaces a las tres demos]. |
 | `/tiempos` | La entrega es en 7 días hábiles desde que tenemos tu información. El hosting queda incluido hasta 15 días después del evento. |
 | `/datos` | Para empezar necesitamos: fecha y hora de tu boda, lugar y ubicación, lista de invitados, fotos para tu galería y código de vestimenta. |
@@ -66,8 +66,8 @@ Las parejas pueden escribir a Invyta por WhatsApp al +52 960 246 0590.
 - Panel de edición y gestión de invitados (paquete Personalizado).
 
 **Paquetes**
-- Básico, $2,200 MXN: para bodas tradicionales. Página con enlace único, contenido de la boda, logística para invitados y formulario de confirmación. Sin personalización por invitado ni asistente con IA.
-- Personalizado, $2,600 MXN: experiencia completamente personalizada, con panel de edición, asistente con IA, personalización 1:1 y soporte extendido 7 días antes del evento.
+- Básico, $2,000 MXN: para bodas tradicionales. Página con enlace único, contenido de la boda, logística para invitados y formulario de confirmación. Sin personalización por invitado ni asistente con IA.
+- Personalizado, $2,400 MXN: experiencia completamente personalizada, con panel de edición, asistente con IA, personalización 1:1 y soporte extendido 7 días antes del evento.
 
 **Preguntas frecuentes**
 1. ¿Cuánto tarda la entrega? 7 días hábiles desde que tenemos tu información.

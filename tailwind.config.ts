@@ -26,6 +26,8 @@ export default {
         // Nombre distinto de "heading": app/globals.css define una clase .font-heading
         // propia (Allura cursive) que pisaría la utilidad de Tailwind con ese nombre.
         cormorant: ['Cormorant Garamond', 'serif'],
+        // template-04 "Jardín Editorial": tipografía única (sistema, sin fuente web nueva).
+        georgia: ['Georgia', 'Times New Roman', 'serif'],
       },
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #8b7355 0%, #a67c5a 100%)',

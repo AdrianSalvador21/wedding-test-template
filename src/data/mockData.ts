@@ -841,7 +841,7 @@ export const mockWeddingLuxury: WeddingData = {
     },
     {
       id: 'engagement3',
-      url: 'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      url: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       alt: 'Sofisticación natural',
       cols: 1,
       rows: 1
@@ -2597,6 +2597,161 @@ export const mockWeddingTemplate02Demo: WeddingData = {
   updatedAt: '2026-09-22T00:00:00.000Z'
 };
 
+// Mock data de demostración para Template04 (ID: template-04-demo) — "Jardín Editorial" (spec 19)
+export const mockWeddingTemplate04Demo: WeddingData = {
+  id: 'template-04-demo',
+  couple: {
+    bride: {
+      name: 'Renata',
+      fullName: 'Renata Ibarra Solís',
+      phone: '+52 55 8765-0000',
+      email: 'renata@email.com',
+      instagram: '@renata.ibarra',
+      facebook: 'renata.ibarra'
+    },
+    groom: {
+      name: 'Joaquín',
+      fullName: 'Joaquín Medina Paredes',
+      phone: '+52 55 8765-0001',
+      email: 'joaquin@email.com',
+      instagram: '@joaquin.medina',
+      facebook: 'joaquin.medina'
+    },
+    coupleEmail: 'renata.joaquin@email.com',
+    hashtag: '#RenataYJoaquin2026',
+    story: {
+      es: 'Un nuevo comienzo, lejos de prisas pero cerca de quienes amamos. Nos conocimos una tarde de octubre y desde entonces no hemos dejado de construir juntos, hasta llegar a este día que soñamos celebrar rodeados de ustedes.',
+      en: 'A new beginning, far from rushing but close to those we love. We met one October afternoon and have kept building together ever since, until reaching this day we dreamed of celebrating surrounded by you.'
+    },
+    quote: {
+      es: 'Un nuevo comienzo, lejos de prisas pero cerca de quienes amamos.',
+      en: 'A new beginning, far from rushing but close to those we love.'
+    }
+  },
+  event: {
+    weddingId: 'template-04-demo',
+    date: '2026-11-14T17:00:00.000Z',
+    time: '17:00',
+    ceremony: { time: '17:00', duration: 45 },
+    reception: { time: '19:30', duration: 300 },
+    // Solo name/address/mapsUrl: son los únicos campos de venue que el dashboard edita (pestaña
+    // "Lugares"); no se agrega coordinates/description/features porque no hay UI para escribirlos.
+    ceremonyVenue: {
+      name: { es: 'Jardín Casa Fresno', en: 'Casa Fresno Garden' },
+      address: 'Camino a San Gaspar 45, Valle de Bravo, Edo. México',
+      mapsUrl: 'https://maps.google.com/maps?q=Jard%C3%ADn+Casa+Fresno+Valle+de+Bravo'
+    },
+    receptionVenue: {
+      name: { es: 'Jardín Casa Fresno', en: 'Casa Fresno Garden' },
+      address: 'Camino a San Gaspar 45, Valle de Bravo, Edo. México',
+      description: '', // el tipo lo exige, pero el dashboard no lo edita; LocationV4 no lo usa
+      features: [],
+      mapsUrl: 'https://maps.google.com/maps?q=Jard%C3%ADn+Casa+Fresno+Valle+de+Bravo'
+    },
+    // Solo style/description: la pestaña "Evento" del dashboard no tiene campos para
+    // recommendations (para damas/caballeros) ni colors (sugeridos/a evitar).
+    dressCode: {
+      style: { es: 'Formal de jardín', en: 'Garden formal' },
+      description: { es: 'Vestimenta elegante y cómoda para caminar sobre pasto. El clima refresca al caer la noche.', en: 'Elegant, comfortable attire for walking on grass. The weather cools down after sunset.' },
+      recommendations: { ladies: [], gentlemen: [] },
+      colors: { recommended: [], avoid: [] }
+    },
+    rsvpDeadline: '2026-10-01T23:59:59.000Z'
+  },
+  timeline: [
+    { id: 'ceremony', time: '17:00', title: { es: 'Ceremonia', en: 'Ceremony' }, description: { es: 'Intercambio de votos en el jardín de rosas', en: 'Exchange of vows in the rose garden' }, icon: 'Heart', isHighlight: true },
+    { id: 'cocktail', time: '18:00', title: { es: 'Cóctel', en: 'Cocktail' }, description: { es: 'Bebidas y bocadillos en la terraza', en: 'Drinks and appetizers on the terrace' }, icon: 'Wine' },
+    { id: 'reception', time: '19:30', title: { es: 'Recepción', en: 'Reception' }, description: { es: 'Cena y brindis bajo las estrellas', en: 'Dinner and toast under the stars' }, icon: 'Utensils' },
+    { id: 'party', time: '21:00', title: { es: 'Fiesta', en: 'Party' }, description: { es: 'Música en vivo y pista hasta la madrugada', en: 'Live music and dancing until dawn' }, icon: 'Music' }
+  ],
+  // No se hardcodea contenido de galería aquí: igual que una boda real (el dashboard no gestiona
+  // este campo, ver spec 19), queda vacío y GalleryV4 resuelve las fotos vía useWeddingImages()
+  // — misma carpeta de archivos / mismo fallback de stock que usan el resto de los templates.
+  gallery: [],
+  heroImage: {
+    url: '/assets/wedding-images/template-04-demo/hero.jpg',
+    alt: 'Renata y Joaquín - Imagen principal de boda'
+  },
+  specialMoments: [
+    { year: '2022', title: 'Primer encuentro', description: 'Nos conocimos una tarde de octubre' },
+    { year: '2025', title: 'La propuesta', description: 'Joaquín le propuso matrimonio a Renata en Valle de Bravo' }
+  ],
+  relationshipStats: { yearsTogther: 4, adventures: 30, memories: 860, dreams: 12 },
+  // Solo name/description/mapsUrl por hotel: son los únicos campos que edita la pestaña
+  // "Hoteles Recomendados" del dashboard (sin distance/price/phone/amenities).
+  accommodation: {
+    hotels: [
+      { name: 'Hotel Casa Vieja', description: 'A unos minutos del jardín, con desayuno incluido.', mapsUrl: 'https://maps.google.com/maps?q=Hotel%20Casa%20Vieja%20Valle%20de%20Bravo' },
+      { name: 'Posada del Lago', description: 'Con vista al lago y restaurante propio.', mapsUrl: 'https://maps.google.com/maps?q=Posada%20del%20Lago%20Valle%20de%20Bravo' }
+    ],
+    recommendedPlaces: []
+  },
+  transport: { parking: true, valetParking: false, rideshare: true },
+  giftRegistry: {
+    enabled: true,
+    message: {
+      es: 'Tu presencia es nuestro regalo más grande. Si además deseas obsequiarnos algo, aquí compartimos algunas opciones.',
+      en: 'Your presence is our greatest gift. If you would also like to give us something, here are a few options.'
+    },
+    registries: [
+      { id: 'liverpool', name: 'Liverpool', url: 'https://mesaderegalos.liverpool.com.mx/milistaderegalos/renata-joaquin', description: 'Mesa de regalos para nuestro nuevo hogar' },
+      { id: 'amazon', name: 'Amazon', url: 'https://www.amazon.com.mx/wedding/renata-joaquin', description: 'Lista de deseos con productos prácticos' }
+    ],
+    bankAccount: {
+      bankName: 'BBVA',
+      accountName: 'Renata Ibarra Solís',
+      accountNumber: '0123456789',
+      clabe: '012345678901234567',
+      description: 'También puedes contribuir directamente a nuestra cuenta bancaria'
+    }
+  },
+  adultOnlyEvent: {
+    enabled: true,
+    message: {
+      es: 'Con amor, hemos decidido que sea una celebración solo para adultos.',
+      en: 'With love, we have decided this will be an adults-only celebration.'
+    }
+  },
+  music: {
+    enabled: true,
+    fileName: 'default.mp3', // Música por defecto del repo (/assets/music/default.mp3)
+    title: 'Música de la boda',
+    artist: '',
+    autoplay: true,
+    volume: 0.3,
+    showControls: true,
+    startTime: 0,
+    useRealSpotify: false
+  },
+  // Solo name/description/mapsUrl por lugar: son los únicos campos que edita la pestaña
+  // "Lugares Recomendados" del dashboard (sin category/priceRange/distance/coordinates;
+  // "category" se mantiene con un valor fijo solo porque el tipo lo exige, RecommendedPlacesV4
+  // ya no lo usa para agrupar).
+  recommendedPlaces: {
+    enabled: true,
+    title: 'Lugares recomendados',
+    subtitle: 'Guía especial de lugares para nuestros invitados',
+    places: [
+      { id: 'michoacana-bravo', name: 'La Michoacana de Bravo', category: 'restaurante', description: 'Nieves artesanales a unos pasos del jardín', mapsUrl: 'https://maps.google.com/maps?q=Valle%20de%20Bravo' },
+      { id: 'mirador-valle', name: 'Mirador del Valle', category: 'atraccion', description: 'Vista panorámica del lago y el pueblo', mapsUrl: 'https://maps.google.com/maps?q=Mirador%20del%20Valle%20Valle%20de%20Bravo' },
+      { id: 'taxis-valle', name: 'Taxis Valle de Bravo', category: 'transporte', description: 'Servicio de taxi disponible en el pueblo', mapsUrl: 'https://maps.google.com/maps?q=Valle%20de%20Bravo' }
+    ]
+  },
+  rsvp: { enabled: true, deadline: '2026-10-01', maxGuests: 2, dietaryOptions: true, customQuestions: [] },
+  selectedGuestTickets: true,
+  hasDiet: true,
+  showConfirmCta: true,
+  showRecommendedPlaces: true,
+  theme: { id: 'classic' },
+  template: { id: 'template-04' },
+  status: 'draft',
+  languages: ['es', 'en'],
+  defaultLanguage: 'es',
+  isActive: true,
+  createdAt: '2026-09-30T00:00:00.000Z',
+  updatedAt: '2026-09-30T00:00:00.000Z'
+};
+
 // Mapa de bodas disponibles para desarrollo
 export const mockWeddings: Record<string, WeddingData> = {
   'maria-carlos-2025': mockWeddingMariaCarlos,
@@ -2606,6 +2761,7 @@ export const mockWeddings: Record<string, WeddingData> = {
   'roberto-patricia-2025': mockWeddingCorporate,
   'template-01-demo': mockWeddingTemplate01Demo,
   'template-02-demo': mockWeddingTemplate02Demo,
+  'template-04-demo': mockWeddingTemplate04Demo,
   'friends-test': mockWeddingFriendsTest,
   'valentina-mateo-2026': mockWeddingValentinaMateo
 };

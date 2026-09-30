@@ -37,7 +37,7 @@ Regla general: solo se afirma lo que el producto hace hoy. Sin testimonios, cifr
 - Concreto antes que emotivo: di qué incluye y en cuánto tiempo.
 - Nunca presiones con urgencia falsa ("últimos lugares", "solo hoy").
 - Escribe "Invyta" con mayúscula inicial en texto corrido; el logotipo va en minúsculas ("invyta").
-- Precios siempre con moneda: "$2,200 MXN".
+- Precios siempre con moneda: "$2,000 MXN".
 
 **Sí / No**
 
@@ -62,7 +62,7 @@ Regla general: solo se afirma lo que el producto hace hoy. Sin testimonios, cifr
 
 | | Básico | Personalizado |
 |---|---|---|
-| Precio | $2,200 MXN | $2,600 MXN |
+| Precio | $2,000 MXN | $2,400 MXN |
 | Para | Bodas tradicionales | Experiencia completamente personalizada |
 | Diferencia clave | Invyta gestiona los cambios de contenido | Panel de edición y gestión para la pareja, asistente con IA, personalización 1:1, soporte 7 días previos al evento |
 | No incluye | Personalización por invitado ni asistente con IA | — |

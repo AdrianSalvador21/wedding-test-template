@@ -4,7 +4,7 @@ import { SITE } from '../lib/site';
 
 const title = 'Invitaciones digitales para boda | Invyta';
 const description =
-  'Invitaciones digitales para boda con enlace único por invitado, confirmación en tiempo real y entrega en 7 días hábiles. Desde $2,200 MXN.';
+  'Invitaciones digitales para boda con enlace único por invitado, confirmación en tiempo real y entrega en 7 días hábiles. Desde $2,000 MXN.';
 
 // La imagen para compartir sale de app/opengraph-image.tsx y app/twitter-image.tsx,
 // y los íconos de app/icon.tsx y app/apple-icon.tsx (convenciones de archivo).
