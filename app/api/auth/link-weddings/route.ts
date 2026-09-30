@@ -3,7 +3,7 @@ import { authenticate, isAdminEmail, normalizeEmail } from '../../../../lib/serv
 
 export const runtime = 'nodejs';
 
-const FIELDS = ['couple.bride.name', 'couple.groom.name', 'event.date', 'tier'];
+const FIELDS = ['couple.bride.name', 'couple.groom.name', 'event.date', 'tier', 'plannerEmail'];
 
 interface LinkedWedding {
   id: string;
@@ -11,6 +11,9 @@ interface LinkedWedding {
   date: string;
   // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
   tier: 'free' | 'template';
+  // Spec 17 — correo del wedding planner atribuido, si aplica; visible para admin y dueño
+  // no-admin por igual (a diferencia de ownerEmails, que sigue siendo solo de operador).
+  plannerEmail: string | null;
   // Solo para el operador: correos con acceso (weddingOwners/<id>.emails)
   ownerEmails?: string[];
 }
@@ -20,7 +23,8 @@ function toWedding(id: string, data: FirebaseFirestore.DocumentData | undefined)
   const groom = data?.couple?.groom?.name || '';
   const title = bride || groom ? [bride || '…', groom || '…'].join(' y ') : id;
   const tier = data?.tier === 'free' ? 'free' : 'template';
-  return { id, title, date: typeof data?.event?.date === 'string' ? data.event.date : '', tier };
+  const plannerEmail = typeof data?.plannerEmail === 'string' ? data.plannerEmail : null;
+  return { id, title, date: typeof data?.event?.date === 'string' ? data.event.date : '', tier, plannerEmail };
 }
 
 const ownerEmailsOf = (data: FirebaseFirestore.DocumentData | undefined): string[] =>

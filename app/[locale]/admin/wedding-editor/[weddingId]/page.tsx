@@ -8,6 +8,7 @@ import { track } from '../../../../../lib/analytics/client';
 import { db } from '../../../../../lib/firebase';
 import { WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../src/types/wedding';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
+import EditorNotAvailable from '../../../../../components/admin/EditorNotAvailable';
 import AuthGuard from '../../../../../components/admin/AuthGuard';
 import { createInitialWeddingData, isValidWeddingId } from '../../../../../lib/wedding-defaults';
 import { AdminTopBar, AdminPageNav, AdminSidebarNavItem, AdminSectionChip, AdminButton, AiButton, AiBadge, manrope, displayFont } from '../../../../../components/admin/ui';
@@ -163,6 +164,9 @@ function WeddingEditorContent() {
 
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
   const [loading, setLoading] = useState(true);
+  // Corrección: una boda del tier gratuito (spec 16) no tiene Editor; navegar directo a
+  // esta URL debe bloquearla aquí, no solo ocultar el link en AdminPageNav.
+  const [freeTierBlocked, setFreeTierBlocked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('couple');
   const [error, setError] = useState<string | null>(null);
@@ -209,8 +213,17 @@ function WeddingEditorContent() {
       
       if (docSnap.exists()) {
         const data = docSnap.data() as WeddingData;
+
+        // Corrección: el tier gratuito (spec 16) no tiene Editor. Se corta aquí, antes de
+        // migrar o guardar nada, para no arriesgar los datos de una boda que no debería
+        // pasar por este flujo.
+        if ((data.tier ?? 'template') === 'free') {
+          setFreeTierBlocked(true);
+          return;
+        }
+
         setAiUsage(flattenUsage(data.aiUsage));
-        
+
         // Verificar si la boda tiene información básica
         const hasBasicInfo = data.couple?.bride?.name || data.couple?.groom?.name || data.event?.date;
         
@@ -451,6 +464,10 @@ function WeddingEditorContent() {
 
   if (notFound) {
     return <WeddingNotFound weddingId={weddingId} />;
+  }
+
+  if (freeTierBlocked) {
+    return <EditorNotAvailable weddingId={weddingId} locale={locale} />;
   }
 
   if (error) {

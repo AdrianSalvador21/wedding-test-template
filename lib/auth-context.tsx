@@ -10,6 +10,8 @@ export interface LinkedWedding {
   date: string;
   // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
   tier?: 'free' | 'template';
+  // Spec 17 — correo del wedding planner atribuido a esta boda, si aplica
+  plannerEmail?: string | null;
   // Solo llega para el operador (weddingOwners/<id>.emails)
   ownerEmails?: string[];
 }
@@ -22,6 +24,9 @@ interface AuthValue {
   user: User | null;
   email: string;
   isAdmin: boolean;
+  // Spec 17 — true si el correo de la cuenta es el plannerEmail de alguna de sus bodas
+  // (y la cuenta no es admin). Una cuenta de planner es, por lo demás, una cuenta normal.
+  isPlanner: boolean;
   weddings: LinkedWedding[];
   // Código corto de la última falla al cargar las bodas (para diagnosticar), si la hubo
   errorCode: string | null;
@@ -102,6 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       email: user?.email?.toLowerCase() ?? '',
       isAdmin,
+      isPlanner: !isAdmin && weddings.some((w) => !!w.plannerEmail && w.plannerEmail === (user?.email?.toLowerCase() ?? '')),
       weddings,
       errorCode,
       signOut: () => firebaseSignOut(auth),

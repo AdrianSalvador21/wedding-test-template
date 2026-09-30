@@ -895,7 +895,6 @@ const AdminGuestsContent = () => {
 
           {filteredAndSortedGuests.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-[#D4D4D8] text-4xl mb-4">👥</div>
               <h3 className="text-lg text-[#0A0A0A] mb-2" style={displayFont}>
                 {filterStatus === 'all' && !searchTerm ? 'No hay invitados' : `No hay invitados ${
                   filterStatus === 'confirmed' ? 'confirmados' :
