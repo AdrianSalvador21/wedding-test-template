@@ -142,7 +142,7 @@ export const PACKAGES: PackageContent[] = [
       { strong: 'Invyta gestiona los cambios', text: ' de contenido' },
     ],
     notIncluded:
-      'Personalización por invitado (URL, mensaje, idioma, boletos o canción individuales), el asistente con IA ni la gestión de mesas.',
+      'Personalización por invitado (URL, mensaje, idioma, boletos o canción individuales) ni el asistente con IA. La gestión de mesas es gratis con cualquier cuenta, sin necesidad de este paquete.',
   },
   {
     id: 'personalizado',
@@ -282,7 +282,7 @@ export const FAQ_ITEMS: FaqItem[] = [
 FAQ_ITEMS.push(
   {
     question: '¿Cuánto cuesta una invitación digital de boda con Invyta?',
-    answer: `El Paquete Básico cuesta ${formatPrice(PACKAGES[0].price)} MXN y el Personalizado ${formatPrice(PACKAGES[1].price)} MXN. No hay costo extra por cada invitación que envíes.`,
+    answer: `Organizar tus invitados y mesas es gratis, sin comprar ningún paquete: crea tu cuenta y úsalo de inmediato. Si además quieres tu invitación con diseño, el Paquete Básico cuesta ${formatPrice(PACKAGES[0].price)} MXN y el Personalizado ${formatPrice(PACKAGES[1].price)} MXN. No hay costo extra por cada invitación que envíes.`,
     group: 'Antes de empezar',
   },
   {
@@ -310,7 +310,7 @@ FAQ_ITEMS.push(
   {
     question: '¿Puedo contratar Invyta si soy wedding planner?',
     answer:
-      'Sí. Cada boda tiene su propia invitación y su panel de invitados. Cuéntanos cuántas bodas manejas y te explicamos cómo lo organizamos.',
+      'Sí. Cada boda tiene su propia invitación y su propio panel, y ves todas las bodas de tus clientes desde una sola cuenta, con un solo inicio de sesión. Cuéntanos cuántas bodas manejas y te explicamos cómo lo organizamos.',
     group: 'Antes de empezar',
   },
   {

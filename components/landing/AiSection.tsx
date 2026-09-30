@@ -73,11 +73,6 @@ const capabilities = [
       </>
     ),
   },
-  {
-    title: 'Código de vestimenta',
-    text: 'Describe cómo deben vestir tus invitados, con el tono de tu boda.',
-    icon: <path d="M12 6a2 2 0 10-2-2M12 6v2l8 6a1 1 0 01-.6 1.8H4.6A1 1 0 014 14l8-6" />,
-  },
 ];
 
 const guarantees = [
@@ -131,7 +126,7 @@ export default function AiSection() {
           </h2>
           <p className="text-[15.5px] md:text-[17px] leading-relaxed text-[#D8CFC4] max-w-[640px]">
             Responde tres preguntas y el editor redacta tu historia en español e inglés. También traduce, arma tu
-            itinerario y sugiere lugares para tus invitados. Tú decides qué se queda.
+            itinerario y sugiere lugares para tus invitados.
           </p>
         </LReveal>
 

@@ -3,13 +3,9 @@
 import React from 'react';
 import Image from 'next/image';
 import { fraunces, LSection, LSolidButton, LTextLink, LCheckIcon } from './ui';
-import { getDesign } from '../../lib/marketing-content';
 
 const WHATSAPP_LINK_INTRO =
   'https://wa.me/529602460590?text=Hola!%20Me%20interesa%20conocer%20m%C3%A1s%20sobre%20las%20invitaciones%20digitales%20de%20Invyta.';
-
-// Demo real de Botánica Editorial: el enlace del hero la abre en pestaña nueva (demo_click se mide solo).
-const DEMO_HREF = getDesign('botanica-editorial')!.demoHref;
 
 const checks = ['Enlace único para compartir', 'Confirmaciones en tiempo real'];
 
@@ -36,8 +32,8 @@ export default function Hero() {
             <LSolidButton href={WHATSAPP_LINK_INTRO} target="_blank" variant="terracotaDark" className="text-base">
               Crea tu invitación
             </LSolidButton>
-            <LTextLink href={DEMO_HREF} target="_blank">
-              Ver una invitación de ejemplo →
+            <LTextLink href="/login?mode=signup">
+              Organiza tu boda gratis →
             </LTextLink>
           </div>
           <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-[#4A433C]">

@@ -149,9 +149,22 @@ export default function PaquetesPage() {
       </PageHero>
 
       <Section>
-        <div className="grid md:grid-cols-2 gap-8 items-stretch">
-          <PackageCard pkg={basico} featured={false} />
-          <PackageCard pkg={personalizado} featured />
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8 bg-[#FBF7F1] border border-[rgba(43,38,34,0.1)] rounded-[20px] px-7 py-6">
+            <div className="flex-grow flex flex-col gap-1.5">
+              <span className="text-lg font-bold text-[#211D19]">¿Solo quieres organizar invitados y mesas?</span>
+              <span className="text-[15px] text-[#5A534B]">
+                Es gratis, sin comprar ningún paquete: crea tu cuenta y úsalo de inmediato.
+              </span>
+            </div>
+            <LSolidButton href="/login?mode=signup" variant="terracotaDark" className="flex-shrink-0">
+              Crear cuenta gratis
+            </LSolidButton>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8 items-stretch">
+            <PackageCard pkg={basico} featured={false} />
+            <PackageCard pkg={personalizado} featured />
+          </div>
         </div>
       </Section>
 

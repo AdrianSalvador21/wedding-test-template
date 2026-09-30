@@ -16,7 +16,8 @@ export default function PlannerCta() {
             ¿Eres wedding planner?
           </h2>
           <p className="text-base md:text-lg text-[#FBEADD] leading-relaxed">
-            Una invitación y un panel de invitados por cada cliente, con el mismo cuidado y sin rehacer trabajo.
+            Todas las bodas de tus clientes en una sola cuenta: entra una vez y ve cada invitación, sus invitados y
+            sus mesas, sin rehacer trabajo.
           </p>
         </div>
         <LSolidButton href={whatsappUrl(PLANNER_MESSAGE)} target="_blank" variant="ivoryDark" className="flex-shrink-0">
