@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { V4Container, V4Reveal, V4Section, V4SectionHeading, V4Stagger, V4StaggerItem, v4Colors } from './ui';
+import { V4BgMotif, V4Container, V4CornerFlourish, V4Reveal, V4Section, V4SectionHeading, V4Stagger, V4StaggerItem, v4Colors } from './ui';
 
 interface TimeLeft {
   days: number;
@@ -61,6 +61,8 @@ export default function CountdownV4() {
 
   return (
     <V4Section id="countdown" dark>
+      <V4BgMotif patternId="v4-lp-countdown" tileSize={300} rotate={-8} light />
+      <V4CornerFlourish corner="top-right" width={150} height={100} opacity={0.4} light />
       <V4Container className="py-16 md:py-24 text-center">
         <V4Reveal>
           <V4SectionHeading numeral="II" eyebrow={t('subtitle')} light />

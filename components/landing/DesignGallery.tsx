@@ -21,7 +21,7 @@ export default function DesignGallery() {
           </p>
         </LReveal>
         {/* En móvil: carrusel horizontal con snap. Desde md: tres columnas. */}
-        <LStagger className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-6 md:scroll-px-0 -mx-6 px-6 pb-3 md:mx-0 md:px-0 md:pb-0 md:grid md:grid-cols-3 md:gap-7 md:overflow-visible">
+        <LStagger className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-6 md:scroll-px-0 -mx-6 px-6 pb-3 md:mx-0 md:px-0 md:pb-0 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-7 md:overflow-visible">
           {designs.map((design) => (
             <LStaggerItem key={design.templateId} className="w-[270px] flex-shrink-0 snap-start md:w-auto">
               <LCard variant="default" className="overflow-hidden flex flex-col h-full transition-all hover:shadow-[0_28px_56px_rgba(43,38,34,0.14)] md:hover:-translate-y-1.5">

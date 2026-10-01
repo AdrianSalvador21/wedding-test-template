@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import { useWedding } from '../../src/store/hooks';
 import { useTranslations } from '../../lib/translations';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
-import { V4Container, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
+import { V4BgMotif, V4Container, V4CornerFlourish, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
 
 export default function GiftRegistryV4() {
   const { t } = useTranslations('giftRegistry');
@@ -38,6 +38,8 @@ export default function GiftRegistryV4() {
 
   return (
     <V4Section id="gift-registry" dark>
+      <V4BgMotif patternId="v4-lp-giftregistry" tileSize={250} rotate={9} light />
+      <V4CornerFlourish corner="bottom-left" width={150} height={100} opacity={0.4} light />
       <V4Container className="py-16 md:py-24 text-center">
         <V4Reveal>
           <V4SectionHeading numeral="VII" eyebrow={t('title')} light />

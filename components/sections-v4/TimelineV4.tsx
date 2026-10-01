@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { V4Container, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
+import { V4BgMotif, V4Container, V4CornerFlourish, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
 
 export default function TimelineV4() {
   const { t } = useTranslations('timeline');
@@ -28,6 +28,9 @@ export default function TimelineV4() {
 
   return (
     <V4Section id="timeline" dark>
+      <V4BgMotif patternId="v4-lp-timeline" tileSize={300} rotate={12} light />
+      <V4CornerFlourish corner="top-left" width={150} height={98} opacity={0.45} light />
+      <V4CornerFlourish corner="bottom-right" width={130} height={84} opacity={0.35} light />
       <V4Container className="py-16 md:py-24">
         <V4Reveal>
           <V4SectionHeading numeral="V" eyebrow={t('title')} light />

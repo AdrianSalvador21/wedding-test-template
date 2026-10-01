@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Galería — Propuesta B: 2×2 con Jardín Editorial destacado</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  body { margin: 0; }
+  .frn { font-family: 'Fraunces', serif; }
+  .mnr { font-family: 'Manrope', sans-serif; }
+  .card { background: #ffffff; border: 1px solid rgba(43,38,34,0.1); border-radius: 22px; overflow: hidden; display: flex; gap: 0; position: relative; }
+  .card img { width: 260px; height: 100%; object-fit: cover; display: block; flex-shrink: 0; }
+  .btn-outline { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; border: 1.5px solid #211D19; padding: 10px 18px; font-size: 13px; font-weight: 700; color: #211D19; text-decoration: none; }
+  .link-terracota { font-size: 13px; font-weight: 700; color: #AE5730; text-decoration: none; }
+  .card.featured { border: 2px solid #2E3323; background: #F6EFE4; box-shadow: 0 20px 40px rgba(46,51,35,0.14); }
+</style>
+</helmet>
+
+<div style="width: 1440px; height: 760px; box-sizing: border-box; background: #FBF7F1; padding: 56px 80px; display: flex; flex-direction: column; gap: 36px;">
+
+  <div class="mnr" style="display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;">
+    <span style="font-size: 13px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #AE5730;">Diseños</span>
+    <div class="frn" style="font-size: 34px; color: #211D19; font-weight: 600;">Elige tu diseño y ábrelo en tu celular</div>
+    <div style="font-size: 15px; color: #5A534B; max-width: 520px;">Cada uno tiene una demo real: ábrela como la verían tus invitados.</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; flex-grow: 1;">
+
+    <div class="card">
+      <img src="/_blob/2c73162a3d0492ae0c394bd236d9d5de" alt="Diseño Clásico">
+      <div style="padding: 24px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; justify-content: center;">
+        <div class="frn" style="font-size: 23px; color: #211D19;">Clásico</div>
+        <div class="mnr" style="font-size: 14px; color: #5A534B; line-height: 1.5;">Serif elegante, monograma en sello y detalles botánicos mínimos.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px;">
+          <a href="#" class="mnr btn-outline">Ver ejemplo real →</a>
+          <a href="#" class="mnr link-terracota">Ver el diseño</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="/_blob/1dbbd03859a03d810dedccdd1ca7bfa1" alt="Diseño Moderno">
+      <div style="padding: 24px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; justify-content: center;">
+        <div class="frn" style="font-size: 23px; color: #211D19;">Moderno</div>
+        <div class="mnr" style="font-size: 14px; color: #5A534B; line-height: 1.5;">Sans-serif geométrica, anillos concéntricos y acentos de línea botánica.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px;">
+          <a href="#" class="mnr btn-outline">Ver ejemplo real →</a>
+          <a href="#" class="mnr link-terracota">Ver el diseño</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="/_blob/543731aa24c2429cc9318518f44d8de1" alt="Diseño Botánica Editorial">
+      <div style="padding: 24px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; justify-content: center;">
+        <div class="frn" style="font-size: 23px; color: #211D19;">Botánica Editorial</div>
+        <div class="mnr" style="font-size: 14px; color: #5A534B; line-height: 1.5;">Fotografía de novios en arco, motivos botánicos dibujados a mano y countdown en vivo.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px;">
+          <a href="#" class="mnr btn-outline">Ver ejemplo real →</a>
+          <a href="#" class="mnr link-terracota">Ver el diseño</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card featured">
+      <img src="/_blob/1ebb131c5474bd3bc2fec58813e93e89" alt="Diseño Jardín Editorial">
+      <div style="padding: 24px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; justify-content: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="frn" style="font-size: 23px; color: #211D19;">Jardín Editorial</div>
+          <span class="mnr" style="font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #F4EFE3; background: #2E3323; padding: 4px 10px; border-radius: 999px;">Nuevo</span>
+        </div>
+        <div class="mnr" style="font-size: 14px; color: #5A534B; line-height: 1.5;">Verde oliva oscuro, papel crema, fotos con marco en arco y numerales romanos en cada sección.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px;">
+          <a href="#" class="mnr" style="display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; border: 1.5px solid #2E3323; padding: 10px 18px; font-size: 13px; font-weight: 700; color: #2E3323; text-decoration: none;">Ver ejemplo real →</a>
+          <a href="#" class="mnr link-terracota">Ver el diseño</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":760}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

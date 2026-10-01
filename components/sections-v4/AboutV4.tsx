@@ -6,7 +6,7 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddingSlice';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
-import { V4Container, V4PhotoArch, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
+import { V4Container, V4CornerFlourish, V4PhotoArch, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
 
 export default function AboutV4() {
   const { t } = useTranslations('about');
@@ -26,6 +26,7 @@ export default function AboutV4() {
 
   return (
     <V4Section id="about">
+      <V4CornerFlourish corner="bottom-left" width={150} height={98} opacity={0.5} />
       <V4Container className="py-16 md:py-24 text-center">
         <V4Reveal>
           <V4SectionHeading numeral="I" eyebrow={t('title')} />

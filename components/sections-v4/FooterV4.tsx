@@ -1,17 +1,14 @@
 'use client';
 
-import { useParams } from 'next/navigation';
 import { Instagram, Facebook, Mail, MessageCircle } from 'lucide-react';
 import { openExternalLink } from '@/lib/utils';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { V4Container, V4Divider, V4Reveal, v4Colors } from './ui';
+import { V4Branch, V4Container, V4Divider, V4Reveal, v4Colors } from './ui';
 
 export default function FooterV4() {
   const { t } = useTranslations('footer');
-  const params = useParams();
-  const currentLocale = params.locale as string;
   const weddingData = useAppSelector(selectCurrentWedding);
 
   const couple = weddingData?.couple;
@@ -40,7 +37,15 @@ export default function FooterV4() {
   const handleEmailClick = () => openExternalLink(`mailto:${coupleEmail}`);
 
   return (
-    <footer className="font-georgia" style={{ background: v4Colors.ink, color: v4Colors.paper }}>
+    <footer className="relative overflow-hidden font-georgia" style={{ background: v4Colors.ink, color: v4Colors.paper }}>
+      <V4Branch
+        width={150}
+        height={98}
+        color={v4Colors.paper}
+        accentColor={v4Colors.paper}
+        className="absolute"
+        style={{ left: 20, top: 30, opacity: 0.25 }}
+      />
       <V4Container className="py-16 md:py-20 text-center">
         <V4Reveal>
           <p className="text-3xl">

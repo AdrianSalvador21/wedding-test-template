@@ -6,7 +6,7 @@ import { openExternalLink } from '@/lib/utils';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { V4Button, V4Container, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
+import { V4BgMotif, V4Button, V4Container, V4CornerFlourish, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
 
 export default function LocationV4() {
   const { t } = useTranslations('location');
@@ -38,6 +38,8 @@ export default function LocationV4() {
 
   return (
     <V4Section id="location">
+      <V4BgMotif patternId="v4-lp-location" tileSize={230} rotate={12} />
+      <V4CornerFlourish corner="bottom-left" width={140} height={92} opacity={0.5} />
       <V4Container className="py-16 md:py-24 text-center">
         <V4Reveal>
           <V4SectionHeading numeral="IV" eyebrow={t('title')} />

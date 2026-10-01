@@ -13,7 +13,7 @@ export default function FinalCta() {
           Cuéntanos la fecha de tu boda y empezamos tu invitación.
         </h2>
         <p className="text-base md:text-lg text-[#5A534B] max-w-[560px] leading-relaxed">
-          Te respondemos por WhatsApp con los paquetes y los tres diseños para verlos desde tu celular.
+          Te respondemos por WhatsApp con los paquetes y los cuatro diseños para verlos desde tu celular.
         </p>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-1.5 w-full sm:w-auto">
           <LSolidButton href={WHATSAPP_LINK} target="_blank" variant="terracotaDark">

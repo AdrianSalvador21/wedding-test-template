@@ -12,7 +12,7 @@ import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { guestService } from '../../services/guestService';
 import { isDemoId } from '../../lib/analytics/demos';
 import { FirebaseRSVP, FirebaseGuest } from '../../src/types/wedding';
-import { V4Button, V4Container, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
+import { V4BgMotif, V4Button, V4Container, V4CornerFlourish, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
 
 const inputClass =
   'w-full px-4 py-3 border bg-white focus:outline-none transition-colors text-[15px] font-georgia';
@@ -248,6 +248,8 @@ function RSVPContentV4() {
   if (isSubmitted) {
     return (
       <V4Section id="rsvp">
+        <V4CornerFlourish corner="top-left" width={130} height={86} opacity={0.5} />
+        <V4CornerFlourish corner="bottom-right" width={130} height={86} opacity={0.42} />
         <V4Container className="py-16 md:py-24 text-center">
           <V4Reveal>
             <V4SectionHeading numeral="XI" eyebrow={t('subtitle')} />
@@ -269,6 +271,9 @@ function RSVPContentV4() {
 
   return (
     <V4Section id="rsvp">
+      <V4BgMotif patternId="v4-lp-rsvp" tileSize={300} rotate={-11} />
+      <V4CornerFlourish corner="top-left" width={130} height={86} opacity={0.5} />
+      <V4CornerFlourish corner="bottom-right" width={130} height={86} opacity={0.42} />
       <V4Container className="py-16 md:py-24 text-center">
         <V4Reveal>
           <V4SectionHeading numeral="XI" eyebrow={t('subtitle')} title={t('title')} />

@@ -5,7 +5,7 @@ import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
-import { V4Container, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
+import { V4BgMotif, V4Container, V4CornerFlourish, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
 
 export default function DressCodeV4() {
   const { t } = useTranslations('dressCode');
@@ -25,6 +25,8 @@ export default function DressCodeV4() {
 
   return (
     <V4Section id="dresscode">
+      <V4BgMotif patternId="v4-lp-dresscode" tileSize={270} rotate={-10} />
+      <V4CornerFlourish corner="top-right" width={140} height={92} opacity={0.5} />
       <V4Container className="py-16 md:py-24 text-center">
         <V4Reveal>
           <V4SectionHeading numeral="VI" eyebrow={t('title')} />

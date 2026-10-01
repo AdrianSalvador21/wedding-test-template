@@ -13,7 +13,7 @@ import { pageMetadata } from '../../../lib/page-metadata';
 import { breadcrumbSchema } from '../../../lib/seo-schema';
 import { whatsappUrl } from '../../../lib/contact';
 
-// Solo existen los tres diseños de DESIGNS.
+// Solo existen los cuatro diseños de DESIGNS.
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -179,7 +179,7 @@ export default function DesignPage({ params }: { params: { slug: string } }) {
       </Section>
 
       <Section tone="white">
-        <SectionHead eyebrow="Más diseños" title="Conoce los otros dos estilos" />
+        <SectionHead eyebrow="Más diseños" title="Conoce los otros tres estilos" />
         <div className="grid md:grid-cols-2 gap-6 md:gap-8">
           {others.map((other) => (
             <a

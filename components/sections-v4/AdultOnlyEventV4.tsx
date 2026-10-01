@@ -5,7 +5,7 @@ import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
-import { V4Container, V4Reveal, V4Section, v4Colors } from './ui';
+import { V4Container, V4CornerFlourish, V4Reveal, V4Section, v4Colors } from './ui';
 
 export default function AdultOnlyEventV4() {
   const { t } = useTranslations('adultOnlyEvent');
@@ -22,6 +22,7 @@ export default function AdultOnlyEventV4() {
 
   return (
     <V4Section id="adult-only">
+      <V4CornerFlourish corner="bottom-right" width={140} height={92} opacity={0.5} />
       <V4Container className="py-12 md:py-16">
         <V4Reveal>
           <div

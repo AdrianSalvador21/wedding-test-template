@@ -5,8 +5,8 @@
 // ---------- Diseños ----------
 
 export interface DesignContent {
-  slug: 'clasico' | 'moderno' | 'botanica-editorial';
-  templateId: 'template-01' | 'template-02' | 'template-03';
+  slug: 'clasico' | 'moderno' | 'botanica-editorial' | 'jardin-editorial';
+  templateId: 'template-01' | 'template-02' | 'template-03' | 'template-04';
   name: string;
   crumb: string; // texto de la miga de pan
   h1: string;
@@ -77,6 +77,25 @@ export const DESIGNS: DesignContent[] = [
     demoHref: '/wedding/valentina-mateo-2026',
     image: '/assets/landing/design-template-03.jpg',
     imageAlt: 'Vista previa en el celular de la invitación de boda con el diseño Botánica Editorial',
+  },
+  {
+    slug: 'jardin-editorial',
+    templateId: 'template-04',
+    name: 'Jardín Editorial',
+    crumb: 'Diseño jardín editorial',
+    h1: 'Invitación digital de boda jardín editorial',
+    tagline: 'Verde oliva oscuro y papel crema, fotos en arco y numerales romanos en cada sección.',
+    lead: 'Un diseño editorial con fondo verde oliva oscuro y papel crema, numerales romanos como guía de cada sección y fotografías con marco en arco.',
+    metaDescription:
+      'Invitación digital de boda jardín editorial: verde oliva oscuro, papel crema, fotos en arco y numerales romanos. Confirmación en tiempo real.',
+    signature: {
+      title: 'Verde oliva y numerales romanos',
+      text: 'Fondo verde oliva oscuro y papel crema, con numerales romanos que guían cada sección de la invitación.',
+    },
+    fit: 'El verde oliva oscuro y los numerales romanos le dan un carácter editorial y sereno. Es una buena elección para parejas que buscan un tono elegante y con estructura de revista.',
+    demoHref: '/wedding/template-04-demo',
+    image: '/assets/landing/design-template-04.png',
+    imageAlt: 'Vista previa en el celular de la invitación de boda con el diseño Jardín Editorial',
   },
 ];
 
@@ -293,12 +312,12 @@ FAQ_ITEMS.push(
   },
   {
     question: '¿Puedo ver cómo se ve antes de contratar?',
-    answer: 'Sí, hay tres demos reales que puedes abrir desde el celular.',
+    answer: 'Sí, hay cuatro demos reales que puedes abrir desde el celular.',
     group: 'Antes de empezar',
   },
   {
     question: '¿Qué diseños puedo elegir?',
-    answer: 'Tres: Clásico, Moderno y Botánica Editorial. Puedes abrir una demo real de cada uno desde tu celular.',
+    answer: 'Cuatro: Clásico, Moderno, Botánica Editorial y Jardín Editorial. Puedes abrir una demo real de cada uno desde tu celular.',
     group: 'Antes de empezar',
   },
   {

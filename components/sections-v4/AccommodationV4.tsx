@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { V4Container, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
+import { V4BgMotif, V4Container, V4CornerFlourish, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
 
 export default function AccommodationV4() {
   const { t } = useTranslations('accommodation');
@@ -18,6 +18,8 @@ export default function AccommodationV4() {
 
   return (
     <V4Section id="accommodation" tinted>
+      <V4BgMotif patternId="v4-lp-accommodation" tileSize={280} rotate={-9} />
+      <V4CornerFlourish corner="top-right" width={140} height={92} opacity={0.5} />
       <V4Container className="py-16 md:py-24 text-center">
         <V4Reveal>
           <V4SectionHeading numeral="VIII" eyebrow={t('title')} />

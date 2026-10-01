@@ -4,7 +4,7 @@ import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
-import { V4Container, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
+import { V4BgMotif, V4Container, V4CornerFlourish, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
 
 export default function GalleryV4() {
   const { t } = useTranslations('gallery');
@@ -17,6 +17,8 @@ export default function GalleryV4() {
 
   return (
     <V4Section id="gallery" tinted>
+      <V4BgMotif patternId="v4-lp-gallery" tileSize={220} rotate={10} />
+      <V4CornerFlourish corner="top-right" width={150} height={100} opacity={0.5} />
       <V4Container className="py-16 md:py-24 text-center">
         <V4Reveal>
           <V4SectionHeading numeral="III" eyebrow={t('title')} />
