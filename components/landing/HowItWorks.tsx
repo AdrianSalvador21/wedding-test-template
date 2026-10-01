@@ -7,7 +7,7 @@ const steps = [
   {
     number: '01',
     title: 'Elige tu diseño y cuéntanos tu boda',
-    description: 'Escoge entre tres diseños y compártenos fecha, lugares, cronograma y fotos.',
+    description: 'Escoge entre cuatro diseños y compártenos fecha, lugares, cronograma y fotos.',
     accent: false,
   },
   {

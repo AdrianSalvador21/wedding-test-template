@@ -38,7 +38,7 @@ const PLANNER_FAQ = [
 
 const STEPS = [
   { title: 'Nos cuentas', text: 'Cuántas bodas manejas y para qué fechas.' },
-  { title: 'Eligen el diseño', text: 'Cada cliente escoge entre Clásico, Moderno y Botánica Editorial.' },
+  { title: 'Eligen el diseño', text: 'Cada cliente escoge entre Clásico, Moderno, Botánica Editorial y Jardín Editorial.' },
   { title: 'Reunimos los datos', text: 'Fecha, lugar, lista de invitados, fotos y código de vestimenta de cada boda.' },
   { title: 'Entregamos', text: 'En 7 días hábiles, con confirmaciones en tiempo real.' },
 ];

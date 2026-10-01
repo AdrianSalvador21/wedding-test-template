@@ -5,8 +5,8 @@
 // ---------- Diseños ----------
 
 export interface DesignContent {
-  slug: 'clasico' | 'moderno' | 'botanica-editorial';
-  templateId: 'template-01' | 'template-02' | 'template-03';
+  slug: 'clasico' | 'moderno' | 'botanica-editorial' | 'jardin-editorial';
+  templateId: 'template-01' | 'template-02' | 'template-03' | 'template-04';
   name: string;
   crumb: string; // texto de la miga de pan
   h1: string;
@@ -78,6 +78,25 @@ export const DESIGNS: DesignContent[] = [
     image: '/assets/landing/design-template-03.jpg',
     imageAlt: 'Vista previa en el celular de la invitación de boda con el diseño Botánica Editorial',
   },
+  {
+    slug: 'jardin-editorial',
+    templateId: 'template-04',
+    name: 'Jardín Editorial',
+    crumb: 'Diseño jardín editorial',
+    h1: 'Invitación digital de boda jardín editorial',
+    tagline: 'Verde oliva oscuro y papel crema, fotos en arco y numerales romanos en cada sección.',
+    lead: 'Un diseño editorial con fondo verde oliva oscuro y papel crema, numerales romanos como guía de cada sección y fotografías con marco en arco.',
+    metaDescription:
+      'Invitación digital de boda jardín editorial: verde oliva oscuro, papel crema, fotos en arco y numerales romanos. Confirmación en tiempo real.',
+    signature: {
+      title: 'Verde oliva y numerales romanos',
+      text: 'Fondo verde oliva oscuro y papel crema, con numerales romanos que guían cada sección de la invitación.',
+    },
+    fit: 'El verde oliva oscuro y los numerales romanos le dan un carácter editorial y sereno. Es una buena elección para parejas que buscan un tono elegante y con estructura de revista.',
+    demoHref: '/wedding/template-04-demo',
+    image: '/assets/landing/design-template-04.png',
+    imageAlt: 'Vista previa en el celular de la invitación de boda con el diseño Jardín Editorial',
+  },
 ];
 
 export const getDesign = (slug: string) => DESIGNS.find((d) => d.slug === slug);
@@ -100,7 +119,7 @@ export interface PackageHighlight {
 export interface PackageContent {
   id: 'basico' | 'personalizado';
   name: string; // "Paquete Básico"
-  price: 2200 | 2600; // fuente única del precio: landing, /paquetes y schema
+  price: 2000 | 2400; // fuente única del precio: landing, /paquetes y schema
   currency: 'MXN';
   forWho: string;
   groups: PackageGroup[]; // texto largo: /paquetes
@@ -112,7 +131,7 @@ export const PACKAGES: PackageContent[] = [
   {
     id: 'basico',
     name: 'Paquete Básico',
-    price: 2200,
+    price: 2000,
     currency: 'MXN',
     forWho: 'Perfecto para bodas tradicionales',
     groups: [
@@ -147,7 +166,7 @@ export const PACKAGES: PackageContent[] = [
   {
     id: 'personalizado',
     name: 'Paquete Personalizado',
-    price: 2600,
+    price: 2400,
     currency: 'MXN',
     forWho: 'Experiencia completamente personalizada',
     groups: [
@@ -198,7 +217,7 @@ export const PACKAGES: PackageContent[] = [
 
 export const getPackage = (id: PackageContent['id']) => PACKAGES.find((p) => p.id === id)!;
 
-// "$2,200" — sin depender de la configuración regional del servidor o del navegador.
+// "$2,000" — sin depender de la configuración regional del servidor o del navegador.
 export const formatPrice = (price: number) => `$${String(price).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 
 // ---------- Preguntas frecuentes ----------
@@ -293,12 +312,12 @@ FAQ_ITEMS.push(
   },
   {
     question: '¿Puedo ver cómo se ve antes de contratar?',
-    answer: 'Sí, hay tres demos reales que puedes abrir desde el celular.',
+    answer: 'Sí, hay cuatro demos reales que puedes abrir desde el celular.',
     group: 'Antes de empezar',
   },
   {
     question: '¿Qué diseños puedo elegir?',
-    answer: 'Tres: Clásico, Moderno y Botánica Editorial. Puedes abrir una demo real de cada uno desde tu celular.',
+    answer: 'Cuatro: Clásico, Moderno, Botánica Editorial y Jardín Editorial. Puedes abrir una demo real de cada uno desde tu celular.',
     group: 'Antes de empezar',
   },
   {

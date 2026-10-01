@@ -122,13 +122,14 @@ const TEMPLATE_IMAGES: Record<TemplateId, string> = {
   'template-01': '/assets/landing/design-template-01.jpg',
   'template-02': '/assets/landing/design-template-02.jpg',
   'template-03': '/assets/landing/design-template-03.jpg',
+  'template-04': '/assets/landing/design-template-04.png',
 };
 
 function TemplatePicker({ value, onChange, name }: { value: TemplateId; onChange: (id: TemplateId) => void; name: string }) {
   return (
     <fieldset className="flex flex-col gap-2 border-0 p-0 m-0 min-w-0">
       <legend className="text-[13px] font-semibold text-[#27272A] mb-2 p-0">Plantilla</legend>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {TEMPLATE_OPTIONS.map((t) => {
           const selected = value === t.id;
           return (

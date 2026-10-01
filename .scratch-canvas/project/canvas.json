@@ -1,0 +1,20 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-09-30T00:00:00Z" },
+  "title": "Template-04 — Hero y galería",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Hero-A.dc.html": { "x": 0, "y": 40, "w": 1440, "h": 680, "title": "Hero — Propuesta A" },
+    "Gallery-A.dc.html": { "x": 0, "y": 840, "w": 1440, "h": 640, "title": "Galería — Propuesta A" },
+    "Hero-B.dc.html": { "x": 1600, "y": 40, "w": 1440, "h": 680, "title": "Hero — Propuesta B" },
+    "Gallery-B.dc.html": { "x": 1600, "y": 840, "w": 1440, "h": 760, "title": "Galería — Propuesta B" }
+  },
+  "order": ["Hero-A.dc.html", "Gallery-A.dc.html", "Hero-B.dc.html", "Gallery-B.dc.html"],
+  "notes": {
+    "titleA": { "x": 0, "y": -220, "text": "Propuesta A — Cuarteto igualitario", "kind": "title1" },
+    "titleB": { "x": 1600, "y": -220, "text": "Propuesta B — Jardín Editorial protagonista", "kind": "title1" },
+    "descA": { "x": 0, "y": -120, "text": "El Hero extiende el fan actual de 3 a 4 fotos: Jardín Editorial queda al centro, sin rotación y con el marco más grueso (la que está \"arriba de todas\"), las otras tres se conservan tal cual detrás. La galería pasa de 3 a 4 columnas iguales, mismo trato visual para los 4 diseños.", "kind": null, "w": 1440, "fill": "gray" },
+    "descB": { "x": 1600, "y": -120, "text": "Jardín Editorial se vuelve la foto protagonista del Hero: grande, derecha y sin rotar, con etiqueta \"Nuevo\". Los otros 3 diseños quedan como un trío pequeño superpuesto con la nota \"+3 diseños más\". La galería pasa a 2×2 y la tarjeta de Jardín Editorial lleva borde oliva y badge \"Nuevo\", para reforzar el lanzamiento en toda la página.", "kind": null, "w": 1440, "fill": "gray" }
+  }
+}

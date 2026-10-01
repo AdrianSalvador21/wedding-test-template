@@ -17,6 +17,7 @@ import MusicPlayer from './MusicPlayer';
 import Template01 from './templates/Template01';
 import Template02 from './templates/Template02';
 import Template03 from './templates/Template03';
+import Template04 from './templates/Template04';
 
 interface WeddingTemplateProps {
   guestId?: string | null;
@@ -95,7 +96,8 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
                         currentWedding.id === 'corporate-event' ||
                         currentWedding.id === 'valentina-mateo-2026' ||
                         currentWedding.id === 'template-01-demo' ||
-                        currentWedding.id === 'template-02-demo';
+                        currentWedding.id === 'template-02-demo' ||
+                        currentWedding.id === 'template-04-demo';
       
       if (isMockData) {
         // Mostrar overlay de demo después de 1 segundo
@@ -172,6 +174,9 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
           const templateId = currentWedding.template?.id || 'template-01';
           const overlayVisible = showOverlay || showDemoOverlay;
 
+          if (templateId === 'template-04') {
+            return <Template04 overlayVisible={overlayVisible} />;
+          }
           if (templateId === 'template-03') {
             return <Template03 overlayVisible={overlayVisible} />;
           }

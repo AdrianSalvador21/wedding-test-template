@@ -6,6 +6,7 @@ export const TEMPLATE_OPTIONS = [
   { id: 'template-01', name: 'Clásico', description: 'Serif elegante, monograma en sello y detalles botánicos mínimos.' },
   { id: 'template-02', name: 'Moderno', description: 'Sans-serif geométrica, anillos concéntricos y acentos de línea botánica.' },
   { id: 'template-03', name: 'Botánica Editorial', description: 'Fotografía en arco, motivos botánicos y countdown en vivo.' },
+  { id: 'template-04', name: 'Jardín Editorial', description: 'Verde oliva oscuro y papel crema, fotos en arco y numerales romanos.' },
 ] as const;
 
 export type TemplateId = (typeof TEMPLATE_OPTIONS)[number]['id'];

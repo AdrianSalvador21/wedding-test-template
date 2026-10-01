@@ -49,6 +49,7 @@ export const MARKETING_PAGES: MarketingPage[] = [
   { path: '/disenos/clasico', title: 'Invitación digital de boda clásica', lastModified: '2026-09-25' },
   { path: '/disenos/moderno', title: 'Invitación digital de boda moderna', lastModified: '2026-09-25' },
   { path: '/disenos/botanica-editorial', title: 'Invitación digital de boda botánica editorial', lastModified: '2026-09-25' },
+  { path: '/disenos/jardin-editorial', title: 'Invitación digital de boda jardín editorial', lastModified: '2026-09-30' },
   { path: '/wedding-planners', title: 'Invitaciones digitales para wedding planners', lastModified: '2026-09-25' },
   { path: '/preguntas-frecuentes', title: 'Preguntas frecuentes de invitaciones digitales', lastModified: '2026-09-28' },
 ];

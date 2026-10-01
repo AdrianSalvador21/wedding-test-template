@@ -127,6 +127,17 @@ NOTA: Sin ?guest= en la URL, el RSVP entra en modo demo local (no escribe a
 Firebase) para poder probar el formulario completo sin un invitado real.
 ```
 
+**9. Renata & Joaquín (Template04 - Jardín Editorial)**
+```
+Boda: template-04-demo
+URL base: /wedding/template-04-demo
+Template: template-04 (réplica visual "Jardín Editorial": Georgia, numerales
+romanos, fotos en arco y nav inferior fijo)
+
+NOTA: Sin ?guest= en la URL, el RSVP entra en modo demo local (no escribe a
+Firebase) para poder probar el formulario completo sin un invitado real.
+```
+
 ### **🌐 Ejemplos de URLs Completas:**
 
 **En Español:**

@@ -47,17 +47,17 @@ export default function Hero() {
         </div>
 
         <div
-          className="relative mx-auto w-full max-w-[460px] hero-in-left"
-          style={{ height: 'clamp(360px, 46vw, 560px)' }}
+          className="relative mx-auto w-full max-w-[480px] hero-in-left"
+          style={{ height: 'clamp(380px, 50vw, 580px)' }}
         >
           <div
-            className="absolute overflow-hidden rounded-[26px] border-[7px] border-white shadow-[0_24px_48px_rgba(43,38,34,0.2)]"
+            className="absolute overflow-hidden rounded-[24px] border-[6px] border-white shadow-[0_20px_40px_rgba(43,38,34,0.18)]"
             style={{
-              top: '5%',
-              left: '2%',
-              width: 'clamp(120px, 34vw, 230px)',
-              height: 'clamp(220px, 66vw, 460px)',
-              transform: 'rotate(-9deg)',
+              top: '10%',
+              left: '-2%',
+              width: 'clamp(100px, 27vw, 190px)',
+              height: 'clamp(190px, 52vw, 365px)',
+              transform: 'rotate(-15deg)',
               zIndex: 1,
             }}
           >
@@ -65,19 +65,19 @@ export default function Hero() {
               src="/assets/landing/design-template-03-2.png"
               alt="Invitación de boda digital con el diseño Botánica Editorial vista en el celular"
               fill
-              sizes="(max-width: 768px) 40vw, 250px"
+              sizes="(max-width: 768px) 32vw, 190px"
               className="object-cover"
               style={{ objectPosition: '50% 15%' }}
             />
           </div>
           <div
-            className="absolute overflow-hidden rounded-[28px] border-[8px] border-white shadow-[0_32px_64px_rgba(43,38,34,0.26)]"
+            className="absolute overflow-hidden rounded-[25px] border-[7px] border-white shadow-[0_22px_44px_rgba(43,38,34,0.2)]"
             style={{
-              top: 0,
-              left: '30%',
-              width: 'clamp(130px, 37vw, 250px)',
-              height: 'clamp(240px, 72vw, 500px)',
-              transform: 'rotate(-1deg)',
+              top: '0%',
+              left: '12%',
+              width: 'clamp(112px, 30vw, 210px)',
+              height: 'clamp(212px, 57vw, 400px)',
+              transform: 'rotate(-7deg)',
               zIndex: 2,
             }}
           >
@@ -85,20 +85,19 @@ export default function Hero() {
               src="/assets/landing/design-template-01.jpg"
               alt="Invitación de boda digital con el diseño Clásico vista en el celular"
               fill
-              sizes="(max-width: 768px) 40vw, 250px"
-              priority
+              sizes="(max-width: 768px) 35vw, 210px"
               className="object-cover"
               style={{ objectPosition: '50% 25%' }}
             />
           </div>
           <div
-            className="absolute overflow-hidden rounded-[26px] border-[7px] border-white shadow-[0_24px_48px_rgba(43,38,34,0.2)]"
+            className="absolute overflow-hidden rounded-[24px] border-[6px] border-white shadow-[0_20px_40px_rgba(43,38,34,0.18)]"
             style={{
-              top: '7%',
-              left: '58%',
-              width: 'clamp(120px, 34vw, 230px)',
-              height: 'clamp(220px, 66vw, 460px)',
-              transform: 'rotate(8deg)',
+              top: '5%',
+              left: '64%',
+              width: 'clamp(102px, 27vw, 194px)',
+              height: 'clamp(195px, 52vw, 372px)',
+              transform: 'rotate(12deg)',
               zIndex: 1,
             }}
           >
@@ -106,18 +105,32 @@ export default function Hero() {
               src="/assets/landing/design-template-02.jpg"
               alt="Invitación de boda digital con el diseño Moderno vista en el celular"
               fill
-              sizes="(max-width: 768px) 40vw, 250px"
+              sizes="(max-width: 768px) 32vw, 194px"
               className="object-cover"
               style={{ objectPosition: '50% 30%' }}
             />
           </div>
-          {/*<div
-            className="absolute bg-white rounded-2xl px-4 py-3 shadow-[0_20px_40px_rgba(43,38,34,0.18)] flex items-center gap-2.5"
-            style={{ bottom: '2%', left: '22%', zIndex: 3 }}
+          <div
+            className="absolute overflow-hidden rounded-[28px] border-[8px] border-white shadow-[0_32px_64px_rgba(43,38,34,0.26)]"
+            style={{
+              top: '-4%',
+              left: '31%',
+              width: 'clamp(132px, 36vw, 250px)',
+              height: 'clamp(255px, 68vw, 480px)',
+              transform: 'rotate(0deg)',
+              zIndex: 4,
+            }}
           >
-            <LCheckIcon />
-            <span className="text-[13px] font-bold text-[#211D19] whitespace-nowrap">3 diseños para elegir</span>
-          </div>*/}
+            <Image
+              src="/assets/landing/design-template-04.png"
+              alt="Invitación de boda digital con el diseño Jardín Editorial vista en el celular"
+              fill
+              sizes="(max-width: 768px) 42vw, 250px"
+              priority
+              className="object-cover"
+              style={{ objectPosition: '50% 10%' }}
+            />
+          </div>
         </div>
       </div>
     </LSection>
