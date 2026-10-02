@@ -163,7 +163,7 @@ export default function AdminHomePage() {
   const freeCount = auth.weddings.length - templateCount;
 
   return (
-    <div className="admin-form min-h-screen bg-[#FAFAFA]" style={manrope}>
+    <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA]" style={manrope}>
       <div className="bg-white border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 h-[60px] flex items-center justify-between gap-4">
         <span className="text-xl sm:text-2xl text-[#0A0A0A]" style={displayFont}>
           invyta

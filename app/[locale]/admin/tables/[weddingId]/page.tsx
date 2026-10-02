@@ -178,7 +178,7 @@ const AdminTablesContent = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-[rgba(0,0,0,0.14)] border-t-[#111111] rounded-full mx-auto mb-4"></div>
           <p className="text-[#3F3F46]" style={manrope}>Cargando mesas...</p>
@@ -193,7 +193,7 @@ const AdminTablesContent = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
+      <div className="min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
         <div className="text-center py-12">
           <div className="text-6xl text-[#D4D4D8] mb-6">⚠</div>
           <h3 className="text-2xl text-[#0A0A0A] mb-3" style={displayFont}>Error</h3>
@@ -214,7 +214,7 @@ const AdminTablesContent = () => {
     }`;
 
   return (
-    <div className="admin-form min-h-screen bg-[#FAFAFA]" style={manrope}>
+    <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA]" style={manrope}>
       <div className="bg-white border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 py-3.5 flex items-center justify-between gap-4">
         <a href="/" className="text-xl sm:text-2xl text-[#0A0A0A] hover:opacity-70 transition-opacity" style={displayFont}>
           invyta

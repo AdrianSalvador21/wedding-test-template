@@ -2,11 +2,12 @@
 
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
-import { AlertCircle, Loader2, Lock, Mail, UserPlus } from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2, Heart, LayoutGrid, Loader2, Lock, Mail, Sparkles, Users } from 'lucide-react';
 import { manrope, displayFont } from './ui';
+import { fraunces } from '../../lib/brand';
 import { useAuth } from '../../lib/auth-context';
 import { whatsappUrl } from '../../lib/contact';
-import { FreeWeddingModal } from './FreeWeddingTools';
+import { useFreeWeddingForm, FreeWeddingFields } from './FreeWeddingTools';
 
 // Piezas de las pantallas de acceso (login, verificación, sin boda, sin acceso).
 // Siguen el diseño del spec 08 con la paleta neutra de los paneles.
@@ -20,7 +21,7 @@ export function formatWeddingDate(iso: string): string {
 
 export function AuthScreen({ children, showHelp = true }: { children: ReactNode; showHelp?: boolean }) {
   return (
-    <div className="admin-form min-h-screen bg-[#FAFAFA] flex flex-col items-center gap-9 px-4 sm:px-6 py-12 sm:py-16" style={manrope}>
+    <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex flex-col items-center gap-9 px-4 sm:px-6 py-12 sm:py-16" style={manrope}>
       <span className="text-[28px] sm:text-[30px] text-[#0A0A0A]" style={displayFont}>
         invyta
       </span>
@@ -161,7 +162,7 @@ export function TextLink({ children, onClick }: { children: ReactNode; onClick: 
 
 export function LoadingScreen({ text = 'Cargando...' }: { text?: string }) {
   return (
-    <div className="admin-form min-h-screen bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
+    <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
       <div className="text-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#111111] mx-auto mb-4" />
         <p className="text-[#3F3F46]">{text}</p>
@@ -250,43 +251,204 @@ export function VerifyEmailScreen() {
   );
 }
 
+// Onboarding de bienvenida (spec 22). Acento tipográfico en Fraunces itálica, solo en este
+// flujo — el resto del panel de admin sigue usando únicamente `displayFont`/Manrope.
+function OnboardingEmphasis({ children }: { children: ReactNode }) {
+  return (
+    <em style={{ ...fraunces, fontStyle: 'italic', fontWeight: 500, color: '#AE5730' }}>{children}</em>
+  );
+}
+
+function OnboardingTitle({ children }: { children: ReactNode }) {
+  return <h1 className="m-0 text-[25px] font-extrabold tracking-[-0.01em] text-[#0A0A0A] leading-[1.2]">{children}</h1>;
+}
+
+function OnboardingProgress({ step }: { step: number }) {
+  return (
+    <div className="flex gap-1.5">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="flex-1 h-1 rounded-full bg-[#F4F4F5] overflow-hidden">
+          <div className="h-full rounded-full bg-[#AE5730] transition-[width] duration-300" style={{ width: i <= step ? '100%' : '0%' }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function OnboardingFeature({
+  icon: Icon,
+  title,
+  children,
+  locked = false,
+  link,
+}: {
+  icon: typeof Mail;
+  title: string;
+  children: ReactNode;
+  locked?: boolean;
+  link?: ReactNode;
+}) {
+  return (
+    <div className={`flex gap-3 items-start p-3.5 rounded-xl border ${locked ? 'border-dashed border-[rgba(0,0,0,0.16)]' : 'border-[rgba(0,0,0,0.08)]'}`}>
+      <div
+        className={`w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0 ${
+          locked ? 'bg-[#F4F4F5] text-[#71717A]' : 'bg-[rgba(198,102,60,0.1)] text-[#AE5730]'
+        }`}
+      >
+        <Icon className="h-[18px] w-[18px]" />
+      </div>
+      <div className="flex flex-col gap-0.5 min-w-0">
+        <div className="text-sm font-extrabold text-[#0A0A0A]">{title}</div>
+        <p className="m-0 text-xs leading-[1.5] text-[#71717A]">{children}</p>
+        {link}
+      </div>
+    </div>
+  );
+}
+
 export function NoWeddingsScreen() {
   const auth = useAuth();
-  const [showFree, setShowFree] = useState(false);
-  // `NoWeddingsScreen` solo se monta dentro de `/admin` (app/[locale]/admin/page.tsx), así que
-  // no hace falta navegar a ningún lado: al refrescar, esa misma página deja de mostrar esta
-  // pantalla y pasa a "Mis invitaciones" con la nueva tarjeta — el organizador elige ahí a
-  // cuál entrar, y desde ahí puede crear otra (hasta el tope de 3 gratuitas).
-  const onFreeCreated = async () => {
-    setShowFree(false);
-    await auth.refresh({ silent: true });
-  };
-  const message = `Hola, ya contraté mi invitación con Invyta (correo: ${auth.email}) y no la veo en mi cuenta.`;
+  const params = useParams();
+  const locale = (params?.locale as string) || 'es';
+  const [step, setStep] = useState(0);
+  const [weddingId, setWeddingId] = useState<string | null>(null);
+  // `NoWeddingsScreen` solo se monta dentro de `/admin` (app/[locale]/admin/page.tsx). Al crear
+  // la boda no hace falta refrescar `auth`: el paso 4 enlaza directo al panel de la boda nueva o
+  // de vuelta a "Mis invitaciones", que al cargar ya resuelve `auth.status` a 'ready'.
+  const form = useFreeWeddingForm((id) => {
+    setWeddingId(id);
+    setStep(3);
+  });
+  const recoveryMessage = `Hola, ya contraté mi invitación con Invyta (correo: ${auth.email}) y no la veo en mi cuenta.`;
+
   return (
     <AuthScreen showHelp={false}>
-      <IconBadge icon={UserPlus} />
-      <AuthHead
-        title="No tienes ninguna invitación"
-        sub={
-          <>
-            Con <strong className="text-[#0A0A0A]">{auth.email}</strong> puedes crear gratis tu lista de invitados y organizar tus mesas, sin plantilla ni editor de invitación.
-          </>
-        }
-      />
-      <div className="flex flex-col gap-2.5">
-        <AuthButton onClick={() => setShowFree(true)}>Crear mi lista de invitados gratis</AuthButton>
-      </div>
-      <p className="m-0 text-xs leading-normal text-[#71717A] text-center">
-        ¿Ya contrataste una invitación con diseño?{' '}
-        <a href={whatsappUrl(message)} target="_blank" rel="noopener noreferrer" className="font-bold text-[#0A0A0A] underline">
-          Escríbenos por WhatsApp
-        </a>{' '}
-        para ligarla a tu cuenta.
-      </p>
-      <div className="border-t border-[rgba(0,0,0,0.08)] pt-4 text-center">
-        <TextLink onClick={() => void auth.signOut()}>Cerrar sesión</TextLink>
-      </div>
-      {showFree && <FreeWeddingModal onClose={() => setShowFree(false)} onCreated={onFreeCreated} />}
+      <OnboardingProgress step={step} />
+
+      {step === 0 && (
+        <div className="flex flex-col gap-[22px]">
+          <IconBadge icon={Heart} />
+          <OnboardingTitle>
+            Bienvenida a <OnboardingEmphasis>Invyta</OnboardingEmphasis>.
+          </OnboardingTitle>
+          <p className="m-0 text-sm leading-[1.6] text-[#3F3F46]">
+            Tu boda, en una invitación que se siente tuya. En un par de minutos armamos tu lista de invitados y tus mesas.
+          </p>
+          <AuthButton onClick={() => setStep(1)}>Comenzar</AuthButton>
+        </div>
+      )}
+
+      {step === 1 && (
+        <div className="flex flex-col gap-[18px]">
+          <div className="text-[11px] font-extrabold tracking-[0.1em] uppercase text-[#AE5730]">Con tu cuenta gratis</div>
+          <OnboardingTitle>
+            Esto es lo que vas a <OnboardingEmphasis>organizar</OnboardingEmphasis>.
+          </OnboardingTitle>
+          <div className="flex flex-col gap-2.5">
+            <OnboardingFeature icon={Users} title="Lista de invitados">
+              Agregas a cada invitado y anotas tú su confirmación — sin límite de invitados.
+            </OnboardingFeature>
+            <OnboardingFeature icon={LayoutGrid} title="Acomodo de mesas">
+              Arma tus mesas y mueve invitados entre ellas para cuadrar tu salón.
+            </OnboardingFeature>
+            <OnboardingFeature
+              icon={Sparkles}
+              title="Invitación con diseño"
+              locked
+              link={
+                <a
+                  href={whatsappUrl('Hola, quiero saber más de la invitación con diseño de Invyta.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 mt-1 text-xs font-bold text-[#AE5730] hover:text-[#8F4524]"
+                >
+                  Escríbenos por WhatsApp
+                  <ArrowRight className="h-3 w-3" />
+                </a>
+              }
+            >
+              Un sitio propio para tus invitados, con enlace único y tu panel para editar los datos y el diseño cuando quieras.
+            </OnboardingFeature>
+          </div>
+          <div className="flex items-center gap-3">
+            <button type="button" onClick={() => setStep(0)} className="text-[13px] font-bold text-[#71717A] hover:text-[#0A0A0A]">
+              Atrás
+            </button>
+            <div className="flex-1">
+              <AuthButton onClick={() => setStep(2)}>Crear mi boda gratis</AuthButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {step === 2 && (
+        <form onSubmit={form.submit} noValidate className="flex flex-col gap-[20px]">
+          <OnboardingTitle>
+            ¿Quiénes se <OnboardingEmphasis>casan</OnboardingEmphasis>?
+          </OnboardingTitle>
+          <FreeWeddingFields form={form} />
+          <div className="flex items-center gap-3">
+            <button type="button" onClick={() => setStep(1)} className="text-[13px] font-bold text-[#71717A] hover:text-[#0A0A0A]">
+              Atrás
+            </button>
+            <div className="flex-1">
+              <AuthButton type="submit" loading={form.submitting}>
+                Crear mi boda
+              </AuthButton>
+            </div>
+          </div>
+        </form>
+      )}
+
+      {step === 3 && (
+        <div className="flex flex-col gap-[20px]">
+          <div className="w-[52px] h-[52px] rounded-full bg-[rgba(198,102,60,0.1)] flex items-center justify-center text-[#AE5730]">
+            <CheckCircle2 className="h-6 w-6" />
+          </div>
+          <OnboardingTitle>
+            Tu boda está <OnboardingEmphasis>lista</OnboardingEmphasis>.
+          </OnboardingTitle>
+          <div className="border border-[rgba(0,0,0,0.08)] rounded-xl p-4 flex flex-col gap-1">
+            <span style={{ ...fraunces, fontStyle: 'italic', fontWeight: 500 }} className="text-lg text-[#0A0A0A]">
+              {form.bride.trim()} &amp; {form.groom.trim()}
+            </span>
+            <span className="text-xs text-[#71717A]">{formatWeddingDate(form.date) || 'Fecha por confirmar'}</span>
+          </div>
+          <p className="m-0 text-sm text-[#3F3F46]">Ya puedes empezar a sumar invitados y armar tus mesas.</p>
+          <div className="flex flex-col gap-2.5">
+            {weddingId && (
+              <a
+                href={`/${locale}/admin/panel/${weddingId}/guests`}
+                className="w-full inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-bold transition-colors"
+              >
+                Agregar mis primeros invitados
+              </a>
+            )}
+            <a
+              href={`/${locale}/admin`}
+              className="w-full inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-bold transition-colors"
+            >
+              Ir a mis invitaciones
+            </a>
+          </div>
+        </div>
+      )}
+
+      {step < 2 && (
+        <p className="m-0 text-xs leading-normal text-[#71717A] text-center">
+          ¿Ya contrataste una invitación con diseño?{' '}
+          <a href={whatsappUrl(recoveryMessage)} target="_blank" rel="noopener noreferrer" className="font-bold text-[#0A0A0A] underline">
+            Escríbenos por WhatsApp
+          </a>{' '}
+          para ligarla a tu cuenta.
+        </p>
+      )}
+
+      {step < 3 && (
+        <div className="border-t border-[rgba(0,0,0,0.08)] pt-4 text-center">
+          <TextLink onClick={() => void auth.signOut()}>Cerrar sesión</TextLink>
+        </div>
+      )}
     </AuthScreen>
   );
 }

@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronDown, ChevronLeft, ChevronRight, LayoutGrid, Menu, Pencil, Sparkles, Table2, Users, CheckSquare, X } from 'lucide-react';
-import AccountControls from '../AccountControls';
+import { ChevronDown, ChevronLeft, ChevronRight, LayoutGrid, LogOut, Menu, Pencil, Sparkles, Table2, Users, CheckSquare, X } from 'lucide-react';
 import { useAuthOptional } from '../../../lib/auth-context';
 import { whatsappUrl } from '../../../lib/contact';
 import { track } from '../../../lib/analytics/client';
@@ -135,6 +134,33 @@ function NavLinks({
   );
 }
 
+// Correo + "Cerrar sesión" en línea (sin menú desplegable ni avatar): va justo debajo de
+// "Mesas" tanto en escritorio como en el drawer móvil — antes el escritorio lo escondía
+// detrás de un control de cuenta con menú desplegable pegado al fondo del sidebar.
+function SidebarAccountSection({ onNavigate }: { onNavigate?: () => void }) {
+  const auth = useAuthOptional();
+  if (!auth || !auth.user) return null;
+
+  const signOut = () => {
+    onNavigate?.();
+    void auth.signOut();
+  };
+
+  return (
+    <div className="flex flex-col gap-2.5 px-1">
+      <span className="text-[12.5px] font-semibold text-[#71717A] truncate">{auth.email}</span>
+      <button
+        type="button"
+        onClick={signOut}
+        className="inline-flex items-center gap-2 self-start text-[13px] font-bold text-[#0A0A0A] hover:text-[#AE5730] transition-colors"
+      >
+        <LogOut className="h-3.5 w-3.5" />
+        Cerrar sesión
+      </button>
+    </div>
+  );
+}
+
 function SidebarChrome({
   weddingId,
   locale,
@@ -170,10 +196,9 @@ function SidebarChrome({
       </div>
       {!collapsed && <EventSwitcher weddingId={weddingId} locale={locale} />}
       <NavLinks weddingId={weddingId} locale={locale} active={active} tier={tier} collapsed={collapsed} onNavigate={onNavigate} />
-      <div className="flex-1" />
       {!collapsed && (
-        <div className="border-t border-[rgba(0,0,0,0.08)] pt-3.5">
-          <AccountControls menuPlacement="up" />
+        <div className="border-t border-[rgba(0,0,0,0.08)] mt-3.5 pt-3.5">
+          <SidebarAccountSection onNavigate={onNavigate} />
         </div>
       )}
     </div>
@@ -199,6 +224,29 @@ export function PanelSidebar({
   mobileOpen: boolean;
   onCloseMobile: () => void;
 }) {
+  // El drawer móvil se queda montado mientras corre su animación de salida (closing=true) y
+  // recién después se desmonta — si se desmontara apenas `mobileOpen` pasa a false, el fade/slide
+  // de cierre nunca se vería.
+  const [mounted, setMounted] = useState(mobileOpen);
+  const [closing, setClosing] = useState(false);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      setMounted(true);
+      setClosing(false);
+      return;
+    }
+    if (!mounted) return;
+    setClosing(true);
+    const reduceMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const timer = setTimeout(() => {
+      setMounted(false);
+      setClosing(false);
+    }, reduceMotion ? 0 : 200);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobileOpen]);
+
   return (
     <>
       <aside
@@ -216,15 +264,17 @@ export function PanelSidebar({
         />
       </aside>
 
-      {mobileOpen && (
+      {mounted && (
         <div className="md:hidden fixed inset-0 z-50">
           <button
             type="button"
             aria-label="Cerrar menú"
             onClick={onCloseMobile}
-            className="absolute inset-0 bg-black/40 border-0 p-0 cursor-default"
+            className={`${closing ? 'admin-overlay-out' : 'admin-overlay'} absolute inset-0 bg-black/40 border-0 p-0 cursor-default`}
           />
-          <div className="absolute left-0 top-0 bottom-0 w-[78%] max-w-[300px] bg-white shadow-xl">
+          <div
+            className={`${closing ? 'admin-drawer-left-out' : 'admin-drawer-left'} absolute left-0 top-0 bottom-0 w-[78%] max-w-[300px] bg-white shadow-xl overflow-hidden`}
+          >
             <div className="flex justify-end px-3 pt-3">
               <button
                 type="button"
@@ -257,7 +307,7 @@ export function PanelTopBar({ onOpenMenu }: { onOpenMenu: () => void }) {
       >
         <Menu className="h-5 w-5" />
       </button>
-      <span className="text-sm font-extrabold text-[#0A0A0A]">invyta</span>
+      <span className="text-xl text-[#0A0A0A]" style={displayFont}>invyta</span>
       <span className="w-9" aria-hidden="true" />
     </header>
   );

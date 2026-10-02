@@ -745,14 +745,39 @@ body {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* Variante de admin-drawer-in para paneles anclados a la izquierda (sidebar móvil del panel
+   nuevo, spec 21): entra deslizándose desde su propio borde izquierdo, no desde la derecha. */
+@keyframes admin-drawer-left-in {
+  from { opacity: 0; transform: translateX(-18px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Salida (fade/slide-out) del mismo sidebar móvil: el componente se queda montado mientras
+   corre esta animación y recién entonces se desmonta (ver PanelSidebar en components/admin/panel/ui.tsx). */
+@keyframes admin-overlay-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes admin-drawer-left-out {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-18px); }
+}
+
 .admin-overlay { animation: admin-overlay-in 240ms ease-out both; }
 .admin-drawer { animation: admin-drawer-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.admin-drawer-left { animation: admin-drawer-left-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .admin-modal { animation: admin-modal-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.admin-overlay-out { animation: admin-overlay-out 200ms ease-in both; }
+.admin-drawer-left-out { animation: admin-drawer-left-out 200ms cubic-bezier(0.4, 0, 1, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
   .admin-overlay,
   .admin-drawer,
-  .admin-modal {
+  .admin-drawer-left,
+  .admin-modal,
+  .admin-overlay-out,
+  .admin-drawer-left-out {
     animation: none;
   }
 }

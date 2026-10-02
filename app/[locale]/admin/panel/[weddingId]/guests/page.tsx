@@ -286,7 +286,7 @@ const AdminGuestsContent = () => {
 
   if (error && !showForm) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
+      <div className="min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
         <div className="text-center py-12">
           <div className="text-6xl text-[#D4D4D8] mb-6">⚠</div>
           <h3 className="text-2xl text-[#0A0A0A] mb-3" style={displayFont}>Error</h3>
@@ -304,7 +304,7 @@ const AdminGuestsContent = () => {
     }`;
 
   return (
-    <div className="admin-form min-h-screen bg-[#FAFAFA]" style={manrope}>
+    <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA]" style={manrope}>
       <AdminTopBar
         title="Gestión de Invitados"
         meta={

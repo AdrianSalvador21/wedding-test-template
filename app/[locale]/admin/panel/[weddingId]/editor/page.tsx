@@ -442,7 +442,7 @@ function WeddingEditorContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-[#111111] mx-auto mb-4" />
           <p className="text-[#3F3F46]" style={manrope}>Cargando editor...</p>
@@ -457,7 +457,7 @@ function WeddingEditorContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex items-center justify-center">
         <div className="text-center" style={manrope}>
           <p className="text-[#B91C1C] mb-4">{error}</p>
           <AdminButton onClick={() => window.location.reload()}>Reintentar</AdminButton>

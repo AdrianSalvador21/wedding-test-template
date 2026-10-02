@@ -453,7 +453,7 @@ function WeddingEditorContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-[#111111] mx-auto mb-4" />
           <p className="text-[#3F3F46]" style={manrope}>Cargando editor...</p>
@@ -472,7 +472,7 @@ function WeddingEditorContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex items-center justify-center">
         <div className="text-center" style={manrope}>
           <p className="text-[#B91C1C] mb-4">{error}</p>
           <AdminButton onClick={() => window.location.reload()}>Reintentar</AdminButton>
@@ -508,7 +508,7 @@ function WeddingEditorContent() {
         goToTab: setActiveTab,
       }}
     >
-    <div className="admin-form min-h-screen bg-[#FAFAFA]" style={manrope}>
+    <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA]" style={manrope}>
       {/* Navbar Invyta — mismo padding horizontal que AdminTopBar para que el logo quede alineado con el título de abajo */}
       <div className="bg-white border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 py-3.5 flex items-center justify-between gap-4">
         <a
