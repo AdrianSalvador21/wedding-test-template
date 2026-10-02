@@ -51,7 +51,11 @@ function PanelShell({ weddingId, locale, children }: { weddingId: string; locale
   }
 
   return (
-    <div className="flex w-full h-screen overflow-hidden bg-[#FAFAFA]">
+    // `h-screen` (100vh) se queda corto en móvil cuando el navegador muestra su barra de
+    // direcciones/navegación: esa barra "resta" del alto visible real sin achicar 100vh, así
+    // que el contenido y el drawer del sidebar terminan tapados debajo. `h-[100dvh]` usa el alto
+    // visible dinámico; se deja `h-screen` como respaldo para navegadores sin soporte a `dvh`.
+    <div className="flex w-full h-screen h-[100dvh] overflow-hidden bg-[#FAFAFA]">
       <PanelSidebar
         weddingId={weddingId}
         locale={locale}

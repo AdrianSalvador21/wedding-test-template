@@ -12,7 +12,7 @@ import { track } from '../../lib/analytics/client';
 // redirigir en silencio.
 export default function EditorNotAvailable({ weddingId, locale }: { weddingId: string; locale: string }) {
   return (
-    <div className="admin-form min-h-screen bg-[#FAFAFA]" style={manrope}>
+    <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA]" style={manrope}>
       <div className="bg-white border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 py-3.5 flex items-center justify-between gap-4">
         <a href="/" className="text-xl sm:text-2xl text-[#0A0A0A] hover:opacity-70 transition-opacity" style={displayFont}>
           invyta

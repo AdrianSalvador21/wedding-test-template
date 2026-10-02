@@ -16,9 +16,11 @@ import type { WeddingData } from '../../src/types/wedding';
 
 // ---------- Alta gratuita ----------
 
-export function FreeWeddingModal({ onClose, onCreated }: { onClose: () => void; onCreated: (id: string) => void }) {
+// Estado y envío extraídos a un hook (spec 22) para que el modal de "Mis invitaciones"
+// y el onboarding de bienvenida (components/admin/auth-ui.tsx) compartan la misma
+// validación y el mismo manejo de errores contra /api/weddings/free, sin duplicarlos.
+export function useFreeWeddingForm(onCreated: (id: string) => void) {
   const auth = useAuth();
-  const uid = useId();
 
   const [bride, setBride] = useState('');
   const [groom, setGroom] = useState('');
@@ -67,6 +69,43 @@ export function FreeWeddingModal({ onClose, onCreated }: { onClose: () => void; 
     }
   };
 
+  return { bride, setBride, groom, setGroom, date, setDate, errors, banner, submitting, submit };
+}
+
+export type FreeWeddingFormState = ReturnType<typeof useFreeWeddingForm>;
+
+// Campos del formulario, sin el <form>/botones envolventes: los pone cada lugar que lo usa
+// (el modal aquí abajo, y el paso 3 del onboarding en auth-ui.tsx).
+export function FreeWeddingFields({ form }: { form: FreeWeddingFormState }) {
+  const uid = useId();
+  return (
+    <>
+      {form.banner && (
+        <div role="alert" className="flex gap-2.5 items-start bg-[rgba(185,28,28,0.06)] border border-[rgba(185,28,28,0.3)] rounded-[10px] px-3.5 py-3 text-[13px] text-[#7F1D1D]">
+          {form.banner}
+        </div>
+      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Field label="Nombre de la persona 1" htmlFor={`${uid}-bride`} error={form.errors.bride}>
+          <input id={`${uid}-bride`} type="text" value={form.bride} onChange={(e) => form.setBride(e.target.value)} className={inputClass(!!form.errors.bride)} placeholder="Sofía" />
+        </Field>
+        <Field label="Nombre de la persona 2" htmlFor={`${uid}-groom`} error={form.errors.groom}>
+          <input id={`${uid}-groom`} type="text" value={form.groom} onChange={(e) => form.setGroom(e.target.value)} className={inputClass(!!form.errors.groom)} placeholder="Diego" />
+        </Field>
+      </div>
+      <Field label="Fecha de la boda" htmlFor={`${uid}-date`} error={form.errors.date} hint="Puedes cambiarla después desde Ajustes.">
+        <input id={`${uid}-date`} type="date" value={form.date} onChange={(e) => form.setDate(e.target.value)} className={inputClass(!!form.errors.date)} />
+      </Field>
+      <p className="m-0 text-xs leading-normal text-[#71717A]">
+        No hay ningún enlace público que compartir con tus invitados: tú los agregas y anotas su confirmación desde el panel. Puedes crear hasta 3 bodas gratuitas por cuenta.
+      </p>
+    </>
+  );
+}
+
+export function FreeWeddingModal({ onClose, onCreated }: { onClose: () => void; onCreated: (id: string) => void }) {
+  const form = useFreeWeddingForm(onCreated);
+
   return (
     <Modal
       title="Crear tu lista de invitados"
@@ -74,31 +113,13 @@ export function FreeWeddingModal({ onClose, onCreated }: { onClose: () => void; 
       onClose={onClose}
       width={480}
     >
-      <form onSubmit={submit} noValidate className="flex flex-col gap-[22px]">
-        {banner && (
-          <div role="alert" className="flex gap-2.5 items-start bg-[rgba(185,28,28,0.06)] border border-[rgba(185,28,28,0.3)] rounded-[10px] px-3.5 py-3 text-[13px] text-[#7F1D1D]">
-            {banner}
-          </div>
-        )}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Nombre de la persona 1" htmlFor={`${uid}-bride`} error={errors.bride}>
-            <input id={`${uid}-bride`} type="text" value={bride} onChange={(e) => setBride(e.target.value)} className={inputClass(!!errors.bride)} placeholder="Sofía" />
-          </Field>
-          <Field label="Nombre de la persona 2" htmlFor={`${uid}-groom`} error={errors.groom}>
-            <input id={`${uid}-groom`} type="text" value={groom} onChange={(e) => setGroom(e.target.value)} className={inputClass(!!errors.groom)} placeholder="Diego" />
-          </Field>
-        </div>
-        <Field label="Fecha de la boda" htmlFor={`${uid}-date`} error={errors.date} hint="Puedes cambiarla después desde Ajustes.">
-          <input id={`${uid}-date`} type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClass(!!errors.date)} />
-        </Field>
-        <p className="m-0 text-xs leading-normal text-[#71717A]">
-          No hay ningún enlace público que compartir con tus invitados: tú los agregas y anotas su confirmación desde el panel. Puedes crear hasta 3 bodas gratuitas por cuenta.
-        </p>
+      <form onSubmit={form.submit} noValidate className="flex flex-col gap-[22px]">
+        <FreeWeddingFields form={form} />
         <div className="flex justify-end gap-3">
-          <Btn ghost onClick={onClose} disabled={submitting}>
+          <Btn ghost onClick={onClose} disabled={form.submitting}>
             Cancelar
           </Btn>
-          <Btn type="submit" loading={submitting}>
+          <Btn type="submit" loading={form.submitting}>
             Crear mi lista de invitados
           </Btn>
         </div>

@@ -115,7 +115,7 @@ const AdminConfirmationsContent = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
+      <div className="min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
         <div className="text-center">
           <div className="animate-spin w-10 h-10 border-2 border-[rgba(0,0,0,0.14)] border-t-[#111111] rounded-full mx-auto mb-4"></div>
           <p className="text-[#3F3F46] font-medium">Cargando confirmaciones...</p>
@@ -126,7 +126,7 @@ const AdminConfirmationsContent = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
+      <div className="min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex items-center justify-center" style={manrope}>
         <div className="text-center max-w-md mx-auto p-8">
           <XCircle className="w-16 h-16 text-[#B91C1C] mx-auto mb-4" />
           <h2 className="text-2xl text-[#0A0A0A] mb-2" style={displayFont}>Error</h2>
@@ -150,7 +150,7 @@ const AdminConfirmationsContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]" style={manrope}>
+    <div className="min-h-screen min-h-[100dvh] bg-[#FAFAFA]" style={manrope}>
       {/* Header */}
       <div className="bg-white border-b border-[rgba(0,0,0,0.08)]">
         <div className="max-w-4xl mx-auto px-6 md:px-8 py-12 md:py-16">
