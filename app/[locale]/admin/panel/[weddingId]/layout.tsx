@@ -68,7 +68,11 @@ function PanelShell({ weddingId, locale, children }: { weddingId: string; locale
       />
       <div className="flex-1 min-w-0 h-full flex flex-col overflow-hidden">
         <PanelTopBar onOpenMenu={() => setMobileOpen(true)} />
-        <div className="flex-1 overflow-y-auto flex flex-col">
+        {/* pb-28 solo en móvil: algunos navegadores (y los webviews de apps como WhatsApp/
+            Instagram) tapan la franja inferior con su propia barra sin que `dvh` la descuente,
+            así que el final de cada sección queda tapado. El colchón extra evita que pase,
+            independiente de qué tan alta sea esa barra en cada caso. */}
+        <div className="flex-1 overflow-y-auto flex flex-col pb-28 md:pb-0">
           {loading ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
