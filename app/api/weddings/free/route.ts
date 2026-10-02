@@ -10,16 +10,15 @@ const FREE_WEDDING_LIMIT = 3;
 const invalid = (field: string) => NextResponse.json({ error: 'invalid_input', field }, { status: 400 });
 const text = (value: unknown, max: number) => (typeof value === 'string' ? value.trim().slice(0, max) : '');
 
-// Alta de autoservicio (spec 16): cualquier cuenta con correo verificado crea su propia boda
-// gratuita, sin plantilla ni editor, hasta un máximo de 3 por cuenta. A diferencia de
+// Alta de autoservicio (spec 16): cualquier cuenta autenticada crea su propia boda
+// gratuita (la verificación de correo está deshabilitada a propósito), sin plantilla
+// ni editor, hasta un máximo de 3 por cuenta. A diferencia de
 // POST /api/admin/weddings, no exige ser operador ni recibe `templateId`: `tier: 'free'`
 // y sin `template` es justamente lo que la distingue.
 export async function POST(request: NextRequest) {
   const auth = await authenticate(request);
   if (!auth.ok) return auth.response;
-  if (!auth.user.emailVerified) {
-    return NextResponse.json({ error: 'email_not_verified' }, { status: 403 });
-  }
+  // La verificación de correo se deshabilitó a propósito (antes devolvía 403 aquí).
 
   let body: Record<string, unknown>;
   try {

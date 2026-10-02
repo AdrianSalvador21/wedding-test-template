@@ -51,20 +51,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [errorCode, setErrorCode] = useState<string | null>(null);
 
   const load = useCallback(async (u: User, silent = false) => {
-    if (!u.emailVerified) {
-      setIsAdmin(false);
-      setWeddings([]);
-      setStatus('unverified');
-      return;
-    }
+    // La verificación de correo se deshabilitó a propósito: ni aquí ni en
+    // /api/auth/link-weddings se exige `emailVerified` para entrar. `unverified`
+    // sigue existiendo en `AuthStatus`/`VerifyEmailScreen` por si se reactiva más
+    // adelante, pero ningún camino del código la fija ya.
     if (!silent) setStatus('loading');
     try {
       const token = await u.getIdToken();
       const res = await fetch('/api/auth/link-weddings', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
-      if (res.status === 403) {
-        setStatus('unverified');
-        return;
-      }
       if (res.status === 401) {
         await firebaseSignOut(auth);
         return;

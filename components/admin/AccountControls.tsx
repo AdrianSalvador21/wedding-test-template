@@ -12,7 +12,11 @@ import { useAuthOptional } from '../../lib/auth-context';
 // espacio directo en la barra superior y se sentía saturado en pantallas anchas
 // (spec 13). El modo `compact`, usado dentro del menú hamburguesa móvil de
 // AdminPageNav, no cambia — ahí no había ese problema.
-export default function AccountControls({ compact = false }: { compact?: boolean }) {
+// `menuPlacement="up"` — para cuando el control vive pegado al fondo de un contenedor alto
+// (el sidebar del panel nuevo, spec 21): el menú abriendo hacia abajo se salía del viewport
+// y hacía crecer la página (scroll no deseado al abrirlo). `AdminPageNav` (en la barra
+// superior) sigue usando el valor por defecto, 'down', sin cambios.
+export default function AccountControls({ compact = false, menuPlacement = 'down' }: { compact?: boolean; menuPlacement?: 'down' | 'up' }) {
   const auth = useAuthOptional();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -76,7 +80,9 @@ export default function AccountControls({ compact = false }: { compact?: boolean
       {menuOpen && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-64 bg-white border border-[rgba(0,0,0,0.1)] rounded-xl shadow-lg p-2 z-50"
+          className={`absolute right-0 w-64 bg-white border border-[rgba(0,0,0,0.1)] rounded-xl shadow-lg p-2 z-50 ${
+            menuPlacement === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'
+          }`}
         >
           <div className="flex items-center gap-2.5 px-2.5 py-2">
             <span className="w-9 h-9 rounded-full bg-[#0A0A0A] text-white text-[13px] font-extrabold flex items-center justify-center flex-shrink-0">

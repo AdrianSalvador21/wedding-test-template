@@ -208,7 +208,7 @@ function LoginContent() {
           {mode === 'signin' ? 'Entrar' : mode === 'signup' ? 'Crear cuenta' : 'Enviar enlace'}
         </AuthButton>
         {mode === 'signup' && (
-          <p className="m-0 text-xs leading-normal text-[#71717A] text-center">Te enviaremos un correo para verificar tu dirección antes de entrar.</p>
+          <p className="m-0 text-xs leading-normal text-[#71717A] text-center">Te enviaremos un correo para verificar tu dirección.</p>
         )}
       </form>
       {mode === 'reset' ? (

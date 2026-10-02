@@ -177,7 +177,7 @@ const pillToneClass: Record<string, string> = {
   // Spec 16 — insignia de tier: "Gratis" neutro, "Con plantilla" sólido (misma jerarquía
   // visual que ya usa el canvas de diseño del spec).
   free: 'text-[#3F3F46] bg-[#F4F4F5]',
-  template: 'text-white bg-[#111111]',
+  template: 'text-white bg-[#AE5730]',
 };
 
 export function AdminStatusPill({
@@ -203,30 +203,37 @@ export function AdminSidebarNavItem({
   label,
   active,
   complete,
+  collapsed = false,
   onClick,
 }: {
   icon: LucideIcon;
   label: string;
   active: boolean;
   complete: boolean;
+  collapsed?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      title={collapsed ? label : undefined}
       className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm text-left transition-colors ${
-        active ? 'bg-[#F4F4F5] text-[#0A0A0A] font-bold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'
-      }`}
+        collapsed ? 'justify-center' : ''
+      } ${active ? 'bg-[rgba(198,102,60,0.08)] text-[#AE5730] font-bold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'}`}
     >
       <Icon className="h-[18px] w-[18px] flex-shrink-0" />
-      <span className="flex-1">{label}</span>
-      {complete ? (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth={3}>
-          <path d="M20 6L9 17l-5-5" />
-        </svg>
-      ) : (
-        <span className="w-3.5 h-3.5 rounded-full border-[1.5px] border-[#D4D4D8] flex-shrink-0" />
+      {!collapsed && (
+        <>
+          <span className="flex-1">{label}</span>
+          {complete ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth={3}>
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          ) : (
+            <span className="w-3.5 h-3.5 rounded-full border-[1.5px] border-[#D4D4D8] flex-shrink-0" />
+          )}
+        </>
       )}
     </button>
   );
@@ -249,7 +256,7 @@ export function AdminSectionChip({
       onClick={onClick}
       className={`inline-flex items-center gap-1.5 flex-shrink-0 text-[13px] px-3.5 py-2 rounded-full border whitespace-nowrap transition-colors ${
         active
-          ? 'bg-[#111111] text-white border-[#111111] font-bold'
+          ? 'bg-[#AE5730] text-white border-[#AE5730] font-bold'
           : 'bg-[#FAFAFA] text-[#3F3F46] border-[rgba(0,0,0,0.1)] font-semibold'
       }`}
     >
@@ -333,7 +340,7 @@ export function AdminButton({
   className?: string;
 }) {
   const variantClass = {
-    solid: 'bg-[#111111] text-white border border-transparent hover:bg-black',
+    solid: 'bg-[#AE5730] text-white border border-transparent hover:bg-[#8F4524]',
     ghost: 'bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA]',
     dashed: 'bg-transparent text-[#3F3F46] border border-dashed border-[rgba(0,0,0,0.18)] hover:bg-[rgba(0,0,0,0.03)]',
   }[variant];

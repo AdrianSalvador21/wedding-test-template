@@ -35,9 +35,7 @@ const ownerEmailsOf = (data: FirebaseFirestore.DocumentData | undefined): string
 export async function POST(request: NextRequest) {
   const auth = await authenticate(request);
   if (!auth.ok) return auth.response;
-  if (!auth.user.emailVerified) {
-    return NextResponse.json({ error: 'email_not_verified' }, { status: 403 });
-  }
+  // La verificación de correo se deshabilitó a propósito (antes devolvía 403 aquí).
 
   try {
     const email = auth.user.email;

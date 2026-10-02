@@ -14,6 +14,7 @@ import {
 import { db } from '../lib/firebase';
 import { cleanUndefinedFields } from '../lib/firestore-utils';
 import { FirebaseGuest } from '../src/types/wedding';
+import { activityService } from './activityService';
 
 /**
  * Personas a sentar por invitación (spec 12): mismo criterio que
@@ -164,13 +165,15 @@ export class GuestService {
 
       const guestCollection = collection(db, this.GUESTS_COLLECTION);
       const docRef = await addDoc(guestCollection, cleanData);
-      
+
       // Generar el guestId después de crear el documento para usar el ID real
       const guestId = this.generateGuestId(guestData.name, docRef.id);
-      
+
       // Actualizar el documento con el guestId generado
       await updateDoc(docRef, { guestId });
-      
+
+      await activityService.log(guestData.weddingId, 'guest_added', guestData.name);
+
       return docRef.id;
     } catch (error) {
       console.error('Error creando invitado:', error);
@@ -185,13 +188,29 @@ export class GuestService {
     try {
       const now = new Date().toISOString();
       const guestDoc = doc(db, this.GUESTS_COLLECTION, guestId);
-      
+
       const cleanData = cleanUndefinedFields({
         ...guestData,
         updatedAt: now
       });
-      
+
       await updateDoc(guestDoc, cleanData);
+
+      // El RSVP público (RSVP.tsx y sus variantes) confirma/declina escribiendo
+      // `rsvpConfirmation` a través de este método genérico, no de
+      // `updateGuestRSVPStatus` — se registra la actividad aquí para cubrir ese
+      // flujo real, no solo el cambio manual desde el panel.
+      if (guestData.rsvpConfirmation) {
+        const freshDoc = await getDoc(guestDoc);
+        if (freshDoc.exists()) {
+          const freshData = freshDoc.data() as FirebaseGuest;
+          await activityService.log(
+            freshData.weddingId,
+            guestData.rsvpConfirmation.attending ? 'guest_confirmed' : 'guest_declined',
+            freshData.name
+          );
+        }
+      }
     } catch (error) {
       console.error('Error actualizando invitado:', error);
       throw new Error('No se pudo actualizar el invitado');
@@ -236,6 +255,14 @@ export class GuestService {
         rsvpStatus: status,
         updatedAt: new Date().toISOString()
       });
+
+      if (status !== 'pending') {
+        const freshDoc = await getDoc(guestDoc);
+        if (freshDoc.exists()) {
+          const freshData = freshDoc.data() as FirebaseGuest;
+          await activityService.log(freshData.weddingId, status === 'confirmed' ? 'guest_confirmed' : 'guest_declined', freshData.name);
+        }
+      }
     } catch (error) {
       console.error('Error actualizando el estado del invitado:', error);
       throw new Error('No se pudo actualizar el estado del invitado');
