@@ -48,8 +48,8 @@ export function AuthHead({ title, sub }: { title: string; sub: ReactNode }) {
 
 export function IconBadge({ icon: Icon }: { icon: typeof Mail }) {
   return (
-    <div className="w-[52px] h-[52px] rounded-[14px] bg-[#F4F4F5] flex items-center justify-center">
-      <Icon className="h-6 w-6 text-[#0A0A0A]" />
+    <div className="w-[52px] h-[52px] rounded-[14px] bg-[rgba(198,102,60,0.1)] flex items-center justify-center">
+      <Icon className="h-6 w-6 text-[#AE5730]" />
     </div>
   );
 }
@@ -141,7 +141,7 @@ export function AuthButton({
       disabled={disabled || loading}
       className={`w-full inline-flex items-center justify-center gap-2 h-[46px] px-5 rounded-lg text-sm font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
         variant === 'solid'
-          ? 'bg-[#111111] text-white border border-transparent hover:bg-black'
+          ? 'bg-[#AE5730] text-white border border-transparent hover:bg-[#8F4524]'
           : 'bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA]'
       }`}
     >
@@ -153,7 +153,7 @@ export function AuthButton({
 
 export function TextLink({ children, onClick }: { children: ReactNode; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className="text-[13px] font-bold text-[#0A0A0A] underline hover:text-[#3F3F46]">
+    <button type="button" onClick={onClick} className="text-[13px] font-bold text-[#AE5730] underline hover:text-[#8F4524]">
       {children}
     </button>
   );
@@ -309,7 +309,7 @@ export function NoAccessScreen() {
       <div className="flex flex-col gap-2.5">
         <a
           href={`/${locale}/admin`}
-          className="w-full inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-[#111111] text-white hover:bg-black text-sm font-bold transition-colors"
+          className="w-full inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-bold transition-colors"
         >
           Ir a mis invitaciones
         </a>

@@ -47,6 +47,12 @@ service cloud.firestore {
       allow write: if true;
     }
 
+    // Reglas para el feed de actividad reciente del Dashboard
+    match /activityLog/{entryId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
     // Reglas para configuración general del sistema
     match /config/{configId} {
       // Solo lectura pública de configuración

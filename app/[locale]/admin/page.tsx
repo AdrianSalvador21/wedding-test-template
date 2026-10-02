@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CalendarDays, LayoutGrid, Mail, Pencil, Plus, Search, Settings, Sparkles, Users } from 'lucide-react';
+import { ArrowRight, CalendarDays, Mail, Plus, Search, Settings, Sparkles } from 'lucide-react';
 import { manrope, displayFont, AdminStatusPill } from '../../../components/admin/ui';
 import { whatsappUrl } from '../../../lib/contact';
 import { track } from '../../../lib/analytics/client';
@@ -18,6 +18,19 @@ import { NewWeddingModal, OwnersModal, SettingsModal } from '../../../components
 import { FreeWeddingModal } from '../../../components/admin/FreeWeddingTools';
 import { useAuth, type LinkedWedding } from '../../../lib/auth-context';
 
+// Calculada en el cliente a partir de `wedding.date` (ya disponible en LinkedWedding) —
+// sin pedir ningún dato nuevo al servidor.
+function countdownLabel(dateIso: string): string | null {
+  if (!dateIso) return null;
+  const eventDate = new Date(dateIso);
+  if (Number.isNaN(eventDate.getTime())) return null;
+  const diffDays = Math.ceil((eventDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  if (diffDays > 0) return `${diffDays} ${diffDays === 1 ? 'día' : 'días'} para la boda`;
+  if (diffDays === 0) return 'Hoy es el gran día';
+  const daysAgo = Math.abs(diffDays);
+  return `Celebrada hace ${daysAgo} ${daysAgo === 1 ? 'día' : 'días'}`;
+}
+
 function WeddingCard({
   wedding,
   locale,
@@ -32,14 +45,16 @@ function WeddingCard({
   onSettings?: () => void;
 }) {
   const date = formatWeddingDate(wedding.date);
+  const countdown = countdownLabel(wedding.date);
   const owners = wedding.ownerEmails;
   // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
   const tier = wedding.tier ?? 'template';
-  const actionClass =
-    'inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg text-sm font-bold transition-colors border';
   return (
-    <div className={`bg-white border border-[rgba(0,0,0,0.08)] rounded-[14px] flex flex-col min-w-0 ${compact ? 'p-[18px] gap-3.5' : 'p-[22px] gap-[18px]'}`}>
-      <div className="flex flex-col gap-1.5 min-w-0">
+    <div
+      className={`bg-white border border-[rgba(0,0,0,0.08)] rounded-[18px] overflow-hidden flex flex-col min-w-0 shadow-[0_1px_2px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.04)]`}
+    >
+      <div className={`h-1 ${tier === 'free' ? 'bg-[#D4D4D8]' : 'bg-[#C6663C]'}`} />
+      <div className={`flex flex-col min-w-0 ${compact ? 'p-[18px] gap-3' : 'p-[22px] gap-3.5'}`}>
         <div className="flex items-start justify-between gap-2">
           <div className={`font-extrabold tracking-[-0.01em] text-[#0A0A0A] break-words ${compact ? 'text-[17px]' : 'text-xl'}`}>{wedding.title}</div>
           {onSettings && (
@@ -58,11 +73,20 @@ function WeddingCard({
         </AdminStatusPill>
         {date && (
           <div className="flex items-center gap-2 text-[13px] text-[#3F3F46]">
-            <CalendarDays className="h-3.5 w-3.5" />
+            <CalendarDays className="h-3.5 w-3.5 text-[#C6663C]" />
             {date}
           </div>
         )}
-        <div className="text-xs text-[#71717A] font-mono break-all">{wedding.id}</div>
+        {countdown && (
+          <span
+            className={`inline-flex w-fit items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full ${
+              countdown.startsWith('Celebrada') ? 'bg-[#F4F4F5] text-[#71717A]' : 'bg-[rgba(198,102,60,0.08)] text-[#AE5730]'
+            }`}
+          >
+            {countdown}
+          </span>
+        )}
+        <div className="text-xs text-[#9CA3AF] font-mono break-all">{wedding.id}</div>
         {onEditOwners && (
           <div className="flex items-center gap-2 text-xs text-[#71717A]">
             <Mail className="h-3.5 w-3.5" />
@@ -72,35 +96,28 @@ function WeddingCard({
             </button>
           </div>
         )}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {tier !== 'free' && (
-          <a href={`/${locale}/admin/wedding-editor/${wedding.id}`} className={`${actionClass} bg-[#111111] text-white border-transparent hover:bg-black`}>
-            <Pencil className="h-[15px] w-[15px]" />
-            Editor
+        <div className="border-t border-[rgba(0,0,0,0.06)] pt-3.5 flex flex-col gap-2.5">
+          <a
+            href={`/${locale}/admin/panel/${wedding.id}/dashboard`}
+            className="inline-flex items-center justify-center gap-2 h-11 px-4 rounded-lg text-sm font-bold transition-colors bg-[#AE5730] text-white hover:bg-[#8F4524]"
+          >
+            Abrir panel
+            <ArrowRight className="h-4 w-4" />
           </a>
-        )}
-        <a href={`/${locale}/admin/guests/${wedding.id}`} className={`${actionClass} bg-white text-[#0A0A0A] border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA]`}>
-          <Users className="h-[15px] w-[15px]" />
-          Invitados
-        </a>
-        <a href={`/${locale}/admin/tables/${wedding.id}`} className={`${actionClass} bg-white text-[#0A0A0A] border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA]`}>
-          <LayoutGrid className="h-[15px] w-[15px]" />
-          Mesas
-        </a>
+          {tier === 'free' && (
+            <a
+              href={whatsappUrl(`Hola! Quiero activar mi boda "${wedding.id}" con una invitación digital.`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => track('free_wedding_upgrade_cta_click', {})}
+              className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#AE5730]"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              Activa tu invitación digital
+            </a>
+          )}
+        </div>
       </div>
-      {tier === 'free' && (
-        <a
-          href={whatsappUrl(`Hola! Quiero activar mi boda "${wedding.id}" con una invitación digital.`)}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => track('free_wedding_upgrade_cta_click', {})}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0A0A0A] border-t border-[rgba(0,0,0,0.08)] pt-2.5 -mb-0.5"
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          Activa tu invitación digital
-        </a>
-      )}
     </div>
   );
 }
@@ -142,6 +159,8 @@ export default function AdminHomePage() {
 
   const refreshSilently = () => void auth.refresh({ silent: true });
   const empty = auth.weddings.length === 0;
+  const templateCount = auth.weddings.filter((w) => (w.tier ?? 'template') !== 'free').length;
+  const freeCount = auth.weddings.length - templateCount;
 
   return (
     <div className="admin-form min-h-screen bg-[#FAFAFA]" style={manrope}>
@@ -155,12 +174,32 @@ export default function AdminHomePage() {
       <div className="px-4 sm:px-10 py-8 sm:py-10">
         <div className="max-w-[1120px] mx-auto flex flex-col gap-7">
           <div className="flex flex-col gap-1.5">
+            {auth.isAdmin && (
+              <div className="text-[11px] font-extrabold tracking-[0.12em] text-[#AE5730] uppercase">Panel de operador</div>
+            )}
             <h1 className="m-0 text-[26px] sm:text-[30px] text-[#0A0A0A]" style={displayFont}>
               Mis invitaciones
             </h1>
-            <p className="m-0 text-sm text-[#3F3F46]">
+            <p className="m-0 text-sm text-[#3F3F46] mb-1">
               {auth.isAdmin ? 'Como administrador ves todas las invitaciones.' : 'Elige la invitación que quieres administrar.'}
             </p>
+            {auth.isAdmin && !empty && (
+              <div className="flex gap-2 flex-wrap">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#F4F4F5] text-[#3F3F46]">
+                  {auth.weddings.length} {auth.weddings.length === 1 ? 'invitación' : 'invitaciones'}
+                </span>
+                {templateCount > 0 && (
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[rgba(198,102,60,0.08)] text-[#AE5730]">
+                    {templateCount} con plantilla
+                  </span>
+                )}
+                {freeCount > 0 && (
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#F4F4F5] text-[#3F3F46]">
+                    {freeCount} {freeCount === 1 ? 'gratuita' : 'gratuitas'}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           {auth.isAdmin && !empty && (
@@ -186,7 +225,7 @@ export default function AdminHomePage() {
                 <button
                   type="button"
                   onClick={() => setShowNew(true)}
-                  className="inline-flex items-center gap-2 h-[46px] px-5 rounded-lg bg-[#111111] text-white hover:bg-black text-sm font-bold"
+                  className="inline-flex items-center gap-2 h-[46px] px-5 rounded-lg bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-bold"
                 >
                   <Plus className="h-4 w-4" />
                   Nueva invitación
@@ -201,7 +240,7 @@ export default function AdminHomePage() {
                 <button
                   type="button"
                   onClick={() => setShowNew(true)}
-                  className="inline-flex items-center gap-2 h-[46px] px-5 rounded-lg bg-[#111111] text-white hover:bg-black text-sm font-bold"
+                  className="inline-flex items-center gap-2 h-[46px] px-5 rounded-lg bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-bold"
                 >
                   <Plus className="h-4 w-4" />
                   Nueva invitación
@@ -215,7 +254,7 @@ export default function AdminHomePage() {
                 <button
                   type="button"
                   onClick={() => setShowNew(true)}
-                  className="inline-flex items-center gap-2 h-[46px] px-5 rounded-lg bg-[#111111] text-white hover:bg-black text-sm font-bold"
+                  className="inline-flex items-center gap-2 h-[46px] px-5 rounded-lg bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-bold"
                 >
                   <Plus className="h-4 w-4" />
                   Crear la primera invitación
@@ -229,7 +268,7 @@ export default function AdminHomePage() {
               <button
                 type="button"
                 onClick={() => setShowFreeNew(true)}
-                className="inline-flex items-center gap-2 h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-bold"
+                className="inline-flex items-center gap-2 h-[46px] px-5 rounded-lg bg-white text-[#AE5730] border border-[rgba(198,102,60,0.35)] hover:bg-[rgba(198,102,60,0.06)] text-sm font-bold"
               >
                 <Plus className="h-4 w-4" />
                 Crear otra boda gratis
