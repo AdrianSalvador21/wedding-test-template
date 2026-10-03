@@ -4,11 +4,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { Plus, Search, LayoutGrid, Map as MapIcon, Users, Settings } from 'lucide-react';
-import { guestService, resolveGuestAttendance, getSeatedGuestCount } from '../../../../../../services/guestService';
+import { resolveGuestAttendance, getSeatedGuestCount } from '../../../../../../services/guestService';
 import { tableService } from '../../../../../../services/tableService';
 import { venueFixtureService } from '../../../../../../services/venueFixtureService';
+import { seatService } from '../../../../../../services/seatService';
 import { track } from '../../../../../../lib/analytics/client';
-import { FirebaseTable, FirebaseVenueFixture } from '../../../../../../src/types/wedding';
+import { FirebaseTable, FirebaseTableSeat, FirebaseVenueFixture } from '../../../../../../src/types/wedding';
 import { usePanelData } from '../../../../../../components/admin/panel/PanelDataContext';
 import { AdminTopBar, AdminStatCard, AdminStatusPill, AdminButton, manrope, displayFont } from '../../../../../../components/admin/ui';
 import { FreeWeddingSettingsModal } from '../../../../../../components/admin/FreeWeddingTools';
@@ -27,14 +28,15 @@ const AdminTablesContent = () => {
 
   // weddingData/guests/tables ya los carga el layout compartido (PanelDataContext,
   // spec 21); esta página solo hace su propio fetch de `fixtures` (elementos del
-  // Plano), que el contexto no incluye.
-  const { weddingData, guests, setGuests, tables, setTables } = usePanelData();
+  // Plano) y `seats` (sub-asientos, spec 23), que el contexto no incluye.
+  const { weddingData, guests, tables, setTables } = usePanelData();
   const [error, setError] = useState<string | null>(null);
   // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
   const tier: 'free' | 'template' = weddingData?.tier === 'free' ? 'free' : 'template';
   const [showFreeSettings, setShowFreeSettings] = useState(false);
 
   const [fixtures, setFixtures] = useState<FirebaseVenueFixture[]>([]);
+  const [seats, setSeats] = useState<FirebaseTableSeat[]>([]);
 
   const [view, setView] = useState<'grid' | 'plano'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,8 +66,22 @@ const AdminTablesContent = () => {
     void loadFixtures();
   }, [weddingId]);
 
-  const occupancyByTable = useMemo(() => computeOccupancyByTable(guests), [guests]);
-  const unseatedCount = useMemo(() => getUnseatedCount(guests), [guests]);
+  // Spec 23 — genera de forma perezosa los sub-asientos faltantes de cada invitado
+  // (incluida la migración transparente desde su `tableId` anterior) en cuanto el
+  // contexto compartido entrega la lista de invitados.
+  useEffect(() => {
+    if (guests.length === 0) return;
+    let cancelled = false;
+    seatService.ensureWeddingSeats(guests).then((ensured) => {
+      if (!cancelled) setSeats(ensured);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [guests]);
+
+  const occupancyByTable = useMemo(() => computeOccupancyByTable(seats), [seats]);
+  const unseatedCount = useMemo(() => getUnseatedCount(seats), [seats]);
 
   // Spec 16 — cuenta también a los confirmados a mano (rsvpStatus), no solo por RSVP público.
   const confirmedPersons = useMemo(
@@ -92,13 +108,14 @@ const AdminTablesContent = () => {
       if (occupancyFilter === 'over' && state !== 'over') return false;
       if (!term) return true;
       if (t.name.toLowerCase().includes(term)) return true;
-      return guests.some((g) => g.tableId === t.id && g.name.toLowerCase().includes(term));
+      const seatedGuestIds = new Set(seats.filter((s) => s.tableId === t.id).map((s) => s.guestId));
+      return guests.some((g) => seatedGuestIds.has(g.id) && g.name.toLowerCase().includes(term));
     });
-  }, [tables, guests, occupancyByTable, occupancyFilter, searchTerm]);
+  }, [tables, guests, seats, occupancyByTable, occupancyFilter, searchTerm]);
 
-  const handleAssign = async (guestId: string, tableId: string | null) => {
-    await guestService.assignGuestToTable(guestId, tableId);
-    setGuests((prev) => prev.map((g) => (g.id === guestId ? { ...g, tableId } : g)));
+  const handleAssignSeat = async (seatId: string, tableId: string | null) => {
+    await seatService.assignSeatToTable(seatId, tableId);
+    setSeats((prev) => prev.map((s) => (s.id === seatId ? { ...s, tableId } : s)));
     track('guest_assigned_to_table', {});
   };
 
@@ -121,16 +138,16 @@ const AdminTablesContent = () => {
   const confirmDeleteTable = async () => {
     if (!deletingTable) return;
     await tableService.deleteTable(deletingTable.id, weddingId);
-    setGuests((prev) => prev.map((g) => (g.tableId === deletingTable.id ? { ...g, tableId: null } : g)));
+    setSeats((prev) => prev.map((s) => (s.tableId === deletingTable.id ? { ...s, tableId: null } : s)));
     setTables((prev) => prev.filter((t) => t.id !== deletingTable.id));
     track('table_deleted', {});
     if (panelTarget?.type === 'table' && panelTarget.table.id === deletingTable.id) setPanelTarget(null);
     setDeletingTable(null);
   };
 
-  const affectedGuestCount = useMemo(
-    () => (deletingTable ? guests.filter((g) => g.tableId === deletingTable.id).length : 0),
-    [deletingTable, guests]
+  const affectedPersonCount = useMemo(
+    () => (deletingTable ? seats.filter((s) => s.tableId === deletingTable.id).length : 0),
+    [deletingTable, seats]
   );
 
   // El panel se re-lee de los arrays vivos (guests/tables) para no quedar con datos viejos tras asignar.
@@ -308,13 +325,14 @@ const AdminTablesContent = () => {
             tables={tables}
             fixtures={fixtures}
             guests={guests}
+            seats={seats}
             occupancyByTable={occupancyByTable}
             onSelectTable={(table) => setPanelTarget({ type: 'table', table })}
             onTableUpdated={(updated) => setTables((prev) => prev.map((t) => (t.id === updated.id ? updated : t)))}
             onFixtureCreated={(fixture) => setFixtures((prev) => [...prev, fixture])}
             onFixtureUpdated={(updated) => setFixtures((prev) => prev.map((f) => (f.id === updated.id ? updated : f)))}
             onFixtureDeleted={(id) => setFixtures((prev) => prev.filter((f) => f.id !== id))}
-            onAssign={handleAssign}
+            onAssignSeat={handleAssignSeat}
           />
         )}
       </div>
@@ -326,8 +344,9 @@ const AdminTablesContent = () => {
             target={livePanelTarget}
             guests={guests}
             tables={tables}
+            seats={seats}
             occupancyByTable={occupancyByTable}
-            onAssign={handleAssign}
+            onAssignSeat={handleAssignSeat}
             onClose={() => setPanelTarget(null)}
             onEditTable={
               livePanelTarget.type === 'table'
@@ -356,7 +375,7 @@ const AdminTablesContent = () => {
       {deletingTable && (
         <DeleteTableConfirmModal
           table={deletingTable}
-          affectedGuestCount={affectedGuestCount}
+          affectedPersonCount={affectedPersonCount}
           onConfirm={confirmDeleteTable}
           onClose={() => setDeletingTable(null)}
         />

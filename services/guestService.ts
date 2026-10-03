@@ -15,6 +15,7 @@ import { db } from '../lib/firebase';
 import { cleanUndefinedFields } from '../lib/firestore-utils';
 import { FirebaseGuest } from '../src/types/wedding';
 import { activityService } from './activityService';
+import { seatService } from './seatService';
 
 /**
  * Personas a sentar por invitación (spec 12): mismo criterio que
@@ -35,7 +36,9 @@ export function getSeatedGuestCount(guest: FirebaseGuest): number {
  * cualquier invitado que todavía no confirma por su enlace— se usa `rsvpStatus`, que ahora
  * también se puede fijar a mano desde el panel (antes solo lo cambiaba el propio invitado).
  */
-export function resolveGuestAttendance(guest: FirebaseGuest): 'confirmed' | 'declined' | 'pending' {
+export type AttendanceStatus = 'confirmed' | 'declined' | 'pending';
+
+export function resolveGuestAttendance(guest: FirebaseGuest): AttendanceStatus {
   if (guest.rsvpConfirmation?.attending === true) return 'confirmed';
   if (guest.rsvpConfirmation?.attending === false) return 'declined';
   if (guest.rsvpStatus === 'confirmed') return 'confirmed';
@@ -200,15 +203,25 @@ export class GuestService {
       // `rsvpConfirmation` a través de este método genérico, no de
       // `updateGuestRSVPStatus` — se registra la actividad aquí para cubrir ese
       // flujo real, no solo el cambio manual desde el panel.
-      if (guestData.rsvpConfirmation) {
+      //
+      // Spec 23 — un cambio en `guestCount` o `rsvpConfirmation` puede mover cuántas
+      // personas hay que sentar; se reconcilian los sub-asientos aquí (único punto de
+      // entrada real de ambos flujos) para liberar el sobrante si el conteo bajó. Es
+      // una operación barata (no hace nada si no hay sub-asientos de más).
+      if (guestData.rsvpConfirmation || guestData.guestCount !== undefined) {
         const freshDoc = await getDoc(guestDoc);
         if (freshDoc.exists()) {
-          const freshData = freshDoc.data() as FirebaseGuest;
-          await activityService.log(
-            freshData.weddingId,
-            guestData.rsvpConfirmation.attending ? 'guest_confirmed' : 'guest_declined',
-            freshData.name
-          );
+          const freshData = { id: freshDoc.id, ...freshDoc.data() } as FirebaseGuest;
+
+          if (guestData.rsvpConfirmation) {
+            await activityService.log(
+              freshData.weddingId,
+              guestData.rsvpConfirmation.attending ? 'guest_confirmed' : 'guest_declined',
+              freshData.name
+            );
+          }
+
+          await seatService.reconcileGuestSeats(freshData);
         }
       }
     } catch (error) {

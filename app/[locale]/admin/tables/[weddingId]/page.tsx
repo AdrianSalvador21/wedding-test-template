@@ -9,9 +9,10 @@ import { db } from '../../../../../lib/firebase';
 import { guestService, resolveGuestAttendance, getSeatedGuestCount } from '../../../../../services/guestService';
 import { tableService } from '../../../../../services/tableService';
 import { venueFixtureService } from '../../../../../services/venueFixtureService';
+import { seatService } from '../../../../../services/seatService';
 import { track } from '../../../../../lib/analytics/client';
 import { isValidWeddingId } from '../../../../../lib/wedding-defaults';
-import { FirebaseGuest, FirebaseTable, FirebaseVenueFixture } from '../../../../../src/types/wedding';
+import { FirebaseGuest, FirebaseTable, FirebaseTableSeat, FirebaseVenueFixture } from '../../../../../src/types/wedding';
 import WeddingNotFound from '../../../../../components/WeddingNotFound';
 import AuthGuard from '../../../../../components/admin/AuthGuard';
 import { AdminTopBar, AdminPageNav, AdminStatCard, AdminStatusPill, AdminButton, manrope, displayFont } from '../../../../../components/admin/ui';
@@ -40,6 +41,7 @@ const AdminTablesContent = () => {
   const [guests, setGuests] = useState<FirebaseGuest[]>([]);
   const [tables, setTables] = useState<FirebaseTable[]>([]);
   const [fixtures, setFixtures] = useState<FirebaseVenueFixture[]>([]);
+  const [seats, setSeats] = useState<FirebaseTableSeat[]>([]);
 
   const [view, setView] = useState<'grid' | 'plano'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,10 +86,14 @@ const AdminTablesContent = () => {
         // Toda boda debe arrancar con Escenario y Pista de baile ya colocados en el Plano;
         // se crean solo si todavía no existen (no se duplican en cargas siguientes).
         const fixturesWithDefaults = await venueFixtureService.ensureDefaultFixtures(weddingId, fetchedFixtures);
+        // Spec 23 — genera de forma perezosa los sub-asientos faltantes de cada invitado
+        // (incluida la migración transparente desde su `tableId` anterior, si lo tenía).
+        const ensuredSeats = await seatService.ensureWeddingSeats(fetchedGuests);
 
         setGuests(fetchedGuests);
         setTables(fetchedTables);
         setFixtures(fixturesWithDefaults);
+        setSeats(ensuredSeats);
       } catch (err) {
         console.error('Error cargando mesas:', err);
         setError('Error al cargar las mesas. Intenta de nuevo.');
@@ -99,8 +105,8 @@ const AdminTablesContent = () => {
     load();
   }, [weddingId]);
 
-  const occupancyByTable = useMemo(() => computeOccupancyByTable(guests), [guests]);
-  const unseatedCount = useMemo(() => getUnseatedCount(guests), [guests]);
+  const occupancyByTable = useMemo(() => computeOccupancyByTable(seats), [seats]);
+  const unseatedCount = useMemo(() => getUnseatedCount(seats), [seats]);
 
   // Spec 16 — cuenta también a los confirmados a mano (rsvpStatus), no solo por RSVP público.
   const confirmedPersons = useMemo(
@@ -127,13 +133,14 @@ const AdminTablesContent = () => {
       if (occupancyFilter === 'over' && state !== 'over') return false;
       if (!term) return true;
       if (t.name.toLowerCase().includes(term)) return true;
-      return guests.some((g) => g.tableId === t.id && g.name.toLowerCase().includes(term));
+      const seatedGuestIds = new Set(seats.filter((s) => s.tableId === t.id).map((s) => s.guestId));
+      return guests.some((g) => seatedGuestIds.has(g.id) && g.name.toLowerCase().includes(term));
     });
-  }, [tables, guests, occupancyByTable, occupancyFilter, searchTerm]);
+  }, [tables, guests, seats, occupancyByTable, occupancyFilter, searchTerm]);
 
-  const handleAssign = async (guestId: string, tableId: string | null) => {
-    await guestService.assignGuestToTable(guestId, tableId);
-    setGuests((prev) => prev.map((g) => (g.id === guestId ? { ...g, tableId } : g)));
+  const handleAssignSeat = async (seatId: string, tableId: string | null) => {
+    await seatService.assignSeatToTable(seatId, tableId);
+    setSeats((prev) => prev.map((s) => (s.id === seatId ? { ...s, tableId } : s)));
     track('guest_assigned_to_table', {});
   };
 
@@ -156,16 +163,16 @@ const AdminTablesContent = () => {
   const confirmDeleteTable = async () => {
     if (!deletingTable) return;
     await tableService.deleteTable(deletingTable.id, weddingId);
-    setGuests((prev) => prev.map((g) => (g.tableId === deletingTable.id ? { ...g, tableId: null } : g)));
+    setSeats((prev) => prev.map((s) => (s.tableId === deletingTable.id ? { ...s, tableId: null } : s)));
     setTables((prev) => prev.filter((t) => t.id !== deletingTable.id));
     track('table_deleted', {});
     if (panelTarget?.type === 'table' && panelTarget.table.id === deletingTable.id) setPanelTarget(null);
     setDeletingTable(null);
   };
 
-  const affectedGuestCount = useMemo(
-    () => (deletingTable ? guests.filter((g) => g.tableId === deletingTable.id).length : 0),
-    [deletingTable, guests]
+  const affectedPersonCount = useMemo(
+    () => (deletingTable ? seats.filter((s) => s.tableId === deletingTable.id).length : 0),
+    [deletingTable, seats]
   );
 
   // El panel se re-lee de los arrays vivos (guests/tables) para no quedar con datos viejos tras asignar.
@@ -365,13 +372,14 @@ const AdminTablesContent = () => {
             tables={tables}
             fixtures={fixtures}
             guests={guests}
+            seats={seats}
             occupancyByTable={occupancyByTable}
             onSelectTable={(table) => setPanelTarget({ type: 'table', table })}
             onTableUpdated={(updated) => setTables((prev) => prev.map((t) => (t.id === updated.id ? updated : t)))}
             onFixtureCreated={(fixture) => setFixtures((prev) => [...prev, fixture])}
             onFixtureUpdated={(updated) => setFixtures((prev) => prev.map((f) => (f.id === updated.id ? updated : f)))}
             onFixtureDeleted={(id) => setFixtures((prev) => prev.filter((f) => f.id !== id))}
-            onAssign={handleAssign}
+            onAssignSeat={handleAssignSeat}
           />
         )}
       </div>
@@ -383,8 +391,9 @@ const AdminTablesContent = () => {
             target={livePanelTarget}
             guests={guests}
             tables={tables}
+            seats={seats}
             occupancyByTable={occupancyByTable}
-            onAssign={handleAssign}
+            onAssignSeat={handleAssignSeat}
             onClose={() => setPanelTarget(null)}
             onEditTable={
               livePanelTarget.type === 'table'
@@ -413,7 +422,7 @@ const AdminTablesContent = () => {
       {deletingTable && (
         <DeleteTableConfirmModal
           table={deletingTable}
-          affectedGuestCount={affectedGuestCount}
+          affectedPersonCount={affectedPersonCount}
           onConfirm={confirmDeleteTable}
           onClose={() => setDeletingTable(null)}
         />

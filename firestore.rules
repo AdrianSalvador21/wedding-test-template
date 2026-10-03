@@ -47,6 +47,12 @@ service cloud.firestore {
       allow write: if true;
     }
 
+    // Reglas para asientos individuales por invitado/acompañante (spec 23)
+    match /tableSeats/{seatId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
     // Reglas para el feed de actividad reciente del Dashboard
     match /activityLog/{entryId} {
       allow read: if true;

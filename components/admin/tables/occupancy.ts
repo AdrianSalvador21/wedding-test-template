@@ -1,22 +1,23 @@
 // Utilidades de ocupación de mesas compartidas por la Cuadrícula y el Plano (spec 12).
-import { FirebaseGuest } from '../../../src/types/wedding';
-import { getSeatedGuestCount } from '../../../services/guestService';
+// Spec 23: la ocupación ahora cuenta sub-asientos individuales (FirebaseTableSeat), no
+// invitaciones completas — 1 sub-asiento ocupado = 1 lugar, sin importar de qué
+// invitación venga ni si el resto de su grupo está en otra mesa.
+import { FirebaseTableSeat } from '../../../src/types/wedding';
 
 export type TableOccupancyState = 'empty' | 'space' | 'full' | 'over';
 
-/** Mapa tableId -> personas sentadas (usa el mismo criterio que guestService.getSeatedGuestCount). */
-export function computeOccupancyByTable(guests: FirebaseGuest[]): Map<string, number> {
+/** Mapa tableId -> personas sentadas (un sub-asiento = una persona). */
+export function computeOccupancyByTable(seats: FirebaseTableSeat[]): Map<string, number> {
   const map = new Map<string, number>();
-  guests.forEach((guest) => {
-    if (!guest.tableId) return;
-    const count = getSeatedGuestCount(guest);
-    map.set(guest.tableId, (map.get(guest.tableId) || 0) + count);
+  seats.forEach((seat) => {
+    if (!seat.tableId) return;
+    map.set(seat.tableId, (map.get(seat.tableId) || 0) + 1);
   });
   return map;
 }
 
-export function getUnseatedCount(guests: FirebaseGuest[]): number {
-  return guests.reduce((sum, g) => (g.tableId ? sum : sum + getSeatedGuestCount(g)), 0);
+export function getUnseatedCount(seats: FirebaseTableSeat[]): number {
+  return seats.reduce((sum, seat) => (seat.tableId ? sum : sum + 1), 0);
 }
 
 /** Una mesa solo queda "excedida" reduciendo su capacidad después de asignar gente (spec 12, Decisiones). */

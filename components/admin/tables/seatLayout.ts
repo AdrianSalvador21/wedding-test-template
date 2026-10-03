@@ -24,17 +24,20 @@ export interface SeatPosition {
   y: number;
 }
 
+// Spec 23 — un elemento por SUB-ASIENTO individual ya asignado a esta mesa (antes era
+// uno por invitación completa). Los de una misma invitación quedan en puntos
+// consecutivos del perímetro siempre que el llamador los pase agrupados (ver
+// PlanoCanvas), pero cada uno se arrastra/reasigna por separado.
 export interface PartyInput {
-  id: string;
-  name: string;
-  seats: number; // getSeatedGuestCount(guest) — cuántas personas de esa invitación
+  seatId: string; // id del FirebaseTableSeat — identidad para arrastrar/reasignar
+  guestId: string; // invitación dueña de este sub-asiento
+  name: string; // nombre a mostrar de ESTA persona (getSeatDisplayName)
 }
 
 export interface SeatIcon {
-  guestId: string; // invitación a la que pertenece esta persona (para drag/reasignación)
+  seatId: string;
+  guestId: string;
   guestName: string;
-  seatIndex: number; // posición de esta persona dentro de su invitación (0-based)
-  totalSeats: number; // tamaño de esa invitación
   x: number; // offset respecto al centro de la mesa
   y: number;
 }
@@ -88,7 +91,7 @@ export function computePartyLayout({
   capacity,
   maxSeats = DEFAULT_MAX_SEATS,
 }: PartyLayoutInput): PartyLayoutResult {
-  const totalRequested = parties.reduce((sum, p) => sum + p.seats, 0);
+  const totalRequested = parties.length;
   // Slots fijos del perímetro: uno por asiento de la mesa (no por persona ocupada), para
   // que la gente se acomode en asientos consecutivos en vez de repartirse por todo el
   // círculo cuando la mesa está poco ocupada.
@@ -120,19 +123,16 @@ export function computePartyLayout({
   }
 
   const seats: SeatIcon[] = [];
-  outer: for (const party of parties) {
-    for (let seatIndex = 0; seatIndex < party.seats; seatIndex++) {
-      if (seats.length >= occupiedSlots) break outer;
-      const anchor = anchors[seats.length];
-      seats.push({
-        guestId: party.id,
-        guestName: party.name,
-        seatIndex,
-        totalSeats: party.seats,
-        x: anchor.x,
-        y: anchor.y,
-      });
-    }
+  for (const party of parties) {
+    if (seats.length >= occupiedSlots) break;
+    const anchor = anchors[seats.length];
+    seats.push({
+      seatId: party.seatId,
+      guestId: party.guestId,
+      guestName: party.name,
+      x: anchor.x,
+      y: anchor.y,
+    });
   }
 
   return {
