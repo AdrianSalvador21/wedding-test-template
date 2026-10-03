@@ -6,12 +6,12 @@ import { displayFont, manrope } from '../../admin/ui';
 
 export default function DeleteTableConfirmModal({
   table,
-  affectedGuestCount,
+  affectedPersonCount,
   onConfirm,
   onClose,
 }: {
   table: FirebaseTable;
-  affectedGuestCount: number;
+  affectedPersonCount: number;
   onConfirm: () => Promise<void>;
   onClose: () => void;
 }) {
@@ -36,9 +36,9 @@ export default function DeleteTableConfirmModal({
             ¿Eliminar &ldquo;{table.name}&rdquo;?
           </h3>
           <p className="text-[14px] text-[#3F3F46] mb-6">
-            {affectedGuestCount > 0
-              ? `${affectedGuestCount} ${affectedGuestCount === 1 ? 'invitado volverá' : 'invitados volverán'} a "Sin mesa". Esta acción no se puede deshacer.`
-              : 'Esta mesa no tiene invitados asignados. Esta acción no se puede deshacer.'}
+            {affectedPersonCount > 0
+              ? `${affectedPersonCount} ${affectedPersonCount === 1 ? 'persona volverá' : 'personas volverán'} a "Sin mesa". Esta acción no se puede deshacer.`
+              : 'Esta mesa no tiene personas asignadas. Esta acción no se puede deshacer.'}
           </p>
           <div className="flex justify-end gap-2.5">
             <button

@@ -16,14 +16,16 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronUp, Plus, Search } from 'lucide-react';
-import { FirebaseGuest, FirebaseTable, FirebaseVenueFixture } from '../../../src/types/wedding';
+import { FirebaseGuest, FirebaseTable, FirebaseTableSeat, FirebaseVenueFixture } from '../../../src/types/wedding';
 import { tableService } from '../../../services/tableService';
 import { venueFixtureService } from '../../../services/venueFixtureService';
-import { getSeatedGuestCount } from '../../../services/guestService';
+import { getSeatDisplayName } from '../../../services/seatService';
+import { resolveGuestAttendance } from '../../../services/guestService';
 import { track } from '../../../lib/analytics/client';
 import TableNode, { SHAPE_GEOMETRY, type TableNodeData } from './nodes/TableNode';
 import FixtureNode, { type FixtureNodeData } from './nodes/FixtureNode';
 import FixtureFormModal, { type FixtureFormValues } from './FixtureFormModal';
+import { Avatar, StatusPill } from './PersonBadges';
 import type { PartyInput } from './seatLayout';
 import styles from './plano-overrides.module.css';
 
@@ -33,22 +35,24 @@ const tableNodeId = (id: string) => `table:${id}`;
 const fixtureNodeId = (id: string) => `fixture:${id}`;
 
 // Spec 17 — mismo canal que ya usaba la bandeja "Sin colocar" (mesas/objetos), con un
-// tercer `kind: 'guest'` para arrastrar invitados directo sobre una mesa del lienzo.
-type PlanoDragPayload = { kind: 'table' | 'fixture'; id: string } | { kind: 'guest'; id: string };
-type ArmedItem = { kind: 'table' | 'fixture' | 'guest'; id: string };
+// tercer `kind: 'seat'` (spec 23: un sub-asiento individual, no toda la invitación) para
+// arrastrar personas directo sobre una mesa del lienzo.
+type PlanoDragPayload = { kind: 'table' | 'fixture'; id: string } | { kind: 'seat'; id: string };
+type ArmedItem = { kind: 'table' | 'fixture' | 'seat'; id: string };
 
 interface Props {
   weddingId: string;
   tables: FirebaseTable[];
   fixtures: FirebaseVenueFixture[];
   guests: FirebaseGuest[];
+  seats: FirebaseTableSeat[];
   occupancyByTable: Map<string, number>;
   onSelectTable: (table: FirebaseTable) => void;
   onTableUpdated: (table: FirebaseTable) => void;
   onFixtureCreated: (fixture: FirebaseVenueFixture) => void;
   onFixtureUpdated: (fixture: FirebaseVenueFixture) => void;
   onFixtureDeleted: (fixtureId: string) => void;
-  onAssign: (guestId: string, tableId: string | null) => Promise<void>;
+  onAssignSeat: (seatId: string, tableId: string | null) => Promise<void>;
 }
 
 function PlanoCanvasInner({
@@ -56,13 +60,14 @@ function PlanoCanvasInner({
   tables,
   fixtures,
   guests,
+  seats,
   occupancyByTable,
   onSelectTable,
   onTableUpdated,
   onFixtureCreated,
   onFixtureUpdated,
   onFixtureDeleted,
-  onAssign,
+  onAssignSeat,
 }: Props) {
   const [nodes, setNodes, onNodesChangeBase] = useNodesState([]);
   const [armedNodeId, setArmedNodeId] = useState<string | null>(null);
@@ -80,6 +85,9 @@ function PlanoCanvasInner({
   // Spec 17 — misma idea para la bandeja nueva "Invitados sin mesa" (columna separada).
   const [guestTrayCollapsed, setGuestTrayCollapsed] = useState(false);
   const [guestSearch, setGuestSearch] = useState('');
+  // Spec 23 — filtros "Sin asignar"/"Asignados"/"Todos" de la bandeja de personas (mismo
+  // patrón que el panel de mesa).
+  const [guestTrayFilter, setGuestTrayFilter] = useState<'unassigned' | 'assigned' | 'all'>('unassigned');
   // Mesa bajo el puntero mientras se arrastra un invitado, y si ahí caben sus personas —
   // alimenta el resaltado verde/rojo del nodo (TableNodeData.isDropTarget/isDropRejected).
   const [hoverTableId, setHoverTableId] = useState<string | null>(null);
@@ -106,15 +114,16 @@ function PlanoCanvasInner({
   const nodesRef = useRef<Node[]>([]);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const guestsRef = useRef<FirebaseGuest[]>(guests);
+  const seatsRef = useRef<FirebaseTableSeat[]>(seats);
   const occupancyRef = useRef<Map<string, number>>(occupancyByTable);
   const tablesRef = useRef<FirebaseTable[]>(tables);
-  // Qué invitado se está arrastrando ahora mismo (si lo hay): se fija al iniciar el
-  // arrastre (bandeja o un ícono ya colocado) y se limpia al soltar/cancelar. El
-  // DragEvent nativo no permite leer `dataTransfer` durante `dragover` por seguridad del
-  // navegador, así que esta es la única forma de saber, mientras se arrastra, si lo que
-  // se mueve es un invitado (para resaltar mesas) o una mesa/objeto (comportamiento igual
-  // que antes, sin resaltado).
-  const draggingGuestIdRef = useRef<string | null>(null);
+  // Qué sub-asiento se está arrastrando ahora mismo (si lo hay, spec 23): se fija al
+  // iniciar el arrastre (bandeja o un ícono ya colocado) y se limpia al soltar/cancelar.
+  // El DragEvent nativo no permite leer `dataTransfer` durante `dragover` por seguridad
+  // del navegador, así que esta es la única forma de saber, mientras se arrastra, si lo
+  // que se mueve es una persona (para resaltar mesas) o una mesa/objeto (comportamiento
+  // igual que antes, sin resaltado).
+  const draggingSeatIdRef = useRef<string | null>(null);
   const touchStateRef = useRef<{
     nodeId: string;
     startX: number;
@@ -132,6 +141,9 @@ function PlanoCanvasInner({
     guestsRef.current = guests;
   }, [guests]);
   useEffect(() => {
+    seatsRef.current = seats;
+  }, [seats]);
+  useEffect(() => {
     occupancyRef.current = occupancyByTable;
   }, [occupancyByTable]);
   useEffect(() => {
@@ -148,9 +160,9 @@ function PlanoCanvasInner({
         ? tables.some((t) => t.id === armedTrayItem.id && (t.posX == null || t.posY == null))
         : armedTrayItem.kind === 'fixture'
           ? fixtures.some((f) => f.id === armedTrayItem.id && (f.posX == null || f.posY == null))
-          : guests.some((g) => g.id === armedTrayItem.id && !g.tableId);
+          : seats.some((s) => s.id === armedTrayItem.id && !s.tableId);
     if (!stillPending) setArmedTrayItem(null);
-  }, [armedTrayItem, tables, fixtures, guests]);
+  }, [armedTrayItem, tables, fixtures, seats]);
 
   // Al cambiar entre bandeja lateral (escritorio) y bandeja apilada arriba (móvil) el
   // lienzo cambia de tamaño; sin volver a "ajustar a pantalla" las mesas ya colocadas
@@ -224,25 +236,23 @@ function PlanoCanvasInner({
     []
   );
 
-  // Spec 17 — asigna (o reasigna) un invitado a una mesa desde el lienzo, con el mismo
-  // criterio de capacidad que ya usa TableDetailPanel: se bloquea si sus personas no caben,
-  // nunca si la mesa ya estaba excedida por otra razón (reducción de capacidad, spec 12).
-  const handleAssignDrop = useCallback(
-    async (guestId: string, table: FirebaseTable) => {
-      const guest = guestsRef.current.find((g) => g.id === guestId);
-      if (!guest || guest.tableId === table.id) return;
+  // Spec 23 — asigna (o reasigna) UN sub-asiento a una mesa desde el lienzo: cada persona
+  // solo necesita 1 lugar libre, sin importar cuántos acompañantes traiga su invitación.
+  const handleAssignSeatDrop = useCallback(
+    async (seatId: string, table: FirebaseTable) => {
+      const seat = seatsRef.current.find((s) => s.id === seatId);
+      if (!seat || seat.tableId === table.id) return;
       const occupied = occupancyRef.current.get(table.id) || 0;
-      const seats = getSeatedGuestCount(guest);
-      if (occupied + seats > table.capacity) {
+      if (occupied + 1 > table.capacity) {
         const id = tableNodeId(table.id);
         setRejectedTableId(id);
         window.setTimeout(() => setRejectedTableId((cur) => (cur === id ? null : cur)), 900);
         return;
       }
-      await onAssign(guestId, table.id);
+      await onAssignSeat(seatId, table.id);
       track('guest_assigned_to_table', {});
     },
-    [onAssign]
+    [onAssignSeat]
   );
 
   // Gesto de arrastre en pantallas táctiles (spec 12, ajustado tras spec 14): un
@@ -312,8 +322,9 @@ function PlanoCanvasInner({
 
   const isTouchDevice = isCoarsePointerRef.current;
 
-  // Spec 17 — se arma con un dataTransfer 'guest' (bandeja o ícono ya colocado) en
-  // desktop, y hereda el mismo mecanismo de armado táctil en touch.
+  // Spec 23 — se arma con un dataTransfer 'seat' (bandeja o ícono ya colocado) en
+  // desktop, y hereda el mismo mecanismo de armado táctil en touch. Mueve solo ESE
+  // sub-asiento, no al resto de su invitación.
   //
   // Contorno de color + una leve inclinación en la tarjeta mientras se arrastra: el
   // navegador solo deja fijar la imagen "fantasma" que sigue al cursor UNA vez, al llamar
@@ -325,10 +336,10 @@ function PlanoCanvasInner({
   // queda en su lugar (bandeja o mesa) no se ve afectada, solo la imagen que viaja con el
   // cursor. El resaltado verde/rojo de la mesa al pasar por encima (isDropTarget /
   // isDropRejected en TableNode) ya cubre el feedback dinámico de "está sobre una mesa".
-  const onGuestDragStart = useCallback(
-    (guestId: string) => (e: React.DragEvent) => {
-      e.dataTransfer.setData('application/x-invyta-plano-item', JSON.stringify({ kind: 'guest', id: guestId }));
-      draggingGuestIdRef.current = guestId;
+  const onSeatDragStart = useCallback(
+    (seatId: string) => (e: React.DragEvent) => {
+      e.dataTransfer.setData('application/x-invyta-plano-item', JSON.stringify({ kind: 'seat', id: seatId }));
+      draggingSeatIdRef.current = seatId;
 
       const el = e.currentTarget as HTMLElement;
       const prevTransform = el.style.transform;
@@ -351,15 +362,15 @@ function PlanoCanvasInner({
     },
     []
   );
-  const onGuestTap = useCallback(
-    (guestId: string) => () => {
-      setArmedTrayItem((cur) => (cur?.kind === 'guest' && cur.id === guestId ? null : { kind: 'guest', id: guestId }));
+  const onSeatTap = useCallback(
+    (seatId: string) => () => {
+      setArmedTrayItem((cur) => (cur?.kind === 'seat' && cur.id === seatId ? null : { kind: 'seat', id: seatId }));
     },
     []
   );
-  const guestDragHandlers = useMemo(
-    () => ({ isTouchDevice, onGuestDragStart, onGuestTap }),
-    [isTouchDevice, onGuestDragStart, onGuestTap]
+  const seatDragHandlers = useMemo(
+    () => ({ isTouchDevice, onSeatDragStart, onSeatTap }),
+    [isTouchDevice, onSeatDragStart, onSeatTap]
   );
 
   // Reconstruye los nodos cuando cambian los datos (mesas, objetos, ocupación, invitados,
@@ -369,13 +380,22 @@ function PlanoCanvasInner({
     const draggableByMouse = !isCoarsePointerRef.current;
     const nextNodes: Node[] = [];
 
+    const guestsById = new Map(guests.map((g) => [g.id, g] as const));
+    // Spec 23 — agrupado por mesa y, dentro de ella, por invitación (en el mismo orden en
+    // que llegan los sub-asientos de cada invitado), para que las personas de un mismo
+    // grupo sigan cayendo en puntos consecutivos del perímetro aunque ya no estén
+    // obligadas a compartir mesa.
     const partiesByTable = new Map<string, PartyInput[]>();
-    guests.forEach((guest) => {
-      if (!guest.tableId) return;
-      const list = partiesByTable.get(guest.tableId) || [];
-      list.push({ id: guest.id, name: guest.name, seats: getSeatedGuestCount(guest) });
-      partiesByTable.set(guest.tableId, list);
-    });
+    [...seats]
+      .sort((a, b) => (a.guestId === b.guestId ? a.seatIndex - b.seatIndex : a.guestId.localeCompare(b.guestId)))
+      .forEach((seat) => {
+        if (!seat.tableId) return;
+        const guest = guestsById.get(seat.guestId);
+        if (!guest) return;
+        const list = partiesByTable.get(seat.tableId) || [];
+        list.push({ seatId: seat.id, guestId: seat.guestId, name: getSeatDisplayName(guest, seat.seatIndex) });
+        partiesByTable.set(seat.tableId, list);
+      });
 
     tables.forEach((table) => {
       if (table.posX == null || table.posY == null) return;
@@ -388,7 +408,7 @@ function PlanoCanvasInner({
         isDropTarget: hoverTableId === id && hoverValid,
         isDropRejected: (hoverTableId === id && !hoverValid) || rejectedTableId === id,
         touchHandlers: makeTouchHandlers(id),
-        guestDragHandlers,
+        seatDragHandlers,
       };
       nextNodes.push({
         id,
@@ -434,27 +454,41 @@ function PlanoCanvasInner({
 
     setNodes(nextNodes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tables, fixtures, guests, occupancyByTable, armedNodeId, selectedFixtureId, hoverTableId, hoverValid, rejectedTableId, makeTouchHandlers, guestDragHandlers]);
+  }, [tables, fixtures, guests, seats, occupancyByTable, armedNodeId, selectedFixtureId, hoverTableId, hoverValid, rejectedTableId, makeTouchHandlers, seatDragHandlers]);
 
   const unplacedTables = useMemo(() => tables.filter((t) => t.posX == null || t.posY == null), [tables]);
   const unplacedFixtures = useMemo(() => fixtures.filter((f) => f.posX == null || f.posY == null), [fixtures]);
-  const unassignedGuests = useMemo(() => guests.filter((g) => !g.tableId), [guests]);
-  const filteredUnassignedGuests = useMemo(() => {
+  // Spec 23 — "Sin mesa" ahora es por persona: cada sub-asiento sin tableId es su propio
+  // chip arrastrable, con el nombre que le corresponde (titular o acompañante). Conteos
+  // de los 3 filtros siempre a nivel de toda la boda, igual que en el panel de mesa.
+  const unassignedSeats = useMemo(() => seats.filter((s) => !s.tableId), [seats]);
+  const assignedSeats = useMemo(() => seats.filter((s) => s.tableId), [seats]);
+  const guestTrayCounts = {
+    unassigned: unassignedSeats.length,
+    assigned: assignedSeats.length,
+    all: seats.length,
+  };
+  const guestTraySeats =
+    guestTrayFilter === 'unassigned' ? unassignedSeats : guestTrayFilter === 'assigned' ? assignedSeats : seats;
+  const filteredGuestTraySeats = useMemo(() => {
     const term = guestSearch.trim().toLowerCase();
-    if (!term) return unassignedGuests;
-    return unassignedGuests.filter((g) => g.name.toLowerCase().includes(term));
-  }, [unassignedGuests, guestSearch]);
+    if (!term) return guestTraySeats;
+    return guestTraySeats.filter((s) => {
+      const guest = guests.find((g) => g.id === s.guestId);
+      return guest ? getSeatDisplayName(guest, s.seatIndex).toLowerCase().includes(term) : false;
+    });
+  }, [guestTraySeats, guestSearch, guests]);
 
   const handleNodeDragStop: NodeDragHandler = (_event, node) => {
     persistNodePosition(node.id, node.position.x, node.position.y);
   };
 
   const handleNodeClick = (_event: React.MouseEvent, node: Node) => {
-    // Con un invitado armado (touch), tocar una mesa lo asigna ahí en vez de abrir el panel.
-    if (armedTrayItem?.kind === 'guest' && node.type === 'table') {
+    // Con una persona armada (touch), tocar una mesa la asigna ahí en vez de abrir el panel.
+    if (armedTrayItem?.kind === 'seat' && node.type === 'table') {
       const id = node.id.slice('table:'.length);
       const table = tables.find((t) => t.id === id);
-      if (table) handleAssignDrop(armedTrayItem.id, table);
+      if (table) handleAssignSeatDrop(armedTrayItem.id, table);
       setArmedTrayItem(null);
       return;
     }
@@ -472,7 +506,7 @@ function PlanoCanvasInner({
   };
 
   const clearDragState = () => {
-    draggingGuestIdRef.current = null;
+    draggingSeatIdRef.current = null;
     setHoverTableId(null);
   };
 
@@ -492,38 +526,37 @@ function PlanoCanvasInner({
       return;
     }
     const table = findTableUnderPoint(flowPos);
-    if (table) handleAssignDrop(item.id, table);
+    if (table) handleAssignSeatDrop(item.id, table);
   };
 
-  // Mientras se arrastra un invitado (bandeja o un ícono ya colocado), resalta en vivo la
-  // mesa bajo el puntero: verde si caben sus personas, rojo si no. El DragEvent nativo no
-  // deja leer `dataTransfer.getData` durante `dragover` (solo en `drop`), así que se usa
-  // `draggingGuestIdRef` — fijado en el propio `dragstart` — para saber qué se arrastra.
+  // Mientras se arrastra una persona (bandeja o un ícono ya colocado), resalta en vivo la
+  // mesa bajo el puntero: verde si cabe, rojo si no. El DragEvent nativo no deja leer
+  // `dataTransfer.getData` durante `dragover` (solo en `drop`), así que se usa
+  // `draggingSeatIdRef` — fijado en el propio `dragstart` — para saber qué se arrastra.
   const handleDragOver = (event: React.DragEvent) => {
     event.preventDefault();
-    const guestId = draggingGuestIdRef.current;
-    if (!guestId) return;
+    const seatId = draggingSeatIdRef.current;
+    if (!seatId) return;
     const flowPos = reactFlow.screenToFlowPosition({ x: event.clientX, y: event.clientY });
     const table = findTableUnderPoint(flowPos);
     if (!table) {
       setHoverTableId((cur) => (cur === null ? cur : null));
       return;
     }
-    const guest = guestsRef.current.find((g) => g.id === guestId);
+    const seat = seatsRef.current.find((s) => s.id === seatId);
     const occupied = occupancyRef.current.get(table.id) || 0;
-    const seats = guest ? getSeatedGuestCount(guest) : 0;
-    const valid = guest?.tableId === table.id || occupied + seats <= table.capacity;
+    const valid = seat?.tableId === table.id || occupied + 1 <= table.capacity;
     const id = tableNodeId(table.id);
     setHoverTableId((cur) => (cur === id ? cur : id));
     setHoverValid((cur) => (cur === valid ? cur : valid));
   };
 
   // Toca-y-toca para touch (ver comentario de armedTrayItem): un toque sobre el lienzo
-  // vacío mientras hay una mesa/objeto armado lo coloca ahí; un invitado armado no tiene
+  // vacío mientras hay una mesa/objeto armado lo coloca ahí; una persona armada no tiene
   // "colocar en el vacío" (solo se asigna tocando una mesa), así que solo se cancela.
   const handlePaneClick = (event: React.MouseEvent) => {
     if (armedTrayItem) {
-      if (armedTrayItem.kind === 'guest') {
+      if (armedTrayItem.kind === 'seat') {
         setArmedTrayItem(null);
         return;
       }
@@ -568,27 +601,47 @@ function PlanoCanvasInner({
     );
   };
 
-  // Spec 17 — chip de invitado sin mesa: arrastrar (o, en touch, armar y tocar una mesa)
-  // lo asigna. Mismo patrón visual que renderTrayChip, con el conteo de personas visible.
-  const renderGuestChip = (guest: FirebaseGuest) => {
-    const isArmed = armedTrayItem?.kind === 'guest' && armedTrayItem.id === guest.id;
-    const seats = getSeatedGuestCount(guest);
+  // Spec 23 — chip de PERSONA sin mesa (antes era por invitación completa): arrastrar
+  // (o, en touch, armar y tocar una mesa) asigna solo a esa persona.
+  const renderSeatChip = (seat: FirebaseTableSeat) => {
+    const guest = guests.find((g) => g.id === seat.guestId);
+    if (!guest) return null;
+    const isArmed = armedTrayItem?.kind === 'seat' && armedTrayItem.id === seat.id;
+    const displayName = getSeatDisplayName(guest, seat.seatIndex);
+    // Spec 23 — en los filtros "Asignados"/"Todos" cada persona ya tiene mesa: se
+    // muestra dónde está en vez del estado RSVP, para poder encontrarla y arrastrarla
+    // a otra mesa desde aquí mismo.
+    const seatedAt = seat.tableId ? tables.find((t) => t.id === seat.tableId) : null;
     return (
       <div
-        key={guest.id}
+        key={seat.id}
         draggable={!isTouchDevice}
-        onDragStart={isTouchDevice ? undefined : onGuestDragStart(guest.id)}
+        onDragStart={isTouchDevice ? undefined : onSeatDragStart(seat.id)}
         onDragEnd={isTouchDevice ? undefined : clearDragState}
-        onClick={isTouchDevice ? onGuestTap(guest.id) : undefined}
-        className={`flex items-center gap-2 rounded-lg px-2.5 py-5 transition-colors ${
+        onClick={isTouchDevice ? onSeatTap(seat.id) : undefined}
+        className={`flex items-start gap-2 rounded-lg px-2.5 py-2 transition-colors ${
           isTouchDevice ? 'cursor-pointer' : 'cursor-grab'
         } ${isArmed ? 'bg-[#111111] border border-[#111111] text-white' : 'border border-[rgba(0,0,0,0.14)] bg-white text-[#0A0A0A]'}`}
-        title={isTouchDevice ? 'Toca para elegirlo y luego toca una mesa para asignarlo' : 'Arrastra sobre una mesa para asignarlo'}
+        title={
+          isTouchDevice
+            ? 'Toca para elegirla y luego toca una mesa para asignarla'
+            : seatedAt
+              ? `Ya está en ${seatedAt.name}. Arrastra sobre otra mesa para moverla.`
+              : 'Arrastra sobre una mesa para asignarla'
+        }
       >
-        <span className="flex-1 min-w-0 text-[12.5px] font-bold truncate">{guest.name}</span>
-        <span className={`flex-shrink-0 text-[11px] font-semibold ${isArmed ? 'text-white/75' : 'text-[#71717A]'}`}>
-          {seats === 1 ? '1 persona' : `${seats} personas`}
-        </span>
+        <Avatar name={displayName} size={22} />
+        <div className="flex-1 min-w-0 flex flex-col items-start gap-1">
+          <span className="text-[12.5px] font-bold leading-snug break-words">{displayName}</span>
+          {!isArmed &&
+            (seatedAt ? (
+              <span className="flex-shrink-0 text-[10.5px] font-extrabold px-2 py-0.5 rounded-full bg-[#F4F4F5] text-[#71717A] whitespace-nowrap">
+                En {seatedAt.name}
+              </span>
+            ) : (
+              <StatusPill status={resolveGuestAttendance(guest)} />
+            ))}
+        </div>
       </div>
     );
   };
@@ -687,7 +740,7 @@ function PlanoCanvasInner({
             bandeja, así que en escritorio (drag-and-drop nativo, sin cambios) nunca se ve. */}
         {armedTrayItem && (
           <div className="absolute z-20 left-1/2 -translate-x-1/2 top-3 bg-[#111111] text-white text-[12px] font-bold px-3.5 py-2 rounded-lg shadow-md whitespace-nowrap">
-            {armedTrayItem.kind === 'guest' ? 'Toca una mesa para asignarlo' : 'Toca el lienzo para colocarla'}
+            {armedTrayItem.kind === 'seat' ? 'Toca una mesa para asignarla' : 'Toca el lienzo para colocarla'}
           </div>
         )}
 
@@ -754,7 +807,7 @@ function PlanoCanvasInner({
       <div className={`relative flex-shrink-0 ${isDesktop ? '' : 'w-full mt-5'}`}>
         <motion.div
           initial={false}
-          animate={isDesktop ? { width: guestTrayCollapsed ? 40 : 220 } : { height: guestTrayCollapsed ? 40 : 220 }}
+          animate={isDesktop ? { width: guestTrayCollapsed ? 40 : 280 } : { height: guestTrayCollapsed ? 40 : 260 }}
           transition={{ duration: 0.22, ease: 'easeInOut' }}
           className={`relative bg-white border border-[rgba(0,0,0,0.08)] rounded-xl overflow-hidden ${
             isDesktop ? 'h-full' : 'w-full'
@@ -763,14 +816,16 @@ function PlanoCanvasInner({
           <motion.div
             animate={{ opacity: guestTrayCollapsed ? 0 : 1 }}
             transition={{ duration: guestTrayCollapsed ? 0.1 : 0.2, delay: guestTrayCollapsed ? 0 : 0.08 }}
-            className={isDesktop ? 'w-[220px] h-full flex flex-col p-3' : 'h-[220px] w-full flex flex-col p-3'}
+            className={isDesktop ? 'w-[280px] h-full flex flex-col p-3' : 'h-[260px] w-full flex flex-col p-3'}
           >
             <div className="mb-2 flex-shrink-0">
-              <div className="text-[13px] font-bold uppercase tracking-wide text-[#71717A]">
-                Invitados sin mesa ({unassignedGuests.length})
+              <div className="text-[10.5px] font-extrabold uppercase tracking-wide text-[#9CA3AF]">Invitados</div>
+              <div className="text-[16px] font-extrabold text-[#0A0A0A] mt-0.5">
+                {guestTrayCounts[guestTrayFilter]}{' '}
+                {guestTrayFilter === 'unassigned' ? 'sin mesa' : guestTrayFilter === 'assigned' ? 'asignados' : 'en total'}
               </div>
-              <p className="text-[13px] font-medium text-[#9CA3AF] leading-snug mt-0.5 mb-2">
-                Arrastra a un invitado hacia una mesa para asignarlo.
+              <p className="text-[12px] font-medium text-[#9CA3AF] leading-snug mt-0.5 mb-2">
+                Arrastra a una persona hacia una mesa para asignarla o moverla.
               </p>
             </div>
             <div className="relative flex-shrink-0 mb-2">
@@ -780,16 +835,36 @@ function PlanoCanvasInner({
                 value={guestSearch}
                 onChange={(e) => setGuestSearch(e.target.value)}
                 placeholder="Buscar invitado"
-                className="w-full pl-8 pr-2.5 py-1.5 rounded-lg border border-[rgba(0,0,0,0.14)] text-[12px] text-[#0A0A0A] bg-white focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
+                className="w-full pl-8 pr-2.5 py-1.5 rounded-full border border-[rgba(0,0,0,0.14)] text-[12px] text-[#0A0A0A] bg-white focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
               />
             </div>
+            <div className="flex items-center gap-1 mb-2.5 flex-nowrap flex-shrink-0 overflow-x-auto">
+              {(['unassigned', 'assigned', 'all'] as const).map((f) => {
+                const label = f === 'unassigned' ? 'Sin asignar' : f === 'assigned' ? 'Asignados' : 'Todos';
+                const active = guestTrayFilter === f;
+                return (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setGuestTrayFilter(f)}
+                    className={`flex-shrink-0 px-2 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-colors ${
+                      active ? 'bg-[#111111] text-white' : 'bg-[#FAFAFA] text-[#3F3F46] border border-[rgba(0,0,0,0.1)]'
+                    }`}
+                  >
+                    {label} {guestTrayCounts[f]}
+                  </button>
+                );
+              })}
+            </div>
             <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-1.5">
-              {unassignedGuests.length === 0 ? (
-                <p className="text-[12px] text-[#9CA3AF] leading-snug">Todos los invitados ya tienen mesa.</p>
-              ) : filteredUnassignedGuests.length === 0 ? (
+              {guestTraySeats.length === 0 ? (
+                <p className="text-[12px] text-[#9CA3AF] leading-snug">
+                  {guestTrayFilter === 'unassigned' ? 'Todos ya tienen mesa.' : guestTrayFilter === 'assigned' ? 'Nadie tiene mesa todavía.' : 'No hay invitados.'}
+                </p>
+              ) : filteredGuestTraySeats.length === 0 ? (
                 <p className="text-[12px] text-[#9CA3AF] leading-snug">Sin resultados.</p>
               ) : (
-                filteredUnassignedGuests.map(renderGuestChip)
+                filteredGuestTraySeats.map(renderSeatChip)
               )}
             </div>
           </motion.div>

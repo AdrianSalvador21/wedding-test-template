@@ -5,13 +5,13 @@ import type { NodeProps } from 'reactflow';
 import { FirebaseTable } from '../../../../src/types/wedding';
 import { getOccupancyState, occupancyColor } from '../occupancy';
 import { computePartyLayout, type PartyInput } from '../seatLayout';
-import PersonIcon from '../PersonIcon';
+import { SeatInitialsIcon } from '../PersonBadges';
 
 export interface TableNodeData {
   table: FirebaseTable;
   occupied: number;
-  // Spec 17 — una invitación asignada por entrada; seatLayout.ts dibuja un ícono por
-  // persona, repartidos alrededor de la mesa según su forma.
+  // Spec 23 — un sub-asiento individual por entrada (ya no una invitación completa):
+  // seatLayout.ts dibuja un ícono por persona realmente asignada a ESTA mesa.
   parties: PartyInput[];
   armed: boolean;
   // Spec 17 — feedback visual mientras se arrastra un invitado sobre esta mesa.
@@ -22,13 +22,12 @@ export interface TableNodeData {
     onTouchMove: (e: React.TouchEvent) => void;
     onTouchEnd: (e: React.TouchEvent) => void;
   };
-  // Spec 17 — arrastrar (o, en touch, tocar para armar) cualquier ícono de un grupo ya
-  // colocado reasigna a esa invitación completa a otra mesa; reutiliza el mismo
-  // mecanismo que la bandeja de invitados.
-  guestDragHandlers: {
+  // Spec 23 — arrastrar (o, en touch, tocar para armar) un ícono reasigna solo a ESA
+  // persona (ya no a toda la invitación); reutiliza el mismo mecanismo que la bandeja.
+  seatDragHandlers: {
     isTouchDevice: boolean;
-    onGuestDragStart: (guestId: string) => (e: React.DragEvent) => void;
-    onGuestTap: (guestId: string) => () => void;
+    onSeatDragStart: (seatId: string) => (e: React.DragEvent) => void;
+    onSeatTap: (seatId: string) => () => void;
   };
 }
 
@@ -46,7 +45,7 @@ export const SHAPE_GEOMETRY: Record<NonNullable<FirebaseTable['shape']>, { width
 };
 
 export default function TableNode({ data }: NodeProps<TableNodeData>) {
-  const { table, occupied, parties, armed, isDropTarget, isDropRejected, touchHandlers, guestDragHandlers } = data;
+  const { table, occupied, parties, armed, isDropTarget, isDropRejected, touchHandlers, seatDragHandlers } = data;
   const state = getOccupancyState(occupied, table.capacity);
   const colors = occupancyColor[state];
   const geometry = SHAPE_GEOMETRY[table.shape || 'round'];
@@ -98,18 +97,18 @@ export default function TableNode({ data }: NodeProps<TableNodeData>) {
 
         {layout.seats.map((seat) => (
           <div
-            key={`${seat.guestId}-${seat.seatIndex}`}
-            title={seat.totalSeats === 1 ? seat.guestName : `${seat.guestName} · ${seat.seatIndex + 1}/${seat.totalSeats}`}
-            draggable={!guestDragHandlers.isTouchDevice}
+            key={seat.seatId}
+            title={seat.guestName}
+            draggable={!seatDragHandlers.isTouchDevice}
             onDragStart={(e) => {
               e.stopPropagation();
-              guestDragHandlers.onGuestDragStart(seat.guestId)(e);
+              seatDragHandlers.onSeatDragStart(seat.seatId)(e);
             }}
             onClick={
-              guestDragHandlers.isTouchDevice
+              seatDragHandlers.isTouchDevice
                 ? (e) => {
                     e.stopPropagation();
-                    guestDragHandlers.onGuestTap(seat.guestId)();
+                    seatDragHandlers.onSeatTap(seat.seatId)();
                   }
                 : undefined
             }
@@ -120,12 +119,12 @@ export default function TableNode({ data }: NodeProps<TableNodeData>) {
               left: `calc(50% + ${seat.x}px)`,
               top: `calc(50% + ${seat.y}px)`,
               transform: 'translate(-50%, -50%)',
-              cursor: guestDragHandlers.isTouchDevice ? 'pointer' : 'grab',
+              cursor: seatDragHandlers.isTouchDevice ? 'pointer' : 'grab',
               touchAction: 'none',
               filter: 'drop-shadow(0 0 0 1.5px #fff)',
             }}
           >
-            <PersonIcon size={layout.iconSize} color={colors.text} />
+            <SeatInitialsIcon name={seat.guestName} size={layout.iconSize} color={colors.text} />
           </div>
         ))}
 

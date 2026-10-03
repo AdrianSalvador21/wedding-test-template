@@ -26,6 +26,7 @@ export interface TableStats {
 export class TableService {
   private readonly TABLES_COLLECTION = 'tables';
   private readonly GUESTS_COLLECTION = 'guests';
+  private readonly SEATS_COLLECTION = 'tableSeats';
 
   /**
    * Obtiene todas las mesas de una boda
@@ -145,8 +146,10 @@ export class TableService {
   }
 
   /**
-   * Elimina una mesa. Cascada: los invitados con esta mesa asignada vuelven a
-   * "Sin mesa" (tableId: null) en el mismo batch, antes de borrar el documento.
+   * Elimina una mesa. Cascada: los sub-asientos con esta mesa asignada vuelven a
+   * "Sin mesa" (tableId: null, spec 23) en el mismo batch, antes de borrar el
+   * documento. También limpia el `tableId` (deprecated) de los invitados que
+   * todavía lo tuvieran de antes de la migración lazy a FirebaseTableSeat.
    */
   async deleteTable(tableId: string, weddingId: string): Promise<void> {
     try {
@@ -155,11 +158,22 @@ export class TableService {
         where('weddingId', '==', weddingId),
         where('tableId', '==', tableId)
       );
-      const affectedGuests = await getDocs(affectedGuestsQuery);
+      const affectedSeatsQuery = query(
+        collection(db, this.SEATS_COLLECTION),
+        where('weddingId', '==', weddingId),
+        where('tableId', '==', tableId)
+      );
+      const [affectedGuests, affectedSeats] = await Promise.all([
+        getDocs(affectedGuestsQuery),
+        getDocs(affectedSeatsQuery),
+      ]);
 
       const batch = writeBatch(db);
       affectedGuests.forEach((guestDoc) => {
         batch.update(guestDoc.ref, { tableId: null, updatedAt: new Date().toISOString() });
+      });
+      affectedSeats.forEach((seatDoc) => {
+        batch.update(seatDoc.ref, { tableId: null, updatedAt: new Date().toISOString() });
       });
       batch.delete(doc(db, this.TABLES_COLLECTION, tableId));
 
@@ -171,21 +185,21 @@ export class TableService {
   }
 
   /**
-   * Cuenta cuántos invitados quedarían "Sin mesa" si se borra esta mesa
-   * (para el modal de confirmación de borrado).
+   * Cuenta cuántas personas (sub-asientos) quedarían "Sin mesa" si se borra esta
+   * mesa (para el modal de confirmación de borrado).
    */
-  async countGuestsAtTable(tableId: string, weddingId: string): Promise<number> {
+  async countSeatsAtTable(tableId: string, weddingId: string): Promise<number> {
     try {
-      const affectedGuestsQuery = query(
-        collection(db, this.GUESTS_COLLECTION),
+      const affectedSeatsQuery = query(
+        collection(db, this.SEATS_COLLECTION),
         where('weddingId', '==', weddingId),
         where('tableId', '==', tableId)
       );
-      const affectedGuests = await getDocs(affectedGuestsQuery);
-      return affectedGuests.size;
+      const affectedSeats = await getDocs(affectedSeatsQuery);
+      return affectedSeats.size;
     } catch (error) {
-      console.error('Error contando invitados de la mesa:', error);
-      throw new Error('No se pudieron contar los invitados de la mesa');
+      console.error('Error contando personas de la mesa:', error);
+      throw new Error('No se pudieron contar las personas de la mesa');
     }
   }
 

@@ -46,7 +46,8 @@ export interface FirebaseGuest {
   };
   createdAt: string;
   updatedAt: string;
-  tableId?: string | null; // Mesa asignada (spec 12); ausente o null = "Sin mesa"
+  /** @deprecated (spec 12) Reemplazado por FirebaseTableSeat (spec 23). Solo se lee una vez para migrar sus sub-asientos; no se escribe más. */
+  tableId?: string | null;
 }
 
 // Tipos para gestión de mesas (spec 12)
@@ -58,6 +59,17 @@ export interface FirebaseTable {
   shape?: 'round' | 'square' | 'rectangular' | 'imperial'; // decorativo, no afecta la lógica de capacidad
   posX?: number; // posición en el Plano; ausente = "sin colocar" (bandeja)
   posY?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Asiento individual por persona dentro de una invitación (spec 23): reemplaza FirebaseGuest.tableId
+export interface FirebaseTableSeat {
+  id: string;
+  weddingId: string;
+  guestId: string; // FirebaseGuest al que pertenece este sub-asiento
+  seatIndex: number; // 0 = titular, 1..N-1 = acompañantes
+  tableId?: string | null; // mesa asignada a ESTA persona; ausente o null = sin mesa
   createdAt: string;
   updatedAt: string;
 }
