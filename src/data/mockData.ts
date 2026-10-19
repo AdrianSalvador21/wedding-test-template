@@ -2517,27 +2517,26 @@ export const mockWeddingTemplate02Demo: WeddingData = {
     time: '18:00',
     ceremony: { time: '18:00', duration: 45 },
     reception: { time: '20:00', duration: 300 },
+    // Spec 25: solo name/address/mapsUrl, los únicos campos de sede que edita el dashboard
+    // (pestaña "Lugares"); description/features se quedan vacíos porque el tipo los exige.
     ceremonyVenue: {
       name: { es: 'Capilla Jardines del Bosque', en: 'Jardines del Bosque Chapel' },
       address: 'Camino al Bosque 45, Guadalajara',
-      coordinates: { lat: 20.6597, lng: -103.3496 },
-      description: 'Capilla de cristal rodeada de árboles centenarios'
+      mapsUrl: 'https://maps.google.com/maps?q=Capilla%20Jardines%20del%20Bosque%20Guadalajara'
     },
     receptionVenue: {
       name: { es: 'Jardines del Bosque', en: 'Jardines del Bosque' },
       address: 'Camino al Bosque 45, Guadalajara',
-      coordinates: { lat: 20.6597, lng: -103.3496 },
-      description: 'Un espacio contemporáneo entre jardines y arquitectura minimalista, perfecto para una celebración moderna.',
-      features: ['Jardines iluminados', 'Salón de cristal', 'Terraza panorámica', 'Estacionamiento con valet']
+      description: '',
+      features: [],
+      mapsUrl: 'https://maps.google.com/maps?q=Jardines%20del%20Bosque%20Guadalajara'
     },
+    // Solo style/description: la pestaña "Evento" no edita recommendations ni colors.
     dressCode: {
       style: { es: 'Semi-formal / Garden Party', en: 'Semi-formal / Garden Party' },
       description: { es: 'Un estilo elegante pero relajado, perfecto para una celebración al aire libre', en: 'An elegant but relaxed style, perfect for an outdoor celebration' },
-      recommendations: {
-        ladies: ['Vestidos florales o de colores pasteles', 'Zapatos cómodos'],
-        gentlemen: ['Camisa elegante', 'Pantalón de vestir, saco opcional']
-      },
-      colors: { recommended: ['#2d3748', '#4a5568', '#68d391'], avoid: ['#ffffff', '#000000'] }
+      recommendations: { ladies: [], gentlemen: [] },
+      colors: { recommended: [], avoid: [] }
     },
     rsvpDeadline: '2026-10-07T23:59:59.000Z'
   },
@@ -2561,20 +2560,56 @@ export const mockWeddingTemplate02Demo: WeddingData = {
   ],
   relationshipStats: { yearsTogther: 5, adventures: 55, memories: 1800, dreams: 15 },
   accommodation: {
+    // Solo name/description/mapsUrl por hotel (pestaña "Hoteles Recomendados" del dashboard).
     hotels: [
-      { name: 'Hotel Boutique Bosque', distance: '10 min del lugar', price: 'Desde $95/noche', phone: '+52 33 2222-3333', amenities: ['Alberca', 'Desayuno incluido'] }
+      { name: 'Hotel Boutique Bosque', description: { es: 'A unos minutos del jardín, con desayuno incluido.', en: 'A few minutes from the garden, breakfast included.' }, mapsUrl: 'https://maps.google.com/maps?q=Hotel%20Boutique%20Bosque%20Guadalajara' },
+      { name: 'Posada del Lago', description: { es: 'Con vista al lago y restaurante propio.', en: 'Lake views and its own restaurant.' }, mapsUrl: 'https://maps.google.com/maps?q=Posada%20del%20Lago%20Guadalajara' }
     ],
     recommendedPlaces: []
   },
   transport: { parking: true, valetParking: true, rideshare: true },
   giftRegistry: {
     enabled: true,
-    message: 'Tu presencia es nuestro regalo más preciado, pero si deseas contribuir a nuestro futuro juntos:',
+    message: {
+      es: 'Tu presencia es nuestro regalo más preciado, pero si deseas contribuir a nuestro futuro juntos:',
+      en: 'Your presence is our most precious gift, but if you would like to contribute to our future together:'
+    },
     registries: [
-      { id: 'amazon', name: 'Amazon', url: 'https://www.amazon.com.mx/wedding/camila-andres', description: 'Lista de deseos con productos prácticos' }
+      { id: 'amazon', name: 'Amazon', url: 'https://www.amazon.com.mx/wedding/camila-andres', description: { es: 'Lista de deseos con productos prácticos', en: 'Wish list with practical items' } },
+      { id: 'liverpool', name: 'Liverpool', url: 'https://mesaderegalos.liverpool.com.mx/milistaderegalos/camila-andres', description: { es: 'Mesa de regalos para nuestro nuevo hogar', en: 'Gift registry for our new home' } }
+    ],
+    bankAccount: {
+      bankName: 'BBVA',
+      accountName: 'Camila Ortiz Reyes',
+      accountNumber: '0123456789',
+      clabe: '012345678901234567',
+      description: {
+        es: 'También puedes contribuir directamente a nuestra cuenta bancaria.',
+        en: 'You can also contribute directly to our bank account.'
+      }
+    }
+  },
+  adultOnlyEvent: {
+    enabled: true,
+    message: {
+      es: 'Con amor, hemos decidido que sea una celebración solo para adultos.',
+      en: 'With love, we have decided this will be an adults-only celebration.'
+    }
+  },
+  // Solo name/description/mapsUrl por lugar (pestaña "Lugares Recomendados"); `category` solo
+  // porque el tipo lo exige.
+  recommendedPlaces: {
+    enabled: true,
+    places: [
+      { id: 'mercado-san-juan', name: 'Mercado San Juan de Dios', category: 'atraccion', description: { es: 'Comida típica y artesanías', en: 'Local food and crafts' }, mapsUrl: 'https://maps.google.com/maps?q=Mercado%20San%20Juan%20de%20Dios%20Guadalajara' },
+      { id: 'hospicio-cabanas', name: 'Hospicio Cabañas', category: 'atraccion', description: { es: 'Murales de Orozco en el centro histórico', en: 'Orozco murals in the historic center' }, mapsUrl: 'https://maps.google.com/maps?q=Hospicio%20Caba%C3%B1as%20Guadalajara' },
+      { id: 'tlaquepaque', name: 'Tlaquepaque', category: 'atraccion', description: { es: 'Galerías y cafés para la mañana siguiente', en: 'Galleries and cafés for the morning after' }, mapsUrl: 'https://maps.google.com/maps?q=Tlaquepaque%20Jalisco' }
     ]
   },
-  adultOnlyEvent: { enabled: false },
+  selectedGuestTickets: true,
+  hasDiet: true,
+  showConfirmCta: true,
+  showRecommendedPlaces: true,
   music: {
     enabled: true,
     fileName: 'default.mp3', // Música por defecto del repo (/assets/music/default.mp3)

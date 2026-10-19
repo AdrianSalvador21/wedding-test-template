@@ -5,7 +5,7 @@ Regla general: solo se afirma lo que el producto hace hoy. Sin testimonios, cifr
 
 ## 1. Estrategia
 
-**Qué es Invyta.** Invitaciones web de boda hechas a la medida: una página propia para la pareja, con enlace único por invitado, confirmación de asistencia (RSVP) en tiempo real y, en el paquete Personalizado, un panel para que la pareja ajuste sus datos cuando quiera (para un cambio visual escribe a Invyta por WhatsApp).
+**Qué es Invyta.** Invitaciones web de boda hechas a la medida: una página propia para la pareja, con confirmación de asistencia (RSVP) en tiempo real y, en el paquete Personalizado, enlace único por invitado y un panel para que la pareja ajuste sus datos cuando quiera (para un cambio visual escribe a Invyta por WhatsApp).
 
 **Promesa.** Tu invitación de boda, lista en 7 días hábiles, con confirmaciones en tiempo real.
 
@@ -16,15 +16,16 @@ Regla general: solo se afirma lo que el producto hace hoy. Sin testimonios, cifr
 **Público secundario: wedding planners.** Buscan una solución repetible para sus clientes. Mensaje aparte, mismo sistema visual (ver sección 3).
 
 **Diferenciadores reales (verificados en el producto):**
-1. Tres diseños distintos: Clásico, Moderno y Botánica Editorial, con demos reales.
-2. Enlace único por invitado y RSVP en tiempo real.
+1. Cuatro diseños distintos: Jardín Editorial, Clásico, Moderno y Botánica Editorial, con demos reales.
+2. RSVP en tiempo real; en el Personalizado, enlace y bienvenida con el nombre de cada invitado.
 3. Invitaciones ilimitadas y envío por WhatsApp o enlace.
 4. Contenido completo del evento: cronograma y mapa, mesa de regalos y hospedaje, código de vestimenta, música elegida por la pareja, disponible en español e inglés.
 5. Panel de edición y gestión de invitados (exclusivo del paquete Personalizado).
 6. Asistente con IA (exclusivo del Personalizado): redacta la historia y el código de vestimenta, traduce a inglés y sugiere itinerario, hoteles y lugares.
-7. Entrega en 7 días hábiles, con hosting incluido hasta 15 días después del evento.
+7. Entrega en 7 días hábiles; la invitación está en línea hasta 15 días después de la boda.
 8. Revisiones ilimitadas antes de la entrega (compromiso de negocio, spec 15).
-9. Acompañamiento por WhatsApp durante todo el proceso; en el Personalizado, los cambios visuales después de publicar se piden por WhatsApp y los datos los ajusta la pareja desde su panel (spec 15).
+9. Acompañamiento por WhatsApp durante todo el proceso, con respuesta en menos de una hora; en el Personalizado, los cambios visuales después de publicar se piden por WhatsApp y los datos los ajusta la pareja desde su panel (spec 15).
+10. Forma de pago sin riesgo: $500 MXN de anticipo por transferencia y el resto al recibir la invitación terminada (spec 26).
 
 ## 2. Voz y tono
 
@@ -45,14 +46,14 @@ Regla general: solo se afirma lo que el producto hace hoy. Sin testimonios, cifr
 |---|---|
 | "Tu invitación, lista en 7 días hábiles." | "¡¡La mejor invitación del universo!!" |
 | "Cada invitado recibe su propio enlace." | "Tecnología revolucionaria de RSVP." |
-| "Cuéntanos tu fecha y te compartimos disponibilidad." | "¡Escríbenos ya, no te lo pierdas!" |
+| "Cuéntanos tu fecha y te respondemos en menos de una hora." | "¡Escríbenos ya, no te lo pierdas!" |
 | "Tú editas los cambios desde tu panel." | "Súper fácil, cero esfuerzo." |
 
 ## 3. Mensajes clave
 
 **Parejas**
 - Principal: una invitación bonita que tus invitados abren desde el celular y te dice quién confirmó.
-- De apoyo: elige entre tres diseños; incluye cronograma, mapa, vestimenta, regalos y música; no pagas por invitación enviada.
+- De apoyo: elige entre cuatro diseños; empiezas con $500 de anticipo y pagas el resto al recibirla; incluye cronograma, mapa, vestimenta, regalos y música; no pagas por invitación enviada.
 
 **Wedding planners**
 - Principal: una invitación para cada cliente, con el mismo cuidado y sin rehacer trabajo.
@@ -67,20 +68,33 @@ Regla general: solo se afirma lo que el producto hace hoy. Sin testimonios, cifr
 | Diferencia clave | Invyta gestiona los cambios de contenido | Panel de edición y gestión para la pareja, asistente con IA, personalización 1:1, soporte 7 días previos al evento |
 | No incluye | Personalización por invitado ni asistente con IA | — |
 
-El desglose completo por categorías vive en `components/landing/Packages.tsx`. Cualquier pieza con precios se toma de ahí, no de memoria.
+El desglose completo vive en `PACKAGE_COMPARISON` de `lib/marketing-content.ts` (spec 26), y lo muestran igual la landing y `/paquetes`. Cualquier pieza con precios se toma de ahí, no de memoria.
+
+### Forma de pago
+
+- Anticipo: $500 MXN por transferencia para apartar la fecha y empezar.
+- Resto: se paga al recibir la invitación terminada.
+- Factura: por ahora no se emite factura.
+- Fuente única en código: `PAYMENT` en `lib/marketing-content.ts`.
+
+### Respuesta y llamada a la acción
+
+- Respuesta por WhatsApp en menos de una hora (`RESPONSE_TIME`).
+- Botón principal en todas las piezas: **"Cotiza por WhatsApp"**, con el ícono de WhatsApp. En la barra móvil, "Cotizar"; en paquetes, "Elegir Básico" / "Elegir Personalizado".
 
 ## 5. Objeciones frecuentes y respuestas tipo
 
 | Objeción | Respuesta base |
 |---|---|
-| ¿Mis invitados mayores sabrán usarla? | Se comparte por WhatsApp como cualquier mensaje: un enlace, un toque y se abre. |
+| ¿Mis invitados mayores sabrán usarla? | Se comparte por WhatsApp como cualquier mensaje: un enlace, un toque y se abre. Para confirmar solo eligen “Sí, ahí estaré”. |
 | ¿Puedo cambiar algo después? | En el Personalizado ajustas tus datos (nombres, fecha, lugares y fotos) desde tu panel, y para un cambio visual nos escribes por WhatsApp; en el Básico Invyta hace los cambios por ti. |
 | ¿Cuántas revisiones tengo? | Las que necesites antes de la entrega: las revisiones son ilimitadas. |
 | ¿Me acompañan durante el proceso? | Sí, por WhatsApp, desde la primera pregunta hasta la entrega. |
-| ¿Cuánto tarda? | 7 días hábiles desde que tenemos tu información. |
+| ¿Cuánto tarda? | 7 días hábiles desde que tenemos tu información y tus fotos. |
+| ¿Cómo se paga? | Por transferencia. Empiezas con $500 MXN de anticipo y pagas el resto cuando recibes tu invitación terminada. Por ahora no emitimos factura. |
 | ¿Cuántas invitaciones puedo mandar? | Todas las que necesites, sin costo extra por invitado. |
-| ¿Cuánto tiempo estará activa? | Incluye hosting hasta 15 días después del evento. |
-| ¿Puedo ver cómo se ve antes de contratar? | Sí, hay tres demos reales que puedes abrir desde el celular. |
+| ¿Cuánto tiempo estará activa? | Está en línea hasta 15 días después de tu boda. |
+| ¿Puedo ver cómo se ve antes de contratar? | Sí, hay cuatro demos reales que puedes abrir desde el celular. |
 
 Antes de publicar, confirmar cada respuesta contra el paquete vigente.
 
@@ -93,7 +107,7 @@ Antes de publicar, confirmar cada respuesta contra el paquete vigente.
 
 ## 7. Pilares de contenido para redes (Instagram, TikTok, WhatsApp Business)
 
-1. **Producto:** los tres diseños, el panel, el flujo de RSVP.
+1. **Producto:** los cuatro diseños, el panel, el flujo de RSVP.
 2. **Educación para parejas:** cuándo mandar la invitación, qué información incluir, cómo organizar confirmaciones.
 3. **Prueba visual:** demos reales en celular, antes y después de una invitación tradicional frente a la web.
 4. **Oferta:** paquetes y cómo empezar.

@@ -119,9 +119,9 @@ function CopyRow({ label, value }: { label: string; value: string }) {
 }
 
 const TEMPLATE_IMAGES: Record<TemplateId, string> = {
-  'template-01': '/assets/landing/design-template-01.jpg',
-  'template-02': '/assets/landing/design-template-02.jpg',
-  'template-03': '/assets/landing/design-template-03.jpg',
+  'template-01': '/assets/landing/design-template-01.png',
+  'template-02': '/assets/landing/design-template-02.png',
+  'template-03': '/assets/landing/design-template-03.png',
   'template-04': '/assets/landing/design-template-04.png',
 };
 

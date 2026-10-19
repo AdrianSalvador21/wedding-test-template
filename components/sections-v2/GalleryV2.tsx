@@ -1,445 +1,172 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { Camera, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { useThemePatterns } from '../../lib/theme-context';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
-import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title } from './ui';
+import { V2_COLORS, V2Container, V2CopyButton, V2Reveal, V2Section, V2SectionHeading, v2DisplayStyle } from './ui';
+import { useV2SectionNumber, v2Fill } from './sections';
+
+const pad = (n: number) => String(n).padStart(2, '0');
 
 export default function GalleryV2() {
-  const { t } = useTranslations('gallery');
+  const { t } = useTranslations('template02');
   const weddingData = useAppSelector(selectCurrentWedding);
   const { galleryImages } = useWeddingImages(weddingData?.id);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [preloadedImages, setPreloadedImages] = useState<Set<string>>(new Set());
-  const { getBackgroundStyle } = useThemePatterns();
+  const number = useV2SectionNumber('gallery');
+  const stripRef = useRef<HTMLDivElement>(null);
+  const [current, setCurrent] = useState(0);
 
-  type IdleCallbackHandle = number;
+  const photos = galleryImages.filter(Boolean);
+  const total = photos.length;
+  const hashtag = weddingData?.couple.hashtag;
 
-  type RequestIdleCallback = (
-    callback: () => void,
-    options?: {
-      timeout: number;
-    }
-  ) => IdleCallbackHandle;
-
-  type CancelIdleCallback = (handle: IdleCallbackHandle) => void;
-
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.2,
-  });
-
-  const photos = galleryImages.map((src, index) => ({
-    id: index + 1,
-    src,
-    alt: `Foto ${index + 1} de la boda`,
-  }));
-
-  const shouldRender = photos.length > 0;
-  const hashtag = weddingData?.couple.hashtag || t('hashtag');
+  // Paso entre tarjetas = ancho de la primera tarjeta + gap del contenedor.
+  const getStep = useCallback(() => {
+    const strip = stripRef.current;
+    const first = strip?.firstElementChild as HTMLElement | null;
+    if (!strip || !first) return 0;
+    const gap = parseFloat(getComputedStyle(strip).columnGap || '0') || 0;
+    return first.getBoundingClientRect().width + gap;
+  }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || photos.length === 0) return;
-
-    const preload = (src: string) => {
-      if (!src || preloadedImages.has(src)) return;
-      const img = document.createElement('img');
-      img.onload = () => {
-        setPreloadedImages((prev) => new Set([...Array.from(prev), src]));
-      };
-      img.src = src;
+    const strip = stripRef.current;
+    if (!strip) return;
+    const onScroll = () => {
+      const step = getStep();
+      if (!step) return;
+      const atEnd = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 4;
+      setCurrent(atEnd ? total - 1 : Math.min(total - 1, Math.max(0, Math.round(strip.scrollLeft / step))));
     };
+    strip.addEventListener('scroll', onScroll, { passive: true });
+    return () => strip.removeEventListener('scroll', onScroll);
+  }, [getStep, total]);
 
-    const isDesktop = window.innerWidth >= 768;
-    const indicesToPreload = new Set<number>();
-
-    indicesToPreload.add(currentIndex);
-    indicesToPreload.add(currentIndex + 1);
-    indicesToPreload.add(currentIndex + 2);
-    indicesToPreload.add(currentIndex - 1);
-
-    indicesToPreload.forEach((idx) => {
-      const safeIndex = ((idx % photos.length) + photos.length) % photos.length;
-      preload(photos[safeIndex].src);
-    });
-
-    if (isDesktop) {
-      photos.forEach((p) => preload(p.src));
-      return;
-    }
-
-    const remaining = photos
-      .map((p) => p.src)
-      .filter((src) => src && !preloadedImages.has(src));
-
-    if (remaining.length === 0) return;
-
-    const windowWithIdle = window as unknown as {
-      requestIdleCallback?: RequestIdleCallback;
-      cancelIdleCallback?: CancelIdleCallback;
-    };
-    const idleCb = windowWithIdle.requestIdleCallback;
-    const cancelIdleCb = windowWithIdle.cancelIdleCallback;
-
-    if (idleCb) {
-      const id = idleCb(
-        () => {
-          remaining.forEach((src) => preload(src));
-        },
-        { timeout: 1500 }
-      );
-
-      return () => {
-        if (cancelIdleCb) cancelIdleCb(id);
-      };
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      remaining.forEach((src) => preload(src));
-    }, 800);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [photos, preloadedImages, currentIndex]);
-
-  useEffect(() => {
-    if (!isAutoPlaying || !inView || isDragging || photos.length === 0) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % photos.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, inView, isDragging, photos.length]);
-
-  const goToPrevious = useCallback(() => {
-    if (isTransitioning) return;
-    setIsAutoPlaying(false);
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
-    setTimeout(() => setIsTransitioning(false), 300);
-  }, [photos.length, isTransitioning]);
-
-  const goToNext = useCallback(() => {
-    if (isTransitioning) return;
-    setIsAutoPlaying(false);
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => (prev + 1) % photos.length);
-    setTimeout(() => setIsTransitioning(false), 300);
-  }, [photos.length, isTransitioning]);
-
-  const goToSlide = useCallback((index: number) => {
-    if (isTransitioning || index === currentIndex) return;
-    setIsAutoPlaying(false);
-    setIsTransitioning(true);
-    setCurrentIndex(index);
-    setTimeout(() => setIsTransitioning(false), 300);
-  }, [isTransitioning, currentIndex]);
-
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    setIsDragging(false);
-    const threshold = 50;
-    const velocity = info.velocity.x;
-    const offset = info.offset.x;
-
-    if (Math.abs(velocity) > 500 || Math.abs(offset) > threshold) {
-      if (offset > 0 || velocity > 0) {
-        goToPrevious();
-      } else {
-        goToNext();
-      }
-    }
+  const goTo = (index: number) => {
+    const strip = stripRef.current;
+    const step = getStep();
+    if (!strip || !step) return;
+    const target = Math.min(total - 1, Math.max(0, index));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    strip.scrollTo({ left: target * step, behavior: reduce ? 'auto' : 'smooth' });
   };
 
-  const slideVariants = {
-    enter: { x: 300, opacity: 0 },
-    center: { zIndex: 1, x: 0, opacity: 1 },
-    exit: { zIndex: 0, x: -300, opacity: 0 },
-  };
-
-  const getPhoto = (index: number) => {
-    if (photos.length === 0) return null;
-    const safeIndex = ((index % photos.length) + photos.length) % photos.length;
-    return photos[safeIndex];
-  };
-
-  if (!shouldRender) {
+  if (total === 0) {
     return null;
   }
 
+  const navButton = (enabled: boolean, filled: boolean): React.CSSProperties =>
+    filled && enabled
+      ? { backgroundColor: V2_COLORS.ink, border: `1px solid ${V2_COLORS.ink}`, color: V2_COLORS.stone }
+      : { backgroundColor: 'transparent', border: `1px solid ${V2_COLORS.rule}`, color: V2_COLORS.graphite, opacity: enabled ? 1 : 0.5 };
+
   return (
-    <V2Section
-      id="gallery"
-      className="relative overflow-hidden"
-      style={{
-        ...getBackgroundStyle(2, '240px'),
-        backgroundSize: '585px 401px',
-        backgroundRepeat: 'repeat',
-        backgroundPosition: '166% 11%'
-      }}
-    >
-      <V2Container className="py-12">
-        <V2Stagger>
-          <V2StaggerItem>
-            <V2Title title={t('title')} subtitle={t('subtitle')} />
-          </V2StaggerItem>
+    <V2Section id="gallery">
+      <div className="flex flex-col gap-7 py-[72px] lg:gap-10 lg:py-24">
+        <V2Container>
+          <V2Reveal>
+            <V2SectionHeading number={number} overline={t('gallery.overline')} title={t('gallery.title')} />
+          </V2Reveal>
+        </V2Container>
 
-          <V2StaggerItem>
-            <div ref={ref}>
-              <div className="mt-10 max-w-6xl mx-auto">
-                <div className="relative">
-                  {/* Mobile carousel */}
-                  <div className="relative md:hidden">
-                    <div className="relative h-96 sm:h-80 overflow-visible">
-                      <div className="absolute inset-0 pointer-events-none select-none">
-                        {photos.length > 1 && (
-                          <div className="absolute inset-0 translate-x-3 translate-y-3 rotate-[1.25deg] scale-[0.985] opacity-70">
-                            <div className="relative h-full w-full rounded-[22px] overflow-hidden shadow-lg bg-white">
-                              <Image
-                                src={getPhoto(currentIndex + 1)!.src}
-                                alt={getPhoto(currentIndex + 1)!.alt}
-                                fill
-                                className="object-cover"
-                                quality={60}
-                                draggable={false}
-                              />
-                              <div className="absolute inset-0 bg-[#fbf7f1]/45" />
-                            </div>
-                          </div>
-                        )}
+        <div
+          ref={stripRef}
+          className="flex snap-x snap-mandatory scroll-pl-6 gap-3 overflow-x-auto pl-6 pr-6 [scrollbar-width:none] md:scroll-pl-12 md:pl-12 md:pr-12 lg:gap-4 xl:scroll-pl-[calc((100vw-1200px)/2+48px)] xl:pl-[calc((100vw-1200px)/2+48px)] [&::-webkit-scrollbar]:hidden"
+          aria-roledescription="carousel"
+          aria-label={t('gallery.title')}
+          tabIndex={0}
+        >
+          {photos.map((src, index) => (
+            <div
+              key={`${src}-${index}`}
+              className="relative h-[400px] w-[286px] shrink-0 snap-start overflow-hidden rounded-[4px] lg:h-[500px] lg:w-[360px]"
+              aria-roledescription="slide"
+              aria-label={v2Fill(t('gallery.counterLabel'), { current: index + 1, total })}
+            >
+              <V2Reveal className="absolute inset-0" delay={Math.min(index, 3) * 0.1}>
+                <Image
+                  src={src}
+                  alt={v2Fill(t('gallery.photoAlt'), { n: index + 1 })}
+                  fill
+                  sizes="(min-width: 1024px) 360px, 286px"
+                  className="select-none object-cover"
+                  draggable={false}
+                  priority={index === 0}
+                />
+              </V2Reveal>
+            </div>
+          ))}
+        </div>
 
-                        {photos.length > 2 && (
-                          <div className="absolute inset-0 translate-x-6 translate-y-6 rotate-[2.25deg] scale-[0.97] opacity-40">
-                            <div className="relative h-full w-full rounded-[22px] overflow-hidden shadow-md bg-white">
-                              <Image
-                                src={getPhoto(currentIndex + 2)!.src}
-                                alt={getPhoto(currentIndex + 2)!.alt}
-                                fill
-                                className="object-cover"
-                                quality={55}
-                                draggable={false}
-                              />
-                              <div className="absolute inset-0 bg-[#fbf7f1]/55" />
-                            </div>
-                          </div>
-                        )}
-                      </div>
+        <V2Container>
+          <V2Reveal className="flex flex-col gap-7" delay={0.2}>
+          <div className="flex items-center gap-4">
+            <span
+              className="min-w-[58px] text-[15px]"
+              style={{ fontFamily: v2DisplayStyle(15).fontFamily, letterSpacing: '0.02em' }}
+              aria-live="polite"
+            >
+              {pad(current + 1)} / {pad(total)}
+            </span>
+            <div className="relative h-0.5 flex-grow" style={{ backgroundColor: V2_COLORS.rule }} aria-hidden="true">
+              <span
+                className="absolute left-0 top-0 h-0.5 transition-[width] duration-300"
+                style={{ width: `${((current + 1) / total) * 100}%`, backgroundColor: V2_COLORS.ink }}
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => goTo(current - 1)}
+                disabled={current === 0}
+                aria-label={t('gallery.previous')}
+                className="flex h-11 w-11 items-center justify-center rounded-full disabled:cursor-not-allowed"
+                style={navButton(current > 0, false)}
+              >
+                <ChevronLeft className="h-[18px] w-[18px]" aria-hidden="true" strokeWidth={1.7} />
+              </button>
+              <button
+                type="button"
+                onClick={() => goTo(current + 1)}
+                disabled={current >= total - 1}
+                aria-label={t('gallery.next')}
+                className="flex h-11 w-11 items-center justify-center rounded-full disabled:cursor-not-allowed"
+                style={navButton(current < total - 1, true)}
+              >
+                <ChevronRight className="h-[18px] w-[18px]" aria-hidden="true" strokeWidth={1.7} />
+              </button>
+            </div>
+          </div>
 
-                      <AnimatePresence initial={false}>
-                        <motion.div
-                          key={currentIndex}
-                          variants={slideVariants}
-                          initial="enter"
-                          animate="center"
-                          exit="exit"
-                          transition={{
-                            x: { type: 'spring', stiffness: 300, damping: 30 },
-                            opacity: { duration: 0.2 },
-                          }}
-                          drag="x"
-                          dragConstraints={{ left: 0, right: 0 }}
-                          dragElastic={0.1}
-                          onDragStart={() => setIsDragging(true)}
-                          onDragEnd={handleDragEnd}
-                          className="absolute inset-0 cursor-grab active:cursor-grabbing"
-                        >
-                          <div className="relative h-full w-full rounded-[22px] overflow-hidden shadow-xl bg-white">
-                            <Image
-                              src={photos[currentIndex].src}
-                              alt={photos[currentIndex].alt}
-                              fill
-                              className="object-cover select-none"
-                              quality={90}
-                              priority={currentIndex === 0}
-                              draggable={false}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
-                          </div>
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
-                  </div>
-
-                  {/* Desktop carousel */}
-                  <div className="hidden md:block relative">
-                    <div className="flex items-center justify-center space-x-4 lg:space-x-6">
-                      {currentIndex > 0 && (
-                        <div
-                          className="relative w-32 lg:w-40 h-48 lg:h-60 rounded-[22px] overflow-hidden cursor-pointer opacity-60 hover:opacity-80 transition-opacity"
-                          onClick={() => goToSlide(currentIndex - 1)}
-                        >
-                          <Image
-                            src={photos[currentIndex - 1].src}
-                            alt={photos[currentIndex - 1].alt}
-                            fill
-                            className="object-cover select-none"
-                            quality={70}
-                            draggable={false}
-                            unoptimized={true}
-                          />
-                          <div className="absolute inset-0 bg-[#fbf7f1]/30" />
-                        </div>
-                      )}
-
-                      <div className="relative w-80 lg:w-96 h-96 lg:h-[500px] rounded-[28px] overflow-hidden border border-[#e7dccf] bg-white">
-                        <div
-                          key={currentIndex}
-                          className="absolute inset-0 transition-opacity duration-300 ease-out"
-                          style={{ opacity: isTransitioning ? 0.7 : 1 }}
-                        >
-                          <Image
-                            src={photos[currentIndex].src}
-                            alt={photos[currentIndex].alt}
-                            fill
-                            className="object-contain select-none bg-[#fbf7f1]"
-                            quality={95}
-                            priority={true}
-                            draggable={false}
-                            unoptimized={true}
-                          />
-                        </div>
-
-                        <div className="absolute inset-0 flex items-center justify-between px-4 z-10">
-                          <button
-                            onClick={goToPrevious}
-                            disabled={isTransitioning}
-                            className={`rounded-full w-11 h-11 flex items-center justify-center transition-opacity border border-[#e7dccf] bg-white/80 hover:opacity-90 ${
-                              isTransitioning ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
-                            aria-label="Imagen anterior"
-                          >
-                            <ChevronLeft className="w-5 h-5 text-[#6f6254]" />
-                          </button>
-
-                          <button
-                            onClick={goToNext}
-                            disabled={isTransitioning}
-                            className={`rounded-full w-11 h-11 flex items-center justify-center transition-opacity border border-[#e7dccf] bg-white/80 hover:opacity-90 ${
-                              isTransitioning ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
-                            aria-label="Imagen siguiente"
-                          >
-                            <ChevronRight className="w-5 h-5 text-[#6f6254]" />
-                          </button>
-                        </div>
-                      </div>
-
-                      {currentIndex < photos.length - 1 && (
-                        <div
-                          className="relative w-32 lg:w-40 h-48 lg:h-60 rounded-[22px] overflow-hidden cursor-pointer opacity-60 hover:opacity-80 transition-opacity"
-                          onClick={() => goToSlide(currentIndex + 1)}
-                        >
-                          <Image
-                            src={photos[currentIndex + 1].src}
-                            alt={photos[currentIndex + 1].alt}
-                            fill
-                            className="object-cover select-none"
-                            quality={70}
-                            draggable={false}
-                            unoptimized={true}
-                          />
-                          <div className="absolute inset-0 bg-[#fbf7f1]/30" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Indicators */}
-                <div className="flex justify-center space-x-2 mt-8">
-                  {(() => {
-                    const maxVisiblePills = 5;
-                    const totalPhotos = photos.length;
-
-                    if (totalPhotos <= maxVisiblePills) {
-                      return photos.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => goToSlide(index)}
-                          className={`transition-all duration-300 ${
-                            index === currentIndex
-                              ? 'w-8 h-2 rounded-full bg-[#b79a7a]'
-                              : 'w-2 h-2 rounded-full bg-[#dccab7] hover:bg-[#cbb398]'
-                          }`}
-                          aria-label={`Ir a imagen ${index + 1}`}
-                        />
-                      ));
-                    }
-
-                    const halfVisible = Math.floor(maxVisiblePills / 2);
-                    let startIndex = Math.max(0, currentIndex - halfVisible);
-                    const endIndex = Math.min(totalPhotos - 1, startIndex + maxVisiblePills - 1);
-
-                    if (endIndex - startIndex < maxVisiblePills - 1) {
-                      startIndex = Math.max(0, endIndex - maxVisiblePills + 1);
-                    }
-
-                    const visibleIndices = [];
-                    for (let i = startIndex; i <= endIndex; i++) visibleIndices.push(i);
-
-                    return (
-                      <>
-                        {startIndex > 0 && (
-                          <div className="flex items-center space-x-1">
-                            <div className="w-1 h-1 rounded-full bg-[#cbb398]" />
-                            <div className="w-1 h-1 rounded-full bg-[#cbb398]" />
-                            <div className="w-1 h-1 rounded-full bg-[#cbb398]" />
-                          </div>
-                        )}
-                        {visibleIndices.map((index) => (
-                          <button
-                            key={index}
-                            onClick={() => goToSlide(index)}
-                            className={`transition-all duration-300 ${
-                              index === currentIndex
-                                ? 'w-8 h-2 rounded-full bg-[#b79a7a]'
-                                : 'w-2 h-2 rounded-full bg-[#dccab7] hover:bg-[#cbb398]'
-                            }`}
-                            aria-label={`Ir a imagen ${index + 1}`}
-                          />
-                        ))}
-                        {endIndex < totalPhotos - 1 && (
-                          <div className="flex items-center space-x-1">
-                            <div className="w-1 h-1 rounded-full bg-[#cbb398]" />
-                            <div className="w-1 h-1 rounded-full bg-[#cbb398]" />
-                            <div className="w-1 h-1 rounded-full bg-[#cbb398]" />
-                          </div>
-                        )}
-                      </>
-                    );
-                  })()}
-                </div>
+          {hashtag && (
+            <div
+              className="flex items-center justify-between gap-3 rounded-md px-5 py-[18px] lg:max-w-[560px]"
+              style={{ border: `1px solid ${V2_COLORS.rule}` }}
+            >
+              <div className="flex min-w-0 flex-col gap-1">
+                <span className="text-[13px]" style={{ color: V2_COLORS.graphite }}>
+                  {t('gallery.sharePrompt')}
+                </span>
+                <span className="break-all" style={v2DisplayStyle(20, 400, -0.02)}>
+                  {hashtag}
+                </span>
               </div>
+              <V2CopyButton
+                value={hashtag}
+                label={t('gallery.copyHashtag')}
+                copiedLabel={t('gallery.copied')}
+                ariaLabel={t('gallery.copyHashtag')}
+                iconOnly
+              />
             </div>
-          </V2StaggerItem>
-
-          <V2StaggerItem>
-            <div className="mt-10">
-              <V2Card className="p-8 md:p-10 text-center">
-                <h3 className="font-bold text-xl text-[#3b342b]">{t('shareMessage')}</h3>
-                <p className="mt-4 text-sm md:text-base text-[#6f6254]">
-                  {t('cameraMessage')} <span className="font-medium text-[#3b342b]">{hashtag}</span> {t('hashtagPrompt')}
-                </p>
-                <div className="mt-6 flex justify-center">
-                  <span className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold bg-[#f3ece2] text-[#3b342b]">
-                    <Camera className="w-4 h-4" />
-                    {hashtag}
-                  </span>
-                </div>
-              </V2Card>
-            </div>
-          </V2StaggerItem>
-        </V2Stagger>
-      </V2Container>
+          )}
+          </V2Reveal>
+        </V2Container>
+      </div>
     </V2Section>
   );
 }

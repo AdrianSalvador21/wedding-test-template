@@ -1,32 +1,34 @@
 'use client';
 
 import React, { useState } from 'react';
-import { fraunces, manrope, LSolidButton } from './ui';
+import { fraunces, manrope, LButton, L_WRAP } from './ui';
+import { QUOTE_WHATSAPP_MESSAGE, whatsappUrl } from '../../lib/contact';
 
-const WHATSAPP_LINK = 'https://wa.me/529602460590';
+const QUOTE_LINK = whatsappUrl(QUOTE_WHATSAPP_MESSAGE);
 
 // Los enlaces a secciones llevan `/` para funcionar también desde las páginas de marketing.
 const links = [
   { href: '/#disenos', label: 'Diseños' },
-  { href: '/#como-funciona', label: 'Cómo funciona' },
-  { href: '/paquetes', label: 'Paquetes' },
-  { href: '/wedding-planners', label: 'Wedding planners' },
-  { href: '/preguntas-frecuentes', label: 'Preguntas frecuentes' },
-  { href: '/login', label: 'Inicia sesión' },
+  { href: '/#experiencia-invitado', label: 'Cómo funciona' },
+  { href: '/paquetes', label: 'Precios' },
+  { href: '/wedding-planners', label: 'Planners' },
+  { href: '/preguntas-frecuentes', label: 'Preguntas' },
+  { href: '/login', label: 'Entrar' },
 ];
 
+// Altura de la barra: 62 px y 76 px desde lg. PageShell y el hero dejan ese espacio arriba.
 // `active` marca la página actual (href exacto de `links`) en las páginas de marketing.
 export default function Nav({ active }: { active?: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-[rgba(251,247,241,0.92)] backdrop-blur-md border-b border-[rgba(43,38,34,0.08)]">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 h-16 md:h-24 flex items-center justify-between">
-        <a href="/" className="text-2xl md:text-[28px] font-semibold text-[#211D19] tracking-tight" style={fraunces}>
+    <header className="fixed top-0 w-full z-50 bg-[rgba(251,247,241,0.93)] backdrop-blur-[10px] border-b border-[rgba(43,38,34,0.1)]">
+      <div className={`${L_WRAP} h-[62px] lg:h-[76px] flex items-center justify-between gap-5`}>
+        <a href="/" className="text-2xl lg:text-[28px] font-semibold text-[#211D19] tracking-[-0.02em]" style={fraunces}>
           invyta
         </a>
 
-        <nav aria-label="Principal" className="hidden xl:flex items-center gap-7" style={manrope}>
+        <nav aria-label="Principal" className="hidden lg:flex items-center gap-7" style={manrope}>
           {links.map((link) => {
             const isActive = link.href === active;
             return (
@@ -37,31 +39,29 @@ export default function Nav({ active }: { active?: string }) {
                 className={`text-[15px] py-1.5 border-b-2 transition-colors ${
                   isActive
                     ? 'font-bold text-[#AE5730] border-[#AE5730]'
-                    : 'font-medium text-[#4A433C] border-transparent hover:text-[#C6663C]'
+                    : 'font-semibold text-[#4A433C] border-transparent hover:text-[#AE5730]'
                 }`}
               >
                 {link.label}
               </a>
             );
           })}
-          <LSolidButton href={WHATSAPP_LINK} target="_blank" variant="dark" className="px-6 py-3 text-[14px]">
-            Crea tu invitación
-          </LSolidButton>
         </nav>
+        <div className="hidden lg:block" style={manrope}>
+          <LButton href={QUOTE_LINK} external variant="dark" size="sm">
+            Cotiza por WhatsApp
+          </LButton>
+        </div>
 
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
           aria-expanded={open}
-          className="xl:hidden flex items-center justify-center w-11 h-11 -mr-2 text-[#211D19]"
+          className="lg:hidden flex items-center justify-center w-11 h-11 -mr-2 text-[#211D19]"
         >
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            {open ? (
-              <path d="M18 6L6 18M6 6l12 12" />
-            ) : (
-              <path d="M3 6h18M3 12h18M3 18h18" />
-            )}
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            {open ? <path d="M18 6L6 18M6 6l12 12" /> : <path d="M3 6h18M3 12h18M3 18h18" />}
           </svg>
         </button>
       </div>
@@ -69,7 +69,7 @@ export default function Nav({ active }: { active?: string }) {
       {open && (
         <nav
           aria-label="Principal"
-          className="xl:hidden bg-[#FBF7F1] border-t border-[rgba(43,38,34,0.08)] px-6 py-6 flex flex-col gap-5"
+          className="lg:hidden bg-[#FBF7F1] border-t border-[rgba(43,38,34,0.08)] px-5 py-6 flex flex-col gap-5"
           style={manrope}
         >
           {links.map((link) => (
@@ -83,15 +83,9 @@ export default function Nav({ active }: { active?: string }) {
               {link.label}
             </a>
           ))}
-          <LSolidButton
-            href={WHATSAPP_LINK}
-            target="_blank"
-            variant="dark"
-            className="w-full text-[15px]"
-            onClick={() => setOpen(false)}
-          >
-            Crea tu invitación
-          </LSolidButton>
+          <LButton href={QUOTE_LINK} external variant="dark" className="w-full text-[15px]">
+            Cotiza por WhatsApp
+          </LButton>
         </nav>
       )}
     </header>

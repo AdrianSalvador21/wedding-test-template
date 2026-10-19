@@ -18,7 +18,7 @@ const UsersIcon = ({ color = '#AE5730' }: { color?: string }) => (
 const items = [
   { icon: UsersIcon, label: 'Sin costo por invitado' },
   { icon: LClockIcon, label: 'Entrega en 7 días hábiles' },
-  { icon: LGlobeIcon, label: 'Hosting hasta 15 días después del evento' },
+  { icon: LGlobeIcon, label: 'En línea hasta 15 días después de tu boda' },
 ];
 
 const TagIcon = () => (

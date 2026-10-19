@@ -10,7 +10,9 @@ export interface DesignContent {
   name: string;
   crumb: string; // texto de la miga de pan
   h1: string;
-  tagline: string; // descripción corta (la de la galería de la landing)
+  tagline: string; // descripción corta por tipo de boda (galería de la landing y "otros diseños")
+  audience: string; // para qué boda es, sobre el nombre en la galería (spec 26)
+  badge: string; // etiqueta sobre la imagen en la galería (spec 26)
   lead: string; // párrafo bajo el h1
   metaDescription: string; // ≤ 155 caracteres
   signature: { title: string; text: string }; // lo que distingue a este diseño
@@ -27,7 +29,9 @@ export const DESIGNS: DesignContent[] = [
     name: 'Clásico',
     crumb: 'Diseño clásico',
     h1: 'Invitación digital de boda clásica',
-    tagline: 'Serif elegante, monograma en sello y detalles botánicos mínimos.',
+    tagline: 'Sereno y formal, con monograma y detalles dorados. Para bodas tradicionales.',
+    audience: 'Ceremonias formales',
+    badge: 'Monograma',
     lead: 'Un diseño formal y sereno, pensado para bodas tradicionales. Tus invitados lo abren desde el celular con un enlace único.',
     metaDescription:
       'Invitación digital de boda clásica: serif elegante, monograma en sello y detalles botánicos. Enlace único por invitado y confirmación en tiempo real.',
@@ -37,7 +41,7 @@ export const DESIGNS: DesignContent[] = [
     },
     fit: 'La tipografía serif y el monograma en sello le dan un tono formal. Es una buena elección para ceremonias tradicionales y celebraciones de estilo clásico.',
     demoHref: '/wedding/template-01-demo',
-    image: '/assets/landing/design-template-01.jpg',
+    image: '/assets/landing/design-template-01.png',
     imageAlt: 'Vista previa en el celular de la invitación de boda con el diseño Clásico',
   },
   {
@@ -46,7 +50,9 @@ export const DESIGNS: DesignContent[] = [
     name: 'Moderno',
     crumb: 'Diseño moderno',
     h1: 'Invitación digital de boda moderna',
-    tagline: 'Sans-serif geométrica, anillos concéntricos y acentos de línea botánica.',
+    tagline: 'Limpio y actual, para parejas que prefieren menos adorno y más aire.',
+    audience: 'Bodas contemporáneas',
+    badge: 'Minimalista',
     lead: 'Un diseño limpio y contemporáneo, con tipografía geométrica y acentos de línea botánica. Se comparte por WhatsApp como cualquier mensaje.',
     metaDescription:
       'Invitación digital de boda moderna: tipografía geométrica, anillos concéntricos y acentos de línea botánica. Con confirmación de asistencia en tiempo real.',
@@ -56,7 +62,7 @@ export const DESIGNS: DesignContent[] = [
     },
     fit: 'La tipografía geométrica y los anillos concéntricos le dan un aire contemporáneo. Encaja con parejas que prefieren una invitación limpia y actual.',
     demoHref: '/wedding/template-02-demo',
-    image: '/assets/landing/design-template-02.jpg',
+    image: '/assets/landing/design-template-02.png',
     imageAlt: 'Vista previa en el celular de la invitación de boda con el diseño Moderno',
   },
   {
@@ -65,7 +71,9 @@ export const DESIGNS: DesignContent[] = [
     name: 'Botánica Editorial',
     crumb: 'Diseño botánica editorial',
     h1: 'Invitación digital de boda botánica editorial',
-    tagline: 'Fotografía de novios en arco, motivos botánicos dibujados a mano y countdown en vivo.',
+    tagline: 'Tu fotografía en arco, flores dibujadas a mano y cuenta regresiva en vivo.',
+    audience: 'Si tus fotos son lo principal',
+    badge: 'Tus fotos al centro',
     lead: 'Un diseño editorial que pone la fotografía de la pareja al centro, con motivos botánicos dibujados a mano y cuenta regresiva en vivo.',
     metaDescription:
       'Invitación digital de boda botánica editorial: fotografía en arco, motivos dibujados a mano y cuenta regresiva en vivo. Confirmación en tiempo real.',
@@ -75,7 +83,7 @@ export const DESIGNS: DesignContent[] = [
     },
     fit: 'La fotografía en arco y los motivos botánicos dibujados a mano le dan un carácter editorial y cálido. Es ideal para parejas que quieren que sus fotos sean las protagonistas.',
     demoHref: '/wedding/valentina-mateo-2026',
-    image: '/assets/landing/design-template-03.jpg',
+    image: '/assets/landing/design-template-03.png',
     imageAlt: 'Vista previa en el celular de la invitación de boda con el diseño Botánica Editorial',
   },
   {
@@ -84,7 +92,9 @@ export const DESIGNS: DesignContent[] = [
     name: 'Jardín Editorial',
     crumb: 'Diseño jardín editorial',
     h1: 'Invitación digital de boda jardín editorial',
-    tagline: 'Verde oliva oscuro y papel crema, fotos en arco y numerales romanos en cada sección.',
+    tagline: 'Verde oliva y papel crema, con un tono elegante y sereno, como una revista de bodas.',
+    audience: 'Jardín y hacienda',
+    badge: 'Fotos en arco',
     lead: 'Un diseño editorial con fondo verde oliva oscuro y papel crema, numerales romanos como guía de cada sección y fotografías con marco en arco.',
     metaDescription:
       'Invitación digital de boda jardín editorial: verde oliva oscuro, papel crema, fotos en arco y numerales romanos. Confirmación en tiempo real.',
@@ -101,117 +111,39 @@ export const DESIGNS: DesignContent[] = [
 
 export const getDesign = (slug: string) => DESIGNS.find((d) => d.slug === slug);
 
+// Orden en que la landing muestra los diseños (hero, galería y pie), spec 26.
+export const LANDING_DESIGNS: DesignContent[] = (
+  ['jardin-editorial', 'clasico', 'moderno', 'botanica-editorial'] as const
+).map((slug) => getDesign(slug)!);
+
 // ---------- Paquetes ----------
-
-export interface PackageGroup {
-  title: string;
-  text: string;
-  isNew?: boolean;
-}
-
-// Viñeta corta de las tarjetas de paquetes de la landing (spec 15): `strong` arranca en negritas.
-export interface PackageHighlight {
-  text: string;
-  strong?: string;
-  isNew?: boolean;
-}
 
 export interface PackageContent {
   id: 'basico' | 'personalizado';
   name: string; // "Paquete Básico"
   price: 1100 | 1400; // fuente única del precio: landing, /paquetes y schema
   currency: 'MXN';
-  forWho: string;
-  groups: PackageGroup[]; // texto largo: /paquetes
-  highlights: PackageHighlight[]; // viñetas cortas: solo components/landing/Packages.tsx
-  notIncluded?: string;
+  forWho: string; // descripción del Offer en el JSON-LD (lib/seo-schema.ts)
+  tagline: string; // frase corta bajo el precio en la comparativa (spec 26)
 }
 
+// Qué incluye cada paquete vive en PACKAGE_COMPARISON (más abajo), compartido por la landing y /paquetes.
 export const PACKAGES: PackageContent[] = [
   {
     id: 'basico',
     name: 'Paquete Básico',
     price: 1100,
     currency: 'MXN',
-    forWho: 'Perfecto para bodas tradicionales',
-    groups: [
-      {
-        title: 'Tu página web',
-        text: 'Página tipo plantilla, enlace único para compartir, dominio/hosting incluido hasta 15 días después del evento, entrega en 7 días hábiles.',
-      },
-      {
-        title: 'Contenido de tu boda',
-        text: 'Bienvenida, cuenta regresiva, detalles del evento, nuestra historia, galería de fotos, cronograma y código de vestimenta.',
-      },
-      {
-        title: 'Logística para invitados',
-        text: 'Mesa de regalos, hospedaje recomendado y sección de solo adultos.',
-      },
-      {
-        title: 'Confirmación y gestión',
-        text: 'Formulario de confirmación y gestión de invitados confirmados.',
-      },
-    ],
-    highlights: [
-      { text: 'Página con enlace único para compartir' },
-      { text: 'Historia, cuenta regresiva, galería, cronograma y mapa' },
-      { text: 'Regalos, hospedaje, vestimenta y sección solo adultos' },
-      { text: 'Confirmación de asistencia y lista de confirmados' },
-      { text: 'Entrega en 7 días hábiles y hosting hasta 15 días después del evento' },
-      { strong: 'Invyta gestiona los cambios', text: ' de contenido' },
-    ],
-    notIncluded:
-      'Personalización por invitado (URL, mensaje, idioma, boletos o canción individuales) ni el asistente con IA. La gestión de mesas es gratis con cualquier cuenta, sin necesidad de este paquete.',
+    forWho: 'Invyta arma tu invitación y hace los cambios por ti.',
+    tagline: 'Nosotros hacemos todo',
   },
   {
     id: 'personalizado',
     name: 'Paquete Personalizado',
     price: 1400,
     currency: 'MXN',
-    forWho: 'Experiencia completamente personalizada',
-    groups: [
-      {
-        title: 'Tu página web',
-        text: 'Completamente personalizada, enlace único para redes, dominio/hosting incluido, entrega rápida en 7 días hábiles.',
-      },
-      {
-        title: 'Contenido a tu medida',
-        text: 'Bienvenida personalizada, cuenta regresiva dinámica, detalles completos, nuestra historia, galería profesional, cronograma detallado y código de vestimenta elegante.',
-      },
-      {
-        title: 'Logística para invitados',
-        text: 'Mesa de regalos integrada, hospedaje recomendado y sección solo adultos.',
-      },
-      {
-        title: 'Panel de edición y gestión',
-        text: 'Cambia los datos de tu invitación y controla confirmaciones e invitados cuando quieras.',
-      },
-      {
-        title: 'Gestión de mesas',
-        text: 'Cuadrícula y plano visual de tu salón: arrastra a tus invitados confirmados a su mesa y ve la ocupación de un vistazo.',
-        isNew: true,
-      },
-      {
-        title: 'Asistente con IA',
-        text: 'Redacta tu historia y tu código de vestimenta, traduce a inglés y sugiere itinerario, hoteles y lugares para tus invitados.',
-        isNew: true,
-      },
-      {
-        title: 'Personalización 1:1',
-        text: 'URL y bienvenida únicas por invitado, idioma (ES/EN) y canción en la invitación.',
-      },
-      {
-        title: 'Soporte',
-        text: 'Extendido, 7 días antes del evento.',
-      },
-    ],
-    highlights: [
-      { strong: 'Panel para editar tú mismo', text: ' tu invitación y gestionar invitados' },
-      { strong: 'Enlace y bienvenida por invitado', text: ', idioma ES/EN y canción' },
-      { strong: 'Gestión de mesas', text: ' con cuadrícula y plano visual', isNew: true },
-      { strong: 'Asistente con IA', text: ' para historia, traducción, itinerario y lugares', isNew: true },
-      { strong: 'Soporte extendido', text: ' durante los 7 días previos al evento' },
-    ],
+    forWho: 'Tu invitación con panel para editar, una invitación por invitado y asistente con IA.',
+    tagline: 'Tú tienes el control',
   },
 ];
 
@@ -219,6 +151,65 @@ export const getPackage = (id: PackageContent['id']) => PACKAGES.find((p) => p.i
 
 // "$1,100" — sin depender de la configuración regional del servidor o del navegador.
 export const formatPrice = (price: number) => `$${String(price).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+
+// ---------- Forma de pago y tiempo de respuesta (spec 26) ----------
+
+// Forma de pago (fuente única: hero, TrustSection, PaymentAndProcess, FAQ, StickyCtaBar).
+export const PAYMENT = {
+  depositMxn: 500, // anticipo para apartar fecha y empezar
+  method: 'transferencia',
+  balanceOn: 'entrega', // el resto se paga al recibir la invitación terminada
+  invoice: false, // hoy no se emite factura
+} as const;
+
+// "$500": el anticipo listo para usarse en frases.
+export const depositLabel = formatPrice(PAYMENT.depositMxn);
+
+// Promesa de respuesta por WhatsApp (texto, no número, para usarlo en frases).
+export const RESPONSE_TIME = 'menos de una hora';
+
+// ---------- Comparativa de paquetes (landing y /paquetes) ----------
+
+// `text` solo en filas donde cada paquete tiene un valor propio en lugar de sí/no.
+export interface ComparisonRow {
+  label: string;
+  basico: boolean;
+  personalizado: boolean;
+  text?: { basico: string; personalizado: string };
+}
+
+export interface ComparisonGroup {
+  title: string;
+  rows: ComparisonRow[];
+}
+
+export const PACKAGE_COMPARISON: ComparisonGroup[] = [
+  {
+    title: 'Tu invitación',
+    rows: [
+      { label: 'Uno de los 4 diseños, lista en 7 días hábiles', basico: true, personalizado: true },
+      { label: 'Historia, galería, cuenta regresiva, cronograma y mapa', basico: true, personalizado: true },
+      { label: 'Regalos, hospedaje, vestimenta y sección solo adultos', basico: true, personalizado: true },
+      { label: 'Confirmación de asistencia y lista de confirmados', basico: true, personalizado: true },
+      { label: 'Revisiones ilimitadas antes de la entrega', basico: true, personalizado: true },
+    ],
+  },
+  {
+    title: 'Después de publicar',
+    rows: [
+      {
+        label: 'Cambios de datos',
+        basico: true,
+        personalizado: true,
+        text: { basico: 'Los hacemos por ti', personalizado: 'Tú, desde tu panel' },
+      },
+      { label: 'Enlace y bienvenida con el nombre de cada invitado', basico: false, personalizado: true },
+      { label: 'Lugares por invitado, idioma ES/EN y canción', basico: false, personalizado: true },
+      { label: 'Asistente con IA para textos y traducción', basico: false, personalizado: true },
+      { label: 'Soporte extendido la semana de tu boda', basico: false, personalizado: true },
+    ],
+  },
+];
 
 // ---------- Preguntas frecuentes ----------
 
@@ -263,7 +254,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   },
   {
     question: '¿Cuánto tarda la entrega?',
-    answer: '7 días hábiles.',
+    answer: '7 días hábiles desde que tenemos tu información y tus fotos.',
     group: 'Antes de empezar',
   },
   {
@@ -305,6 +296,26 @@ FAQ_ITEMS.push(
     group: 'Antes de empezar',
   },
   {
+    // Spec 26: la respuesta sale de PAYMENT para que el anticipo viva en un solo lugar.
+    question: '¿Cómo se paga?',
+    answer: `Por ${PAYMENT.method}. Empiezas con ${depositLabel} MXN de anticipo y pagas el resto cuando recibes tu invitación terminada.${
+      PAYMENT.invoice ? '' : ' Por ahora no emitimos factura.'
+    }`,
+    group: 'Antes de empezar',
+  },
+  {
+    question: '¿Por qué no mandar un PDF o una imagen?',
+    answer:
+      'Un PDF no te dice quién confirmó. Con Invyta cada respuesta llega a tu lista, tus invitados tienen mapa, horarios y regalos en un solo lugar, y si cambia un dato no tienes que reenviar nada.',
+    group: 'Antes de empezar',
+  },
+  {
+    question: '¿Cuándo conviene enviarla?',
+    answer:
+      'Lo ideal es enviarla de 2 a 3 meses antes. Si tu boda es en menos de un mes, escríbenos hoy: con 7 días hábiles de entrega todavía llegas.',
+    group: 'Antes de empezar',
+  },
+  {
     question: '¿Cuál es la diferencia entre el Paquete Básico y el Personalizado?',
     answer:
       'En el Básico, Invyta gestiona los cambios de contenido de tu invitación. El Personalizado suma un panel para que edites tú y gestiones a tus invitados, un asistente con IA, personalización por invitado y soporte extendido durante los 7 días previos al evento.',
@@ -339,12 +350,13 @@ FAQ_ITEMS.push(
   },
   {
     question: '¿Mis invitados mayores sabrán usarla?',
-    answer: 'Se comparte por WhatsApp como cualquier mensaje: un enlace, un toque y se abre.',
+    answer:
+      'Se comparte por WhatsApp como cualquier mensaje: un enlace, un toque y se abre. Para confirmar solo eligen “Sí, ahí estaré”.',
     group: 'Invitados y confirmaciones',
   },
   {
     question: '¿Cuánto tiempo estará activa mi invitación?',
-    answer: 'Incluye hosting hasta 15 días después del evento.',
+    answer: 'Está en línea hasta 15 días después de tu boda.',
     group: 'Cambios, idioma y duración',
   },
   {
@@ -356,24 +368,24 @@ FAQ_ITEMS.push(
   {
     question: '¿Qué es la gestión de mesas?',
     answer:
-      'Organiza a tus invitados confirmados en mesas desde una vista de cuadrícula o un plano visual de tu salón, con arrastrar y soltar. Es parte del Paquete Personalizado.',
+      'Organiza a tus invitados confirmados en mesas desde una vista de cuadrícula o un plano visual de tu salón, con arrastrar y soltar. Es gratis con cualquier cuenta, sin contratar ningún paquete.',
     group: 'Gestión de mesas',
   },
 );
 
 export const getFaq = (question: string) => FAQ_ITEMS.find((item) => item.question === question)!;
 
-// Preguntas de la landing, en el orden en que se muestran (spec 15). Son textos exactos de
+// Preguntas de la landing, en el orden en que se muestran (spec 26). Son textos exactos de
 // FAQ_ITEMS: no se renombran porque /paquetes, /wedding-planners y /disenos las buscan con getFaq.
 export const LANDING_FAQ_QUESTIONS = [
-  '¿Cuánto cuesta una invitación digital de boda con Invyta?',
-  '¿Cuál es la diferencia entre el Paquete Básico y el Personalizado?',
+  '¿Cómo se paga?',
+  '¿Mis invitados necesitan descargar una aplicación?',
+  '¿Mis invitados mayores sabrán usarla?',
+  '¿Por qué no mandar un PDF o una imagen?',
   '¿Cuánto tarda la entrega?',
   '¿Puedo cambiar la información después de publicar?',
-  '¿Mis invitados necesitan descargar una aplicación?',
-  '¿Puedo ver cómo se ve antes de contratar?',
-  '¿La IA publica cosas en mi invitación sin que yo lo sepa?',
-  '¿La gestión de mesas viene en el Paquete Básico?',
+  '¿Cuánto tiempo estará activa mi invitación?',
+  '¿Cuándo conviene enviarla?',
 ];
 
 // Agrupa por tema respetando el orden de primera aparición.

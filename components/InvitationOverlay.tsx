@@ -10,6 +10,7 @@ import { getMockInvitation } from '../src/data/mockInvitations';
 import { useThemePatterns, useTheme } from '../lib/theme-context';
 import { useTranslations } from '../lib/translations';
 import type { WeddingInvitation, FirebaseGuest } from '../src/types/wedding';
+import InvitationOverlayV2 from './sections-v2/InvitationOverlayV2';
 
 interface InvitationOverlayProps {
   guestId: string;
@@ -17,9 +18,11 @@ interface InvitationOverlayProps {
   guestInfo?: FirebaseGuest | null;
   onClose: () => void;
   isDemoMode?: boolean;
+  // Spec 25: template-02 tiene su propia vista; los demás templates usan la de siempre.
+  templateId?: string;
 }
 
-const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingId, guestInfo, onClose, isDemoMode = false }) => {
+const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingId, guestInfo, onClose, isDemoMode = false, templateId }) => {
   const [isVisible, setIsVisible] = useState(true);
   const currentWedding = useAppSelector(selectCurrentWedding);
   const [invitation, setInvitation] = useState<WeddingInvitation | null>(null);
@@ -69,28 +72,55 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
   }, [weddingId, guestId, isDemoMode, currentWedding, currentLocale]);
 
   useEffect(() => {
-    // Bloquear scroll en mobile cuando el overlay está activo
-    const isMobile = window.innerWidth < 768;
-    if (isVisible && isMobile) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
-    } else {
-      document.body.style.overflow = 'unset';
-      document.body.style.touchAction = 'unset';
-    }
+    // Mientras la tarjeta del invitado está abierta la página no debe hacer scroll, en cualquier
+    // ancho y en todos los templates. `overflow: hidden` en <body> no basta en iOS Safari, así que
+    // se fija el <body> en su posición actual y se restaura al cerrar.
+    if (!isVisible) return;
 
-    // Cleanup al desmontar el componente
+    const html = document.documentElement;
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const previous = {
+      htmlOverflow: html.style.overflow,
+      bodyOverflow: body.style.overflow,
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyLeft: body.style.left,
+      bodyRight: body.style.right,
+      bodyWidth: body.style.width,
+      bodyTouchAction: body.style.touchAction,
+    };
+
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.touchAction = 'none';
+
     return () => {
-      document.body.style.overflow = 'unset';
-      document.body.style.touchAction = 'unset';
+      html.style.overflow = previous.htmlOverflow;
+      body.style.overflow = previous.bodyOverflow;
+      body.style.position = previous.bodyPosition;
+      body.style.top = previous.bodyTop;
+      body.style.left = previous.bodyLeft;
+      body.style.right = previous.bodyRight;
+      body.style.width = previous.bodyWidth;
+      body.style.touchAction = previous.bodyTouchAction;
+
+      // Volver al mismo punto sin animación aunque el sitio use scroll-behavior: smooth.
+      const previousBehavior = html.style.scrollBehavior;
+      html.style.scrollBehavior = 'auto';
+      window.scrollTo(0, scrollY);
+      html.style.scrollBehavior = previousBehavior;
     };
   }, [isVisible]);
 
   const handleClose = () => {
-    setIsVisible(false);
+    setIsVisible(false); // libera el bloqueo de scroll (cleanup del efecto de arriba)
     setTimeout(() => {
-      document.body.style.overflow = 'unset';
-      document.body.style.touchAction = 'unset';
       onClose();
     }, 500); // Esperar a que termine la animación
   };
@@ -111,6 +141,22 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
   });
 
   const { bride, groom } = currentWedding.couple;
+
+  if (templateId === 'template-02') {
+    return (
+      <InvitationOverlayV2
+        isVisible={isVisible}
+        guestName={guest.name}
+        allowedGuests={guest.allowedGuests}
+        showGuestCount={!currentWedding.selectedGuestTickets}
+        specialMessage={guest.specialMessage || null}
+        brideName={bride.name}
+        groomName={groom.name}
+        date={currentWedding.event?.date ? new Date(currentWedding.event.date) : new Date()}
+        onOpen={handleClose}
+      />
+    );
+  }
 
   return (
     <AnimatePresence>

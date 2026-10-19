@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { fraunces, LSection } from './ui';
-import { DESIGNS } from '../../lib/marketing-content';
+import { LANDING_DESIGNS } from '../../lib/marketing-content';
 import { SITE } from '../../lib/site';
 
 const linkClass = 'text-sm text-[#A79E92] hover:text-white transition-colors';
@@ -25,18 +25,18 @@ export default function Footer() {
             Diseños
           </a>
           <a href="/paquetes" className={linkClass}>
-            Paquetes
+            Precios
           </a>
           <a href="/wedding-planners" className={linkClass}>
             Wedding planners
           </a>
           <a href="/preguntas-frecuentes" className={linkClass}>
-            Preguntas frecuentes
+            Preguntas
           </a>
         </nav>
         <nav aria-label="Diseños" className="flex flex-col gap-3">
           <span className="text-sm font-bold text-[#FBF7F1]">Diseños</span>
-          {DESIGNS.map((design) => (
+          {LANDING_DESIGNS.map((design) => (
             <a key={design.slug} href={`/disenos/${design.slug}`} className={linkClass}>
               {design.name}
             </a>

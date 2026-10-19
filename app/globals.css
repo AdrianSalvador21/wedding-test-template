@@ -817,3 +817,14 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero-in-up, .hero-in-left { animation: none; }
 }
+
+/* Tarjeta "confirmó" del hero (spec 26): aparece al cargar y se repite al cambiar de diseño. */
+@keyframes lp-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+.lp-pop { animation: lp-pop 0.6s ease 0.5s both; }
+.lp-pop-again { animation: lp-pop 0.6s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .lp-pop, .lp-pop-again { animation: none; }
+}

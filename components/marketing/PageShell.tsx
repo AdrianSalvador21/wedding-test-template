@@ -17,7 +17,7 @@ export default function PageShell({
   return (
     <div className="min-h-screen bg-[#FBF7F1]" style={manrope}>
       <Nav active={active} />
-      <div className="pt-16 md:pt-24">
+      <div className="pt-[62px] lg:pt-[76px]">
         <nav aria-label="Migas de pan" className="max-w-7xl mx-auto px-6 md:px-12 h-14 flex items-center">
           <ol className="flex flex-wrap items-center gap-2.5 text-[13px] text-[#5A534B]">
             <li>

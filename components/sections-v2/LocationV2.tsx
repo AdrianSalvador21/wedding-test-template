@@ -1,109 +1,105 @@
 'use client';
 
-import { useParams } from 'next/navigation';
 import { MapPin } from 'lucide-react';
-import { openExternalLink } from '@/lib/utils';
-import { useIsMobile } from '@/lib/motion';
+import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { useTranslations } from '../../lib/translations';
-import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title, V2PillButton } from './ui';
+import {
+  V2_COLORS,
+  V2Container,
+  V2Section,
+  V2SectionHeading,
+  V2SectionLayout,
+  V2Stagger,
+  V2StaggerItem,
+  v2ButtonProps,
+  v2DisplayStyle,
+} from './ui';
+import { useV2SectionNumber, v2Venues } from './sections';
+
+interface Stop {
+  key: string;
+  label: string;
+  name: string;
+  address: string;
+  mapsUrl: string;
+}
+
+const mapsHref = (stop: Stop) =>
+  stop.mapsUrl || `https://maps.google.com/maps?q=${encodeURIComponent([stop.name, stop.address].filter(Boolean).join(' '))}`;
 
 export default function LocationV2() {
-  const { t } = useTranslations('location');
-  const params = useParams();
-  const currentLocale = params.locale as string;
-  const { isLoaded } = useIsMobile();
+  const { t, currentLanguage } = useTranslations('template02');
   const weddingData = useAppSelector(selectCurrentWedding);
+  const number = useV2SectionNumber('location');
+  const { ceremony, reception, sameVenue } = v2Venues(weddingData, currentLanguage);
 
-  const ceremonyVenueName = typeof weddingData?.event.ceremonyVenue?.name === 'object' && weddingData.event.ceremonyVenue.name
-    ? (weddingData.event.ceremonyVenue.name[currentLocale as 'es' | 'en'] || weddingData.event.ceremonyVenue.name.es || '')
-    : (weddingData?.event.ceremonyVenue?.name as unknown as string || '');
+  if (!ceremony && !reception) return null;
 
-  const ceremonyVenue = ceremonyVenueName;
-  const ceremonyAddress = weddingData?.event.ceremonyVenue?.address || '';
-  const ceremonyUrl = weddingData?.event.ceremonyVenue?.mapsUrl || '';
+  // Si ambas sedes se llaman igual se muestran como una sola parada (spec 25).
+  const stops: Stop[] = sameVenue
+    ? [{ key: 'both', label: t('location.both'), ...(reception ?? ceremony)! }]
+    : [
+        ...(ceremony ? [{ key: 'ceremony', label: t('location.ceremony'), ...ceremony }] : []),
+        ...(reception ? [{ key: 'reception', label: t('location.reception'), ...reception }] : []),
+      ];
 
-  const receptionVenueName = typeof weddingData?.event.receptionVenue?.name === 'object' && weddingData.event.receptionVenue.name
-    ? (weddingData.event.receptionVenue.name[currentLocale as 'es' | 'en'] || weddingData.event.receptionVenue.name.es || '')
-    : (weddingData?.event.receptionVenue?.name as unknown as string || '');
-
-  const receptionVenue = receptionVenueName;
-  const receptionAddress = weddingData?.event.receptionVenue?.address || '';
-  const receptionMapsUrl = weddingData?.event.receptionVenue?.mapsUrl || '';
-
-  if (!isLoaded) {
-    return (
-      <V2Section id="location">
-        <V2Container className="py-12">
-          <div className="animate-pulse space-y-6">
-            <div className="h-6 bg-[#e9ded2] rounded w-40" />
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="h-40 bg-[#efe6dc] rounded-[28px]" />
-              <div className="h-40 bg-[#efe6dc] rounded-[28px]" />
-            </div>
-          </div>
-        </V2Container>
-      </V2Section>
-    );
-  }
-
-  const Card = ({
-    title,
-    venue,
-    address,
-    mapsUrl,
-  }: {
-    title: string;
-    venue: string;
-    address: string;
-    mapsUrl: string;
-  }) => {
-    if (!venue) return null;
-
-    return (
-      <V2Card className="p-6">
-        <p className="text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b]">
-          {title}
-        </p>
-        <h3 className="mt-3 text-lg md:text-xl font-bold text-[#3b342b]">
-          {venue}
-        </h3>
-        {!!address && (
-          <p className="mt-2 text-sm text-[#6f6254] leading-relaxed">
-            {address}
-          </p>
-        )}
-
-        <div className="mt-6">
-          <V2PillButton onClick={() => openExternalLink(mapsUrl)} className="w-full px-4 py-3">
-            <span className="inline-flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              {t('directions')}
-            </span>
-          </V2PillButton>
-        </div>
-      </V2Card>
-    );
-  };
+  const title = stops.length > 1 ? t('location.titleTwo') : t('location.titleOne');
 
   return (
-    <V2Section id="location">
-      <V2Container className="py-12">
-        <V2Stagger>
-          <V2StaggerItem>
-            <V2Title title={t('title')} />
-          </V2StaggerItem>
-
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <V2StaggerItem>
-              <Card title={t('ceremony')} venue={ceremonyVenue} address={ceremonyAddress} mapsUrl={ceremonyUrl} />
-            </V2StaggerItem>
-            <V2StaggerItem>
-              <Card title={t('reception')} venue={receptionVenue} address={receptionAddress} mapsUrl={receptionMapsUrl} />
-            </V2StaggerItem>
-          </div>
-        </V2Stagger>
+    <V2Section id="location" tone="paper" bordered>
+      <V2Container className="py-16 pb-[72px] lg:py-24">
+        <V2SectionLayout heading={<V2SectionHeading number={number} overline={t('location.overline')} title={title} />}>
+            <V2Stagger as="ol" className="m-0 flex list-none flex-col p-0 md:grid md:grid-cols-2 md:gap-x-10 lg:flex lg:flex-col">
+              {stops.map((stop, index) => {
+                const isLast = index === stops.length - 1;
+                const filled = isLast;
+                return (
+                  <V2StaggerItem as="li" key={stop.key} className="grid grid-cols-[40px_minmax(0,1fr)] gap-x-4">
+                    <div className="flex flex-col items-center">
+                      <span
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-[15px]"
+                        style={{
+                          fontFamily: v2DisplayStyle(15).fontFamily,
+                          ...(filled
+                            ? { backgroundColor: V2_COLORS.ink, color: V2_COLORS.stone }
+                            : { border: `1px solid ${V2_COLORS.bronze}`, color: V2_COLORS.bronze }),
+                        }}
+                        aria-hidden="true"
+                      >
+                        {stops.length > 1 ? String.fromCharCode(65 + index) : <MapPin className="h-4 w-4" strokeWidth={1.7} />}
+                      </span>
+                      {!isLast && (
+                        <span aria-hidden="true" className="my-1.5 w-px flex-grow md:hidden lg:block" style={{ backgroundColor: V2_COLORS.rule }} />
+                      )}
+                    </div>
+                    <div className={`flex flex-col gap-2 ${isLast ? '' : 'pb-9'}`}>
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: V2_COLORS.graphite }}>
+                        {stop.label}
+                      </span>
+                      <h3 className="m-0" style={{ ...v2DisplayStyle(26, 400, -0.025), lineHeight: 1.1 }}>
+                        {stop.name}
+                      </h3>
+                      {stop.address && (
+                        <p className="m-0 text-[15px] leading-[1.55]" style={{ color: V2_COLORS.graphite }}>
+                          {stop.address}
+                        </p>
+                      )}
+                      <a
+                        href={mapsHref(stop)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        {...v2ButtonProps(filled ? 'primary' : 'secondary', 'sm', 'mt-2 self-start px-5 text-sm')}
+                      >
+                        <MapPin className="h-4 w-4" aria-hidden="true" strokeWidth={1.7} />
+                        {t('location.directions')}
+                      </a>
+                    </div>
+                  </V2StaggerItem>
+                );
+              })}
+            </V2Stagger>
+          </V2SectionLayout>
       </V2Container>
     </V2Section>
   );

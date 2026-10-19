@@ -3,10 +3,12 @@ import PageShell from '../../components/marketing/PageShell';
 import { Chip, CtaBand, PageHero, Section, SectionHead } from '../../components/marketing/blocks';
 import FaqList from '../../components/marketing/FaqList';
 import JsonLd from '../../components/seo/JsonLd';
-import { LCheckIcon, LSolidButton, LXIcon } from '../../components/landing/ui';
+import PackagesComparison from '../../components/landing/PackagesComparison';
+import PaymentAndProcess from '../../components/landing/PaymentAndProcess';
+import { LSolidButton } from '../../components/landing/ui';
 import { fraunces } from '../../lib/brand';
-import { whatsappUrl } from '../../lib/contact';
-import { formatPrice, getFaq, getPackage, type PackageContent } from '../../lib/marketing-content';
+import { QUOTE_WHATSAPP_MESSAGE } from '../../lib/contact';
+import { RESPONSE_TIME, formatPrice, getFaq, getPackage } from '../../lib/marketing-content';
 import { pageMetadata } from '../../lib/page-metadata';
 import { breadcrumbSchema, packagesSchema } from '../../lib/seo-schema';
 
@@ -19,18 +21,6 @@ export const metadata: Metadata = pageMetadata({
   path: '/paquetes',
 });
 
-// true = incluido, false = no incluido, string = texto propio de cada paquete.
-type Cell = boolean | string;
-const COMPARISON: [string, Cell, Cell][] = [
-  ['Enlace único para compartir', true, true],
-  ['Confirmación de asistencia y lista de confirmados', true, true],
-  ['Cronograma, mapa, código de vestimenta, mesa de regalos y hospedaje', true, true],
-  ['Cambios de contenido', 'Los gestiona Invyta', 'Los haces tú desde tu panel'],
-  ['Personalización por invitado: enlace, bienvenida, idioma y canción', false, true],
-  ['Asistente con IA', false, true],
-  ['Soporte extendido 7 días antes del evento', false, true],
-];
-
 const NEEDS = [
   'Fecha y hora de tu boda',
   'Lugar y ubicación',
@@ -40,96 +30,11 @@ const NEEDS = [
 ];
 
 const PRICE_FAQ = [
+  '¿Cómo se paga?',
   '¿Cuánto tarda la entrega?',
   '¿Cuántas invitaciones puedo enviar?',
   '¿Cuánto tiempo estará activa mi invitación?',
 ].map(getFaq);
-
-function CellView({ value }: { value: Cell }) {
-  if (value === true) {
-    return (
-      <span className="inline-flex items-center gap-2">
-        <LCheckIcon color="#AE5730" />
-        <span className="sr-only">Incluido</span>
-      </span>
-    );
-  }
-  if (value === false) {
-    return (
-      <span className="inline-flex items-center gap-2 text-[#A79E92]">
-        <LXIcon />
-        <span className="text-[13px]">No incluido</span>
-      </span>
-    );
-  }
-  return <span className="text-sm leading-snug text-[#2B2622]">{value}</span>;
-}
-
-function PackageCard({ pkg, featured }: { pkg: PackageContent; featured: boolean }) {
-  const message = `Hola, me interesa el ${pkg.name} de Invyta.`;
-  return (
-    <article
-      data-track-package={pkg.id}
-      className={`flex flex-col bg-white rounded-3xl p-8 md:p-10 ${
-        featured ? 'border-2 border-[#AE5730]' : 'border border-[rgba(43,38,34,0.1)]'
-      }`}
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-[28px] md:text-3xl text-[#211D19]" style={fraunces}>
-          {pkg.name}
-        </h2>
-        {featured && <Chip>Con panel y asistente con IA</Chip>}
-      </div>
-      <div className="mt-4 flex items-baseline gap-2">
-        <span className="text-5xl md:text-[56px] leading-none text-[#211D19]" style={fraunces}>
-          {formatPrice(pkg.price)}
-        </span>
-        <span className="text-base font-semibold text-[#5A534B]">{pkg.currency}</span>
-      </div>
-      <p className="mt-2.5 text-[15px] text-[#5A534B]">{pkg.forWho}</p>
-      <div className="h-px bg-[rgba(43,38,34,0.1)] my-6" />
-      <ul className="flex flex-col gap-4">
-        {pkg.groups.map((group) => (
-          <li key={group.title} className="flex items-start gap-3">
-            <LCheckIcon color="#AE5730" className="flex-shrink-0 mt-1" />
-            <div className="flex flex-col gap-1">
-              <span className="flex items-center gap-2 text-[15px] font-bold text-[#211D19]">
-                {group.title}
-                {group.isNew && (
-                  <span className="bg-[#AE5730] text-[#FBF7F1] text-[11px] font-bold tracking-wide uppercase px-2.5 py-0.5 rounded-full">
-                    Nuevo
-                  </span>
-                )}
-              </span>
-              <span className="text-sm leading-relaxed text-[#5A534B]">{group.text}</span>
-            </div>
-          </li>
-        ))}
-      </ul>
-      {pkg.notIncluded && (
-        <div className="mt-auto pt-6">
-          <div className="flex items-start gap-3 bg-[#FBF7F1] border border-[rgba(43,38,34,0.1)] rounded-2xl px-4 py-4">
-            <LXIcon className="flex-shrink-0 mt-0.5" />
-            <p className="text-sm leading-relaxed text-[#5A534B]">
-              <span className="font-bold text-[#211D19]">No incluye: </span>
-              {pkg.notIncluded}
-            </p>
-          </div>
-        </div>
-      )}
-      <div className={pkg.notIncluded ? 'mt-5' : 'mt-auto pt-7'}>
-        <LSolidButton
-          href={whatsappUrl(message)}
-          target="_blank"
-          variant={featured ? 'terracotaDark' : 'dark'}
-          className="w-full sm:w-auto"
-        >
-          {featured ? 'Quiero el Personalizado' : 'Quiero el Básico'}
-        </LSolidButton>
-      </div>
-    </article>
-  );
-}
 
 export default function PaquetesPage() {
   return (
@@ -143,7 +48,7 @@ export default function PaquetesPage() {
       >
         <div className="flex flex-wrap gap-2.5 mt-1">
           <Chip>Entrega en 7 días hábiles</Chip>
-          <Chip>Hosting hasta 15 días después del evento</Chip>
+          <Chip>En línea hasta 15 días después de tu boda</Chip>
           <Chip>Invitaciones sin límite</Chip>
         </div>
       </PageHero>
@@ -161,55 +66,15 @@ export default function PaquetesPage() {
               Crear cuenta gratis
             </LSolidButton>
           </div>
-          <div className="grid md:grid-cols-2 gap-8 items-stretch">
-            <PackageCard pkg={basico} featured={false} />
-            <PackageCard pkg={personalizado} featured />
+          {/* Misma comparativa y mismo bloque de pago que la landing (spec 26). */}
+          <div>
+            <PackagesComparison />
+            <PaymentAndProcess />
           </div>
         </div>
       </Section>
 
       <Section tone="white">
-        <SectionHead
-          eyebrow="Comparativa"
-          title="Qué incluye cada paquete"
-          text="El Paquete Básico es para bodas tradicionales y Invyta gestiona los cambios de contenido. El Personalizado suma un panel para que edites tú, un asistente con IA, personalización por invitado y soporte extendido durante los 7 días previos al evento."
-        />
-        <div className="overflow-x-auto rounded-[20px] border border-[rgba(43,38,34,0.1)]">
-          <table className="w-full min-w-[640px] text-left border-collapse">
-            <caption className="sr-only">Comparativa entre el Paquete Básico y el Paquete Personalizado</caption>
-            <thead>
-              <tr className="bg-[#FBF7F1] text-sm text-[#211D19]">
-                <th scope="col" className="px-6 py-4 font-bold">
-                  Característica
-                </th>
-                <th scope="col" className="px-6 py-4 font-bold">
-                  Básico · {formatPrice(basico.price)} MXN
-                </th>
-                <th scope="col" className="px-6 py-4 font-bold">
-                  Personalizado · {formatPrice(personalizado.price)} MXN
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {COMPARISON.map(([label, a, b]) => (
-                <tr key={label} className="border-t border-[rgba(43,38,34,0.1)]">
-                  <th scope="row" className="px-6 py-4 text-[15px] font-normal leading-snug text-[#2B2622]">
-                    {label}
-                  </th>
-                  <td className="px-6 py-4">
-                    <CellView value={a} />
-                  </td>
-                  <td className="px-6 py-4">
-                    <CellView value={b} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      <Section>
         <SectionHead
           eyebrow="Para empezar"
           title="Qué necesitamos de ti"
@@ -219,7 +84,7 @@ export default function PaquetesPage() {
           {NEEDS.map((need, index) => (
             <li
               key={need}
-              className="bg-white border border-[rgba(43,38,34,0.1)] rounded-[20px] px-5 py-6 flex flex-col gap-3"
+              className="bg-[#FBF7F1] border border-[rgba(43,38,34,0.1)] rounded-[20px] px-5 py-6 flex flex-col gap-3"
             >
               <span className="text-3xl leading-none text-[#AE5730]" style={fraunces}>
                 {String(index + 1).padStart(2, '0')}
@@ -230,7 +95,7 @@ export default function PaquetesPage() {
         </ol>
       </Section>
 
-      <Section tone="white">
+      <Section>
         <SectionHead eyebrow="Dudas de precio" title="Antes de elegir" />
         <div className="max-w-[780px] w-full mx-auto flex flex-col gap-8">
           <FaqList items={PRICE_FAQ} openFirst />
@@ -247,9 +112,9 @@ export default function PaquetesPage() {
 
       <CtaBand
         title="¿Para qué fecha es tu boda?"
-        text="Cuéntanos tu fecha y te compartimos disponibilidad. Respondemos por WhatsApp."
-        button="Escríbenos por WhatsApp"
-        message="Hola, quiero cotizar una invitación digital de boda con Invyta."
+        text={`Te respondemos en ${RESPONSE_TIME} con la disponibilidad para tu fecha.`}
+        button="Cotiza por WhatsApp"
+        message={QUOTE_WHATSAPP_MESSAGE}
       />
     </PageShell>
   );

@@ -1,85 +1,60 @@
 'use client';
 
-import React, { useState } from 'react';
-import { fraunces, LSection, LReveal } from './ui';
-import { LANDING_FAQ_QUESTIONS, getFaq } from '../../lib/marketing-content';
+import React from 'react';
+import { fraunces, LSection, L_WRAP, L_EYEBROW, L_H2, L_LEAD } from './ui';
+import { LANDING_FAQ_QUESTIONS, RESPONSE_TIME, getFaq } from '../../lib/marketing-content';
+import { whatsappUrl } from '../../lib/contact';
 
 const faqItems = LANDING_FAQ_QUESTIONS.map(getFaq);
-const half = Math.ceil(faqItems.length / 2);
-const columns = [faqItems.slice(0, half), faqItems.slice(half)];
 
+const QUESTION_MESSAGE = 'Hola! Tengo una pregunta sobre Invyta.';
+
+// FAQ v4 (spec 26): columna izquierda fija con la salida a WhatsApp y las 8 preguntas a la derecha.
+// <details> nativo: las respuestas están en el HTML inicial y se abren sin JavaScript.
 export default function FAQ() {
-  // Una pregunta abierta a la vez; la primera arranca abierta (diseño v2).
-  const [openQuestion, setOpenQuestion] = useState<string | null>(faqItems[0]?.question ?? null);
-
   return (
-    <LSection id="faq" tone="ivory" className="py-20 md:py-24">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col gap-12">
-        <LReveal className="flex flex-col items-center gap-3.5 text-center">
-          <span className="text-[13px] font-bold tracking-[3px] uppercase text-[#AE5730]">Preguntas frecuentes</span>
-          <h2 className="text-3xl md:text-[40px]" style={fraunces}>
+    <LSection id="faq" className="py-16 md:py-24">
+      <div className={`${L_WRAP} grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-7 md:gap-16 items-start`}>
+        <div className="md:sticky md:top-[110px] flex flex-col gap-[18px]">
+          <span className={L_EYEBROW}>Preguntas frecuentes</span>
+          <h2 className={`${L_H2} text-[#211D19]`} style={fraunces}>
             Lo que casi todas las parejas preguntan
           </h2>
-        </LReveal>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4 items-start max-w-[1100px] w-full mx-auto">
-          {columns.map((column, columnIndex) => (
-            <div key={columnIndex} className="flex flex-col gap-4">
-              {column.map((item) => {
-                const isOpen = openQuestion === item.question;
-                const panelId = `faq-${columnIndex}-${faqItems.indexOf(item)}`;
-                return (
-                  <div
-                    key={item.question}
-                    className="bg-white border border-[rgba(43,38,34,0.1)] rounded-[20px] px-6 py-5"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setOpenQuestion(isOpen ? null : item.question)}
-                      aria-expanded={isOpen}
-                      aria-controls={panelId}
-                      className="flex w-full items-center justify-between gap-4 bg-transparent border-0 p-0 text-left text-[#211D19]"
-                    >
-                      <span className="text-[17px] font-medium leading-snug" style={fraunces}>
-                        {item.question}
-                      </span>
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#AE5730"
-                        strokeWidth="2.4"
-                        aria-hidden="true"
-                        className="flex-shrink-0 transition-transform duration-200"
-                        style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-                      >
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </button>
-                    <div
-                      id={panelId}
-                      style={{
-                        display: 'grid',
-                        gridTemplateRows: isOpen ? '1fr' : '0fr',
-                        transition: 'grid-template-rows 300ms ease',
-                      }}
-                    >
-                      <div style={{ overflow: 'hidden' }}>
-                        <p className="mt-4 pt-4 border-t border-[rgba(43,38,34,0.08)] text-sm text-[#5A534B] leading-relaxed">
-                          {item.answer}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-        <div className="text-center">
-          <a href="/preguntas-frecuentes" className="text-[15px] font-bold text-[#AE5730] hover:text-[#8E4222]">
-            Ver todas las preguntas →
+          <p className={L_LEAD}>¿No está tu pregunta? Escríbenos y te respondemos en {RESPONSE_TIME}.</p>
+          <a
+            href={whatsappUrl(QUESTION_MESSAGE)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="self-start font-extrabold text-[15.5px] text-[#AE5730] border-b-[1.5px] border-current pb-0.5"
+          >
+            Pregúntanos por WhatsApp →
           </a>
+        </div>
+        <div className="flex flex-col gap-3">
+          {faqItems.map((item, index) => (
+            <details
+              key={item.question}
+              open={index === 0}
+              className="group bg-white border border-[rgba(43,38,34,0.1)] rounded-2xl md:rounded-[18px] px-4 md:px-[22px] transition-shadow duration-200 open:shadow-[0_14px_30px_rgba(43,38,34,0.07)]"
+            >
+              <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex justify-between items-center gap-4 py-4 md:py-[19px] text-[16.5px] md:text-[18.5px] leading-[1.3] text-[#211D19]" style={fraunces}>
+                <span>{item.question}</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  aria-hidden="true"
+                  className="w-5 h-5 text-[#AE5730] flex-shrink-0 transition-transform duration-200 group-open:rotate-180"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </summary>
+              <p className="pt-3.5 pb-5 border-t border-[rgba(43,38,34,0.1)] text-[15px] leading-[1.6] text-[#4A433C]">
+                {item.answer}
+              </p>
+            </details>
+          ))}
         </div>
       </div>
     </LSection>

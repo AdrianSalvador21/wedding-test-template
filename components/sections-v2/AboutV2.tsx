@@ -1,89 +1,86 @@
 'use client';
 
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding, selectCouple } from '../../src/store/slices/weddingSlice';
-import { useThemePatterns } from '../../lib/theme-context';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
-import { V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title, V2LeafAccent } from './ui';
+import { V2_COLORS, V2Container, V2Section, V2SectionHeading, V2SectionLayout, v2DisplayStyle } from './ui';
+import { useV2SectionNumber, v2Fill, v2Localized } from './sections';
 
 export default function AboutV2() {
-  const { t } = useTranslations('about');
-  const params = useParams();
-  const currentLocale = params.locale as string;
+  const { t, currentLanguage } = useTranslations('template02');
+  const { t: tAbout } = useTranslations('about');
   const currentWedding = useAppSelector(selectCurrentWedding);
   const couple = useAppSelector(selectCouple);
-  const { getBackgroundStyle } = useThemePatterns();
   const { coupleImage } = useWeddingImages(currentWedding?.id);
+  const number = useV2SectionNumber('about');
 
-  const storyText = typeof couple?.story === 'object' && couple.story
-    ? (couple.story[currentLocale as 'es' | 'en'] || couple.story.es || '')
-    : (couple?.story as unknown as string || t('story'));
-
-  const quoteText = typeof couple?.quote === 'object' && couple.quote
-    ? (couple.quote[currentLocale as 'es' | 'en'] || couple.quote.es || '')
-    : (couple?.quote as unknown as string || '');
+  const storyText = v2Localized(couple?.story, currentLanguage) || tAbout('story');
+  const quoteText = v2Localized(couple?.quote, currentLanguage);
+  const brideName = couple?.bride.name || '';
+  const groomName = couple?.groom.name || '';
 
   return (
-    <V2Section
-      id="about"
-      className="relative overflow-hidden"
-      style={{
-        ...getBackgroundStyle(1, '200px'),
-        backgroundSize: '1273px 845px'
-      }}
-    >
-      <V2Container className="py-12">
-        <V2Stagger>
-          <V2StaggerItem>
-            <V2Title title={t('title')} />
-          </V2StaggerItem>
-
-          <div className="mt-10 max-w-5xl mx-auto">
-            {quoteText && (
-              <V2StaggerItem>
-                <blockquote className="text-center font-medium text-[#6f6254] text-lg md:text-xl leading-relaxed px-2 md:px-10">
-                  &ldquo;{formatTextWithLineBreaks(quoteText)}&rdquo;
-                </blockquote>
-              </V2StaggerItem>
-            )}
-
-            <V2StaggerItem>
-              <div className="mt-10 flex justify-center">
-                <div className="h-px w-24 bg-[#d7c2a5]" />
+    <V2Section id="about">
+      <V2Container className="py-[72px] pb-16 lg:py-24">
+          <V2SectionLayout
+            heading={
+              <div className="flex flex-col gap-9">
+                <V2SectionHeading number={number} overline={t('about.overline')} title={t('about.title')} />
+                {quoteText && (
+                  <blockquote className="m-0 flex flex-col gap-3">
+                    <span aria-hidden="true" style={{ ...v2DisplayStyle(72, 300), lineHeight: 0.6, color: V2_COLORS.bronze }}>
+                      &ldquo;
+                    </span>
+                    <p className="m-0 text-[28px] lg:text-[32px]" style={{ ...v2DisplayStyle(28, 300, -0.025), fontSize: undefined, lineHeight: 1.2 }}>
+                      {formatTextWithLineBreaks(quoteText)}
+                    </p>
+                  </blockquote>
+                )}
               </div>
-            </V2StaggerItem>
-
-            <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-              <V2StaggerItem className="lg:col-span-5">
-                <div className="relative">
-                  <V2LeafAccent size={64} className="absolute -left-6 -top-6 text-[#b79a7a] opacity-60 hidden md:block" />
-                <div className="relative overflow-hidden rounded-[28px] border border-[#e7dccf] bg-white">
+            }
+          >
+            {/* Foto de pareja enmarcada por los anillos */}
+            <div className="relative mx-auto flex h-[380px] w-full max-w-[380px] items-center justify-center lg:h-[460px] lg:max-w-[460px]">
+              <svg
+                viewBox="0 0 380 380"
+                fill="none"
+                stroke={V2_COLORS.bronzeLight}
+                strokeWidth="1"
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full"
+              >
+                <circle cx="190" cy="190" r="186" opacity=".55" />
+                <circle cx="190" cy="190" r="168" opacity=".35" />
+              </svg>
+              <div className="relative h-[300px] w-[300px] overflow-hidden rounded-full lg:h-[364px] lg:w-[364px]">
+                {coupleImage && (
                   <Image
                     src={coupleImage}
-                    alt={`${couple?.bride.name || 'Novia'} y ${couple?.groom.name || 'Novio'}`}
-                    width={900}
-                    height={1100}
-                    className="object-cover w-full h-full"
+                    alt={v2Fill(t('about.photoAlt'), { bride: brideName, groom: groomName })}
+                    fill
+                    sizes="(min-width: 1024px) 364px, 300px"
+                    className="object-cover"
+                    style={{ objectPosition: '55% 30%' }}
                   />
-                </div>
-                </div>
-              </V2StaggerItem>
-
-              <V2StaggerItem className="lg:col-span-7">
-                <p className="text-base md:text-base text-[#6f6254] leading-relaxed text-center">
-                  {formatTextWithLineBreaks(storyText)}
-                </p>
-                <div className="mt-10 flex justify-center">
-                  <div className="h-px w-24 bg-[#d7c2a5]" />
-                </div>
-              </V2StaggerItem>
+                )}
+              </div>
+              {couple?.hashtag && (
+                <span
+                  className="absolute bottom-[26px] right-2 flex h-9 items-center rounded-full px-[14px] text-xs font-semibold tracking-[0.04em]"
+                  style={{ backgroundColor: V2_COLORS.ink, color: V2_COLORS.stone }}
+                >
+                  {couple.hashtag}
+                </span>
+              )}
             </div>
-          </div>
-        </V2Stagger>
+
+            <p className="m-0 text-base leading-[1.75]" style={{ color: V2_COLORS.graphite }}>
+              {formatTextWithLineBreaks(storyText)}
+            </p>
+          </V2SectionLayout>
       </V2Container>
     </V2Section>
   );

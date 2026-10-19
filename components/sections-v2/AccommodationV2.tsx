@@ -1,94 +1,63 @@
 'use client';
 
-import { MapPin } from 'lucide-react';
-import { useParams } from 'next/navigation';
-import { openExternalLink } from '@/lib/utils';
-import { useIsMobile } from '@/lib/motion';
+import { ArrowRight } from 'lucide-react';
+import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { useThemePatterns } from '../../lib/theme-context';
-import { useTranslations } from '../../lib/translations';
-import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title, V2PillButton } from './ui';
+import { V2_COLORS, V2Container, V2Section, V2SectionHeading, V2SectionLayout, V2Stagger, V2StaggerItem, v2DisplayStyle } from './ui';
+import { useV2SectionNumber, v2Localized } from './sections';
 
 export default function AccommodationV2() {
-  const { t } = useTranslations('accommodation');
-  const { isLoaded } = useIsMobile();
+  const { t, currentLanguage } = useTranslations('template02');
   const weddingData = useAppSelector(selectCurrentWedding);
-  const { getBackgroundStyle } = useThemePatterns();
-  const params = useParams();
-  const currentLocale = params.locale as string;
+  const number = useV2SectionNumber('accommodation');
 
   if (!weddingData?.accommodation?.hotels?.length) {
     return null;
   }
 
-  const accommodationOptions = weddingData.accommodation.hotels;
-
-  if (!isLoaded) {
-    return (
-      <V2Section id="accommodation">
-        <V2Container className="py-12">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-[#efe6dc] rounded w-64 mx-auto" />
-            <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-              <div className="h-44 bg-[#f3ece4] rounded-[28px]" />
-              <div className="h-44 bg-[#f3ece4] rounded-[28px]" />
-            </div>
-          </div>
-        </V2Container>
-      </V2Section>
-    );
-  }
+  const hotels = weddingData.accommodation.hotels;
 
   return (
-    <V2Section
-      id="accommodation"
-      className="relative overflow-hidden"
-      style={{
-        ...getBackgroundStyle(2, '240px'),
-        backgroundSize: '400px 500px',
-        backgroundRepeat: 'repeat',
-        backgroundPosition: '-304px -136px'
-      }}
-    >
-      <V2Container className="py-12">
-        <V2Stagger>
-          <V2StaggerItem>
-            <V2Title title={t('title')} subtitle={t('subtitle')} />
-          </V2StaggerItem>
-
-          <div className="mt-10 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-5">
-            {accommodationOptions.map((hotel, index) => (
-              <V2StaggerItem key={index}>
-                <V2Card className="p-6">
-                  <h3 className="font-bold text-lg text-[#3b342b] leading-snug">
-                    {hotel.name}
-                  </h3>
-
-                  {hotel.description && (
-                    <p className="mt-3 text-sm text-[#6f6254] leading-relaxed">
-                      {typeof hotel.description === 'object'
-                        ? (hotel.description[currentLocale as 'es' | 'en'] || hotel.description.es)
-                        : hotel.description}
-                    </p>
-                  )}
-
-                  <div className="mt-6">
-                    <V2PillButton
-                      onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
-                      className="w-full"
+    <V2Section id="accommodation" tone="paper" bordered>
+      <V2Container className="py-16 lg:py-24">
+        <V2SectionLayout
+            heading={<V2SectionHeading number={number} overline={t('accommodation.overline')} title={t('accommodation.title')} />}
+          >
+            <V2Stagger className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4">
+              {hotels.map((hotel, index) => {
+                const description = v2Localized(hotel.description, currentLanguage);
+                const href = hotel.mapsUrl || `https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`;
+                return (
+                  <V2StaggerItem
+                    as="article"
+                    key={hotel.id || `${hotel.name}-${index}`}
+                    className="flex flex-col gap-[10px] rounded-md p-5"
+                    style={{ border: `1px solid ${V2_COLORS.rule}`, backgroundColor: V2_COLORS.white }}
+                  >
+                    <h3 className="m-0" style={{ ...v2DisplayStyle(22, 400, -0.02), lineHeight: 1.15 }}>
+                      {hotel.name}
+                    </h3>
+                    {description && (
+                      <p className="m-0 text-sm leading-[1.55]" style={{ color: V2_COLORS.graphite }}>
+                        {description}
+                      </p>
+                    )}
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-1 flex min-h-11 items-center gap-2 self-start text-sm font-semibold no-underline hover:opacity-80"
+                      style={{ color: V2_COLORS.bronze }}
                     >
-                      <span className="inline-flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        {t('seeLocation')}
-                      </span>
-                    </V2PillButton>
-                  </div>
-                </V2Card>
-              </V2StaggerItem>
-            ))}
-          </div>
-        </V2Stagger>
+                      {t('accommodation.seeLocation')}
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" strokeWidth={1.8} />
+                    </a>
+                  </V2StaggerItem>
+                );
+              })}
+            </V2Stagger>
+          </V2SectionLayout>
       </V2Container>
     </V2Section>
   );
