@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
-import { fraunces, LSection, LButton, LChatIcon, LWhatsAppIcon, L_WRAP, L_EYEBROW, L_LEAD } from './ui';
+import { fraunces, LSection, LButton, LWhatsAppIcon, L_WRAP, L_EYEBROW, L_LEAD } from './ui';
 import { QUOTE_WHATSAPP_MESSAGE, whatsappUrl } from '../../lib/contact';
 import { RESPONSE_TIME } from '../../lib/marketing-content';
-import { SITE } from '../../lib/site';
 
 // Cierre (spec 26): mismo título, la promesa de respuesta y el número visible para quien no
 // puede abrir WhatsApp Web.
