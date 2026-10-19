@@ -1,462 +1,219 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { motion, useReducedMotion, type MotionProps } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import { useInView } from 'react-intersection-observer';
 import { useTranslations } from '../../lib/translations';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { useWeddingImages } from '../../hooks/useWeddingImages';
-import { V2Rings, V2LeafAccent, V2Monogram } from './ui';
+import { V2_COLORS, V2_FONTS, V2Rings, v2ButtonProps, v2DisplayStyle } from './ui';
+import { v2DateLocale, v2FormatLongDate, v2FormatTime, v2Initials, v2Venues, v2WeddingDate } from './sections';
+import MusicToggleV2 from './MusicToggleV2';
+import AddToCalendarButtonV2 from './AddToCalendarButtonV2';
 
 interface HeroV2Props {
   overlayVisible: boolean;
 }
 
+function DateSeal({ date, locale, size }: { date: Date; locale: string; size: 'sm' | 'lg' }) {
+  const month = date.toLocaleDateString(v2DateLocale(locale), { month: 'short' }).replace('.', '').toUpperCase();
+  const year = size === 'lg' ? String(date.getFullYear()) : String(date.getFullYear()).slice(-2);
+  const day = String(date.getDate()).padStart(2, '0');
+  const inner = size === 'lg' ? 148 : 104;
+  return (
+    <div
+      className="flex flex-col items-center justify-center gap-0.5 rounded-full"
+      style={{ width: inner, height: inner, border: `1px solid ${V2_COLORS.bronze}` }}
+    >
+      <span style={v2DisplayStyle(size === 'lg' ? 56 : 40, 300, -0.05)} className="leading-none">
+        {day}
+      </span>
+      <span className="text-[10px] font-semibold uppercase tracking-[0.22em] lg:text-[11px] lg:tracking-[0.24em]" style={{ color: V2_COLORS.bronze }}>
+        {month} · {year}
+      </span>
+    </div>
+  );
+}
+
 export default function HeroV2({ overlayVisible }: HeroV2Props) {
-  const [animationKey, setAnimationKey] = useState(0);
-  const [wasOverlayVisible, setWasOverlayVisible] = useState(overlayVisible);
-  const [monogramExists, setMonogramExists] = useState(false);
-
-  useEffect(() => {
-    if (wasOverlayVisible && !overlayVisible) {
-      setAnimationKey((prev: number) => prev + 1);
-    }
-    setWasOverlayVisible(overlayVisible);
-  }, [overlayVisible, wasOverlayVisible]);
-
-  const { t, currentLanguage } = useTranslations('hero');
+  const { t, currentLanguage } = useTranslations('template02');
   const weddingData = useAppSelector(selectCurrentWedding);
+  const { heroImage } = useWeddingImages(weddingData?.id);
+  const reduceMotion = useReducedMotion();
+  const [monogramExists, setMonogramExists] = useState(false);
+  const { ref: heroRef, inView: heroInView } = useInView({ initialInView: true });
 
   useEffect(() => {
     const checkMonogram = async () => {
-      if (weddingData?.id) {
-        try {
-          const response = await fetch(`/assets/wedding-images/${weddingData.id}/monogram.svg`);
-          setMonogramExists(response.ok);
-        } catch {
-          setMonogramExists(false);
-        }
+      if (!weddingData?.id) return;
+      try {
+        const response = await fetch(`/assets/wedding-images/${weddingData.id}/monogram.svg`, { method: 'HEAD' });
+        setMonogramExists(response.ok);
+      } catch {
+        setMonogramExists(false);
       }
     };
     checkMonogram();
   }, [weddingData?.id]);
 
-  const { heroImage } = useWeddingImages(weddingData?.id);
-
   const brideName = weddingData?.couple.bride.name || 'María';
   const groomName = weddingData?.couple.groom.name || 'Carlos';
-  const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
-  const heroImageUrl = heroImage;
-  const heroImageAlt = weddingData?.heroImage?.alt || 'Imagen principal de boda';
+  const initials = v2Initials(weddingData);
+  const weddingDate = v2WeddingDate(weddingData);
+  const time = v2FormatTime(weddingData?.event.time);
+  const { ceremony, reception } = v2Venues(weddingData, currentLanguage);
+  const placeName = ceremony?.name || reception?.name || '';
+  const showConfirm = weddingData?.showConfirmCta !== false;
+  const heroImageAlt = weddingData?.heroImage?.alt || `${brideName} & ${groomName}`;
 
-  const [fixedHeight, setFixedHeight] = useState<number | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isChromeIOS, setIsChromeIOS] = useState(false);
+  const show = !overlayVisible;
+  const reveal = (delay: number, y = 16): MotionProps =>
+    reduceMotion
+      ? { initial: { opacity: 0 }, animate: { opacity: show ? 1 : 0 }, transition: { duration: 0.3, delay: show ? delay / 2 : 0 } }
+      : {
+          initial: { opacity: 0, y },
+          animate: { opacity: show ? 1 : 0, y: show ? 0 : y },
+          transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94], delay: show ? delay : 0 },
+        };
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    const detectChromeIOS = () => {
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isChromeIOSDetected = isIOS && /CriOS/.test(navigator.userAgent);
-      setIsChromeIOS(isChromeIOSDetected);
-    };
-
-    checkMobile();
-    detectChromeIOS();
-    window.addEventListener('resize', checkMobile);
-
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
-    const img = document.createElement('img');
-    img.src = heroImageUrl;
-
-    const setFixedViewportHeight = () => {
-      const currentHeight = window.innerHeight;
-
-      if (isChromeIOS) {
-        const conservativeHeight = Math.min(currentHeight, 640);
-        setFixedHeight(conservativeHeight);
-      } else {
-        setFixedHeight(currentHeight);
-      }
-
-      const vh = currentHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-
-    setFixedViewportHeight();
-
-    const handleOrientationChange = () => {
-      setTimeout(() => {
-        setFixedViewportHeight();
-      }, 100);
-    };
-
-    window.addEventListener('orientationchange', handleOrientationChange);
-    return () => {
-      window.removeEventListener('orientationchange', handleOrientationChange);
-    };
-  }, [heroImageUrl, isChromeIOS]);
-
-  useEffect(() => {
-    if (isChromeIOS) {
-      document.body.classList.add('chrome-ios');
-      document.documentElement.style.setProperty('--hero-bg-image', `url(${heroImageUrl})`);
-    } else {
-      document.body.classList.remove('chrome-ios');
-      document.documentElement.style.removeProperty('--hero-bg-image');
-    }
-
-    return () => {
-      document.body.classList.remove('chrome-ios');
-      document.documentElement.style.removeProperty('--hero-bg-image');
-    };
-  }, [isChromeIOS, heroImageUrl]);
-
-  const localeMap: { [key: string]: string } = {
-    es: 'es-ES',
-    en: 'en-US',
+  const scrollToRsvp = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const target = document.getElementById('rsvp');
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
   };
 
-  const locale = localeMap[currentLanguage] || 'es-ES';
-
-  const formatDate = () => {
-    return weddingDate.toLocaleDateString(locale, {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
+  const facts: { label: string; value: string; wide?: boolean }[] = [
+    { label: t('hero.date'), value: v2FormatLongDate(weddingDate, currentLanguage) },
+    ...(time ? [{ label: t('hero.time'), value: time }] : []),
+    ...(placeName ? [{ label: t('hero.place'), value: placeName, wide: true }] : []),
+  ];
 
   return (
     <section
-      className="hero-section relative overflow-hidden md:flex md:items-center md:justify-center text-white"
-      style={{
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
-        ...(isChromeIOS
-          ? {
-              height: '812px',
-              minHeight: '812px',
-              maxHeight: '812px',
-            }
-          : {
-              height: fixedHeight ? `${fixedHeight}px` : '100vh',
-              minHeight: fixedHeight ? `${fixedHeight}px` : '100vh',
-            }),
-        ...(!isMobile && !isChromeIOS ? { backgroundImage: `url(${heroImageUrl})` } : {}),
-      }}
+      id="hero"
+      ref={heroRef}
+      className="relative lg:grid lg:min-h-[max(720px,calc(100vh-80px))] lg:grid-cols-2"
+      style={{ backgroundColor: V2_COLORS.stone, color: V2_COLORS.ink, fontFamily: V2_FONTS.body }}
     >
-      <section className="md:hidden relative w-full h-full bg-[#fbf7f1] overflow-hidden">
-        <div className="absolute inset-x-0 top-0 overflow-hidden bg-[#fbf7f1]" style={{ height: '64%' }}>
-          <img
-            src={heroImageUrl}
+      {/* Foto */}
+      <div className="relative h-[560px] overflow-hidden lg:h-auto">
+        {heroImage && (
+          <motion.img
+            src={heroImage}
             alt={heroImageAlt}
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ objectPosition: 'center 25%', display: 'block' }}
+            className="absolute inset-0 block h-full w-full object-cover"
+            style={{ objectPosition: 'center 28%' }}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 1.04 }}
+            animate={reduceMotion ? { opacity: show ? 1 : 0 } : { opacity: show ? 1 : 0, scale: show ? 1 : 1.04 }}
+            transition={{ duration: reduceMotion ? 0.3 : 1.2, ease: [0.19, 1, 0.22, 1] }}
           />
-          <span
-            className="absolute left-0 right-0 bottom-0 z-20 pointer-events-none"
-            style={{
-              height: '58%',
-              left: '-6px',
-              right: '-6px',
-              bottom: '-6px',
-              background:
-                'linear-gradient(to bottom, rgba(251,247,241,0) 0%, rgba(251,247,241,0.05) 22%, rgba(251,247,241,0.22) 42%, rgba(251,247,241,0.5) 60%, rgba(251,247,241,0.8) 76%, rgba(251,247,241,0.96) 90%, rgba(251,247,241,1) 100%)',
-            }}
-          />
-        </div>
-
-        <div
-          className="absolute inset-x-0 bottom-0 bg-[#fbf7f1] px-6"
-          style={{ height: '9%', top: 'calc(64% - 6px)' }}
-        >
-          <div className="relative h-full flex items-center justify-center">
-            <div className="w-full max-w-[22rem] text-center text-[#3b342b]">
-              <motion.h2
-                key={`hero-subtitle-mobile-${animationKey}`}
-                className="text-[11px] font-medium tracking-[0.45em] uppercase text-[#6f6254]"
-                initial={{ opacity: 0, letterSpacing: '0.8em' }}
-                animate={{
-                  opacity: overlayVisible ? 0 : 1,
-                  letterSpacing: overlayVisible ? '0.8em' : '0.45em',
-                }}
-                transition={{ duration: 1, ease: 'easeOut', delay: overlayVisible ? 0 : 0.1 }}
-              >
-                {t('ourWedding')}
-              </motion.h2>
-
-            <motion.h1
-              key={`hero-names-mobile-${animationKey}`}
-              className="mt-6 text-[42px] leading-[1.05] font-bold tracking-tight"
-              initial={{ opacity: 0, scale: 0.92, y: 16 }}
-              animate={{
-                opacity: overlayVisible ? 0 : 1,
-                scale: overlayVisible ? 0.92 : 1,
-                y: overlayVisible ? 16 : 0,
-              }}
-              transition={{ duration: 1.0, ease: [0.25, 0.46, 0.45, 0.94], delay: overlayVisible ? 0 : 0.2 }}
+        )}
+        <div className="absolute left-4 top-4">
+          {monogramExists && weddingData?.id ? (
+            <div
+              className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full"
+              style={{ border: '1px solid rgba(255,255,255,0.7)', backgroundColor: 'rgba(30,28,25,0.25)' }}
             >
-              <motion.span
-                key={`hero-bride-mobile-${animationKey}`}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: overlayVisible ? 0 : 1, x: overlayVisible ? -10 : 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut', delay: overlayVisible ? 0 : 0.35 }}
-              >
-                {brideName}
-              </motion.span>
-              <motion.span
-                key={`hero-ampersand-mobile-${animationKey}`}
-                className="mx-3 font-bold text-[#b79a7a]"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: overlayVisible ? 0 : 1, scale: overlayVisible ? 0.9 : 1 }}
-                transition={{ duration: 0.6, ease: 'easeOut', delay: overlayVisible ? 0 : 0.45 }}
-              >
-                &
-              </motion.span>
-              <motion.span
-                key={`hero-groom-mobile-${animationKey}`}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: overlayVisible ? 0 : 1, x: overlayVisible ? 10 : 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut', delay: overlayVisible ? 0 : 0.55 }}
-              >
-                {groomName}
-              </motion.span>
-            </motion.h1>
-
-            <motion.p
-              key={`hero-date-mobile-${animationKey}`}
-              className="mt-6 text-base text-[#6f6254]"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: overlayVisible ? 0 : 1, y: overlayVisible ? 10 : 0 }}
-              transition={{ duration: 0.8, ease: 'easeOut', delay: overlayVisible ? 0 : 0.7 }}
-            >
-              {formatDate()}
-            </motion.p>
-
-            {weddingData?.showConfirmCta !== false && (
-              <motion.button
-                key={`hero-cta-mobile-${animationKey}`}
-                onClick={() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth' })}
-                className="mt-8 inline-flex items-center justify-center rounded-full px-10 py-3.5 text-sm font-medium bg-[#b79a7a] text-white"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: overlayVisible ? 0 : 1, y: overlayVisible ? 10 : 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut', delay: overlayVisible ? 0 : 0.85 }}
-              >
-                <span className="font-bold tracking-wide">{t('cta')}</span>
-              </motion.button>
-            )}
-          </div>
-          </div>
-        </div>
-      </section>
-
-      <div className="hidden md:block absolute inset-0 z-0 overflow-hidden">
-        <img src={heroImageUrl} alt={heroImageAlt} className="hero-background-image" />
-        {/* Degradado natural: casi transparente arriba, se acentúa hacia abajo donde va el texto,
-            más un leve viñeteado en los bordes en vez de un tinte plano uniforme */}
-        <div
-          className="absolute inset-0 z-10"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(15,12,8,.08) 0%, rgba(15,12,8,.1) 30%, rgba(15,12,8,.28) 58%, rgba(15,12,8,.52) 80%, rgba(15,12,8,.62) 100%)',
-          }}
-        />
-        <div
-          className="absolute inset-0 z-10"
-          style={{
-            background:
-              'radial-gradient(120% 90% at 50% 42%, rgba(0,0,0,0) 45%, rgba(15,12,8,.22) 100%)',
-          }}
-        />
-        <V2Rings size={260} className="absolute left-14 top-14 opacity-50 z-10" />
-        <V2LeafAccent size={110} className="absolute right-20 top-28 opacity-40 z-10 text-white" />
-      </div>
-
-      <div className="hidden md:block relative z-10 text-center px-6 max-w-4xl mx-auto">
-        <div className="relative z-10">
-          <motion.div
-            key={`hero-monogram-${animationKey}`}
-            className="mb-10 flex justify-center"
-            initial={{ opacity: 0, y: -30, scale: 0.8 }}
-            animate={{
-              opacity: overlayVisible ? 0 : 1,
-              y: overlayVisible ? -30 : 0,
-              scale: overlayVisible ? 0.8 : 1,
-            }}
-            transition={{
-              duration: 1.2,
-              ease: [0.25, 0.46, 0.45, 0.94],
-              delay: overlayVisible ? 0 : 0.1,
-            }}
-          >
-            {monogramExists ? (
-              <motion.div
-                className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28"
-                initial={{ rotate: -5 }}
-                animate={{ rotate: overlayVisible ? -5 : 0 }}
-                transition={{ duration: 1, ease: 'easeOut', delay: overlayVisible ? 0 : 0.3 }}
-                whileHover={{ scale: 1.05, rotate: 2, transition: { duration: 0.3 } }}
-              >
-                <img
-                  src={`/assets/wedding-images/${weddingData?.id}/monogram.svg`}
-                  alt="Monograma de los novios"
-                  className="w-full h-full object-contain filter drop-shadow-lg"
-                  style={{ filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.8)) brightness(0.95)' }}
-                />
-              </motion.div>
-            ) : (
-              <V2Monogram size={96} initials={`${brideName.charAt(0)}${groomName.charAt(0)}`} />
-            )}
-          </motion.div>
-
-          <motion.div
-            key={`hero-title-${animationKey}`}
-            className="mb-6"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: overlayVisible ? 0 : 1, y: overlayVisible ? -20 : 0 }}
-            transition={{ duration: 0.5, ease: 'easeOut', delay: overlayVisible ? 0 : monogramExists ? 0.4 : 0.2 }}
-          >
-            <motion.h2
-              key={`hero-subtitle-${animationKey}`}
-              className="text-[11px] md:text-xs font-light tracking-[0.45em] uppercase text-white/90 mb-2"
-              style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}
-              initial={{ opacity: 0, letterSpacing: '0.8em' }}
-              animate={{
-                opacity: overlayVisible ? 0 : 1,
-                letterSpacing: overlayVisible ? '0.8em' : '0.45em',
-              }}
-              transition={{ duration: 1, ease: 'easeOut', delay: overlayVisible ? 0 : monogramExists ? 0.4 : 0.2 }}
-            >
-              {t('ourWedding')}
-            </motion.h2>
-
-            <div className="flex flex-col items-center space-y-4">
-              <motion.div
-                key={`hero-line-top-${animationKey}`}
-                className="h-px bg-white/40"
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: overlayVisible ? 0 : '6rem', opacity: overlayVisible ? 0 : 1 }}
-                transition={{ duration: 1, ease: 'easeOut', delay: overlayVisible ? 0 : monogramExists ? 0.8 : 0.6 }}
-              />
-
-              <motion.h1
-                key={`hero-names-${animationKey}`}
-                className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-tight"
-                style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.9)', opacity: 0.95 }}
-                initial={{ opacity: 0, scale: 0.8, y: 30 }}
-                animate={{
-                  opacity: overlayVisible ? 0 : 0.95,
-                  scale: overlayVisible ? 0.8 : 1,
-                  y: overlayVisible ? 30 : 0,
-                }}
-                transition={{
-                  duration: 1.2,
-                  ease: [0.25, 0.46, 0.45, 0.94],
-                  delay: overlayVisible ? 0 : monogramExists ? 1.0 : 0.8,
-                }}
-              >
-                <motion.span
-                  key={`hero-bride-${animationKey}`}
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: overlayVisible ? 0 : 1, x: overlayVisible ? -30 : 0 }}
-                  transition={{ duration: 0.8, ease: 'easeOut', delay: overlayVisible ? 0 : 1 }}
-                >
-                  {brideName}
-                </motion.span>
-                <motion.span
-                  key={`hero-ampersand-${animationKey}`}
-                  className="mx-4 md:mx-6 font-bold text-[#b79a7a]/90"
-                  initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
-                  animate={{ opacity: overlayVisible ? 0 : 1, scale: overlayVisible ? 0.5 : 1, rotate: overlayVisible ? -10 : 0 }}
-                  transition={{ duration: 0.6, ease: 'easeOut', delay: overlayVisible ? 0 : 1.2, type: 'spring', stiffness: 200 }}
-                >
-                  &
-                </motion.span>
-                <motion.span
-                  key={`hero-groom-${animationKey}`}
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: overlayVisible ? 0 : 1, x: overlayVisible ? 30 : 0 }}
-                  transition={{ duration: 0.8, ease: 'easeOut', delay: overlayVisible ? 0 : 1.4 }}
-                >
-                  {groomName}
-                </motion.span>
-              </motion.h1>
-
-              <motion.div
-                key={`hero-line-bottom-${animationKey}`}
-                className="h-px bg-white/40"
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: overlayVisible ? 0 : '6rem', opacity: overlayVisible ? 0 : 1 }}
-                transition={{ duration: 1, ease: 'easeOut', delay: overlayVisible ? 0 : 1.6 }}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/assets/wedding-images/${weddingData.id}/monogram.svg`}
+                alt={t('hero.monogramAlt')}
+                className="h-8 w-8 object-contain"
               />
             </div>
-          </motion.div>
-
-          <motion.div
-            key={`hero-date-container-${animationKey}`}
-            className="mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: overlayVisible ? 0 : 1, y: overlayVisible ? 20 : 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: overlayVisible ? 0 : 1.8 }}
-          >
-            <motion.p
-              key={`hero-date-text-${animationKey}`}
-              className="text-sm md:text-base text-white/90 tracking-wide"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: overlayVisible ? 0 : 1 }}
-              transition={{ duration: 1, ease: 'easeOut', delay: overlayVisible ? 0 : 2 }}
+          ) : (
+            <div
+              className="flex h-11 w-11 items-center justify-center rounded-full text-sm"
+              style={{
+                border: '1px solid rgba(255,255,255,0.7)',
+                backgroundColor: 'rgba(30,28,25,0.25)',
+                color: V2_COLORS.white,
+                fontFamily: V2_FONTS.display,
+                letterSpacing: '0.02em',
+              }}
+              aria-hidden="true"
             >
-              {formatDate()}
-            </motion.p>
-          </motion.div>
-
-          {weddingData?.showConfirmCta !== false && (
-            <motion.div
-              key={`hero-cta-container-${animationKey}`}
-              className="space-y-6"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: overlayVisible ? 0 : 1, y: overlayVisible ? 30 : 0 }}
-              transition={{ duration: 0.8, ease: 'easeOut', delay: overlayVisible ? 0 : 2.2 }}
-            >
-              <motion.button
-                key={`hero-cta-button-${animationKey}`}
-                onClick={() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-[#b79a7a]/85 text-white font-medium py-3.5 px-10 rounded-full text-sm md:text-base shadow-[0_14px_30px_rgba(0,0,0,0.25)] hover:opacity-95 transition-opacity backdrop-blur-sm border border-white/30"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: overlayVisible ? 0 : 1 }}
-                transition={{ duration: 0.6, ease: 'easeOut', delay: overlayVisible ? 0 : 2.4 }}
-              >
-                <span className="font-bold tracking-wide">{t('cta')}</span>
-              </motion.button>
-            </motion.div>
+              {initials.bride}·{initials.groom}
+            </div>
           )}
-
-          <motion.div
-            key={`hero-scroll-indicator-${animationKey}`}
-            animate={{ y: overlayVisible ? [0, 0, 0] : [0, 8, 0], opacity: overlayVisible ? 0 : 1 }}
-            transition={{ duration: 2.5, repeat: overlayVisible ? 0 : Infinity, ease: 'easeInOut', delay: overlayVisible ? 0 : 3 }}
-            className="flex flex-col items-center opacity-70 pt-4"
-            initial={{ opacity: 0 }}
-          >
-            <motion.div
-              animate={{ scale: [1, 1.1, 1], opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 3.2 }}
-            >
-              <ChevronDown className="w-6 h-6" />
-            </motion.div>
-          </motion.div>
         </div>
       </div>
 
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none" />
+      {/* Botón de música: sobre la foto mientras se ve el hero, fijo arriba a la derecha después */}
+      <MusicToggleV2 pinned={!heroInView} />
+
+      {/* Sello de fecha (móvil): montado sobre el borde inferior de la foto */}
+      <motion.div
+        className="absolute right-6 top-[500px] flex h-[120px] w-[120px] items-center justify-center rounded-full lg:hidden"
+        style={{ backgroundColor: V2_COLORS.stone }}
+        {...reveal(0.55)}
+      >
+        <DateSeal date={weddingDate} locale={currentLanguage} size="sm" />
+      </motion.div>
+
+      {/* Panel de texto */}
+      <div className="relative flex flex-col gap-7 px-6 pt-9 lg:justify-between lg:gap-12 lg:px-[72px] lg:pb-16 lg:pt-[72px]">
+        <motion.div className="absolute right-16 top-16 hidden lg:block" {...reveal(0.55)}>
+          <DateSeal date={weddingDate} locale={currentLanguage} size="lg" />
+        </motion.div>
+
+        <motion.p
+          className="m-0 flex items-center gap-[10px] text-[11px] font-semibold uppercase tracking-[0.24em] lg:text-xs lg:tracking-[0.26em]"
+          style={{ color: V2_COLORS.bronze }}
+          {...reveal(0.1)}
+        >
+          <V2Rings width={34} strokeWidth={1.6} />
+          <span>{t('hero.weWed')}</span>
+        </motion.p>
+
+        <motion.h1
+          className="m-0 break-words text-[clamp(52px,18vw,72px)] lg:text-[clamp(88px,8.9vw,128px)]"
+          style={{ ...v2DisplayStyle(72, 400, -0.045), fontSize: undefined, lineHeight: 0.9 }}
+          {...reveal(0.25, 24)}
+        >
+          {brideName}
+          <br />
+          <span style={{ color: V2_COLORS.bronze }}>&amp;</span> {groomName}
+        </motion.h1>
+
+        <motion.div className="flex flex-col gap-7 lg:gap-8" {...reveal(0.45)}>
+          <dl
+            className="m-0 grid grid-cols-2 border-t border-[#D9D3C9] lg:flex"
+          >
+            {facts.map((fact, index) => {
+              // Móvil: fecha | hora en una fila y el lugar a todo el ancho debajo.
+              // Escritorio: las tres en una fila separadas por filetes verticales.
+              const pairedWithTime = !fact.wide && !!time;
+              const mobileSpan = pairedWithTime ? '' : 'col-span-2';
+              const mobileDivider = pairedWithTime && index === 0 ? 'border-r border-[#D9D3C9] pr-4' : pairedWithTime ? 'pl-4' : '';
+              const desktop = `lg:flex-1 ${index > 0 ? 'lg:border-l lg:border-[#D9D3C9] lg:pl-5' : 'lg:pl-0'} ${
+                index < facts.length - 1 ? 'lg:pr-5' : 'lg:pr-0'
+              } ${index === 0 ? 'lg:border-r-0' : ''}`;
+              return (
+                <div key={fact.label} className={`border-b border-[#D9D3C9] py-4 lg:py-5 ${mobileSpan} ${mobileDivider} ${desktop}`}>
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: V2_COLORS.graphite }}>
+                    {fact.label}
+                  </dt>
+                  <dd className="m-0 mt-1.5 text-[15px] font-medium leading-snug lg:mt-2 lg:text-base">{fact.value}</dd>
+                </div>
+              );
+            })}
+          </dl>
+
+          <div className="flex flex-col gap-[10px] lg:flex-row lg:flex-wrap lg:gap-3">
+            {showConfirm && (
+              <a href="#rsvp" onClick={scrollToRsvp} {...v2ButtonProps('primary', 'lg', 'w-full lg:w-auto lg:px-8')}>
+                {t('hero.confirm')}
+                <ArrowRight className="h-[18px] w-[18px]" aria-hidden="true" strokeWidth={1.8} />
+              </a>
+            )}
+            <AddToCalendarButtonV2 size="md" className="w-full lg:h-14 lg:w-auto lg:px-7" />
+          </div>
+        </motion.div>
+      </div>
     </section>
   );
 }

@@ -1,192 +1,167 @@
 'use client';
 
-import { useState } from 'react';
-import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { ArrowUpRight } from 'lucide-react';
 import { useWedding } from '../../src/store/hooks';
-import { useThemePatterns } from '../../lib/theme-context';
 import { useTranslations } from '../../lib/translations';
 import { formatTextWithLineBreaks } from '../../lib/text-utils';
-import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title } from './ui';
+import {
+  V2_COLORS,
+  V2Container,
+  V2CopyButton,
+  V2Rings,
+  V2Section,
+  V2SectionHeading,
+  V2SectionLayout,
+  V2Stagger,
+  V2StaggerItem,
+  v2DisplayStyle,
+} from './ui';
+import { useV2SectionNumber, v2Fill, v2HasGiftContent, v2Localized } from './sections';
 
 export default function GiftRegistryV2() {
-  const { t } = useTranslations('giftRegistry');
+  const { t, currentLanguage } = useTranslations('template02');
+  const { t: tGift } = useTranslations('giftRegistry');
   const { currentWedding } = useWedding();
-  const { getBackgroundStyle } = useThemePatterns();
-  const params = useParams();
-  const currentLocale = params.locale as string;
-  const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [isBankExpanded, setIsBankExpanded] = useState(true);
-  const [isRegistryExpanded, setIsRegistryExpanded] = useState(true);
+  const number = useV2SectionNumber('gifts');
 
-  if (!currentWedding?.giftRegistry?.enabled) {
+  if (!currentWedding || !v2HasGiftContent(currentWedding)) {
     return null;
   }
 
   const { giftRegistry } = currentWedding;
-
-  const hasRegistries = giftRegistry.registries && giftRegistry.registries.length > 0;
-  const hasBankAccount = giftRegistry.bankAccount && (
-    giftRegistry.bankAccount.bankName ||
-    giftRegistry.bankAccount.accountName ||
-    giftRegistry.bankAccount.accountNumber
-  );
-
-  if (!hasRegistries && !hasBankAccount) {
-    return null;
-  }
-
-  const messageData = giftRegistry.message;
-  const giftMessage = typeof messageData === 'object'
-    ? (messageData[currentLocale as 'es' | 'en'] || messageData.es || t('message'))
-    : (messageData || t('message'));
-
-  const copyToClipboard = (text: string, field: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedField(field);
-    setTimeout(() => setCopiedField(null), 2000);
-  };
+  const registries = giftRegistry.registries || [];
+  const bank = giftRegistry.bankAccount;
+  const hasBank = !!bank && !!(bank.bankName || bank.accountName || bank.accountNumber);
+  const giftMessage = v2Localized(giftRegistry.message, currentLanguage) || tGift('message');
+  const bankDescription = v2Localized(bank?.description, currentLanguage);
 
   return (
-    <V2Section
-      id="gift-registry"
-      className="relative overflow-hidden"
-      style={getBackgroundStyle(1, '200px')}
-    >
-      <V2Container className="py-12">
-        <V2Stagger>
-          <V2StaggerItem>
-            <V2Title title={t('title')} subtitle={giftMessage ? formatTextWithLineBreaks(giftMessage) : undefined} />
-          </V2StaggerItem>
-
-          <div className="mt-10 max-w-3xl mx-auto space-y-5">
-            {giftRegistry.registries.length > 0 && (
-              <V2StaggerItem>
-                <V2Card>
-                  <button
-                    onClick={() => setIsRegistryExpanded(!isRegistryExpanded)}
-                    className="w-full px-6 py-5 flex items-center justify-between"
-                  >
-                    <span className="font-bold text-base text-[#3b342b]">{t('onlineRegistries')}</span>
-                    {isRegistryExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-[#6f6254]" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-[#6f6254]" />
-                    )}
-                  </button>
-                  {isRegistryExpanded && (
-                    <div className="px-6 pb-6 border-t border-[#efe6dc]">
-                      <div className="grid gap-3 md:grid-cols-2 mt-5">
-                        {giftRegistry.registries.map((registry) => (
-                          <a
-                            key={registry.id}
-                            href={registry.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-[22px] border border-[#e7dccf] bg-white/70 px-4 py-4 text-center hover:opacity-90 transition-opacity"
-                          >
-                            <span className="font-semibold text-[#3b342b]">{registry.name}</span>
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </V2Card>
-              </V2StaggerItem>
+    <V2Section id="gift-registry">
+      <V2Container className="py-[72px] pb-16 lg:py-24">
+        <V2SectionLayout
+            heading={
+              <V2SectionHeading number={number} overline={t('gifts.overline')} title={t('gifts.title')}>
+                {giftMessage && (
+                  <p className="m-0 mt-1 text-base leading-[1.7]" style={{ color: V2_COLORS.graphite }}>
+                    {formatTextWithLineBreaks(giftMessage)}
+                  </p>
+                )}
+              </V2SectionHeading>
+            }
+          >
+            {registries.length > 0 && (
+              <V2Stagger as="ul" className="m-0 list-none p-0" style={{ borderTop: `1px solid ${V2_COLORS.rule}` }}>
+                {registries.map((registry) => {
+                  const description = v2Localized(registry.description, currentLanguage);
+                  return (
+                    <V2StaggerItem as="li" key={registry.id || registry.name} style={{ borderBottom: `1px solid ${V2_COLORS.rule}` }}>
+                      <a
+                        href={registry.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={v2Fill(t('gifts.openRegistry'), { name: registry.name })}
+                        className="flex min-h-[76px] items-center gap-4 py-[14px] no-underline transition-opacity hover:opacity-80"
+                        style={{ color: V2_COLORS.ink }}
+                      >
+                        <span className="flex flex-grow flex-col gap-1">
+                          <span style={v2DisplayStyle(24, 400, -0.02)}>{registry.name}</span>
+                          {description && (
+                            <span className="text-sm" style={{ color: V2_COLORS.graphite }}>
+                              {description}
+                            </span>
+                          )}
+                        </span>
+                        <span
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
+                          style={{ border: `1px solid ${V2_COLORS.ink}` }}
+                          aria-hidden="true"
+                        >
+                          <ArrowUpRight className="h-4 w-4" strokeWidth={1.8} />
+                        </span>
+                      </a>
+                    </V2StaggerItem>
+                  );
+                })}
+              </V2Stagger>
             )}
 
-            {giftRegistry.bankAccount && (
-              <V2StaggerItem>
-                <V2Card>
-                  <button
-                    onClick={() => setIsBankExpanded(!isBankExpanded)}
-                    className="w-full px-6 py-5 flex items-center justify-between"
+            {hasBank && bank && (
+              <div
+                className="relative flex flex-col gap-5 overflow-hidden rounded-lg p-6 lg:p-8"
+                style={{ backgroundColor: V2_COLORS.ink, color: V2_COLORS.stone }}
+              >
+                <V2Rings
+                  width={200}
+                  strokeWidth={0.35}
+                  color={V2_COLORS.bronzeOnInk}
+                  className="pointer-events-none absolute -right-[50px] -top-[22px] opacity-55"
+                />
+                <div className="relative flex flex-col gap-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em]" style={{ color: V2_COLORS.bronzeOnInk }}>
+                    {t('gifts.transfer')}
+                  </span>
+                  {bank.bankName && <span style={v2DisplayStyle(28, 400, -0.02)}>{bank.bankName}</span>}
+                </div>
+
+                {bank.accountName && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs" style={{ color: V2_COLORS.mutedOnInk }}>
+                      {t('gifts.holder')}
+                    </span>
+                    <span className="text-base font-medium">{bank.accountName}</span>
+                  </div>
+                )}
+
+                {bank.accountNumber && (
+                  <div
+                    className="flex items-center justify-between gap-3 pt-4"
+                    style={{ borderTop: `1px solid ${V2_COLORS.ruleOnInk}` }}
                   >
-                    <span className="font-bold text-base text-[#3b342b]">{t('bankTransfer')}</span>
-                    {isBankExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-[#6f6254]" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-[#6f6254]" />
-                    )}
-                  </button>
-
-                  {isBankExpanded && (
-                    <div className="px-6 pb-6 border-t border-[#efe6dc]">
-                      {(() => {
-                        const descriptionData = giftRegistry.bankAccount.description;
-                        const bankDescription = typeof descriptionData === 'object'
-                          ? (descriptionData[currentLocale as 'es' | 'en'] || descriptionData.es)
-                          : descriptionData;
-
-                        return bankDescription && (
-                          <p className="mt-5 text-center text-sm text-[#6f6254]">
-                            {bankDescription}
-                          </p>
-                        );
-                      })()}
-
-                      <div className="mt-6 space-y-3">
-                        {giftRegistry.bankAccount.bankName && (
-                          <div className="rounded-[22px] border border-[#e7dccf] bg-white/70 p-4">
-                            <p className="text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b]">{t('bank')}</p>
-                            <p className="mt-2 text-sm text-[#3b342b] font-medium">{giftRegistry.bankAccount.bankName}</p>
-                          </div>
-                        )}
-
-                        {giftRegistry.bankAccount.accountName && (
-                          <div className="rounded-[22px] border border-[#e7dccf] bg-white/70 p-4">
-                            <p className="text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b]">{t('accountHolder')}</p>
-                            <p className="mt-2 text-sm text-[#3b342b] font-medium">{giftRegistry.bankAccount.accountName}</p>
-                          </div>
-                        )}
-
-                        {giftRegistry.bankAccount.accountNumber && (
-                          <div className="rounded-[22px] border border-[#e7dccf] bg-white/70 p-4 flex items-center justify-between gap-4">
-                            <div className="min-w-0">
-                              <p className="text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b]">{t('accountNumber')}</p>
-                              <p className="mt-2 text-sm text-[#3b342b] font-medium break-all">{giftRegistry.bankAccount.accountNumber}</p>
-                            </div>
-                            <button
-                              onClick={() => copyToClipboard(giftRegistry.bankAccount?.accountNumber || '', 'account')}
-                              className="shrink-0 w-10 h-10 rounded-full border border-[#e7dccf] bg-white/80 flex items-center justify-center hover:opacity-90 transition-opacity"
-                              title={t('copyAccountNumber')}
-                            >
-                              <Copy className="w-4 h-4 text-[#6f6254]" />
-                            </button>
-                          </div>
-                        )}
-
-                        {giftRegistry.bankAccount.clabe && (
-                          <div className="rounded-[22px] border border-[#e7dccf] bg-white/70 p-4 flex items-center justify-between gap-4">
-                            <div className="min-w-0">
-                              <p className="text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b]">{t('clabe')}</p>
-                              <p className="mt-2 text-sm text-[#3b342b] font-medium break-all">{giftRegistry.bankAccount.clabe}</p>
-                            </div>
-                            <button
-                              onClick={() => copyToClipboard(giftRegistry.bankAccount?.clabe || '', 'clabe')}
-                              className="shrink-0 w-10 h-10 rounded-full border border-[#e7dccf] bg-white/80 flex items-center justify-center hover:opacity-90 transition-opacity"
-                              title={t('copyClabe')}
-                            >
-                              <Copy className="w-4 h-4 text-[#6f6254]" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-
-                      {copiedField && (
-                        <div className="mt-5 rounded-[22px] border border-[#eadfd3] bg-white/70 p-4">
-                          <p className="text-sm text-center text-[#6f6254]">
-                            {copiedField === 'account' ? t('accountCopied') : t('clabeCopied')}
-                          </p>
-                        </div>
-                      )}
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <span className="text-xs" style={{ color: V2_COLORS.mutedOnInk }}>
+                        {t('gifts.accountNumber')}
+                      </span>
+                      <span className="break-all text-[17px] font-medium tracking-[0.08em]">{bank.accountNumber}</span>
                     </div>
-                  )}
-                </V2Card>
-              </V2StaggerItem>
+                    <V2CopyButton
+                      value={bank.accountNumber}
+                      label={t('gifts.copy')}
+                      copiedLabel={t('gifts.copied')}
+                      ariaLabel={t('gifts.copyAccount')}
+                      onInk
+                    />
+                  </div>
+                )}
+
+                {bank.clabe && (
+                  <div
+                    className="flex items-center justify-between gap-3 pt-4"
+                    style={{ borderTop: `1px solid ${V2_COLORS.ruleOnInk}` }}
+                  >
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <span className="text-xs" style={{ color: V2_COLORS.mutedOnInk }}>
+                        {t('gifts.clabe')}
+                      </span>
+                      <span className="break-all text-[17px] font-medium tracking-[0.06em]">{bank.clabe}</span>
+                    </div>
+                    <V2CopyButton
+                      value={bank.clabe}
+                      label={t('gifts.copy')}
+                      copiedLabel={t('gifts.copied')}
+                      ariaLabel={t('gifts.copyClabe')}
+                      onInk
+                    />
+                  </div>
+                )}
+
+                {bankDescription && (
+                  <p className="m-0 text-[13px] leading-[1.55]" style={{ color: V2_COLORS.mutedOnInk }}>
+                    {bankDescription}
+                  </p>
+                )}
+              </div>
             )}
-          </div>
-        </V2Stagger>
+          </V2SectionLayout>
       </V2Container>
     </V2Section>
   );

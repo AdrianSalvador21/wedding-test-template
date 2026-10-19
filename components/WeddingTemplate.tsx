@@ -14,6 +14,7 @@ import { isDemoId } from '../lib/analytics/demos';
 import InvitationNotActivated from './InvitationNotActivated';
 import InvitationOverlay from './InvitationOverlay';
 import MusicPlayer from './MusicPlayer';
+import { MusicControlProvider } from './MusicControlContext';
 import Template01 from './templates/Template01';
 import Template02 from './templates/Template02';
 import Template03 from './templates/Template03';
@@ -166,12 +167,14 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
   // Debug: mostrar tema creado
   console.log('🎨 Tema creado para boda:', currentWedding.id, 'tema:', weddingTheme.id, weddingTheme.name);
 
+  const templateId = currentWedding.template?.id || 'template-01';
+
   // Renderizar la invitación completa
   return (
     <ThemeProvider weddingTheme={weddingTheme}>
+      <MusicControlProvider>
       <main className="min-h-screen">
         {(() => {
-          const templateId = currentWedding.template?.id || 'template-01';
           const overlayVisible = showOverlay || showDemoOverlay;
 
           if (templateId === 'template-04') {
@@ -193,6 +196,7 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
             weddingId={currentWedding.id}
             guestInfo={guestInfo}
             onClose={() => setShowOverlay(false)}
+            templateId={templateId}
           />
         )}
 
@@ -204,14 +208,16 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
             guestInfo={null}
             onClose={() => setShowDemoOverlay(false)}
             isDemoMode={true}
+            templateId={templateId}
           />
         )}
 
-        {/* Reproductor de música de fondo */}
+        {/* Reproductor de música de fondo (template-02 dibuja su propio botón, spec 25) */}
         {dynamicMusic && (
-          <MusicPlayer music={dynamicMusic} />
+          <MusicPlayer music={dynamicMusic} showFloatingButton={templateId !== 'template-02'} />
         )}
       </main>
+      </MusicControlProvider>
 
       {/* Footer Invyta */}
       <footer className="footer-theme-bg from-primary via-secondary to-accent text-white py-2">

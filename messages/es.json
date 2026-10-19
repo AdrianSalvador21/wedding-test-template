@@ -375,5 +375,153 @@
     "subtitle": "Guía especial de lugares para nuestros invitados",
     "description": "Hemos seleccionado algunos lugares especiales que creemos que disfrutarán durante su visita.",
     "button": "Ver ubicación"
+  },
+  "template02": {
+    "hero": {
+      "weWed": "Nos casamos",
+      "date": "Fecha",
+      "time": "Hora",
+      "place": "Lugar",
+      "confirm": "Confirmar asistencia",
+      "addToCalendar": "Agregar al calendario",
+      "playMusic": "Reproducir música",
+      "pauseMusic": "Pausar música",
+      "monogramAlt": "Monograma de los novios",
+      "photoAlt": "{bride} y {groom}"
+    },
+    "countdown": {
+      "overline": "Cuenta regresiva",
+      "title": "Cada día nos acerca\nal sí.",
+      "forDate": "Para el {date} a las {time}.",
+      "days": "Días",
+      "hours": "Horas",
+      "minutes": "Min",
+      "seconds": "Seg",
+      "minutesLong": "Minutos",
+      "secondsLong": "Segundos",
+      "timerLabel": "Faltan {days} días, {hours} horas y {minutes} minutos",
+      "passedTitle": "¡Llegó el gran día!",
+      "passedText": "Gracias por ser parte de nuestra historia."
+    },
+    "about": {
+      "overline": "Nosotros",
+      "title": "Nuestra historia",
+      "photoAlt": "{bride} y {groom}"
+    },
+    "location": {
+      "overline": "Dónde",
+      "titleTwo": "Dos paradas,\nun mismo día",
+      "titleOne": "Un solo lugar\npara celebrar",
+      "ceremony": "Ceremonia",
+      "reception": "Recepción",
+      "both": "Ceremonia y recepción",
+      "directions": "Cómo llegar"
+    },
+    "timeline": {
+      "overline": "Itinerario",
+      "title": "La noche,\nhora por hora"
+    },
+    "dressCode": {
+      "overline": "Código de vestimenta"
+    },
+    "gallery": {
+      "overline": "Galería",
+      "title": "Momentos",
+      "sharePrompt": "Comparte tus fotos con",
+      "copyHashtag": "Copiar hashtag",
+      "copied": "Copiado",
+      "previous": "Foto anterior",
+      "next": "Foto siguiente",
+      "photoAlt": "Foto {n} de la boda",
+      "counterLabel": "Foto {current} de {total}"
+    },
+    "gifts": {
+      "overline": "Mesa de regalos",
+      "title": "Con cariño",
+      "transfer": "Transferencia",
+      "holder": "Titular",
+      "accountNumber": "Número de cuenta",
+      "clabe": "CLABE",
+      "copy": "Copiar",
+      "copied": "Copiada",
+      "copyAccount": "Copiar número de cuenta",
+      "copyClabe": "Copiar CLABE",
+      "openRegistry": "Abrir mesa de regalos de {name}"
+    },
+    "accommodation": {
+      "overline": "Hospedaje",
+      "title": "Dónde quedarse",
+      "seeLocation": "Ver ubicación"
+    },
+    "places": {
+      "overline": "Recomendados",
+      "title": "Para conocer\nla ciudad",
+      "open": "Abrir {name} en Maps"
+    },
+    "adultOnly": {
+      "title": "Celebración solo para adultos"
+    },
+    "rsvp": {
+      "overline": "Confirma tu asistencia",
+      "title": "¿Nos\nacompañas?",
+      "greeting": "Hola, {name}. Tu respuesta nos ayuda a preparar todo.",
+      "greetingGeneric": "Tu respuesta nos ayuda a preparar todo.",
+      "attendance": "Asistencia",
+      "yes": "Sí, ahí estaré",
+      "no": "No podré ir",
+      "guestCount": "¿Cuántas personas asistirán?",
+      "diet": "Restricción alimentaria",
+      "message": "Mensaje para los novios",
+      "messagePlaceholder": "Escribe unas palabras…",
+      "submit": "Enviar confirmación",
+      "submitting": "Enviando…",
+      "required": "Selecciona una opción",
+      "demoNote": "Modo de prueba — esta confirmación no se guarda.",
+      "loading": "Cargando información del invitado…",
+      "retry": "Reintentar",
+      "sentOverline": "Confirmación",
+      "sentTitle": "¡Recibimos tu confirmación!",
+      "declinedTitle": "Recibimos tu respuesta",
+      "seeYouThere": "Nos vemos el {date} en {venue}.",
+      "guests": "Asistentes",
+      "dietSummary": "Alimentación",
+      "directions": "Ver cómo llegar"
+    },
+    "footer": {
+      "call": "Llamar",
+      "callLabel": "Llamar a {name}",
+      "instagramLabel": "Instagram de {name}",
+      "facebookLabel": "Facebook de {name}"
+    },
+    "overlay": {
+      "invitationFor": "Una invitación para",
+      "reservedOne": "Hemos reservado 1 lugar",
+      "reservedMany": "Hemos reservado {count} lugares",
+      "open": "Abrir invitación",
+      "close": "Cerrar invitación",
+      "musicHint": "La invitación incluye música · puedes pausarla arriba a la derecha"
+    },
+    "sticky": {
+      "daysLeft": "faltan {count} días",
+      "dayLeft": "falta 1 día",
+      "today": "es hoy",
+      "confirm": "Confirmar"
+    },
+    "nav": {
+      "label": "Secciones de la invitación",
+      "about": "Nosotros",
+      "location": "Dónde",
+      "timeline": "Itinerario",
+      "dresscode": "Vestimenta",
+      "gallery": "Galería",
+      "gifts": "Regalos",
+      "accommodation": "Hospedaje",
+      "places": "Lugares",
+      "rsvp": "Confirmar"
+    },
+    "calendar": {
+      "title": "Boda de {bride} & {groom}",
+      "filename": "boda-{bride}-{groom}"
+    }
   }
 } 

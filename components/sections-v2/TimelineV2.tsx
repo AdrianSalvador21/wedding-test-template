@@ -1,8 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useParams } from 'next/navigation';
-import { motion } from 'framer-motion';
 import {
   Clock,
   MapPin,
@@ -19,189 +17,100 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
-import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { useThemePatterns } from '../../lib/theme-context';
-import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title } from './ui';
+import { V2_COLORS, V2Container, V2Section, V2SectionHeading, V2SectionLayout, V2Stagger, V2StaggerItem, v2DisplayStyle } from './ui';
+import { useV2SectionNumber, v2Localized } from './sections';
+
+const iconMap: Record<string, LucideIcon> = {
+  MapPin,
+  Heart,
+  Music,
+  Utensils,
+  Users,
+  Wine,
+  Clock,
+  Star,
+  Gift,
+  Calendar,
+  Circle,
+  Sparkles,
+};
+
+const iconPool = [Clock, Users, Calendar, Star, Circle, MapPin, Sparkles, Gift];
+
+const getIcon = (iconName: string | undefined, index: number) => {
+  if (iconName && iconMap[iconName]) return iconMap[iconName];
+  return iconPool[index % iconPool.length];
+};
 
 export default function TimelineV2() {
-  const { t } = useTranslations('timeline');
-  const params = useParams();
-  const currentLocale = params.locale as string;
-  const { isLoaded } = useIsMobile();
+  const { t, currentLanguage } = useTranslations('template02');
   const weddingData = useAppSelector(selectCurrentWedding);
-  const { getBackgroundStyle } = useThemePatterns();
-
-  const iconMap: Record<string, LucideIcon> = {
-    MapPin,
-    Heart,
-    Music,
-    Utensils,
-    Users,
-    Wine,
-    Clock,
-    Star,
-    Gift,
-    Calendar,
-    Circle,
-    Sparkles,
-  };
-
-  const iconPool = [Clock, Users, Calendar, Star, Circle, MapPin, Sparkles, Gift];
-
-  const getIcon = (iconName: string | undefined, index: number) => {
-    if (iconName && iconMap[iconName]) return iconMap[iconName];
-    return iconPool[index % iconPool.length];
-  };
+  const number = useV2SectionNumber('timeline');
 
   if (!weddingData?.timeline?.length) {
     return null;
   }
 
   const events = weddingData.timeline.map((event, index) => ({
+    id: event.id || String(index),
     time: event.time,
-    title:
-      typeof event.title === 'object' && event.title
-        ? (event.title[currentLocale as 'es' | 'en'] || event.title.es || '')
-        : ((event.title as unknown as string) || ''),
-    description:
-      typeof event.description === 'object' && event.description
-        ? (event.description[currentLocale as 'es' | 'en'] || event.description.es || '')
-        : ((event.description as unknown as string) || ''),
+    title: v2Localized(event.title, currentLanguage),
+    description: v2Localized(event.description, currentLanguage),
     icon: getIcon(event.icon as string, index),
+    highlight: !!event.isHighlight,
   }));
 
-  if (!isLoaded) {
-    return (
-      <V2Section id="timeline">
-        <V2Container className="py-12">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-[#efe6dc] rounded w-64 mx-auto" />
-            <div className="h-4 bg-[#f3ece4] rounded w-96 mx-auto" />
-          </div>
-        </V2Container>
-      </V2Section>
-    );
-  }
-
   return (
-    <V2Section
-      id="timeline"
-      className="relative overflow-hidden"
-      style={getBackgroundStyle(3, '160px')}
-    >
-      <V2Container className="py-12">
-        <V2Stagger>
-          <V2StaggerItem>
-            <V2Title title={t('title')} />
-          </V2StaggerItem>
-
-          <div className="mt-10 max-w-4xl mx-auto">
-            {/* Desktop */}
-            <div className="hidden md:block relative">
-              <div className="absolute left-1/2 -translate-x-1/2 h-full w-px bg-[#d7c2a5]/70" />
-
-              <div className="space-y-10">
-                {events.map((event, index) => {
-                  const IconComponent = event.icon;
-                  const isLeft = index % 2 === 0;
-
-                  return (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: isLeft ? -60 : 60 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: '-100px' }}
-                      transition={{ duration: 0.7, ease: 'easeOut', delay: index * 0.08 }}
-                      className={`relative flex items-center ${isLeft ? 'justify-start pr-8' : 'justify-end pl-8'}`}
+    <V2Section id="timeline">
+      <V2Container className="py-[72px] pb-16 lg:py-24">
+        <V2SectionLayout heading={<V2SectionHeading number={number} overline={t('timeline.overline')} title={t('timeline.title')} />}>
+            <V2Stagger as="ol" className="m-0 list-none p-0" style={{ borderTop: `1px solid ${V2_COLORS.rule}` }}>
+              {events.map((event) => {
+                const Icon = event.icon;
+                return (
+                  <V2StaggerItem
+                    as="li"
+                    key={event.id}
+                    className="grid grid-cols-[96px_minmax(0,1fr)_40px] items-start gap-x-3 py-[22px] lg:grid-cols-[132px_minmax(0,1fr)_40px] lg:gap-x-5 lg:py-7"
+                    style={{ borderBottom: `1px solid ${V2_COLORS.rule}` }}
+                  >
+                    <span
+                      className="text-[34px] lg:text-[44px]"
+                      style={{
+                        ...v2DisplayStyle(34, 300, -0.04),
+                        fontSize: undefined,
+                        lineHeight: 1,
+                        color: event.highlight ? V2_COLORS.bronze : undefined,
+                      }}
                     >
-                      <div className={`w-5/12 ${isLeft ? 'text-right pr-8' : 'text-left pl-8'}`}>
-                        <V2Card className="p-6">
-                          <div className={`flex items-center ${isLeft ? 'justify-end' : 'justify-start'} mb-4`}>
-                            <div className="rounded-full border border-[#eadfd3] bg-white/70 px-4 py-2">
-                              <span className="text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b]">{event.time}</span>
-                            </div>
-                          </div>
-                          <h3 className="font-bold text-lg text-[#3b342b]">{event.title}</h3>
-                          {event.description && (
-                            <p className="mt-3 text-sm text-[#6f6254] leading-relaxed">{event.description}</p>
-                          )}
-                        </V2Card>
-                      </div>
-
-                      <div className="absolute left-1/2 -translate-x-1/2 z-10">
-                        <div className="w-12 h-12 bg-[#fbf7f1] rounded-full border border-[#d7c2a5] shadow-[0_10px_25px_rgba(26,20,12,0.10)] flex items-center justify-center">
-                          <IconComponent className="w-5 h-5 text-[#b79a7a]" />
-                        </div>
-                      </div>
-
-                      <div
-                        className={`absolute top-1/2 -translate-y-1/2 h-px bg-[#d7c2a5]/70 ${
-                          isLeft ? 'right-1/2 w-10 mr-6' : 'left-1/2 w-10 ml-6'
-                        }`}
-                      />
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              <V2StaggerItem>
-                <div className="flex justify-center mt-10">
-                  <div className="w-3 h-3 rounded-full bg-[#b79a7a]" />
-                </div>
-              </V2StaggerItem>
-            </div>
-
-            {/* Mobile */}
-            <div className="md:hidden relative">
-              <div className="absolute left-6 top-0 h-full w-px bg-[#d7c2a5]/70" />
-
-              <div className="space-y-6">
-                {events.map((event, index) => {
-                  const IconComponent = event.icon;
-
-                  return (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 18 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: '-100px' }}
-                      transition={{ duration: 0.6, ease: 'easeOut', delay: index * 0.06 }}
-                      className="relative flex items-start pl-16"
+                      {event.time}
+                    </span>
+                    <div className="flex flex-col gap-1.5 pt-0.5">
+                      <h3 className="m-0 text-[17px] font-semibold lg:text-lg">{event.title}</h3>
+                      {event.description && (
+                        <p className="m-0 text-sm leading-normal" style={{ color: V2_COLORS.graphite }}>
+                          {event.description}
+                        </p>
+                      )}
+                    </div>
+                    <span
+                      className="flex h-10 w-10 items-center justify-center rounded-full"
+                      aria-hidden="true"
+                      style={
+                        event.highlight
+                          ? { backgroundColor: V2_COLORS.bronze, color: V2_COLORS.paper }
+                          : { border: `1px solid ${V2_COLORS.rule}`, color: V2_COLORS.graphite }
+                      }
                     >
-                      <div className="absolute left-6 top-4 -translate-x-1/2 z-10">
-                        <div className="w-10 h-10 bg-[#fbf7f1] rounded-full border border-[#d7c2a5] shadow-[0_10px_25px_rgba(26,20,12,0.10)] flex items-center justify-center">
-                          <IconComponent className="w-4 h-4 text-[#b79a7a]" />
-                        </div>
-                      </div>
-
-                      <div className="absolute left-6 top-9 w-6 h-px bg-[#d7c2a5]/70" />
-
-                      <V2Card className="p-5 w-full">
-                        <div className="flex justify-end">
-                          <div className="rounded-full border border-[#eadfd3] bg-white/70 px-3 py-1.5">
-                            <span className="text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b]">{event.time}</span>
-                          </div>
-                        </div>
-                        <h3 className="mt-3 font-bold text-base text-[#3b342b]">{event.title}</h3>
-                        {event.description && (
-                          <p className="mt-2 text-sm text-[#6f6254] leading-relaxed">{event.description}</p>
-                        )}
-                      </V2Card>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              <V2StaggerItem>
-                <div className="flex justify-start mt-6 pl-6">
-                  <div className="w-3 h-3 rounded-full bg-[#b79a7a] -translate-x-1/2" />
-                </div>
-              </V2StaggerItem>
-            </div>
-          </div>
-        </V2Stagger>
+                      <Icon className="h-[18px] w-[18px]" strokeWidth={1.6} />
+                    </span>
+                  </V2StaggerItem>
+                );
+              })}
+            </V2Stagger>
+          </V2SectionLayout>
       </V2Container>
     </V2Section>
   );

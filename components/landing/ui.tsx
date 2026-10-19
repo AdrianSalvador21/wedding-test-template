@@ -40,7 +40,8 @@ export function LSection({
   const borderClass = border ? 'border-t border-[rgba(43,38,34,0.08)]' : '';
 
   return (
-    <section id={id} className={`${toneClass} ${borderClass} ${className}`} style={{ ...manrope, ...style }}>
+    // scroll-mt: los saltos a `/#seccion` no quedan debajo del Nav fijo (62 px; 76 px desde lg).
+    <section id={id} className={`scroll-mt-[62px] lg:scroll-mt-[76px] ${toneClass} ${borderClass} ${className}`} style={{ ...manrope, ...style }}>
       {children}
     </section>
   );
@@ -234,6 +235,70 @@ export function LTextLink({
     >
       {children}
     </a>
+  );
+}
+
+// ---------- Landing v4 (spec 26) ----------
+
+// Contenedor y tipografía comunes de las secciones de la landing v4.
+export const L_WRAP = 'max-w-[1260px] mx-auto px-5 md:px-10';
+export const L_EYEBROW = 'text-[12.5px] font-extrabold tracking-[0.2em] uppercase text-[#AE5730]';
+export const L_H2 = 'text-[31px] md:text-[42px] leading-[1.12] tracking-[-0.01em] [text-wrap:balance]';
+export const L_LEAD = 'text-base md:text-[17.5px] leading-[1.6] text-[#4A433C]';
+
+type LButtonVariant = 'primary' | 'outline' | 'dark' | 'light';
+
+const lButtonVariant: Record<LButtonVariant, string> = {
+  primary:
+    'border-transparent bg-[#AE5730] text-[#FBF7F1] shadow-[0_12px_26px_rgba(174,87,48,0.28)] hover:bg-[#9A4B28] hover:-translate-y-px',
+  outline: 'border-[#211D19] text-[#211D19] bg-transparent hover:bg-[#211D19] hover:text-[#FBF7F1]',
+  dark: 'border-transparent bg-[#211D19] text-[#FBF7F1] hover:bg-[#171310]',
+  light: 'border-transparent bg-[#FBF7F1] text-[#211D19] hover:bg-white',
+};
+
+// Botón de la landing v4: un solo estilo (pastilla, extra-bold) en cuatro variantes.
+export function LButton({
+  children,
+  href,
+  external = false,
+  variant = 'primary',
+  size = 'md',
+  className = '',
+}: {
+  children: React.ReactNode;
+  href: string;
+  external?: boolean;
+  variant?: LButtonVariant;
+  size?: 'md' | 'sm';
+  className?: string;
+}) {
+  const sizeClass = size === 'sm' ? 'px-[18px] py-[11px] text-sm' : 'px-7 py-4 text-base';
+  return (
+    <a
+      href={href}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+      className={`inline-flex items-center justify-center gap-2.5 rounded-full border-[1.5px] font-extrabold leading-none whitespace-nowrap transition-[transform,background-color,color] duration-150 ${sizeClass} ${lButtonVariant[variant]} ${className}`}
+    >
+      {children}
+    </a>
+  );
+}
+
+export function LWhatsAppIcon({ className = 'w-[19px] h-[19px]' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={`flex-shrink-0 ${className}`}>
+      <path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 001.8-1.2 2.2 2.2 0 00.1-1.3c0-.1-.2-.2-.5-.3z" />
+    </svg>
+  );
+}
+
+// Burbuja de chat (contorno): acompaña textos de respuesta por WhatsApp.
+export function LChatIcon({ className = 'w-[22px] h-[22px]' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+      <path d="M21 12a8 8 0 01-11.6 7.1L3 21l1.9-5.4A8 8 0 1121 12z" />
+    </svg>
   );
 }
 

@@ -1,21 +1,28 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { MusicConfig } from '../src/types/wedding';
 import { useTheme } from '../lib/theme-context';
+import { useRegisterMusicControl } from './MusicControlContext';
 
 interface MusicPlayerProps {
   music: MusicConfig;
   className?: string;
+  // Spec 25: false cuando el template dibuja su propio botón (template-02); el audio sigue aquí.
+  showFloatingButton?: boolean;
 }
 
-export default function MusicPlayer({ music, className = '' }: MusicPlayerProps) {
-  
+export default function MusicPlayer({ music, className = '', showFloatingButton = true }: MusicPlayerProps) {
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { currentTheme } = useTheme();
+  const registerMusicControl = useRegisterMusicControl();
+  const togglePlayRef = useRef<() => void>(() => {});
+  const stableToggle = useCallback(() => togglePlayRef.current(), []);
+  const isAvailable = !!music.enabled && !!(music.fileName || music.spotifyTrackId);
 
   // Sistema de audio: Prioriza archivos locales, fallback a Spotify
   useEffect(() => {
@@ -157,13 +164,22 @@ export default function MusicPlayer({ music, className = '' }: MusicPlayerProps)
     }
   };
 
+  togglePlayRef.current = togglePlay;
+
+  // Publicar el estado para los templates que dibujan su propio botón de música (spec 25)
+  useEffect(() => {
+    registerMusicControl({ available: isAvailable, isPlaying, toggle: stableToggle });
+  }, [registerMusicControl, isAvailable, isPlaying, stableToggle]);
+
+  useEffect(() => () => registerMusicControl(null), [registerMusicControl]);
+
   // Solo mostrar si la música está habilitada y tiene fuente (archivo local o Spotify)
-  if (!music.enabled || (!music.fileName && !music.spotifyTrackId)) {
+  if (!isAvailable) {
     return null;
   }
 
   return (
-    <div className={`fixed bottom-4 right-4 z-50 ${className}`}>
+    <div className={showFloatingButton ? `fixed bottom-4 right-4 z-50 ${className}` : 'hidden'}>
       {/* Audio element oculto */}
       <audio
         ref={audioRef}

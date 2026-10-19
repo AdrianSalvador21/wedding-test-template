@@ -4,24 +4,43 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, ChevronDown } from 'lucide-react';
+import { ArrowRight, Check, X } from 'lucide-react';
 import { useSearchParams, useParams } from 'next/navigation';
 import { useTranslations } from '../../lib/translations';
-import { useIsMobile } from '@/lib/motion';
 import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
-import { useThemePatterns } from '../../lib/theme-context';
 import { guestService } from '../../services/guestService';
 import { isDemoId } from '../../lib/analytics/demos';
 import { FirebaseRSVP, FirebaseGuest } from '../../src/types/wedding';
-import { V2Card, V2Container, V2Section, V2Stagger, V2StaggerItem, V2Title, V2PillButton } from './ui';
+import { V2_COLORS, V2_FONTS, V2Container, V2Reveal, V2Rings, V2Section, V2SectionHeading, V2SectionLayout, V2Button, v2ButtonProps, v2DisplayStyle } from './ui';
+import { useV2SectionNumber, v2Fill, v2FormatSentenceDate, v2Localized, v2WeddingDate } from './sections';
+import AddToCalendarButtonV2 from './AddToCalendarButtonV2';
+
+// Spec 25: solo cambia el marcado. Esquema zod, valores guardados y flujo de guardado
+// (guestService.updateGuest / modo demo) son los mismos que antes del rediseño.
+
+const fieldLegend = 'mb-3 p-0 text-[11px] font-semibold uppercase tracking-[0.2em]';
+
+function RSVPShell({ children }: { children: React.ReactNode }) {
+  return (
+    <V2Section id="rsvp" tone="ink">
+      <V2Rings
+        width={360}
+        strokeWidth={0.25}
+        color={V2_COLORS.bronzeOnInk}
+        className="pointer-events-none absolute -left-[170px] -top-[60px] opacity-45"
+      />
+      <V2Container className="py-16 lg:py-24">{children}</V2Container>
+    </V2Section>
+  );
+}
 
 const RSVPContentV2 = () => {
   const { t } = useTranslations('rsvp');
-  const { isMobile, isLoaded } = useIsMobile();
+  const { t: t2 } = useTranslations('template02');
   const weddingData = useAppSelector(selectCurrentWedding);
-  const { getBackgroundStyle } = useThemePatterns();
   const searchParams = useSearchParams();
+  const number = useV2SectionNumber('rsvp');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -40,19 +59,11 @@ const RSVPContentV2 = () => {
   const isDemoMode = !guestId && isDemoId(weddingId);
 
   const receptionVenue = weddingData?.event.receptionVenue;
-  const venueName = typeof receptionVenue?.name === 'object' && receptionVenue.name
-    ? (receptionVenue.name[currentLocale as 'es' | 'en'] || receptionVenue.name.es || '')
-    : (receptionVenue?.name as unknown as string || t('eventInfo.venue'));
-  const weddingDate = weddingData?.event.date ? new Date(weddingData.event.date) : new Date('2025-11-21T16:00:00');
+  const venueName = v2Localized(receptionVenue?.name, currentLocale) || t('eventInfo.venue');
+  const weddingDate = v2WeddingDate(weddingData);
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('es-ES', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  const showGuestCount = !!weddingData?.selectedGuestTickets && weddingData?.showGuestsInput !== false;
+  const showDiet = !!weddingData?.hasDiet;
 
   useEffect(() => {
     const loadExistingRSVP = async () => {
@@ -133,7 +144,9 @@ const RSVPContentV2 = () => {
     watch
   } = useForm<RSVPFormData>({
     resolver: zodResolver(rsvpSchema),
-    mode: 'onChange'
+    mode: 'onChange',
+    // Mismo valor inicial que tenía el <select> de acompañantes ("1").
+    defaultValues: showGuestCount ? { guestCount: '1' } : undefined,
   });
 
   useEffect(() => {
@@ -278,210 +291,286 @@ const RSVPContentV2 = () => {
     }
   };
 
+  const heading = (
+    <V2SectionHeading
+      number={number}
+      overline={t2('rsvp.overline')}
+      title={t2('rsvp.title')}
+      onInk
+      titleSize={44}
+      titleWeight={300}
+    >
+      <p className="m-0 text-[15px] leading-relaxed" style={{ color: V2_COLORS.mutedOnInk }}>
+        {guestInfo?.name ? (
+          <>
+            {t2('rsvp.greeting').split('{name}')[0]}
+            <span className="font-semibold" style={{ color: V2_COLORS.stone }}>{guestInfo.name}</span>
+            {t2('rsvp.greeting').split('{name}')[1]}
+          </>
+        ) : (
+          t2('rsvp.greetingGeneric')
+        )}
+      </p>
+    </V2SectionHeading>
+  );
+
   if (isLoading) {
     return (
-      <V2Section id="rsvp" className="relative overflow-hidden" style={getBackgroundStyle(3, '160px')}>
-        <V2Container className="py-12">
-          <div className="max-w-3xl mx-auto">
-            <V2Card className="p-10 text-center">
-              <div className="animate-spin w-8 h-8 border-[#b79a7a] border-t-transparent rounded-full mx-auto mb-4" />
-              <p className="text-[#6f6254]">Cargando información del invitado...</p>
-            </V2Card>
-          </div>
-        </V2Container>
-      </V2Section>
+      <RSVPShell>
+        <div className="flex flex-col items-center gap-4 py-10 text-center" role="status">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: V2_COLORS.bronzeOnInk, borderTopColor: 'transparent' }} />
+          <p className="m-0" style={{ color: V2_COLORS.mutedOnInk }}>{t2('rsvp.loading')}</p>
+        </div>
+      </RSVPShell>
     );
   }
 
   if (error) {
     return (
-      <V2Section id="rsvp" className="relative overflow-hidden" style={getBackgroundStyle(3, '160px')}>
-        <V2Container className="py-12">
-          <div className="max-w-3xl mx-auto">
-            <V2Card className="p-10 text-center">
-              <p className="text-[#6f6254] mb-6">{error}</p>
-              <V2PillButton onClick={() => window.location.reload()}>
-                Reintentar
-              </V2PillButton>
-            </V2Card>
+      <RSVPShell>
+        <V2SectionLayout heading={heading}>
+          <div className="flex flex-col items-start gap-6">
+            <p className="m-0" style={{ color: V2_COLORS.lightOnInk }} role="alert">{error}</p>
+            <V2Button variant="inverse" size="md" onClick={() => window.location.reload()}>
+              {t2('rsvp.retry')}
+            </V2Button>
           </div>
-        </V2Container>
-      </V2Section>
+        </V2SectionLayout>
+      </RSVPShell>
     );
   }
 
   if (isSubmitted) {
-    return (
-      <V2Section id="rsvp" className="relative overflow-hidden" style={getBackgroundStyle(3, '160px')}>
-        <V2Container className="py-12">
-          <V2Stagger>
-            <V2StaggerItem>
-              <V2Title title={t('title')} subtitle={t('description')} />
-            </V2StaggerItem>
+    const attending = !!existingRSVP?.attending;
+    const dietValue = existingRSVP?.dietaryRestriction;
+    const dietLabel = dietValue ? t(`form.dietaryOptions.${dietValue}`) : '';
+    const summary = [
+      ...(attending && existingRSVP?.guestCount ? [{ label: t2('rsvp.guests'), value: String(existingRSVP.guestCount) }] : []),
+      ...(attending && showDiet && dietLabel ? [{ label: t2('rsvp.dietSummary'), value: dietLabel }] : []),
+    ];
 
-            <V2StaggerItem>
-              <div className="mt-10 max-w-3xl mx-auto">
-                <V2Card className="p-10">
-                  <h3 className="font-bold text-2xl text-[#3b342b] mb-3">
-                    {existingRSVP?.attending ? t('confirmation.received') : t('confirmation.registered')}
-                  </h3>
-                  <p className="text-sm md:text-base text-[#6f6254] leading-relaxed">
-                    {existingRSVP?.attending
-                      ? t('confirmation.seeYouThere').replace('{date}', formatDate(weddingDate)).replace('{venue}', venueName)
-                      : t('confirmation.sorryToMiss')}
-                  </p>
-                </V2Card>
+    return (
+      <RSVPShell>
+        <V2Reveal>
+          <div className="flex max-w-[640px] flex-col gap-7">
+            <p className="m-0 flex items-center gap-[10px] text-[11px] font-semibold uppercase tracking-[0.24em]" style={{ color: V2_COLORS.bronzeOnInk }}>
+              {number && <span>{number}</span>}
+              <span aria-hidden="true" className="inline-block h-px w-6" style={{ backgroundColor: V2_COLORS.bronzeOnInk }} />
+              <span>{t2('rsvp.sentOverline')}</span>
+            </p>
+            <div
+              className="flex h-[88px] w-[88px] items-center justify-center rounded-full"
+              style={{ backgroundColor: V2_COLORS.bronzeOnInk, color: V2_COLORS.ink }}
+              aria-hidden="true"
+            >
+              <Check className="h-9 w-9" strokeWidth={1.8} />
+            </div>
+            <h2 className="m-0 text-[48px] lg:text-[56px]" role="status" style={{ ...v2DisplayStyle(48, 300, -0.045), fontSize: undefined, lineHeight: 1 }}>
+              {attending ? t2('rsvp.sentTitle') : t2('rsvp.declinedTitle')}
+            </h2>
+            <p className="m-0 text-base leading-[1.65]" style={{ color: V2_COLORS.lightOnInk }}>
+              {attending
+                ? v2Fill(t2('rsvp.seeYouThere'), { date: v2FormatSentenceDate(weddingDate, currentLocale), venue: venueName })
+                : t('confirmation.sorryToMiss')}
+            </p>
+
+            {summary.length > 0 && (
+              <dl
+                className="m-0 grid grid-cols-2"
+                style={{ borderTop: `1px solid ${V2_COLORS.ruleOnInk}`, borderBottom: `1px solid ${V2_COLORS.ruleOnInk}` }}
+              >
+                {summary.map((item, index) => (
+                  <div
+                    key={item.label}
+                    className={`py-4 ${index === 0 ? 'pr-3' : 'pl-4'} ${summary.length === 1 ? 'col-span-2' : ''}`}
+                    style={index === 0 && summary.length > 1 ? { borderRight: `1px solid ${V2_COLORS.ruleOnInk}` } : undefined}
+                  >
+                    <dt className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: V2_COLORS.mutedOnInk }}>
+                      {item.label}
+                    </dt>
+                    <dd className="m-0 mt-1.5" style={v2DisplayStyle(28, 400, -0.03)}>{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+
+            {attending && (
+              <div className="flex flex-col gap-[10px] sm:flex-row">
+                <AddToCalendarButtonV2 variant="inverse" size="lg" className="w-full sm:w-auto" />
+                <a href="#location" {...v2ButtonProps('inverseOutline', 'md', 'w-full sm:h-14 sm:w-auto')}>
+                  {t2('rsvp.directions')}
+                </a>
               </div>
-            </V2StaggerItem>
-          </V2Stagger>
-        </V2Container>
-      </V2Section>
+            )}
+          </div>
+        </V2Reveal>
+      </RSVPShell>
     );
   }
 
-  if (!isLoaded) {
-    return (
-      <V2Section id="rsvp">
-        <V2Container className="py-12">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-[#efe6dc] rounded w-64 mx-auto" />
-            <div className="h-40 bg-[#f3ece4] rounded-[28px] max-w-3xl mx-auto" />
-          </div>
-        </V2Container>
-      </V2Section>
-    );
-  }
+  const attendance = watch('attendance');
+  const guestCountValue = watch('guestCount');
+  const dietValue = watch('dietaryRestriction');
+  const declined = attendance === 'no';
+
+  const optionStyle = (selected: boolean, disabled = false): React.CSSProperties => ({
+    border: `1px solid ${selected ? V2_COLORS.stone : V2_COLORS.ruleOnInk}`,
+    backgroundColor: selected ? V2_COLORS.stone : 'transparent',
+    color: selected ? V2_COLORS.ink : V2_COLORS.stone,
+    opacity: disabled ? 0.45 : 1,
+  });
 
   return (
-    <V2Section id="rsvp" className="relative overflow-hidden" style={getBackgroundStyle(3, '160px')}>
-      <V2Container className="py-12">
-        <V2Stagger>
-          <V2StaggerItem>
-            <V2Title title={t('title')} subtitle={t('description')} />
-          </V2StaggerItem>
-
-          <V2StaggerItem>
-            <div className="mt-10 max-w-3xl mx-auto">
-              <V2Card className="p-6 md:p-8">
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-              <div>
-                <label className="block text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b] mb-2">
-                  {t('form.attendance')} *
-                </label>
-                <div className="relative">
-                  <select
-                    {...register('attendance')}
-                    className="w-full px-4 py-3 pr-10 rounded-[18px] border border-[#e7dccf] bg-white/80 focus:ring-2 focus:ring-[#d7c2a5] focus:border-transparent transition-colors appearance-none text-[#3b342b]"
-                  >
-                    <option value=""></option>
-                    <option value="yes">{t('form.attendanceOptions.yes')}</option>
-                    <option value="no">{t('form.attendanceOptions.no')}</option>
-                  </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a7c6b] pointer-events-none" />
-                </div>
-                {errors.attendance && (
-                  <p className="text-red-600 text-sm mt-2">{t('form.selectOption')}</p>
-                )}
-              </div>
-
-              {weddingData?.selectedGuestTickets && weddingData?.showGuestsInput !== false && (
-                <div>
-                  <label className="block text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b] mb-2">
-                    {t('form.guestCount')} *
-                  </label>
-                  <div className="relative">
-                    <select
-                      {...register('guestCount')}
-                      disabled={watch('attendance') === 'no'}
-                      className="w-full px-4 py-3 pr-10 rounded-[18px] border border-[#e7dccf] bg-white/80 focus:ring-2 focus:ring-[#d7c2a5] focus:border-transparent transition-colors appearance-none disabled:bg-[#fbf7f1] disabled:text-[#8a7c6b]"
-                      defaultValue="1"
+    <RSVPShell>
+      <V2SectionLayout heading={heading}>
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-7" noValidate>
+            <fieldset className="m-0 flex flex-col border-0 p-0">
+              <legend className={fieldLegend} style={{ color: V2_COLORS.mutedOnInk }}>
+                {t2('rsvp.attendance')} *
+              </legend>
+              <div className="grid grid-cols-2 gap-[10px]">
+                {(['yes', 'no'] as const).map((value) => {
+                  const selected = attendance === value;
+                  const Icon = value === 'yes' ? Check : X;
+                  return (
+                    <label
+                      key={value}
+                      className="relative flex min-h-[88px] cursor-pointer flex-col justify-between rounded-md p-[14px] focus-within:outline focus-within:outline-2 focus-within:outline-offset-2"
+                      style={{
+                        ...(selected && value === 'yes'
+                          ? { border: `1px solid ${V2_COLORS.bronzeOnInk}`, backgroundColor: V2_COLORS.bronzeOnInk, color: V2_COLORS.ink }
+                          : optionStyle(selected)),
+                        outlineColor: V2_COLORS.bronzeOnInk,
+                      }}
                     >
-                      <option value="1">{t('form.guestCountOptions.1')}</option>
-                      <option value="2">{t('form.guestCountOptions.2')}</option>
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a7c6b] pointer-events-none" />
-                  </div>
-                  {errors.guestCount && (
-                    <p className="text-red-600 text-sm mt-2">{t('form.selectOption')}</p>
-                  )}
-                  <p className="text-xs text-[#6f6254] mt-2">
-                    {t('form.guestCountDisclaimer')}
-                  </p>
-                </div>
-              )}
-
-              {weddingData?.hasDiet && (
-                <div>
-                  <label className="block text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b] mb-2">
-                    {t('form.dietaryRestriction')} *
-                  </label>
-                  <div className="relative">
-                    <select
-                      {...register('dietaryRestriction')}
-                      disabled={watch('attendance') === 'no'}
-                      className="w-full px-4 py-3 pr-10 rounded-[18px] border border-[#e7dccf] bg-white/80 focus:ring-2 focus:ring-[#d7c2a5] focus:border-transparent transition-colors appearance-none disabled:bg-[#fbf7f1] disabled:text-[#8a7c6b]"
-                    >
-                      <option value=""></option>
-                      <option value="vegetarian">{t('form.dietaryOptions.vegetarian')}</option>
-                      <option value="glutenFree">{t('form.dietaryOptions.glutenFree')}</option>
-                      <option value="other">{t('form.dietaryOptions.other')}</option>
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a7c6b] pointer-events-none" />
-                  </div>
-                  {errors.dietaryRestriction && (
-                    <p className="text-red-600 text-sm mt-2">{t('form.selectOption')}</p>
-                  )}
-                </div>
-              )}
-
-              <div>
-                <label className="block text-[11px] tracking-[0.28em] uppercase text-[#8a7c6b] mb-2">
-                  {t('form.messageForCouple')}
-                </label>
-                <textarea
-                  {...register('message')}
-                  rows={isMobile ? 3 : 4}
-                  className="w-full px-4 py-3 rounded-[18px] border border-[#e7dccf] bg-white/80 focus:ring-2 focus:ring-[#d7c2a5] focus:border-transparent transition-colors resize-none text-[#3b342b]"
-                  placeholder=""
-                />
+                      <input type="radio" value={value} {...register('attendance')} className="sr-only" />
+                      <Icon className="h-5 w-5" aria-hidden="true" strokeWidth={value === 'yes' ? 2 : 1.8} />
+                      <span className="text-[15px] font-semibold">{value === 'yes' ? t2('rsvp.yes') : t2('rsvp.no')}</span>
+                    </label>
+                  );
+                })}
               </div>
+              {errors.attendance && (
+                <p className="m-0 mt-2 text-sm" role="alert" style={{ color: V2_COLORS.bronzeOnInk }}>{t('form.selectOption')}</p>
+              )}
+            </fieldset>
 
-              <V2PillButton type="submit" disabled={isSubmitting} className="w-full py-4">
-                {isSubmitting ? (
-                  <span className="inline-flex items-center justify-center gap-3">
-                    <div className="w-6 h-6 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>{t('form.submitting')}</span>
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center justify-center gap-3">
-                    <Send className="w-5 h-5" />
-                    <span>{t('form.submit')}</span>
-                  </span>
+            {showGuestCount && (
+              <fieldset className="m-0 border-0 p-0" disabled={declined}>
+                <legend className={fieldLegend} style={{ color: V2_COLORS.mutedOnInk }}>
+                  {t2('rsvp.guestCount')} *
+                </legend>
+                <div className="grid grid-cols-2 gap-2 sm:max-w-[240px]">
+                  {(['1', '2'] as const).map((value) => {
+                    const selected = guestCountValue === value;
+                    return (
+                      <label
+                        key={value}
+                        className="relative flex h-[52px] cursor-pointer items-center justify-center rounded-full text-xl focus-within:outline focus-within:outline-2 focus-within:outline-offset-2"
+                        style={{ ...optionStyle(selected, declined), fontFamily: V2_FONTS.display, outlineColor: V2_COLORS.bronzeOnInk }}
+                      >
+                        <input
+                          type="radio"
+                          value={value}
+                          {...register('guestCount')}
+                          disabled={declined}
+                          className="sr-only"
+                          aria-label={t(`form.guestCountOptions.${value}`)}
+                        />
+                        {value}
+                      </label>
+                    );
+                  })}
+                </div>
+                {errors.guestCount && (
+                  <p className="m-0 mt-2 text-sm" role="alert" style={{ color: V2_COLORS.bronzeOnInk }}>{t('form.selectOption')}</p>
                 )}
-              </V2PillButton>
-
-              {isDemoMode && (
-                <p className="text-center text-[11px] text-[#6f6254] pt-1">
-                  Modo de prueba — esta confirmación no se guarda.
+                <p className="m-0 mt-[10px] text-xs leading-normal" style={{ color: V2_COLORS.mutedOnInk }}>
+                  {t('form.guestCountDisclaimer')}
                 </p>
-              )}
-                </form>
-              </V2Card>
+              </fieldset>
+            )}
+
+            {showDiet && (
+              <fieldset className="m-0 border-0 p-0" disabled={declined}>
+                <legend className={fieldLegend} style={{ color: V2_COLORS.mutedOnInk }}>
+                  {t2('rsvp.diet')} *
+                </legend>
+                <div className="flex flex-wrap gap-2">
+                  {(['vegetarian', 'glutenFree', 'other'] as const).map((value) => {
+                    const selected = dietValue === value;
+                    return (
+                      <label
+                        key={value}
+                        className="relative flex h-11 cursor-pointer items-center rounded-full px-[18px] text-sm font-medium focus-within:outline focus-within:outline-2 focus-within:outline-offset-2"
+                        style={{ ...optionStyle(selected, declined), outlineColor: V2_COLORS.bronzeOnInk }}
+                      >
+                        <input type="radio" value={value} {...register('dietaryRestriction')} disabled={declined} className="sr-only" />
+                        {t(`form.dietaryOptions.${value}`)}
+                      </label>
+                    );
+                  })}
+                </div>
+                {errors.dietaryRestriction && (
+                  <p className="m-0 mt-2 text-sm" role="alert" style={{ color: V2_COLORS.bronzeOnInk }}>{t('form.selectOption')}</p>
+                )}
+              </fieldset>
+            )}
+
+            <div className="flex flex-col gap-3">
+              <label htmlFor="rsvp-v2-message" className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: V2_COLORS.mutedOnInk }}>
+                {t2('rsvp.message')}
+              </label>
+              <textarea
+                id="rsvp-v2-message"
+                {...register('message')}
+                rows={4}
+                placeholder={t2('rsvp.messagePlaceholder')}
+                className="w-full resize-none rounded-md px-4 py-[14px] text-[15px] leading-normal placeholder:text-[#A49C91] focus:outline focus:outline-2 focus:outline-offset-2"
+                style={{
+                  border: `1px solid ${V2_COLORS.ruleOnInk}`,
+                  backgroundColor: V2_COLORS.fieldOnInk,
+                  color: V2_COLORS.stone,
+                  fontFamily: V2_FONTS.body,
+                  outlineColor: V2_COLORS.bronzeOnInk,
+                }}
+              />
             </div>
-          </V2StaggerItem>
-        </V2Stagger>
-      </V2Container>
-    </V2Section>
+
+            <V2Button type="submit" variant="inverse" size="lg" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? (
+                <>
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: V2_COLORS.ink, borderTopColor: 'transparent' }} aria-hidden="true" />
+                  {t2('rsvp.submitting')}
+                </>
+              ) : (
+                <>
+                  {t2('rsvp.submit')}
+                  <ArrowRight className="h-[18px] w-[18px]" aria-hidden="true" strokeWidth={1.8} />
+                </>
+              )}
+            </V2Button>
+
+            {isDemoMode && (
+              <p className="m-0 text-center text-[11px]" style={{ color: V2_COLORS.mutedOnInk }}>
+                {t2('rsvp.demoNote')}
+              </p>
+            )}
+          </form>
+        </V2SectionLayout>
+    </RSVPShell>
   );
 };
 
 export default function RSVPV2() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-stone-300 border-t-stone-900 rounded-full"></div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-[400px] items-center justify-center" style={{ backgroundColor: V2_COLORS.ink }}>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: V2_COLORS.bronzeOnInk, borderTopColor: 'transparent' }} />
+        </div>
+      }
+    >
       <RSVPContentV2 />
     </Suspense>
   );

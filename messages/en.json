@@ -375,5 +375,153 @@
     "subtitle": "Special guide to places for our guests",
     "description": "We've selected some special places that we think you'll enjoy during your visit.",
     "button": "See location"
+  },
+  "template02": {
+    "hero": {
+      "weWed": "We're getting married",
+      "date": "Date",
+      "time": "Time",
+      "place": "Venue",
+      "confirm": "RSVP",
+      "addToCalendar": "Add to calendar",
+      "playMusic": "Play music",
+      "pauseMusic": "Pause music",
+      "monogramAlt": "Couple's monogram",
+      "photoAlt": "{bride} and {groom}"
+    },
+    "countdown": {
+      "overline": "Countdown",
+      "title": "Every day brings us\ncloser to \"I do\".",
+      "forDate": "Until {date} at {time}.",
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Min",
+      "seconds": "Sec",
+      "minutesLong": "Minutes",
+      "secondsLong": "Seconds",
+      "timerLabel": "{days} days, {hours} hours and {minutes} minutes to go",
+      "passedTitle": "The big day is here!",
+      "passedText": "Thank you for being part of our story."
+    },
+    "about": {
+      "overline": "About us",
+      "title": "Our story",
+      "photoAlt": "{bride} and {groom}"
+    },
+    "location": {
+      "overline": "Where",
+      "titleTwo": "Two stops,\none day",
+      "titleOne": "One place\nto celebrate",
+      "ceremony": "Ceremony",
+      "reception": "Reception",
+      "both": "Ceremony and reception",
+      "directions": "Get directions"
+    },
+    "timeline": {
+      "overline": "Schedule",
+      "title": "The night,\nhour by hour"
+    },
+    "dressCode": {
+      "overline": "Dress code"
+    },
+    "gallery": {
+      "overline": "Gallery",
+      "title": "Moments",
+      "sharePrompt": "Share your photos with",
+      "copyHashtag": "Copy hashtag",
+      "copied": "Copied",
+      "previous": "Previous photo",
+      "next": "Next photo",
+      "photoAlt": "Wedding photo {n}",
+      "counterLabel": "Photo {current} of {total}"
+    },
+    "gifts": {
+      "overline": "Gift registry",
+      "title": "With love",
+      "transfer": "Bank transfer",
+      "holder": "Account holder",
+      "accountNumber": "Account number",
+      "clabe": "CLABE",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyAccount": "Copy account number",
+      "copyClabe": "Copy CLABE",
+      "openRegistry": "Open {name} gift registry"
+    },
+    "accommodation": {
+      "overline": "Lodging",
+      "title": "Where to stay",
+      "seeLocation": "See location"
+    },
+    "places": {
+      "overline": "Recommended",
+      "title": "Getting to know\nthe city",
+      "open": "Open {name} in Maps"
+    },
+    "adultOnly": {
+      "title": "Adults-only celebration"
+    },
+    "rsvp": {
+      "overline": "RSVP",
+      "title": "Will you\njoin us?",
+      "greeting": "Hi, {name}. Your answer helps us get everything ready.",
+      "greetingGeneric": "Your answer helps us get everything ready.",
+      "attendance": "Attendance",
+      "yes": "Yes, I'll be there",
+      "no": "I can't make it",
+      "guestCount": "How many people will attend?",
+      "diet": "Dietary restriction",
+      "message": "Message for the couple",
+      "messagePlaceholder": "Write a few words…",
+      "submit": "Send RSVP",
+      "submitting": "Sending…",
+      "required": "Please select an option",
+      "demoNote": "Test mode — this RSVP is not saved.",
+      "loading": "Loading guest information…",
+      "retry": "Try again",
+      "sentOverline": "Confirmation",
+      "sentTitle": "We got your RSVP!",
+      "declinedTitle": "We got your answer",
+      "seeYouThere": "See you on {date} at {venue}.",
+      "guests": "Guests",
+      "dietSummary": "Dietary",
+      "directions": "Get directions"
+    },
+    "footer": {
+      "call": "Call",
+      "callLabel": "Call {name}",
+      "instagramLabel": "{name}'s Instagram",
+      "facebookLabel": "{name}'s Facebook"
+    },
+    "overlay": {
+      "invitationFor": "An invitation for",
+      "reservedOne": "We've reserved 1 seat",
+      "reservedMany": "We've reserved {count} seats",
+      "open": "Open invitation",
+      "close": "Close invitation",
+      "musicHint": "This invitation has music · you can pause it at the top right"
+    },
+    "sticky": {
+      "daysLeft": "{count} days to go",
+      "dayLeft": "1 day to go",
+      "today": "it's today",
+      "confirm": "RSVP"
+    },
+    "nav": {
+      "label": "Invitation sections",
+      "about": "About us",
+      "location": "Where",
+      "timeline": "Schedule",
+      "dresscode": "Dress code",
+      "gallery": "Gallery",
+      "gifts": "Gifts",
+      "accommodation": "Lodging",
+      "places": "Places",
+      "rsvp": "RSVP"
+    },
+    "calendar": {
+      "title": "{bride} & {groom}'s wedding",
+      "filename": "wedding-{bride}-{groom}"
+    }
   }
 } 

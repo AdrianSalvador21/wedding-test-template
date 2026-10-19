@@ -1,32 +1,28 @@
 'use client';
 
 import React from 'react';
-import { fraunces, LSection, LReveal, LSolidButton } from './ui';
+import { fraunces, LSection, LButton, LWhatsAppIcon, L_WRAP, L_EYEBROW, L_LEAD } from './ui';
+import { QUOTE_WHATSAPP_MESSAGE, whatsappUrl } from '../../lib/contact';
+import { RESPONSE_TIME } from '../../lib/marketing-content';
 
-const WHATSAPP_LINK = 'https://wa.me/529602460590';
-
+// Cierre (spec 26): mismo título, la promesa de respuesta y el número visible para quien no
+// puede abrir WhatsApp Web.
 export default function FinalCta() {
   return (
-    <LSection id="contacto" tone="ivory" className="py-20 md:py-24">
-      <LReveal className="max-w-4xl mx-auto px-6 flex flex-col items-center gap-5 text-center">
-        <h2 className="text-3xl md:text-[44px] leading-[1.12] tracking-tight text-[#211D19]" style={fraunces}>
-          Cuéntanos la fecha de tu boda y empezamos tu invitación.
+    <LSection id="contacto" tone="white" border className="py-16 pb-[72px] md:py-[100px] text-center">
+      <div className={`${L_WRAP} flex flex-col items-center gap-5`}>
+        <span className={L_EYEBROW}>Empecemos</span>
+        <h2 className="text-[32px] md:text-[50px] leading-[1.12] tracking-[-0.01em] [text-wrap:balance] max-w-[820px] text-[#211D19]" style={fraunces}>
+          Cuéntanos la fecha de tu boda <em className="italic text-[#C6663C]">y empezamos tu invitación.</em>
         </h2>
-        <p className="text-base md:text-lg text-[#5A534B] max-w-[560px] leading-relaxed">
-          Te respondemos por WhatsApp con los paquetes y los cuatro diseños para verlos desde tu celular.
+        <p className={`${L_LEAD} max-w-[580px]`}>
+          Te respondemos en {RESPONSE_TIME} con los diseños y la disponibilidad para tu fecha.
         </p>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-1.5 w-full sm:w-auto">
-          <LSolidButton href={WHATSAPP_LINK} target="_blank" variant="terracotaDark">
-            Crea tu invitación
-          </LSolidButton>
-          <a
-            href="#disenos"
-            className="inline-flex items-center justify-center rounded-full border-[1.5px] border-[#211D19] px-8 py-[14px] text-[15px] font-semibold text-[#211D19] transition-colors hover:bg-[#211D19] hover:text-[#FBF7F1]"
-          >
-            Ver los diseños
-          </a>
-        </div>
-      </LReveal>
+        <LButton href={whatsappUrl(QUOTE_WHATSAPP_MESSAGE)} external className="w-full sm:w-auto">
+          <LWhatsAppIcon />
+          Cotiza por WhatsApp
+        </LButton>
+      </div>
     </LSection>
   );
 }
