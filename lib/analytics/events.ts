@@ -21,7 +21,7 @@ export interface AnalyticsEventMap {
   editor_saved: NoProps;
   guest_added: NoProps;
   guest_link_copied: NoProps;
-  ai_used: { feature: 'dresscode' | 'suggest' | 'place_description' };
+  ai_used: { feature: 'dresscode' | 'suggest' | 'place_description' | 'save_the_date_message' };
   // Gestión de mesas (spec 12)
   table_created: NoProps;
   table_deleted: NoProps;

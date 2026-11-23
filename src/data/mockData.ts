@@ -1,3 +1,4 @@
+import { SAVE_THE_DATE_DEMOS } from '../../lib/save-the-date-demos';
 import { WeddingData } from '../types/wedding';
 
 // Datos de prueba para María & Carlos
@@ -2787,8 +2788,37 @@ export const mockWeddingTemplate04Demo: WeddingData = {
   updatedAt: '2026-09-30T00:00:00.000Z'
 };
 
+// Spec 27 — demos de "Aparta la fecha": la demo de cada diseño con fecha futura y el save the date
+// activo. Sábado 13 de noviembre de 2027, 5:00 p. m. en el centro de México.
+const SAVE_THE_DATE_DEMO_DATE = '2027-11-13T23:00:00.000Z';
+const saveTheDateDemo = (base: WeddingData, id: string): WeddingData => ({
+  ...base,
+  id,
+  event: { ...base.event, weddingId: id, date: SAVE_THE_DATE_DEMO_DATE, rsvpDeadline: '2027-10-13T23:00:00.000Z' },
+  saveTheDate: {
+    enabled: true,
+    place: 'San Miguel de Allende, Guanajuato',
+    message: {
+      es: 'Nos encantaría contar con tu presencia en este día tan especial. Guarda la fecha, muy pronto te compartiremos todos los detalles.',
+      en: 'We would love to have you with us on this very special day. Save the date, we will share all the details very soon.',
+    },
+  },
+});
+
+const saveTheDateDemoBases: Record<(typeof SAVE_THE_DATE_DEMOS)[number]['baseId'], WeddingData> = {
+  'template-01-demo': mockWeddingTemplate01Demo,
+  'template-02-demo': mockWeddingTemplate02Demo,
+  'valentina-mateo-2026': mockWeddingValentinaMateo,
+  'template-04-demo': mockWeddingTemplate04Demo,
+};
+
+const saveTheDateDemoWeddings: Record<string, WeddingData> = Object.fromEntries(
+  SAVE_THE_DATE_DEMOS.map(({ id, baseId }) => [id, saveTheDateDemo(saveTheDateDemoBases[baseId], id)])
+);
+
 // Mapa de bodas disponibles para desarrollo
 export const mockWeddings: Record<string, WeddingData> = {
+  ...saveTheDateDemoWeddings,
   'maria-carlos-2025': mockWeddingMariaCarlos,
   'ana-luis-2025': mockWeddingAnaLuis,
   'isabella-alexander-2025': mockWeddingLuxury,

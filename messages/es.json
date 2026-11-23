@@ -523,5 +523,36 @@
       "title": "Boda de {bride} & {groom}",
       "filename": "boda-{bride}-{groom}"
     }
+  },
+  "saveTheDate": {
+    "date": "Fecha",
+    "place": "Lugar",
+    "saveThisDay": "Guarda este día",
+    "title": "Aparta la fecha",
+    "titleGuest": "{name}, aparta la fecha",
+    "formalToFollow": "Invitación formal próximamente",
+    "addToCalendar": "Agregar a mi calendario",
+    "calendarPhone": "Calendario del celular",
+    "calendarPhoneHint": "iPhone, Android u Outlook",
+    "calendarGoogle": "Google Calendar",
+    "calendarGoogleHint": "Se abre en tu cuenta de Google",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "countdown": {
+      "days": "días",
+      "hours": "horas",
+      "minutes": "min"
+    },
+    "calendar": {
+      "title": "Boda de {bride} & {groom}",
+      "filename": "boda-{bride}-{groom}",
+      "details": "Invitación: {url}"
+    },
+    "preview": {
+      "label": "Vista previa",
+      "text": "Tus invitados ven “Aparta la fecha” mientras esté activo. Solo tú ves la invitación completa.",
+      "asGuest": "Ver como invitado",
+      "backToEditor": "Volver al Editor"
+    }
   }
-} 
+}

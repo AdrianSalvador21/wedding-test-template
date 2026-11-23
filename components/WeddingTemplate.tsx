@@ -12,6 +12,9 @@ import { useWeddingMusic } from '../hooks/useWeddingMusic';
 import { SITE } from '../lib/site';
 import { isDemoId } from '../lib/analytics/demos';
 import InvitationNotActivated from './InvitationNotActivated';
+import SaveTheDate from './SaveTheDate';
+import SaveTheDatePreviewBar from './SaveTheDatePreviewBar';
+import { useCanPreviewFull } from '../hooks/useCanPreviewFull';
 import InvitationOverlay from './InvitationOverlay';
 import MusicPlayer from './MusicPlayer';
 import { MusicControlProvider } from './MusicControlContext';
@@ -23,9 +26,12 @@ import Template04 from './templates/Template04';
 interface WeddingTemplateProps {
   guestId?: string | null;
   weddingId?: string;
+  previewFull?: boolean; // Spec 27 — ?vista=completa
+  previewSaveTheDate?: boolean; // Spec 27 — ?vista=aparta-la-fecha o /aparta-la-fecha: muestra el save the date aunque esté apagado
+  demoGuestName?: string | null; // Spec 27 — nombre de muestra (?invitado=) en las demos de save the date
 }
 
-export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateProps) {
+export default function WeddingTemplate({ guestId, weddingId, previewFull = false, previewSaveTheDate = false, demoGuestName = null }: WeddingTemplateProps) {
   const { currentWedding, loading, error, initialized } = useWedding();
   const { t } = useTranslations('template');
   const [showOverlay, setShowOverlay] = useState(false);
@@ -41,6 +47,14 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
   if (process.env.NODE_ENV === 'development') {
     console.log('🔍 WeddingTemplate - dynamicMusic:', dynamicMusic);
   }
+
+  // Spec 27 — con el save the date activo, la invitación completa solo se ve con ?vista=completa y
+  // sesión de admin o dueño. Sin el parámetro, el hook no toca Auth ni la red.
+  const saveTheDateOn = !!currentWedding?.saveTheDate?.enabled;
+  const { allowed: canPreviewFull, checking: checkingPreview } = useCanPreviewFull(
+    currentWedding?.id,
+    previewFull && saveTheDateOn
+  );
 
   const router = useRouter();
   const params = useParams();
@@ -112,7 +126,7 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
   }, [guestId, currentWedding, guestLoading]);
 
   // Estado de carga
-  if (!initialized || loading || guestLoading) {
+  if (!initialized || loading || guestLoading || checkingPreview) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-primary-50">
         <div className="text-center">
@@ -161,6 +175,12 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
     return <InvitationNotActivated coupleNames={coupleNames} weddingId={currentWedding.id} />;
   }
 
+  // Spec 27 — modo "Aparta la fecha": el mismo link (con o sin ?guest=) muestra solo el save the
+  // date, sin overlay de bienvenida, overlay de demo ni música.
+  if (previewSaveTheDate || (saveTheDateOn && !canPreviewFull)) {
+    return <SaveTheDate wedding={currentWedding} guestName={guestInfo?.name || demoGuestName || null} />;
+  }
+
   // Crear tema basado en los datos del servicio
   const weddingTheme = createWeddingTheme(currentWedding);
   
@@ -173,6 +193,7 @@ export default function WeddingTemplate({ guestId, weddingId }: WeddingTemplateP
   return (
     <ThemeProvider weddingTheme={weddingTheme}>
       <MusicControlProvider>
+      {saveTheDateOn && canPreviewFull && <SaveTheDatePreviewBar weddingId={currentWedding.id} />}
       <main className="min-h-screen">
         {(() => {
           const overlayVisible = showOverlay || showDemoOverlay;

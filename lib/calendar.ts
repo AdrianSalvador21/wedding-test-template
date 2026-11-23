@@ -1,7 +1,7 @@
 import type { WeddingData } from '../src/types/wedding';
 import { getTranslation, type Language } from './translations';
 
-// "Agregar al calendario" de template-02 (spec 25). Solo lee datos que ya existen: el instante
+// "Agregar al calendario" (spec 25; compartido por el save the date, spec 27). Solo lee datos que ya existen: el instante
 // es el mismo que usa la cuenta regresiva (`new Date(event.date)`), con duración fija de 6 h
 // porque el panel no edita las duraciones de ceremonia/recepción.
 const EVENT_DURATION_HOURS = 6;
@@ -45,7 +45,7 @@ export function getWeddingCalendarLocation(wedding: WeddingData, locale: Languag
 export function buildWeddingIcs(wedding: WeddingData, locale: Language): string {
   const start = new Date(wedding.event.date);
   const end = new Date(start.getTime() + EVENT_DURATION_HOURS * 60 * 60 * 1000);
-  const title = fill(getTranslation('template02.calendar.title', locale), {
+  const title = fill(getTranslation('saveTheDate.calendar.title', locale), {
     bride: wedding.couple.bride.name,
     groom: wedding.couple.groom.name,
   });
@@ -70,8 +70,29 @@ export function buildWeddingIcs(wedding: WeddingData, locale: Language): string 
   return lines.join('\r\n');
 }
 
+// Spec 27 — mismo evento que buildWeddingIcs, como link de "Google Calendar" (abre el formulario
+// de evento prellenado en la cuenta de Google del invitado). El link de la invitación va en la
+// descripción para que el evento lleve de vuelta a ella cuando se publique la invitación formal.
+export function buildGoogleCalendarUrl(wedding: WeddingData, locale: Language, invitationUrl: string): string {
+  const start = new Date(wedding.event.date);
+  const end = new Date(start.getTime() + EVENT_DURATION_HOURS * 60 * 60 * 1000);
+  const title = fill(getTranslation('saveTheDate.calendar.title', locale), {
+    bride: wedding.couple.bride.name,
+    groom: wedding.couple.groom.name,
+  });
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: `${toIcsUtc(start)}/${toIcsUtc(end)}`,
+    details: fill(getTranslation('saveTheDate.calendar.details', locale), { url: invitationUrl }),
+  });
+  const location = getWeddingCalendarLocation(wedding, locale);
+  if (location) params.set('location', location);
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 export function getWeddingIcsFilename(wedding: WeddingData, locale: Language): string {
-  const base = fill(getTranslation('template02.calendar.filename', locale), {
+  const base = fill(getTranslation('saveTheDate.calendar.filename', locale), {
     bride: wedding.couple.bride.name,
     groom: wedding.couple.groom.name,
   });
