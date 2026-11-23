@@ -523,5 +523,36 @@
       "title": "{bride} & {groom}'s wedding",
       "filename": "wedding-{bride}-{groom}"
     }
+  },
+  "saveTheDate": {
+    "date": "Date",
+    "place": "Place",
+    "saveThisDay": "Save this day",
+    "title": "Save the date",
+    "titleGuest": "{name}, save the date",
+    "formalToFollow": "Formal invitation to follow",
+    "addToCalendar": "Add to my calendar",
+    "calendarPhone": "Phone calendar",
+    "calendarPhoneHint": "iPhone, Android or Outlook",
+    "calendarGoogle": "Google Calendar",
+    "calendarGoogleHint": "Opens in your Google account",
+    "cancel": "Cancel",
+    "close": "Close",
+    "countdown": {
+      "days": "days",
+      "hours": "hours",
+      "minutes": "min"
+    },
+    "calendar": {
+      "title": "{bride} & {groom}'s wedding",
+      "filename": "wedding-{bride}-{groom}",
+      "details": "Invitation: {url}"
+    },
+    "preview": {
+      "label": "Preview",
+      "text": "Your guests see “Save the date” while it is on. Only you see the full invitation.",
+      "asGuest": "View as guest",
+      "backToEditor": "Back to Editor"
+    }
   }
-} 
+}

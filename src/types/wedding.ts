@@ -300,6 +300,15 @@ export interface RecommendedPlacesConfig {
   places: RecommendedPlace[];
 }
 
+// Spec 27 — modo "Aparta la fecha": mientras está activo, el link de la invitación muestra solo
+// la pantalla de save the date. `message` puede llegar como texto plano en el sitio público
+// (processBilingualData lo resuelve al idioma del invitado).
+export interface SaveTheDateConfig {
+  enabled: boolean;
+  place?: string; // texto libre: "Guadalajara, Jalisco". Vacío = no se muestra línea de lugar
+  message?: string | { es: string; en: string }; // vacío = no se muestra
+}
+
 // Tipo principal que contiene toda la información de la boda
 export interface WeddingData {
   id: string;
@@ -347,6 +356,7 @@ export interface WeddingData {
   };
   tier?: 'free' | 'template'; // Spec 16 — ausente se interpreta como 'template' en todo el código
   plannerEmail?: string | null; // Spec 17 — correo del wedding planner atribuido a esta boda, si aplica
+  saveTheDate?: SaveTheDateConfig; // Spec 27 — modo "Aparta la fecha"; ausente = apagado
   status: 'draft' | 'active' | 'archived';
   languages: string[];
   defaultLanguage: string;

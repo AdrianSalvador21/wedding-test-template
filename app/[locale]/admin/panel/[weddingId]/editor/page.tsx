@@ -39,7 +39,9 @@ import {
   Loader2,
   Sparkles,
   Globe,
-  Info
+  Info,
+  CalendarHeart,
+  ExternalLink
 } from 'lucide-react';
 
 // Función para migrar/completar datos bilingües faltantes
@@ -68,7 +70,17 @@ const migrateWeddingData = (data: Record<string, unknown>): WeddingData => {
   if (data.showConfirmCta !== undefined) {
     migrated.showConfirmCta = data.showConfirmCta as boolean;
   }
-  
+  // Spec 27 — modo "Aparta la fecha": se conserva y el mensaje se normaliza a { es, en }.
+  if (data.saveTheDate && typeof data.saveTheDate === 'object') {
+    const std = data.saveTheDate as { enabled?: unknown; place?: unknown; message?: unknown };
+    const msg = std.message as string | { es?: string; en?: string } | undefined;
+    migrated.saveTheDate = {
+      enabled: std.enabled === true,
+      place: typeof std.place === 'string' ? std.place : '',
+      message: typeof msg === 'string' ? { es: msg, en: '' } : { es: msg?.es || '', en: msg?.en || '' },
+    };
+  }
+
   // Migrar giftRegistry.message
   if (migrated.giftRegistry?.message && typeof migrated.giftRegistry.message === 'string') {
     migrated.giftRegistry.message = {
@@ -427,6 +439,11 @@ function WeddingEditorContent() {
     }
   };
 
+  // Spec 27 — "Aparta la fecha" va primero, pero fuera de `tabs`: el contador "N/9 secciones"
+  // sigue midiendo solo el contenido de la invitación.
+  const saveTheDateTab = { id: 'saveTheDate', label: 'Aparta la fecha', icon: CalendarHeart };
+  const saveTheDateOn = !!weddingData?.saveTheDate?.enabled;
+
   // NOTA: Galería OCULTA según solicitud del usuario
   const tabs = [
     { id: 'couple', label: 'Pareja', icon: Heart },
@@ -577,6 +594,29 @@ function WeddingEditorContent() {
             </button>
           </div>
           <div className="flex flex-col gap-1">
+            <button
+              type="button"
+              onClick={() => setActiveTab(saveTheDateTab.id)}
+              title={sidebarCollapsed ? saveTheDateTab.label : undefined}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm text-left transition-colors ${
+                sidebarCollapsed ? 'justify-center' : ''
+              } ${activeTab === saveTheDateTab.id ? 'bg-[rgba(198,102,60,0.08)] text-[#AE5730] font-bold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'}`}
+            >
+              <CalendarHeart className="h-[18px] w-[18px] flex-shrink-0" />
+              {!sidebarCollapsed && (
+                <>
+                  <span className="flex-1">{saveTheDateTab.label}</span>
+                  <span
+                    className={`text-[11px] font-extrabold px-2 py-0.5 rounded-full ${
+                      saveTheDateOn ? 'bg-[#F0FDF4] text-[#15803D]' : 'bg-[#F4F4F5] text-[#52525B]'
+                    }`}
+                  >
+                    {saveTheDateOn ? 'Activo' : 'Apagado'}
+                  </span>
+                </>
+              )}
+            </button>
+            <div className="h-px bg-[rgba(0,0,0,0.06)] mx-1 my-1.5" />
             {tabs.map((tab) => (
               <AdminSidebarNavItem
                 key={tab.id}
@@ -593,6 +633,12 @@ function WeddingEditorContent() {
 
         {/* Chips de sección — móvil */}
         <div className="md:hidden bg-white border-b border-[rgba(0,0,0,0.08)] px-4 py-3 flex gap-2 overflow-x-auto">
+          <AdminSectionChip
+            icon={saveTheDateTab.icon}
+            label={saveTheDateTab.label}
+            active={activeTab === saveTheDateTab.id}
+            onClick={() => setActiveTab(saveTheDateTab.id)}
+          />
           {tabs.map((tab) => (
             <AdminSectionChip
               key={tab.id}
@@ -608,6 +654,15 @@ function WeddingEditorContent() {
         <div className="flex-1 min-w-0 md:h-full md:overflow-y-auto">
         <div className="p-4 sm:p-8 pb-28 md:pb-8">
           <div className="max-w-5xl">
+            {activeTab === saveTheDateTab.id && (
+              <SaveTheDateSection
+                data={weddingData}
+                weddingId={weddingId}
+                locale={locale}
+                onChange={(field, value) => updateWeddingData(field, value)}
+                goToTab={setActiveTab}
+              />
+            )}
             {activeTab === 'couple' && (
               <CoupleSection
                 data={(weddingData?.couple || {}) as Record<string, unknown>}
@@ -2373,6 +2428,235 @@ function SettingsSection({ data, onChange }: SectionProps) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// Spec 27 — pestaña "Aparta la fecha". El interruptor se publica con "Guardar cambios", como el
+// resto del Editor. Diseño: canvas https://claude.ai/artifact/LiEhf11s8WD9GUVYbMsM2M (página Panel).
+function SaveTheDateSection({
+  data,
+  weddingId,
+  locale,
+  onChange,
+  goToTab,
+}: {
+  data: WeddingData | null;
+  weddingId: string;
+  locale: string;
+  onChange: (field: string, value: string | boolean | object) => void;
+  goToTab: (tab: string) => void;
+}) {
+  const std = data?.saveTheDate;
+  const enabled = !!std?.enabled;
+  const place = std?.place || '';
+  const message =
+    std?.message && typeof std.message === 'object'
+      ? std.message
+      : { es: typeof std?.message === 'string' ? std.message : '', en: '' };
+  const update = (patch: Partial<{ enabled: boolean; place: string; message: { es: string; en: string } }>) =>
+    onChange('saveTheDate', { enabled, place, message, ...patch });
+
+  const ai = useEditorAi();
+  const [msgLoading, setMsgLoading] = useState(false);
+  const [msgError, setMsgError] = useState<string | null>(null);
+  const [msgByAi, setMsgByAi] = useState(false);
+  const msgLimitReached = ai.remaining('saveTheDateMessage') <= 0;
+  const handleSuggestMessage = async () => {
+    setMsgLoading(true);
+    setMsgError(null);
+    const result = await requestDraft(ai, '/api/ai/save-the-date-message', {
+      weddingId: ai.weddingId,
+      bride: data?.couple?.bride?.name || '',
+      groom: data?.couple?.groom?.name || '',
+      date: data?.event?.date || '',
+      place,
+      current: message.es,
+      withEnglish: ai.hasEnglish,
+    });
+    if (result.ok) {
+      track('ai_used', { feature: 'save_the_date_message' });
+      update({ message: { es: result.es, en: ai.hasEnglish && result.en ? result.en : message.en } });
+      if (ai.hasEnglish && result.en) ai.setMeta('saveTheDate|message', result.es);
+      setMsgByAi(true);
+    } else {
+      setMsgError(result.limit ? AI_TEXT.LIMIT_TEXT : AI_TEXT.ERROR_TEXT);
+    }
+    setMsgLoading(false);
+  };
+  const publicUrl = `/${locale}/wedding/${weddingId}`;
+  const card = (active: boolean) =>
+    `flex-1 basis-[260px] flex flex-col gap-2 rounded-xl p-4 ${
+      active ? 'border-[1.5px] border-[#AE5730] bg-[rgba(198,102,60,0.05)]' : 'border border-[rgba(0,0,0,0.1)] bg-[#FAFAFA]'
+    }`;
+  const inputCls =
+    'w-full px-4 py-3 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors';
+
+  return (
+    <div className="space-y-5">
+      <div className="space-y-1.5">
+        <h2 className="text-[26px] text-[#0A0A0A]" style={displayFont}>Aparta la fecha</h2>
+        <p className="text-sm leading-relaxed text-[#3F3F46] max-w-[640px]">
+          Mándalo meses antes para que tus invitados guarden el día. Cuando tu invitación esté lista, apágalo: el mismo link mostrará la invitación completa.
+        </p>
+      </div>
+
+      <section className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] px-4 sm:px-[22px] py-5 space-y-3.5">
+        <div className="flex items-start gap-4">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={enabled}
+            aria-label="Mostrar Aparta la fecha en lugar de la invitación"
+            onClick={() => update({ enabled: !enabled })}
+            className={`relative flex-shrink-0 mt-0.5 h-7 w-12 rounded-full transition-colors ${enabled ? 'bg-[#AE5730]' : 'bg-[#D4D4D8]'}`}
+          >
+            <span className={`absolute top-[3px] h-[22px] w-[22px] rounded-full bg-white shadow transition-all ${enabled ? 'left-[23px]' : 'left-[3px]'}`} />
+          </button>
+          <div className="flex-1 flex flex-col gap-1">
+            <span className="text-[15px] font-extrabold text-[#0A0A0A]">Mostrar “Aparta la fecha” en lugar de la invitación</span>
+            <span className="text-[13px] leading-relaxed text-[#71717A]">
+              {enabled
+                ? 'Tus invitados ven la pantalla “Aparta la fecha” en el mismo link de su invitación.'
+                : 'Tus invitados ven la invitación completa, con confirmación de asistencia.'}
+            </span>
+          </div>
+          <span
+            className={`hidden sm:inline-flex flex-shrink-0 h-[26px] items-center px-2.5 rounded-full text-xs font-extrabold ${
+              enabled ? 'bg-[#F0FDF4] text-[#15803D]' : 'bg-[#F4F4F5] text-[#52525B]'
+            }`}
+          >
+            {enabled ? 'Encendido' : 'Apagado'}
+          </span>
+        </div>
+        <div className="flex gap-2.5 items-start bg-[#F4F4F5] rounded-[10px] px-3.5 py-2.5 text-[13px] leading-normal text-[#3F3F46]">
+          <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <span>
+            Tus invitados no verán el cambio hasta que pulses <strong>Guardar cambios</strong>.
+          </span>
+        </div>
+      </section>
+
+      <section className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] px-4 sm:px-[22px] py-5 space-y-[18px]">
+        <h3 className="text-[15px] font-extrabold text-[#0A0A0A]">Lo que se muestra</h3>
+        <div className="space-y-1.5">
+          <label htmlFor="std-place" className="block text-[13px] font-semibold text-[#27272A]">Ciudad o lugar</label>
+          <input
+            id="std-place"
+            type="text"
+            value={place}
+            onChange={(e) => update({ place: e.target.value })}
+            className={inputCls}
+            placeholder="Guadalajara, Jalisco"
+          />
+          <p className="text-xs text-[#71717A]">Ej. Guadalajara, Jalisco. No pongas la dirección exacta del salón. Si lo dejas vacío, no se muestra.</p>
+        </div>
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <label htmlFor="std-message" className="block text-[13px] font-semibold text-[#27272A]">Mensaje (opcional)</label>
+              {msgByAi && <AiBadge>Generado con IA</AiBadge>}
+            </div>
+            <AiButton onClick={handleSuggestMessage} disabled={msgLoading || msgLimitReached}>
+              <Sparkles className="h-3.5 w-3.5" />
+              {msgLoading
+                ? 'Redactando...'
+                : msgLimitReached
+                  ? 'Ya usaste tus 5 propuestas para esto'
+                  : `Proponer con IA${usageHint(ai, 'saveTheDateMessage')}`}
+            </AiButton>
+          </div>
+          <textarea
+            id="std-message"
+            rows={3}
+            value={message.es}
+            onChange={(e) => {
+              update({ message: { ...message, es: e.target.value } });
+              setMsgByAi(false);
+            }}
+            readOnly={msgLoading}
+            className={`${inputCls} ${msgLoading ? 'ai-field-loading' : ''}`}
+            placeholder="Nos encantaría contar con tu presencia en este día tan especial. Guarda la fecha, muy pronto te compartiremos todos los detalles."
+          />
+          {msgError && <p className="text-[12px] font-semibold text-[#B91C1C]">{msgError}</p>}
+        </div>
+        <EnField
+          rows={3}
+          label="Mensaje (English)"
+          value={message.en}
+          onChange={(v) => update({ message: { ...message, en: v } })}
+          source={message.es}
+          metaKey="saveTheDate|message"
+          placeholder="We would love to have you with us on this very special day. Save the date, we will share all the details very soon."
+        />
+        <div className="flex gap-2.5 items-start bg-[#F4F4F5] rounded-[10px] px-3.5 py-3 text-[13px] leading-normal text-[#3F3F46]">
+          <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <span>
+            La foto, los nombres y la fecha se toman de las pestañas{' '}
+            <button type="button" onClick={() => goToTab('couple')} className="font-bold text-[#AE5730] underline">
+              Pareja
+            </button>{' '}
+            y{' '}
+            <button type="button" onClick={() => goToTab('event')} className="font-bold text-[#AE5730] underline">
+              Evento
+            </button>
+            . El diseño es el mismo que eligieron para su invitación.
+          </span>
+        </div>
+      </section>
+
+      <section className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] px-4 sm:px-[22px] py-5 space-y-3.5">
+        <h3 className="text-[15px] font-extrabold text-[#0A0A0A]">Qué ven tus invitados en su link</h3>
+        <div className="flex flex-wrap gap-3.5">
+          <div className={card(enabled)}>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-extrabold text-[#0A0A0A]">Encendido</span>
+              {enabled && <span className="text-[11px] font-extrabold uppercase tracking-[0.06em] text-[#AE5730]">Ahora</span>}
+            </div>
+            <p className="text-[13px] leading-relaxed text-[#3F3F46]">
+              Una sola pantalla: foto, nombres, fecha, ciudad, cuenta regresiva, botón para agregar al calendario e “Invitación formal próximamente”. Sin confirmación de asistencia ni el resto de las secciones.
+            </p>
+          </div>
+          <div className={card(!enabled)}>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-extrabold text-[#0A0A0A]">Apagado</span>
+              {!enabled && <span className="text-[11px] font-extrabold uppercase tracking-[0.06em] text-[#AE5730]">Ahora</span>}
+            </div>
+            <p className="text-[13px] leading-relaxed text-[#3F3F46]">
+              La invitación completa, con confirmación de asistencia, ubicación, itinerario y regalos. Es el mismo link: no tienes que mandar uno nuevo.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] px-4 sm:px-[22px] py-5 space-y-3">
+        <div className="space-y-1">
+          <h3 className="text-[15px] font-extrabold text-[#0A0A0A]">Revisa cómo se ve</h3>
+          <p className="text-[13px] leading-relaxed text-[#71717A]">
+            Ambas vistas muestran lo último que guardaste, aunque el interruptor esté apagado, para que compares las dos antes de mandarlas. Tus invitados solo ven “Aparta la fecha” cuando está encendido y guardado.
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2.5">
+          <a
+            href={`${publicUrl}/aparta-la-fecha`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-11 items-center justify-center gap-2 px-4 rounded-[10px] bg-[#111111] text-white text-sm font-bold no-underline hover:bg-black"
+          >
+            Ver save the date
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+          <a
+            href={`${publicUrl}?vista=completa`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-11 items-center justify-center gap-2 px-4 rounded-[10px] bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] text-sm font-bold no-underline hover:bg-[#FAFAFA]"
+          >
+            Ver invitación completa
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </section>
     </div>
   );
 }
