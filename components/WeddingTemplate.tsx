@@ -13,6 +13,7 @@ import { SITE } from '../lib/site';
 import { isDemoId } from '../lib/analytics/demos';
 import InvitationNotActivated from './InvitationNotActivated';
 import SaveTheDate from './SaveTheDate';
+import InvitationLoading from './InvitationLoading';
 import SaveTheDatePreviewBar from './SaveTheDatePreviewBar';
 import { useCanPreviewFull } from '../hooks/useCanPreviewFull';
 import InvitationOverlay from './InvitationOverlay';
@@ -127,16 +128,7 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
 
   // Estado de carga
   if (!initialized || loading || guestLoading || checkingPreview) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-primary-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-primary-800 font-medium">
-            {guestLoading ? 'Cargando información del invitado...' : t('loading')}
-          </p>
-        </div>
-      </div>
-    );
+    return <InvitationLoading message={guestLoading ? 'Cargando información del invitado...' : t('loading')} />;
   }
 
   // Estado de error

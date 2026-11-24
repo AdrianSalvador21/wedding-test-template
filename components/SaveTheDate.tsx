@@ -10,6 +10,7 @@ import { v2FormatLongDate, v2Localized } from './sections-v2/sections';
 import { SITE } from '../lib/site';
 import { isDemoId } from '../lib/analytics/demos';
 import { imageSourceId } from '../lib/save-the-date-demos';
+import InvitationLoading from './InvitationLoading';
 
 // Spec 27 — pantalla "Aparta la fecha". Un solo componente con 4 estilos (uno por template); el
 // diseño de referencia es el canvas https://claude.ai/artifact/LiEhf11s8WD9GUVYbMsM2M. Solo muestra
@@ -73,6 +74,39 @@ function useCountdown(date: Date | null) {
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
+// La foto llega en dos pasos (/api/wedding-images y luego el JPG), así que puede aparecer antes,
+// durante o después de la animación de apertura. Se precarga y decodifica antes de pintar la
+// pantalla para que la apertura siempre arranque con la foto. Si tarda más de `timeoutMs` o falla,
+// se muestra la pantalla de todos modos: nadie debe quedarse atorado en la carga.
+function useImageReady(src: string, timeoutMs: number): boolean {
+  const [readySrc, setReadySrc] = useState<string | null>(null);
+  const [timedOut, setTimedOut] = useState(false);
+
+  useEffect(() => {
+    const id = setTimeout(() => setTimedOut(true), timeoutMs);
+    return () => clearTimeout(id);
+  }, [timeoutMs]);
+
+  useEffect(() => {
+    if (!src) return;
+    let cancelled = false;
+    const done = () => {
+      if (!cancelled) setReadySrc(src);
+    };
+    const img = new Image();
+    img.onload = () => {
+      img.decode().catch(() => undefined).then(done);
+    };
+    img.onerror = done;
+    img.src = src;
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
+  return timedOut || (!!src && readySrc === src);
+}
+
 // ---------- Animación ----------
 
 // Con "reducir movimiento" se pasa `initial={false}`: framer pinta directo el estado final.
@@ -95,7 +129,7 @@ function useMotionHelpers() {
 
 // Foto: entra acercándose y luego queda con un acercamiento muy lento (CSS, en un contenedor aparte
 // para no pelear con el transform de framer).
-function Photo({ src, alt, delay = 0, style, className = '' }: { src: string; alt: string; delay?: number; style?: CSSProperties; className?: string }) {
+function Photo({ src, alt, delay = 0, style, className = '', objectPosition = '50% 30%' }: { src: string; alt: string; delay?: number; style?: CSSProperties; className?: string; objectPosition?: string }) {
   const { custom } = useMotionHelpers();
   if (!src) return null;
   return (
@@ -105,7 +139,7 @@ function Photo({ src, alt, delay = 0, style, className = '' }: { src: string; al
         src={src}
         alt={alt}
         className="h-full w-full object-cover"
-        style={{ objectPosition: '50% 30%' }}
+        style={{ objectPosition }}
         {...custom({ scale: 1.14 }, { scale: 1 }, delay, 2.8)}
       />
     </div>
@@ -294,6 +328,8 @@ export default function SaveTheDate({ wedding, guestName }: SaveTheDateProps) {
   const { heroImage } = useWeddingImages(imageSourceId(wedding.id));
   const { up, custom, reduce } = useMotionHelpers();
   const [veilDone, setVeilDone] = useState(false);
+  const photoReady = useImageReady(heroImage, 6000);
+  const { t: tTemplate } = useTranslations('template');
 
   const templateId = (['template-01', 'template-02', 'template-03', 'template-04'].includes(wedding.template?.id || '')
     ? wedding.template?.id
@@ -332,6 +368,9 @@ export default function SaveTheDate({ wedding, guestName }: SaveTheDateProps) {
   const driftCss = (
     <style>{`@keyframes stdDrift{from{transform:scale(1)}to{transform:scale(1.06)}}.std-drift{animation:stdDrift 22s 2.8s ease-in-out infinite alternate}@media (prefers-reduced-motion: reduce){.std-drift{animation:none}}`}</style>
   );
+
+  // Misma pantalla de carga que mientras llegan los datos: la apertura empieza ya con la foto lista.
+  if (!photoReady) return <InvitationLoading message={tTemplate('loading')} />;
 
   // ----- Clásico (template-01) -----
   if (templateId === 'template-01') {
@@ -452,8 +491,9 @@ export default function SaveTheDate({ wedding, guestName }: SaveTheDateProps) {
               <br />&amp; {groom}
             </motion.h1>
             {heroImage && (
-              <motion.div className="relative h-[214px] lg:hidden" {...custom({ clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)' }, 0.6, 1.4, EASE_IN_OUT)}>
-                <Photo src={heroImage} alt={photoAlt} delay={0.6} />
+              <motion.div className="relative h-[240px] overflow-hidden rounded-[5px] lg:hidden" {...custom({ clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)' }, 0.6, 1.4, EASE_IN_OUT)}>
+                {/* Franja horizontal en móvil: centra a la pareja en vertical (50% 52%). */}
+                <Photo src={heroImage} alt={photoAlt} delay={0.6} objectPosition="50% 52%" />
               </motion.div>
             )}
             <motion.dl {...up(1.1)} className="m-0 flex flex-wrap" style={{ borderTop: `1px solid ${C.rule}` }}>
