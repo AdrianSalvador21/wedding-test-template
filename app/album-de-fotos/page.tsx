@@ -5,7 +5,7 @@ import FaqList from '../../components/marketing/FaqList';
 import JsonLd from '../../components/seo/JsonLd';
 import { fraunces, manrope } from '../../lib/brand';
 import { whatsappUrl } from '../../lib/contact';
-import { ALBUM_FAQ, getDesign } from '../../lib/marketing-content';
+import { ALBUM_FAQ, ALBUM_PRICE, getDesign } from '../../lib/marketing-content';
 import { pageMetadata } from '../../lib/page-metadata';
 import { breadcrumbSchema, faqSchema } from '../../lib/seo-schema';
 
@@ -15,11 +15,19 @@ import { breadcrumbSchema, faqSchema } from '../../lib/seo-schema';
 export const metadata: Metadata = pageMetadata({
   title: 'Álbum de fotos de los invitados para tu boda | Invyta',
   description:
-    'Tus invitados suben sus fotos desde su invitación o con un QR en las mesas, sin app ni registro. Todas en un solo álbum con el diseño de tu invitación. $399 MXN, pago único.',
+    `Tus invitados suben sus fotos desde su invitación o con un QR en las mesas, sin app ni registro. Todas en un solo álbum. $${ALBUM_PRICE.standalone} MXN, pago único.`,
   path: '/album-de-fotos',
 });
 
 const WHATSAPP = whatsappUrl('Hola! Quiero información del álbum de fotos para mi boda.');
+// Spec 30 — álbum sin invitación.
+const WHATSAPP_STANDALONE = whatsappUrl('Hola! Quiero el álbum de fotos para mi boda, sin invitación.');
+const SIGNUP = '/login?mode=signup';
+const STANDALONE_STEPS = [
+  { n: '1', title: 'Crea tu cuenta gratis', body: 'Con tus nombres y la fecha de tu boda. Ahí mismo puedes armar tu lista de invitados y tus mesas.' },
+  { n: '2', title: 'Actívalo por WhatsApp', body: `Entra a la sección Fotos de tu panel y escríbenos. Pagas $${ALBUM_PRICE.standalone} y lo activamos ese mismo día.` },
+  { n: '3', title: 'Elige el estilo y compártelo', body: 'Escoge entre Clásico, Moderno, Botánica o Jardín, imprime el QR para las mesas y manda a cada invitado su link.' },
+];
 const jardin = getDesign('jardin-editorial')!;
 const moderno = getDesign('moderno')!;
 const clasico = getDesign('clasico')!;
@@ -47,7 +55,7 @@ const STEPS = [
   { n: '01', title: 'Lo agregas a tu invitación', body: 'Nos escribes por WhatsApp y lo activamos ese mismo día. Tú eliges el modo del álbum desde tu panel.' },
   { n: '02', title: 'Llega el gran día', body: 'Tu invitación muestra "Comparte tus fotos" y pones el QR en las mesas.' },
   { n: '03', title: 'Tus invitados suben', body: 'Desde su celular, sin descargar nada ni crear cuenta. Hasta 30 fotos cada invitación, durante 3 semanas.' },
-  { n: '04', title: 'Tú te quedas con todo', body: 'Ves cada foto con el nombre de quien la subió y descargas todo en ZIP.' },
+  { n: '04', title: 'Tú te quedas con todo', body: 'Ves cada foto con el nombre de quien la subió y las descargas todas juntas en tu dispositivo cuando quieras.' },
 ];
 const CONTROL = [
   { n: '1', title: 'Decides qué se ve', body: 'Oculta o borra cualquier foto al momento.' },
@@ -55,12 +63,12 @@ const CONTROL = [
   { n: '3', title: 'Tres semanas para compartir', body: 'Hasta 30 fotos por invitación, desde el día de la boda.' },
   { n: '4', title: 'Un año para descargarlas', body: 'Las fotos se guardan 1 año desde tu boda.' },
 ];
+// Spec 30 — la lista vale para los dos precios (con y sin invitación).
 const INCLUDES = [
-  'Álbum con el diseño de tu invitación',
-  'Botón "Comparte tus fotos" en la invitación',
-  'QR imprimible para las mesas',
+  'Álbum con el diseño de tu invitación, o el estilo que elijas si no la tienes',
+  'Link personal para cada invitado y QR imprimible para las mesas',
   'Álbum abierto o cámara desechable',
-  'Descarga de todas las fotos en ZIP',
+  'Las descargas todas juntas en tu dispositivo cuando quieras',
 ];
 const TEMPLATES = [
   { name: 'Clásico', image: clasico.image },
@@ -294,12 +302,15 @@ export default function AlbumDeFotosPage() {
               <span className="text-xs font-semibold tracking-[0.16em] uppercase text-[#6B6359]">Precio</span>
               <div className="flex items-baseline gap-2.5">
                 <span className="text-[52px] md:text-[64px] leading-none text-[#211D19]" style={fraunces}>
-                  $399
+                  ${ALBUM_PRICE.standalone}
                 </span>
                 <span className="text-base md:text-[17px] font-semibold text-[#4A433C]">MXN · pago único</span>
               </div>
               <p className="m-0 text-[15px] md:text-[15.5px] leading-normal text-[#4A433C]">
-                Se agrega a cualquier invitación con diseño de Invyta (paquete Básico o Personalizado).
+                Se agrega a tu invitación de Invyta o funciona solo, aunque tu invitación sea de papel o de otro proveedor.{' '}
+                <a href="#sin-invitacion" className="text-[#AE5730] font-semibold">
+                  Cómo empezar sin invitación
+                </a>
               </p>
               <div className="flex flex-col gap-[11px] border-t border-[rgba(43,38,34,0.12)] pt-5">
                 {INCLUDES.map((i) => (
@@ -311,7 +322,46 @@ export default function AlbumDeFotosPage() {
               </div>
               <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className={BTN_PRIMARY}>
                 <WhatsAppIcon />
-                Agregarlo a mi invitación
+                Pregúntanos por WhatsApp
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section id="sin-invitacion" className={`${WRAP} scroll-mt-20 pt-14 md:pt-24 grid lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-8 lg:gap-14`}>
+          <div className="flex flex-col gap-4">
+            <span className={EYEBROW}>Sin invitación</span>
+            <h2 className={H2} style={fraunces}>
+              ¿No tienes tu invitación con nosotros?
+            </h2>
+            <p className="m-0 text-base md:text-[16.5px] leading-relaxed text-[#4A433C]">
+              No hace falta. El álbum funciona solo, con tu lista de invitados gratis. Y si después quieres tu invitación, el álbum y sus fotos se quedan.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3.5">
+            {STANDALONE_STEPS.map((step) => (
+              <div key={step.n} className="flex gap-4 items-start bg-white border border-[rgba(43,38,34,0.08)] rounded-[20px] px-5 md:px-6 py-5">
+                <span className="w-10 h-10 flex-shrink-0 rounded-full bg-[#F6EFE4] text-[#AE5730] flex items-center justify-center text-[17px]" style={fraunces}>
+                  {step.n}
+                </span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[17px] font-semibold text-[#211D19]">{step.title}</span>
+                  <span className="text-[15px] leading-normal text-[#4A433C]">{step.body}</span>
+                </div>
+              </div>
+            ))}
+            <div className="flex flex-wrap gap-3 pt-1.5">
+              <a href={SIGNUP} className={BTN_PRIMARY}>
+                Crear mi cuenta gratis
+              </a>
+              <a
+                href={WHATSAPP_STANDALONE}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2.5 min-h-[54px] px-[26px] rounded-full border-[1.5px] border-[#211D19] text-[#211D19] no-underline text-[15.5px] font-semibold hover:bg-[rgba(33,29,25,0.04)] transition-colors"
+              >
+                <WhatsAppIcon />
+                Escríbenos por WhatsApp
               </a>
             </div>
           </div>

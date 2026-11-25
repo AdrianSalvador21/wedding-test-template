@@ -61,6 +61,9 @@ const AdminGuestsContent = () => {
   const [showImport, setShowImport] = useState(false);
   // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
   const tier = weddingData?.tier ?? 'template';
+  // Spec 30 — boda gratis con el álbum de fotos activo: cada invitado recibe su link del álbum
+  // por WhatsApp (sin invitación no hay otro link que mandar).
+  const albumLinks = tier === 'free' && weddingData?.photoAlbum?.enabled === true;
 
   const [formData, setFormData] = useState<GuestFormData>({
     name: '',
@@ -558,12 +561,12 @@ const AdminGuestsContent = () => {
                             )}
                           </button>
                         )}
-                        {tier !== 'free' && (
+                        {(tier !== 'free' || albumLinks) && (
                           <button
                             onClick={() => setWhatsappGuest(guest)}
                             className="text-[#15803D] hover:text-[#14532D] p-2 rounded-lg hover:bg-[#F0FDF4] transition-colors"
-                            title="Enviar por WhatsApp"
-                            aria-label="Enviar por WhatsApp"
+                            title={albumLinks ? 'Enviar link del álbum' : 'Enviar por WhatsApp'}
+                            aria-label={albumLinks ? 'Enviar link del álbum por WhatsApp' : 'Enviar por WhatsApp'}
                           >
                             <MessageCircle className="h-4 w-4" />
                           </button>
@@ -650,12 +653,12 @@ const AdminGuestsContent = () => {
                         {copiedGuestId === guest.id ? <Check className="h-4 w-4" /> : <Link className="h-4 w-4" />}
                       </button>
                     )}
-                    {tier !== 'free' && (
+                    {(tier !== 'free' || albumLinks) && (
                       <button
                         onClick={() => setWhatsappGuest(guest)}
                         className="text-[#15803D] hover:text-[#14532D] p-2 rounded-lg hover:bg-[#F0FDF4] transition-colors"
-                        title="Enviar por WhatsApp"
-                        aria-label="Enviar por WhatsApp"
+                        title={albumLinks ? 'Enviar link del álbum' : 'Enviar por WhatsApp'}
+                        aria-label={albumLinks ? 'Enviar link del álbum por WhatsApp' : 'Enviar por WhatsApp'}
                       >
                         <MessageCircle className="h-4 w-4" />
                       </button>
@@ -871,6 +874,7 @@ const AdminGuestsContent = () => {
           guest={whatsappGuest}
           weddingId={weddingId}
           weddingData={weddingData}
+          album={albumLinks}
           onClose={() => setWhatsappGuest(null)}
           onSaved={(id, whatsappMessages) =>
             setGuests((prev) => prev.map((g) => (g.id === id ? { ...g, whatsappMessages } : g)))

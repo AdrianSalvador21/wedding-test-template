@@ -330,7 +330,7 @@ export class GuestService {
    * invitado. Escribe solo esa clave con notación de punto: no pasa por `updateGuest`, así que
    * no registra actividad ni reconcilia asientos, y no toca `updatedAt`.
    */
-  async saveWhatsAppMessage(id: string, kind: 'invitation' | 'saveTheDate', text: string | null): Promise<void> {
+  async saveWhatsAppMessage(id: string, kind: 'invitation' | 'saveTheDate' | 'album', text: string | null): Promise<void> {
     try {
       await updateDoc(doc(db, this.GUESTS_COLLECTION, id), {
         [`whatsappMessages.${kind}`]: text === null ? deleteField() : text,

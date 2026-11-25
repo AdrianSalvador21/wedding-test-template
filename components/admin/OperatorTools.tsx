@@ -2,11 +2,12 @@
 
 import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
-import { Check, Copy, Info, Loader2, MessageCircle, Trash2, X } from 'lucide-react';
+import { Camera, Check, Copy, Info, Loader2, MessageCircle, Trash2, X } from 'lucide-react';
 import { AdminToggle, manrope } from './ui';
 import { useAuth, type LinkedWedding } from '../../lib/auth-context';
 import { isValidWeddingId, slugifyWeddingNames } from '../../lib/wedding-defaults';
 import { EMAIL_RE, MAX_OWNER_EMAILS, TEMPLATE_OPTIONS, isValidEmail, isValidIsoDate, type TemplateId } from '../../lib/admin-validation';
+import { ALBUM_PRICE } from '../../lib/marketing-content';
 
 // Alta de invitaciones y edición de correos con acceso (solo operador, spec 08).
 
@@ -158,6 +159,7 @@ interface CreatedWedding {
   groom: string;
   plannerEmail: string;
   emails: string[];
+  albumOnly: boolean;
 }
 
 // ---------- Nueva invitación ----------
@@ -175,6 +177,8 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
   const [plannerEmail, setPlannerEmail] = useState('');
   const [date, setDate] = useState('');
   const [templateId, setTemplateId] = useState<TemplateId>('template-01');
+  // Spec 30 — "Solo álbum de fotos": boda gratis, sin template, con el álbum ya activado.
+  const [albumOnly, setAlbumOnly] = useState(false);
   const [weddingId, setWeddingId] = useState('');
   const [idTouched, setIdTouched] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -196,6 +200,7 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
     setPlannerEmail('');
     setDate('');
     setTemplateId('template-01');
+    setAlbumOnly(false);
     setWeddingId('');
     setIdTouched(false);
     setErrors({});
@@ -249,13 +254,13 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
           groomEmail: groomEmail.trim(),
           plannerEmail: plannerEmail.trim(),
           date,
-          templateId,
+          ...(albumOnly ? { albumOnly: true } : { templateId }),
           weddingId: weddingId.trim(),
         }),
       });
       if (res.status === 201) {
         const emails = Array.from(new Set([brideEmailTrim, groomEmailTrim, plannerEmailTrim].filter(Boolean)));
-        setCreated({ id: weddingId.trim(), bride: bride.trim(), groom: groom.trim(), plannerEmail: plannerEmail.trim(), emails });
+        setCreated({ id: weddingId.trim(), bride: bride.trim(), groom: groom.trim(), plannerEmail: plannerEmail.trim(), emails, albumOnly });
         onCreated();
         return;
       }
@@ -285,17 +290,21 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
     // mensaje se dirige al planner en vez de "Hola {bride} y {groom}...".
     const hasCouple = !!(created.bride || created.groom);
     const emailsText = created.emails.length > 1 ? `${created.emails[0]} (o ${created.emails[1]})` : created.emails[0];
-    const message = hasCouple
+    const albumUrl = `${origin}/wedding/${created.id}/fotos`;
+    const albumMessage = `Hola${hasCouple ? ` ${created.bride} y ${created.groom}` : ''}, ya está listo el álbum de fotos de su boda en Invyta.\n\nPara administrarlo:\n1. Entren a ${loginUrl}\n2. Creen su cuenta con este correo: ${emailsText} y verifíquenlo desde el mensaje que les llega.\n3. Al entrar, vayan a la sección Fotos: ahí eligen el estilo del álbum, descargan el QR para las mesas y mandan a cada invitado su link.\n\nSi algo no funciona, respóndanme por aquí.`;
+    const message = created.albumOnly
+      ? albumMessage
+      : hasCouple
       ? `Hola ${created.bride} y ${created.groom}, ya está lista la base de su invitación en Invyta.\n\nPara editarla:\n1. Entren a ${loginUrl}\n2. Creen su cuenta con este correo: ${emailsText} y verifíquenlo desde el mensaje que les llega.\n3. Al entrar, se abrirá directo su invitación.\n\nSi algo no funciona, respóndanme por aquí.`
       : `Hola, ya está lista la base de la invitación de tu cliente en Invyta (${created.id}).\n\nPara completarla:\n1. Entra a ${loginUrl}\n2. Crea tu cuenta con este correo: ${created.plannerEmail} y verifícalo desde el mensaje que te llega.\n3. Al entrar, la verás en "Mis invitaciones" junto con tus demás bodas.\n\nAhí puedes agregar los datos de la pareja cuando los tengas.`;
 
     return (
       <Modal
-        title="Invitación creada"
+        title={created.albumOnly ? 'Álbum creado' : 'Invitación creada'}
         sub={hasCouple ? `${created.bride} y ${created.groom} ya pueden entrar con sus correos.` : 'El wedding planner ya puede entrar con su correo.'}
         onClose={onClose}
       >
-        <CopyRow label="Invitación para los invitados" value={inviteUrl} />
+        {created.albumOnly ? <CopyRow label="Álbum para los invitados" value={albumUrl} /> : <CopyRow label="Invitación para los invitados" value={inviteUrl} />}
         <CopyRow label="Entrada de la pareja" value={loginUrl} />
         <div className="flex flex-col gap-2">
           <label htmlFor={`${uid}-msg`} className="text-[13px] font-semibold text-[#27272A]">
@@ -325,19 +334,21 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
             </a>
           </div>
         </div>
-        <div className="flex gap-2.5 items-start bg-[#F4F4F5] rounded-[10px] px-3.5 py-3 text-[13px] leading-normal text-[#3F3F46]">
-          <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
-          <span>Las fotos y la música se agregan aparte. Mientras tanto la invitación usa fotos de stock.</span>
-        </div>
+        {!created.albumOnly && (
+          <div className="flex gap-2.5 items-start bg-[#F4F4F5] rounded-[10px] px-3.5 py-3 text-[13px] leading-normal text-[#3F3F46]">
+            <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+            <span>Las fotos y la música se agregan aparte. Mientras tanto la invitación usa fotos de stock.</span>
+          </div>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <button type="button" onClick={reset} className="text-[13px] font-semibold text-[#0A0A0A] underline">
             Crear otra invitación
           </button>
           <a
-            href={`/${locale}/admin/panel/${created.id}/editor`}
+            href={`/${locale}/admin/panel/${created.id}/${created.albumOnly ? 'photos' : 'editor'}`}
             className="inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-semibold"
           >
-            Ir al editor de la invitación
+            {created.albumOnly ? 'Ir a Fotos' : 'Ir al editor de la invitación'}
           </a>
         </div>
       </Modal>
@@ -345,13 +356,33 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
   }
 
   return (
-    <Modal title="Nueva invitación" sub="Crea la base de la invitación. La pareja completa el resto desde su editor." onClose={onClose}>
+    <Modal title="Nueva boda" sub="Crea la base de la boda. La pareja entra con su correo y ve su panel." onClose={onClose}>
       <form onSubmit={submit} noValidate className="flex flex-col gap-[22px]">
         {banner && (
           <div role="alert" className="flex gap-2.5 items-start bg-[rgba(185,28,28,0.06)] border border-[rgba(185,28,28,0.3)] rounded-[10px] px-3.5 py-3 text-[13px] text-[#7F1D1D]">
             {banner}
           </div>
         )}
+        <fieldset className="flex flex-col gap-2 m-0 p-0 border-0">
+          <legend className="text-[13px] font-semibold text-[#27272A] mb-2">Tipo</legend>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {[
+              { value: false, title: 'Con invitación', body: `Invitación con diseño. El álbum se activa aparte ($${ALBUM_PRICE.withInvitation}).` },
+              { value: true, title: 'Solo álbum de fotos', body: `Boda gratis con el álbum ya activado ($${ALBUM_PRICE.standalone}). Sin template.` },
+            ].map((o) => (
+              <label
+                key={o.title}
+                className={`flex gap-3 items-start p-3.5 rounded-xl cursor-pointer ${albumOnly === o.value ? 'border-2 border-[#AE5730] bg-[rgba(198,102,60,0.04)]' : 'border border-[rgba(0,0,0,0.14)]'}`}
+              >
+                <input type="radio" name={`${uid}-tipo`} checked={albumOnly === o.value} onChange={() => setAlbumOnly(o.value)} className="mt-1 accent-[#AE5730]" />
+                <span className="flex flex-col gap-0.5">
+                  <span className="text-sm font-semibold text-[#0A0A0A]">{o.title}</span>
+                  <span className="text-[12.5px] leading-snug text-[#71717A]">{o.body}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Nombre de la persona 2 (opcional)" htmlFor={`${uid}-bride`} error={errors.bride}>
             <input id={`${uid}-bride`} type="text" value={bride} onChange={(e) => setBride(e.target.value)} className={inputClass(!!errors.bride)} placeholder="María" />
@@ -389,9 +420,18 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
         <Field label="Fecha de la boda" htmlFor={`${uid}-date`} error={errors.date}>
           <input id={`${uid}-date`} type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClass(!!errors.date)} />
         </Field>
-        <TemplatePicker value={templateId} onChange={setTemplateId} name={`${uid}-tpl`} />
+        {albumOnly ? (
+          <div className="flex gap-2.5 items-start bg-[#FAFAFA] border border-dashed border-[rgba(0,0,0,0.16)] rounded-xl px-4 py-3.5 text-[13px] leading-normal text-[#3F3F46]">
+            <Camera className="h-4 w-4 flex-shrink-0 mt-0.5 text-[#AE5730]" />
+            <span>
+              <span className="font-semibold text-[#0A0A0A]">Sin elegir diseño.</span> El álbum empieza en modo abierto y con el estilo Moderno; la pareja puede cambiar ambos desde su panel. Si después contrata su invitación, se le asigna template en Ajustes.
+            </span>
+          </div>
+        ) : (
+          <TemplatePicker value={templateId} onChange={setTemplateId} name={`${uid}-tpl`} />
+        )}
         <Field
-          label="Dirección de la invitación"
+          label={albumOnly ? 'Dirección del álbum' : 'Dirección de la invitación'}
           htmlFor={`${uid}-id`}
           error={errors.weddingId}
           hint="Es la parte que ven los invitados en su enlace. De 3 a 50 caracteres: letras, números y guiones. Si no hay nombres de pareja para sugerirla, escríbela tú directamente."
@@ -647,8 +687,8 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
   const templateChanged = !!initial && templateId !== initial.templateId;
   const plannerEmailTrim = plannerEmail.trim().toLowerCase();
   const plannerEmailChanged = !!initial && plannerEmailTrim !== (initial.plannerEmail || '');
-  // Spec 29 — el álbum es solo para bodas con diseño (asignar plantilla en este mismo guardado cuenta).
-  const albumAllowed = !!initial && (initial.tier !== 'free' || templateChanged);
+  // Spec 30 — el álbum se puede activar también en bodas gratis (álbum sin invitación).
+  const albumAllowed = !!initial;
   const albumChanged = !!initial && albumEnabled !== initial.albumEnabled;
   const changed = templateChanged || (!locked && idChanged) || plannerEmailChanged || albumChanged;
 
@@ -803,7 +843,7 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
             <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#71717A]">Extras</span>
             <div className="flex items-center justify-between gap-4">
               <div className="flex flex-col gap-1">
-                <span className="text-sm font-semibold text-[#0A0A0A]">Álbum de fotos de invitados ($399)</span>
+                <span className="text-sm font-semibold text-[#0A0A0A]">Álbum de fotos de invitados ({initial.tier === 'free' && !templateChanged ? `$${ALBUM_PRICE.standalone}, sin invitación` : `$${ALBUM_PRICE.withInvitation}`})</span>
                 <span className={`text-[13px] font-semibold ${albumEnabled ? 'text-[#15803D]' : 'text-[#71717A]'}`}>
                   {albumEnabled
                     ? initial.albumEnabled && initial.albumActivatedAt
@@ -819,7 +859,7 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
               )}
             </div>
             <span className="text-xs text-[#71717A] leading-normal">
-              Actívalo cuando la pareja haya pagado. Al apagarlo no se borra ninguna foto. No disponible en bodas gratis.
+              Actívalo cuando la pareja haya pagado. Al apagarlo no se borra ninguna foto.
             </span>
           </div>
           {!locked && idChanged && (

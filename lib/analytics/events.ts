@@ -35,12 +35,13 @@ export interface AnalyticsEventMap {
   free_wedding_upgrade_cta_click: NoProps;
   // Importar invitados y enviar por WhatsApp (spec 28)
   guests_imported: { rows: number };
-  guest_whatsapp_opened: { kind: 'invitation' | 'saveTheDate'; edited: boolean };
+  guest_whatsapp_opened: { kind: 'invitation' | 'saveTheDate' | 'album'; edited: boolean };
   // Álbum de fotos de los invitados (spec 29)
   album_photo_uploaded: { mode: 'open' | 'disposable'; source: 'guest' | 'device' };
   album_zip_downloaded: { photos: number };
   album_qr_downloaded: { variant: 'design' | 'plain' };
-  album_activation_cta_click: NoProps;
+  album_activation_cta_click: { standalone: boolean };
+  album_style_changed: { style: string };
   album_uploads_toggled: { closed: boolean };
   album_link_copied: NoProps;
 }

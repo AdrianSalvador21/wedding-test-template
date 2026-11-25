@@ -53,6 +53,7 @@ export interface FirebaseGuest {
   whatsappMessages?: {
     invitation?: string;
     saveTheDate?: string;
+    album?: string; // Spec 30 — link del álbum de fotos
   };
 }
 
@@ -321,6 +322,9 @@ export interface PhotoAlbumConfig {
   mode: 'open' | 'disposable'; // lo elige la pareja; 'open' por defecto
   activatedAt: string; // ISO, la primera vez que el operador lo enciende
   uploadsClosed?: boolean; // la pareja cerró la subida antes de tiempo: el álbum queda solo para ver
+  // Spec 30 — estilo del álbum en bodas gratis ('template-01' … 'template-04'). En bodas con diseño
+  // manda el template de la invitación; si falta, el Moderno.
+  style?: string;
 }
 
 // Spec 29 — una foto subida por un invitado (colección albumPhotos). Solo la lee y escribe el servidor.

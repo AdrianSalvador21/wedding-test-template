@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '../../../../lib/serverAuth';
 import { createInitialWeddingData, isValidWeddingId } from '../../../../lib/wedding-defaults';
 import { isTemplateId, isValidEmail, isValidIsoDate, normalizeEmailList } from '../../../../lib/admin-validation';
+import { DEFAULT_ALBUM_STYLE } from '../../../../lib/album';
 
 export const runtime = 'nodejs';
 
@@ -15,6 +16,8 @@ const isAlreadyExists = (err: unknown) => {
 
 // Alta de una invitación (solo operador): crea weddings/<id> y weddingOwners/<id> en una
 // sola operación atómica. Si el ID ya existe, no escribe nada.
+// Spec 30 — con `albumOnly: true` crea una boda gratis (sin template) con el álbum de fotos ya
+// activado: el álbum sin invitación para quien escribe directo por WhatsApp.
 export async function POST(request: NextRequest) {
   const auth = await requireAdmin(request);
   if (!auth.ok) return auth.response;
@@ -33,6 +36,7 @@ export async function POST(request: NextRequest) {
   const plannerEmail = text(body.plannerEmail, 120).toLowerCase();
   const date = text(body.date, 10);
   const weddingId = text(body.weddingId, 50);
+  const albumOnly = body.albumOnly === true;
 
   // Spec 17 — bride/groom (nombre y correo) son opcionales de forma independiente: el
   // staff puede crear la boda de un cliente de un wedding planner solo con el correo
@@ -42,7 +46,7 @@ export async function POST(request: NextRequest) {
   if (plannerEmail && !isValidEmail(plannerEmail)) return invalid('plannerEmail');
   if (plannerEmail && (plannerEmail === brideEmail || plannerEmail === groomEmail)) return invalid('plannerEmail');
   if (!isValidIsoDate(date)) return invalid('date');
-  if (!isTemplateId(body.templateId)) return invalid('templateId');
+  if (!albumOnly && !isTemplateId(body.templateId)) return invalid('templateId');
   if (!isValidWeddingId(weddingId)) return invalid('weddingId');
   const ownerEmails = [brideEmail, groomEmail, plannerEmail].filter(Boolean);
   if (ownerEmails.length === 0) return invalid('owners');
@@ -54,7 +58,14 @@ export async function POST(request: NextRequest) {
   if (groom) wedding.couple.groom.name = groom; // "persona 1" en el editor
   wedding.plannerEmail = plannerEmail || null; // Spec 17
   wedding.event.date = `${date}T16:00:00.000Z`; // mismo formato que escribe el editor
-  wedding.template = { id: body.templateId };
+  if (albumOnly) {
+    // Igual que una boda gratis creada por la pareja (`/api/weddings/free`), con el álbum activo.
+    wedding.tier = 'free';
+    wedding.selectedGuestTickets = false;
+    wedding.photoAlbum = { enabled: true, mode: 'open', activatedAt: new Date().toISOString(), style: DEFAULT_ALBUM_STYLE };
+  } else {
+    wedding.template = { id: body.templateId as string };
+  }
 
   try {
     const { getAdminDb } = await import('../../../../lib/firebase-admin');

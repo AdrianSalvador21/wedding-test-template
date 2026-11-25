@@ -407,6 +407,10 @@ export function groupFaq(items: FaqItem[]): { group: string; items: FaqItem[] }[
 // "¿Cuándo me conviene activarlo?".
 const ALBUM_GROUP = 'Álbum de fotos';
 
+// Spec 30 — precio del álbum de fotos. El público es `standalone` ($499); a una boda con invitación
+// de Invyta se le muestra tachado y se le cobra `withInvitation` ($399), solo dentro de su panel.
+export const ALBUM_PRICE = { withInvitation: 399, standalone: 499 } as const;
+
 export const ALBUM_FAQ: FaqItem[] = [
   {
     question: '¿Mis invitados tienen que descargar una app?',
@@ -440,7 +444,12 @@ export const ALBUM_FAQ: FaqItem[] = [
   },
   {
     question: '¿Cuánto tiempo se guardan?',
-    answer: '1 año desde la fecha de tu boda. Puedes descargarlas todas en ZIP cuando quieras.',
+    answer: '1 año desde la fecha de tu boda. Las descargas todas juntas en tu dispositivo cuando quieras.',
+    group: ALBUM_GROUP,
+  },
+  {
+    question: '¿Puedo contratar el álbum sin invitación?',
+    answer: `Sí. Crea tu cuenta gratis, entra a la sección Fotos y escríbenos por WhatsApp para activarlo. Cuesta $${ALBUM_PRICE.standalone} MXN, pago único.`,
     group: ALBUM_GROUP,
   },
   {
@@ -457,4 +466,19 @@ export const ALBUM_PANEL_FAQ: FaqItem[] = [
     answer: 'Antes de la boda, para imprimir el QR con tus centros de mesa y avisar a tus invitados desde el principio.',
     group: ALBUM_GROUP,
   },
+];
+
+// Spec 30 — preguntas de la venta en una boda gratis (álbum sin invitación).
+export const ALBUM_STANDALONE_PANEL_FAQ: FaqItem[] = [
+  {
+    question: '¿Necesito tener mi invitación con Invyta?',
+    answer: 'No. El álbum funciona solo, con tu lista de invitados gratis. Si después contratas tu invitación, el álbum y sus fotos se quedan y toman su diseño.',
+    group: ALBUM_GROUP,
+  },
+  {
+    question: '¿Mis invitados tienen que descargar una app?',
+    answer: 'No. Suben las fotos desde el navegador de su celular: con el QR de las mesas o con el link que les mandes por WhatsApp.',
+    group: ALBUM_GROUP,
+  },
+  ...ALBUM_FAQ.slice(2, 4),
 ];

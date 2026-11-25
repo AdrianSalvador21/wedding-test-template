@@ -34,6 +34,7 @@ interface AlbumData {
   guestName: string | null;
   remaining: number;
   albumFull?: boolean; // la boda llegó al tope de ALBUM_WEDDING_LIMIT fotos
+  standalone?: boolean; // Spec 30 — boda gratis: álbum sin invitación, sin foto de portada
   photos: PublicPhoto[];
   total: number;
 }
@@ -390,12 +391,15 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
     void load();
   }, [load]);
 
+  // La foto de portada sale de la invitación; un álbum sin invitación (spec 30) no lleva.
+  const standalone = data?.standalone;
   useEffect(() => {
+    if (standalone !== false) return;
     fetch(`/api/wedding-images/${encodeURIComponent(weddingId)}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => setHeroImage(d?.heroImage || ''))
       .catch(() => setHeroImage(''));
-  }, [weddingId]);
+  }, [weddingId, standalone]);
 
   const theme = getAlbumTheme(data?.templateId);
   const guestLabel = t('guestFallback');

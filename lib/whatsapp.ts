@@ -3,8 +3,9 @@
 import type { FirebaseGuest, WeddingData } from '../src/types/wedding';
 import { normalizePhone } from './phone';
 import { resolveHasEnglish } from './wedding-language';
+import { SITE } from './site';
 
-export type WhatsAppMessageKind = 'invitation' | 'saveTheDate';
+export type WhatsAppMessageKind = 'invitation' | 'saveTheDate' | 'album';
 
 const TEMPLATES: Record<'es' | 'en', Record<WhatsAppMessageKind, string>> = {
   es: {
@@ -12,18 +13,29 @@ const TEMPLATES: Record<'es' | 'en', Record<WhatsAppMessageKind, string>> = {
       '¡Hola, {nombre}! 💌\nCon mucha ilusión queremos invitarte a nuestra boda el {fecha}.\nAquí está tu invitación con todos los detalles y para confirmar tu asistencia:\n{link}\nCon cariño, {novios}',
     saveTheDate:
       '¡Hola, {nombre}! Aparta la fecha: nos casamos el {fecha}. 💍\nAgrégalo a tu calendario aquí:\n{link}\nPronto te llegará la invitación formal.\n{novios}',
+    // Spec 30 — link personal del álbum de fotos (bodas sin invitación).
+    album:
+      '¡Hola {nombre}! Gracias por acompañarnos en nuestra boda el {fecha}. En este enlace puedes subir las fotos que tomes y ver las de todos:\n{link}\nCon cariño, {novios}',
   },
   en: {
     invitation:
       'Hi {nombre}! 💌\nWe would love for you to join us at our wedding on {fecha}.\nHere is your invitation with all the details and your RSVP:\n{link}\nWith love, {novios}',
     saveTheDate:
       "Hi {nombre}! Save the date: we're getting married on {fecha}. 💍\nAdd it to your calendar here:\n{link}\nFormal invitation to follow.\n{novios}",
+    album:
+      "Hi {nombre}! Thank you for celebrating our wedding with us on {fecha}. Use this link to upload the photos you take and see everyone's:\n{link}\nWith love, {novios}",
   },
 };
 
 // Mismo link que copia `handleCopyLink` en la Lista de invitados.
 export function buildGuestInvitationUrl(origin: string, weddingId: string, guest: Pick<FirebaseGuest, 'guestId' | 'language'>): string {
   return `${origin}/${guest.language || 'es'}/wedding/${weddingId}?guest=${guest.guestId}`;
+}
+
+// Spec 30 — link personal del álbum (`/fotos?guest=`), siempre con el dominio de producción.
+// En español va sin prefijo de idioma (/es/... redirige ahí).
+export function buildGuestAlbumUrl(weddingId: string, guest: Pick<FirebaseGuest, 'guestId' | 'language'>): string {
+  return `${SITE.url}${guest.language === 'en' ? '/en' : ''}/wedding/${encodeURIComponent(weddingId)}/fotos?guest=${guest.guestId}`;
 }
 
 // "14 de marzo de 2027" / "March 14, 2027". Vacío si la boda no tiene fecha válida.
