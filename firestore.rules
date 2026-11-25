@@ -53,6 +53,12 @@ service cloud.firestore {
       allow write: if true;
     }
 
+    // Spec 29 — fotos del álbum de invitados. Solo las lee y escribe el servidor (firebase-admin):
+    // así nadie lista las URLs desde el cliente ni se salta el límite o el revelado diferido.
+    match /albumPhotos/{photoId} {
+      allow read, write: if false;
+    }
+
     // Reglas para el feed de actividad reciente del Dashboard
     match /activityLog/{entryId} {
       allow read: if true;

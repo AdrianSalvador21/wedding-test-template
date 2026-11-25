@@ -22,6 +22,20 @@ class HasGuestsError extends Error {
 class NotFoundError extends Error {}
 class OwnersLimitError extends Error {}
 class PlannerEmailConflictError extends Error {}
+class AlbumNotAllowedError extends Error {}
+
+// Spec 29 — enciende o apaga el álbum de fotos. La primera vez que se enciende queda en modo
+// abierto y con la fecha de activación; después solo cambia `enabled` y se conservan el modo y la fecha.
+function nextPhotoAlbum(current: unknown, enabled: boolean, now: string): Record<string, unknown> | null {
+  const prev = current && typeof current === 'object' ? (current as Record<string, unknown>) : null;
+  if (!prev) return enabled ? { enabled: true, mode: 'open', activatedAt: now } : null;
+  return {
+    ...prev,
+    enabled,
+    mode: prev.mode === 'disposable' ? 'disposable' : 'open',
+    activatedAt: typeof prev.activatedAt === 'string' ? prev.activatedAt : now,
+  };
+}
 
 // Spec 17 — agrega/quita el correo del planner de la lista de dueños de la boda, sin
 // tocar los demás correos. Puro: no valida el límite, eso lo hace quien la llama.
@@ -51,11 +65,17 @@ export async function GET(request: NextRequest, { params }: { params: { weddingI
     const count = await db.collection('guests').where('weddingId', '==', params.weddingId).count().get();
     const templateId = snap.data()?.template?.id;
     const plannerEmail = snap.data()?.plannerEmail;
+    const photoAlbum = snap.data()?.photoAlbum;
     return NextResponse.json({
       id: params.weddingId,
       templateId: isTemplateId(templateId) ? templateId : 'template-01',
       guestCount: count.data().count,
       plannerEmail: typeof plannerEmail === 'string' ? plannerEmail : null,
+      tier: snap.data()?.tier === 'free' ? 'free' : 'template',
+      photoAlbum: {
+        enabled: photoAlbum?.enabled === true,
+        activatedAt: typeof photoAlbum?.activatedAt === 'string' ? photoAlbum.activatedAt : null,
+      },
     });
   } catch (error) {
     console.error('Error en GET /api/admin/weddings/[weddingId]:', error);
@@ -71,7 +91,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
   const id = params.weddingId;
   if (!isValidWeddingId(id)) return notFound();
 
-  let body: { templateId?: unknown; newWeddingId?: unknown; plannerEmail?: unknown };
+  let body: { templateId?: unknown; newWeddingId?: unknown; plannerEmail?: unknown; photoAlbum?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -96,7 +116,15 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
       return invalid('plannerEmail');
     }
   }
-  if (!hasTemplate && !renaming && !hasPlannerChange) return invalid('body');
+  // Spec 29 — photoAlbum: { enabled: boolean }; undefined = no tocar.
+  const hasAlbumChange = body.photoAlbum !== undefined;
+  let albumEnabled = false;
+  if (hasAlbumChange) {
+    const raw = body.photoAlbum as { enabled?: unknown } | null;
+    if (!raw || typeof raw !== 'object' || typeof raw.enabled !== 'boolean') return invalid('photoAlbum');
+    albumEnabled = raw.enabled;
+  }
+  if (!hasTemplate && !renaming && !hasPlannerChange && !hasAlbumChange) return invalid('body');
 
   let db: FirebaseFirestore.Firestore;
   try {
@@ -117,6 +145,13 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
       const prevPlannerEmail = typeof data.plannerEmail === 'string' ? data.plannerEmail : null;
 
       const update: Record<string, unknown> = { updatedAt: now };
+      if (hasAlbumChange) {
+        // El álbum es solo para bodas con diseño: una boda gratis no lo puede encender.
+        const tierAfter = hasTemplate ? 'template' : data.tier === 'free' ? 'free' : 'template';
+        if (tierAfter === 'free' && albumEnabled) return invalid('photoAlbum');
+        const album = nextPhotoAlbum(data.photoAlbum, albumEnabled, now);
+        if (album) update.photoAlbum = album;
+      }
       // Spec 16: asignar plantilla es el único punto donde una boda pasa de 'free' a 'template'.
       if (hasTemplate) {
         update['template.id'] = body.templateId;
@@ -176,6 +211,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
         ...(hasTemplate ? { template: { id: body.templateId }, tier: 'template' } : {}),
         ...(hasPlannerChange ? { plannerEmail: plannerEmailValue } : {}),
       };
+      if (hasAlbumChange) {
+        if (moved.tier === 'free' && albumEnabled) throw new AlbumNotAllowedError();
+        const album = nextPhotoAlbum(data.photoAlbum, albumEnabled, now);
+        if (album) (moved as Record<string, unknown>).photoAlbum = album;
+      }
       tx.create(newRef, moved);
       tx.delete(oldRef);
       if (owners.exists) {
@@ -191,6 +231,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
     if (error instanceof HasGuestsError) return NextResponse.json({ error: 'has_guests', guestCount: error.guestCount }, { status: 409 });
     if (error instanceof OwnersLimitError) return ownersLimit();
     if (error instanceof PlannerEmailConflictError) return invalid('plannerEmail');
+    if (error instanceof AlbumNotAllowedError) return invalid('photoAlbum');
     if (isAlreadyExists(error)) return NextResponse.json({ error: 'wedding_exists' }, { status: 409 });
     console.error('Error en PATCH /api/admin/weddings/[weddingId]:', error);
     return NextResponse.json({ error: 'server_error' }, { status: 500 });

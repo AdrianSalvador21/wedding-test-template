@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Spec 29 — Firebase Storage está cerrado para los clientes. Las fotos del álbum de invitados
+// solo las escribe y borra el servidor (firebase-admin), y se leen con URLs de descarga con token,
+// que funcionan aunque estas reglas nieguen todo.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

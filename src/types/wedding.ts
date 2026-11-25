@@ -315,6 +315,32 @@ export interface SaveTheDateConfig {
   message?: string | { es: string; en: string }; // vacío = no se muestra
 }
 
+// Spec 29 — álbum de fotos de los invitados. Ausente = no activado.
+export interface PhotoAlbumConfig {
+  enabled: boolean; // lo escribe solo el operador
+  mode: 'open' | 'disposable'; // lo elige la pareja; 'open' por defecto
+  activatedAt: string; // ISO, la primera vez que el operador lo enciende
+}
+
+// Spec 29 — una foto subida por un invitado (colección albumPhotos). Solo la lee y escribe el servidor.
+export interface AlbumPhoto {
+  id: string;
+  weddingId: string;
+  source: 'guest' | 'device'; // link personal o QR general
+  guestId?: string;
+  deviceId?: string;
+  uploaderName?: string;
+  storagePath: string;
+  thumbPath: string;
+  url: string;
+  thumbUrl: string;
+  width: number;
+  height: number;
+  sizeBytes: number;
+  hidden: boolean;
+  createdAt: string;
+}
+
 // Tipo principal que contiene toda la información de la boda
 export interface WeddingData {
   id: string;
@@ -363,6 +389,7 @@ export interface WeddingData {
   tier?: 'free' | 'template'; // Spec 16 — ausente se interpreta como 'template' en todo el código
   plannerEmail?: string | null; // Spec 17 — correo del wedding planner atribuido a esta boda, si aplica
   saveTheDate?: SaveTheDateConfig; // Spec 27 — modo "Aparta la fecha"; ausente = apagado
+  photoAlbum?: PhotoAlbumConfig; // Spec 29 — álbum de fotos de los invitados; ausente = no activado
   status: 'draft' | 'active' | 'archived';
   languages: string[];
   defaultLanguage: string;

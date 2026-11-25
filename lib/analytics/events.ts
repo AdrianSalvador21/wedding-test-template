@@ -36,6 +36,11 @@ export interface AnalyticsEventMap {
   // Importar invitados y enviar por WhatsApp (spec 28)
   guests_imported: { rows: number };
   guest_whatsapp_opened: { kind: 'invitation' | 'saveTheDate'; edited: boolean };
+  // Álbum de fotos de los invitados (spec 29)
+  album_photo_uploaded: { mode: 'open' | 'disposable'; source: 'guest' | 'device' };
+  album_zip_downloaded: { photos: number };
+  album_qr_downloaded: NoProps;
+  album_activation_cta_click: NoProps;
 }
 
 export type AnalyticsEventName = keyof AnalyticsEventMap;

@@ -401,3 +401,60 @@ export function groupFaq(items: FaqItem[]): { group: string; items: FaqItem[] }[
   }
   return groups;
 }
+
+// Spec 29 — preguntas frecuentes del álbum de fotos de los invitados. Las 8 se muestran en
+// /album-de-fotos (con su JSON-LD); la página de venta del panel usa las 4 primeras más
+// "¿Cuándo me conviene activarlo?".
+const ALBUM_GROUP = 'Álbum de fotos';
+
+export const ALBUM_FAQ: FaqItem[] = [
+  {
+    question: '¿Mis invitados tienen que descargar una app?',
+    answer: 'No. Suben las fotos desde el navegador de su celular: abren su invitación o escanean el QR de las mesas.',
+    group: ALBUM_GROUP,
+  },
+  {
+    question: '¿Quién puede ver las fotos?',
+    answer: 'Solo quien tenga el link de tu boda o el QR de las mesas. Tú puedes ocultar o borrar cualquier foto desde tu panel.',
+    group: ALBUM_GROUP,
+  },
+  {
+    question: '¿Cuándo se pueden subir fotos?',
+    answer: 'A partir del día de tu boda y durante las 3 semanas siguientes.',
+    group: ALBUM_GROUP,
+  },
+  {
+    question: '¿Se pierde calidad?',
+    answer: 'Las fotos se guardan a 2048 px, suficiente para verlas en pantalla completa o imprimirlas en tamaño postal.',
+    group: ALBUM_GROUP,
+  },
+  {
+    question: '¿Necesitan crear una cuenta?',
+    answer: 'No. Con su link personal las fotos quedan con su nombre; con el QR de las mesas pueden escribirlo si quieren.',
+    group: ALBUM_GROUP,
+  },
+  {
+    question: '¿Cuántas fotos puede subir cada invitado?',
+    answer: 'Hasta 30 por invitación, o por teléfono si entran con el QR de las mesas.',
+    group: ALBUM_GROUP,
+  },
+  {
+    question: '¿Cuánto tiempo se guardan?',
+    answer: '2 años desde la fecha de tu boda. Puedes descargarlas todas en ZIP cuando quieras.',
+    group: ALBUM_GROUP,
+  },
+  {
+    question: '¿Puedo agregarlo si ya tengo mi invitación?',
+    answer: 'Sí. Se agrega a cualquier invitación con diseño de Invyta: nos escribes por WhatsApp y lo activamos ese mismo día.',
+    group: ALBUM_GROUP,
+  },
+];
+
+export const ALBUM_PANEL_FAQ: FaqItem[] = [
+  ...ALBUM_FAQ.slice(0, 4),
+  {
+    question: '¿Cuándo me conviene activarlo?',
+    answer: 'Antes de la boda, para imprimir el QR con tus centros de mesa y avisar a tus invitados desde el principio.',
+    group: ALBUM_GROUP,
+  },
+];

@@ -21,6 +21,7 @@ export const NON_LOCALIZED_PATHS = [
   '/paquetes',
   '/wedding-planners',
   '/preguntas-frecuentes',
+  '/album-de-fotos', // spec 29: página pública del álbum de fotos de los invitados
   '/aviso-de-privacidad', // spec 11: aviso de la medición; noindex y fuera de MARKETING_PAGES
   '/disenos',
   '/icon',
@@ -52,4 +53,5 @@ export const MARKETING_PAGES: MarketingPage[] = [
   { path: '/disenos/jardin-editorial', title: 'Invitación digital de boda jardín editorial', lastModified: '2026-09-30' },
   { path: '/wedding-planners', title: 'Invitaciones digitales para wedding planners', lastModified: '2026-09-25' },
   { path: '/preguntas-frecuentes', title: 'Preguntas frecuentes de invitaciones digitales', lastModified: '2026-10-19' },
+  { path: '/album-de-fotos', title: 'Álbum de fotos de los invitados para tu boda', lastModified: '2026-11-25' },
 ];
