@@ -27,6 +27,9 @@ export default function Footer() {
           <a href="/paquetes" className={linkClass}>
             Precios
           </a>
+          <a href="/album-de-fotos" className={linkClass}>
+            Álbum de fotos
+          </a>
           <a href="/wedding-planners" className={linkClass}>
             Wedding planners
           </a>

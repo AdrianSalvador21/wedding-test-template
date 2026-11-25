@@ -7,7 +7,10 @@ import type { FaqItem } from '../../lib/marketing-content';
 // Acordeón de preguntas con la misma animación (300 ms) que el FAQ de la landing.
 // Cliente por el estado de apertura, pero las respuestas están siempre en el HTML
 // (altura 0 con overflow oculto), así que se renderizan en el servidor y se indexan.
-export default function FaqList({ items, openFirst = false }: { items: FaqItem[]; openFirst?: boolean }) {
+// `soft`: apertura y cierre más suaves (altura, opacidad y desplazamiento con easing largo). Spec 29.
+export const SOFT_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+export default function FaqList({ items, openFirst = false, soft = false }: { items: FaqItem[]; openFirst?: boolean; soft?: boolean }) {
   const [openIndex, setOpenIndex] = useState<number | null>(openFirst ? 0 : null);
   const baseId = useId();
 
@@ -38,7 +41,7 @@ export default function FaqList({ items, openFirst = false }: { items: FaqItem[]
                 fill="none"
                 stroke="#AE5730"
                 strokeWidth="2.4"
-                className="flex-shrink-0 transition-transform duration-200"
+                className={`flex-shrink-0 transition-transform ${soft ? 'duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]' : 'duration-200'}`}
                 style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
                 aria-hidden="true"
               >
@@ -51,11 +54,22 @@ export default function FaqList({ items, openFirst = false }: { items: FaqItem[]
               style={{
                 display: 'grid',
                 gridTemplateRows: isOpen ? '1fr' : '0fr',
-                transition: 'grid-template-rows 300ms ease',
+                transition: soft ? `grid-template-rows 480ms ${SOFT_EASE}` : 'grid-template-rows 300ms ease',
               }}
             >
-              <div style={{ overflow: 'hidden' }}>
-                <p className="mt-4 pt-4 border-t border-[rgba(43,38,34,0.08)] text-[15px] text-[#5A534B] leading-relaxed">
+              <div style={{ overflow: 'hidden', minHeight: 0 }}>
+                <p
+                  className="mt-4 pt-4 border-t border-[rgba(43,38,34,0.08)] text-[15px] text-[#5A534B] leading-relaxed"
+                  style={
+                    soft
+                      ? {
+                          opacity: isOpen ? 1 : 0,
+                          transform: isOpen ? 'translateY(0)' : 'translateY(-6px)',
+                          transition: `opacity 360ms ease ${isOpen ? '120ms' : '0ms'}, transform 480ms ${SOFT_EASE}`,
+                        }
+                      : undefined
+                  }
+                >
                   {item.answer}
                 </p>
               </div>

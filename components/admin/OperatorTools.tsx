@@ -3,7 +3,7 @@
 import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
 import { Check, Copy, Info, Loader2, MessageCircle, Trash2, X } from 'lucide-react';
-import { manrope } from './ui';
+import { AdminToggle, manrope } from './ui';
 import { useAuth, type LinkedWedding } from '../../lib/auth-context';
 import { isValidWeddingId, slugifyWeddingNames } from '../../lib/wedding-defaults';
 import { EMAIL_RE, MAX_OWNER_EMAILS, TEMPLATE_OPTIONS, isValidEmail, isValidIsoDate, type TemplateId } from '../../lib/admin-validation';
@@ -591,7 +591,15 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
   const uid = useId();
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const [initial, setInitial] = useState<{ templateId: TemplateId; guestCount: number; plannerEmail: string | null } | null>(null);
+  const [initial, setInitial] = useState<{
+    templateId: TemplateId;
+    guestCount: number;
+    plannerEmail: string | null;
+    tier: 'free' | 'template';
+    albumEnabled: boolean;
+    albumActivatedAt: string | null;
+  } | null>(null);
+  const [albumEnabled, setAlbumEnabled] = useState(false);
   const [templateId, setTemplateId] = useState<TemplateId>('template-01');
   const [newId, setNewId] = useState(wedding.id);
   const [plannerEmail, setPlannerEmail] = useState('');
@@ -609,7 +617,15 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
         if (!res.ok) throw new Error('load failed');
         const data = await res.json();
         if (cancelled) return;
-        setInitial({ templateId: data.templateId, guestCount: data.guestCount ?? 0, plannerEmail: data.plannerEmail ?? null });
+        setInitial({
+          templateId: data.templateId,
+          guestCount: data.guestCount ?? 0,
+          plannerEmail: data.plannerEmail ?? null,
+          tier: data.tier === 'free' ? 'free' : 'template',
+          albumEnabled: data.photoAlbum?.enabled === true,
+          albumActivatedAt: data.photoAlbum?.activatedAt ?? null,
+        });
+        setAlbumEnabled(data.photoAlbum?.enabled === true);
         setTemplateId(data.templateId);
         setPlannerEmail(data.plannerEmail || '');
       } catch {
@@ -631,7 +647,10 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
   const templateChanged = !!initial && templateId !== initial.templateId;
   const plannerEmailTrim = plannerEmail.trim().toLowerCase();
   const plannerEmailChanged = !!initial && plannerEmailTrim !== (initial.plannerEmail || '');
-  const changed = templateChanged || (!locked && idChanged) || plannerEmailChanged;
+  // Spec 29 — el álbum es solo para bodas con diseño (asignar plantilla en este mismo guardado cuenta).
+  const albumAllowed = !!initial && (initial.tier !== 'free' || templateChanged);
+  const albumChanged = !!initial && albumEnabled !== initial.albumEnabled;
+  const changed = templateChanged || (!locked && idChanged) || plannerEmailChanged || albumChanged;
 
   const save = async () => {
     setError(null);
@@ -655,10 +674,11 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
 
     setSaving(true);
     try {
-      const body: Record<string, string | null> = {};
+      const body: Record<string, string | null | { enabled: boolean }> = {};
       if (templateChanged) body.templateId = templateId;
       if (!locked && idChanged) body.newWeddingId = trimmedId;
       if (plannerEmailChanged) body.plannerEmail = plannerEmailTrim || null;
+      if (albumChanged) body.photoAlbum = { enabled: albumEnabled };
       const res = await auth.authedFetch(`/api/admin/weddings/${wedding.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -681,6 +701,8 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
         setIdProblem('Ese ID no es válido.');
       } else if (res.status === 400 && data.field === 'plannerEmail') {
         setPlannerEmailError('Debe ser un correo válido y distinto a los demás correos con acceso.');
+      } else if (res.status === 400 && data.field === 'photoAlbum') {
+        setError('El álbum de fotos solo se puede activar en bodas con diseño.');
       } else if (res.status === 400 && data.error === 'owners_limit') {
         setError('Esta invitación ya tiene el máximo de 6 correos con acceso. Quita uno antes de agregar el del planner.');
       } else {
@@ -777,6 +799,29 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
               </button>
             )}
           </Field>
+          <div className="flex flex-col gap-3 border-t border-[rgba(0,0,0,0.08)] pt-4">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#71717A]">Extras</span>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-semibold text-[#0A0A0A]">Álbum de fotos de invitados ($399)</span>
+                <span className={`text-[13px] font-semibold ${albumEnabled ? 'text-[#15803D]' : 'text-[#71717A]'}`}>
+                  {albumEnabled
+                    ? initial.albumEnabled && initial.albumActivatedAt
+                      ? `Activado el ${new Date(initial.albumActivatedAt).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                      : 'Se activará al guardar'
+                    : 'Apagado'}
+                </span>
+              </div>
+              {albumAllowed ? (
+                <AdminToggle checked={albumEnabled} onChange={setAlbumEnabled} ariaLabel="Álbum de fotos de invitados" />
+              ) : (
+                <span className="text-xs font-semibold text-[#71717A]">No disponible</span>
+              )}
+            </div>
+            <span className="text-xs text-[#71717A] leading-normal">
+              Actívalo cuando la pareja haya pagado. Al apagarlo no se borra ninguna foto. No disponible en bodas gratis.
+            </span>
+          </div>
           {!locked && idChanged && (
             <div className="flex gap-2.5 items-start bg-[#F4F4F5] rounded-[10px] px-3.5 py-3 text-[13px] leading-normal text-[#3F3F46]">
               <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />

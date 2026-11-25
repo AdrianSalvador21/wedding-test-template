@@ -1,6 +1,7 @@
 import { cert, getApps, initializeApp, type App } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 
 // Motivo de una configuración inválida de la cuenta de servicio; se devuelve tal cual en la
 // respuesta (sin datos sensibles) para poder diagnosticar en producción.
@@ -32,7 +33,7 @@ function getAdminApp(): App {
   }
 
   try {
-    return initializeApp({ credential: cert(credentials) });
+    return initializeApp({ credential: cert(credentials), storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || undefined });
   } catch (error) {
     throw new AdminConfigError('invalid_credential', `La cuenta de servicio no es válida: ${error instanceof Error ? error.message : 'error desconocido'}`);
   }
@@ -40,3 +41,11 @@ function getAdminApp(): App {
 
 export const getAdminAuth = () => getAuth(getAdminApp());
 export const getAdminDb = () => getFirestore(getAdminApp());
+
+// Spec 29 — bucket por defecto de Firebase Storage (NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET).
+// Las fotos del álbum solo se escriben desde el servidor: storage.rules niega todo a los clientes.
+export const getAdminBucket = () => {
+  const name = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+  if (!name) throw new AdminConfigError('missing_env', 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET no está configurada');
+  return getStorage(getAdminApp()).bucket(name);
+};

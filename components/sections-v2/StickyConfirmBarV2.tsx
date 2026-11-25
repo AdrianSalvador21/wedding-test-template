@@ -7,20 +7,38 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { V2_COLORS, V2_FONTS, v2ButtonProps } from './ui';
 import { v2DateLocale, v2Fill, v2WeddingDate } from './sections';
+import { albumPhase, type AlbumPhase } from '../../lib/album';
+import { albumHref } from '../album/AlbumFab';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // Píldora fija "Confirmar" (spec 25): aparece al salir del hero y desaparece al llegar al RSVP.
 // Lee la posición de #hero y #rsvp en cada scroll porque RSVPV2 cambia de marcado según su estado.
+// Spec 29 — con el álbum de fotos activado, desde el día de la boda el botón "Confirmar" se cambia
+// por "Comparte tus fotos" (o "Ver álbum" cuando cierra la subida), con las mismas reglas de aparición.
 export default function StickyConfirmBarV2() {
   const { t, currentLanguage } = useTranslations('template02');
+  const { t: tAlbum } = useTranslations('album');
   const weddingData = useAppSelector(selectCurrentWedding);
   const reduceMotion = useReducedMotion();
   const [visible, setVisible] = useState(false);
-  const showConfirm = weddingData?.showConfirmCta !== false;
+  const [album, setAlbum] = useState<{ phase: AlbumPhase; guestId: string | null } | null>(null);
+  useEffect(() => {
+    if (!weddingData) return;
+    // La fase depende de la hora y el invitado viene de la URL: se leen en el cliente.
+    setAlbum({ phase: albumPhase(weddingData), guestId: new URLSearchParams(window.location.search).get('guest') });
+  }, [weddingData]);
+  const albumActive = album?.phase === 'open' || album?.phase === 'closed';
+  const showConfirm = weddingData?.showConfirmCta !== false || albumActive;
 
   useEffect(() => {
     if (!showConfirm) return;
+    // Spec 29 — con el álbum activo la barra es el acceso a las fotos: se ve desde que se abre
+    // la invitación y no se oculta al llegar al RSVP.
+    if (albumActive) {
+      setVisible(true);
+      return;
+    }
     let frame = 0;
     const update = () => {
       frame = 0;
@@ -41,7 +59,7 @@ export default function StickyConfirmBarV2() {
       window.removeEventListener('resize', onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [showConfirm]);
+  }, [showConfirm, albumActive]);
 
   if (!showConfirm || !weddingData) return null;
 
@@ -78,12 +96,22 @@ export default function StickyConfirmBarV2() {
                 {weddingData.couple.bride.name} &amp; {weddingData.couple.groom.name}
               </span>
               <span className="truncate text-xs" style={{ color: V2_COLORS.graphite }}>
-                {countdown ? `${shortDate} · ${countdown}` : shortDate}
+                {album?.phase === 'open' ? tAlbum('todayIsTheDay') : countdown ? `${shortDate} · ${countdown}` : shortDate}
               </span>
             </div>
-            <a href="#rsvp" onClick={goToRsvp} {...v2ButtonProps('primary', 'sm', 'h-12 shrink-0 px-5 text-sm')}>
-              {t('sticky.confirm')}
-            </a>
+            {albumActive && album ? (
+              <a href={albumHref(weddingData.id, currentLanguage, album.guestId)} {...v2ButtonProps('primary', 'sm', 'h-12 shrink-0 gap-2 px-5 text-sm')}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M14.5 4h-5L7.5 6.5H4a1 1 0 0 0-1 1V19a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7.5a1 1 0 0 0-1-1h-3.5z" />
+                  <circle cx="12" cy="13" r="3.5" />
+                </svg>
+                {album.phase === 'open' ? tAlbum('shareCta') : tAlbum('viewAlbumCta')}
+              </a>
+            ) : (
+              <a href="#rsvp" onClick={goToRsvp} {...v2ButtonProps('primary', 'sm', 'h-12 shrink-0 px-5 text-sm')}>
+                {t('sticky.confirm')}
+              </a>
+            )}
           </div>
         </motion.div>
       )}

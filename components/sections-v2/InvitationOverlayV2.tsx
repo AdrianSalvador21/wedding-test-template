@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { AnimatePresence, motion, useReducedMotion, type MotionProps } from 'framer-motion';
-import { ArrowRight, Users } from 'lucide-react';
+import { ArrowRight, Camera, Users } from 'lucide-react';
 import { useTranslations } from '../../lib/translations';
 import { useMusicControl } from '../MusicControlContext';
 import { V2_COLORS, V2_FONTS, V2Overline, V2Rings, v2ButtonProps, v2DisplayStyle } from './ui';
@@ -20,6 +20,8 @@ export interface InvitationOverlayV2Props {
   groomName: string;
   date: Date;
   onOpen: () => void;
+  // Spec 29 — con el álbum activo, acceso directo a /fotos desde la bienvenida.
+  albumCta?: { href: string; label: string } | null;
 }
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -34,6 +36,7 @@ export default function InvitationOverlayV2({
   groomName,
   date,
   onOpen,
+  albumCta = null,
 }: InvitationOverlayV2Props) {
   const { t } = useTranslations('template02');
   const reduceMotion = useReducedMotion();
@@ -128,6 +131,12 @@ export default function InvitationOverlayV2({
                 {t('overlay.open')}
                 <ArrowRight className="h-[18px] w-[18px]" aria-hidden="true" strokeWidth={1.8} />
               </button>
+              {albumCta && (
+                <a href={albumCta.href} {...v2ButtonProps('inverseOutline', 'lg', 'w-full')}>
+                  <Camera className="h-[18px] w-[18px]" aria-hidden="true" strokeWidth={1.8} />
+                  {albumCta.label}
+                </a>
+              )}
               {music.available && (
                 <p className="m-0 text-center text-xs" style={{ color: V2_COLORS.mutedOnInk }}>
                   {t('overlay.musicHint')}

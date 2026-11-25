@@ -87,3 +87,21 @@ export async function requireAdmin(request: NextRequest): Promise<AuthResult> {
   }
   return result;
 }
+
+// Spec 29 — dueño de la boda (correo en weddingOwners/{id}.emails) u operador.
+export async function requireWeddingAccess(request: NextRequest, weddingId: string): Promise<AuthResult> {
+  const result = await authenticate(request);
+  if (!result.ok) return result;
+  if (result.user.emailVerified && isAdminEmail(result.user.email)) return result;
+  try {
+    const { getAdminDb } = await import('./firebase-admin');
+    const snap = await getAdminDb().collection('weddingOwners').doc(weddingId).get();
+    const emails = snap.data()?.emails;
+    const isOwner = Array.isArray(emails) && emails.some((e: unknown) => typeof e === 'string' && normalizeEmail(e) === result.user.email);
+    if (isOwner) return result;
+  } catch (error) {
+    console.error('Error al validar dueños de la boda:', error);
+    return { ok: false, response: NextResponse.json({ error: 'server_error' }, { status: 500 }) };
+  }
+  return { ok: false, response: NextResponse.json({ error: 'forbidden' }, { status: 403 }) };
+}

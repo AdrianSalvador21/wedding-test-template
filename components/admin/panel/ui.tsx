@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronDown, ChevronLeft, ChevronRight, LayoutGrid, LogOut, Menu, Pencil, Sparkles, Table2, Users, CheckSquare, X } from 'lucide-react';
+import { Camera, ChevronDown, ChevronLeft, ChevronRight, LayoutGrid, LogOut, Menu, Pencil, Sparkles, Table2, Users, CheckSquare, X } from 'lucide-react';
 import { useAuthOptional } from '../../../lib/auth-context';
 import { whatsappUrl } from '../../../lib/contact';
 import { track } from '../../../lib/analytics/client';
@@ -11,7 +11,7 @@ import BrandWordmark from '../../BrandWordmark';
 
 export type PanelTier = 'free' | 'template';
 
-export type PanelSection = 'dashboard' | 'editor' | 'guests' | 'confirmations' | 'tables';
+export type PanelSection = 'dashboard' | 'editor' | 'guests' | 'confirmations' | 'tables' | 'photos';
 
 const NAV_ITEMS: { id: PanelSection; label: string; icon: typeof LayoutGrid; href: (weddingId: string, locale: string) => string }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutGrid, href: (w, l) => `/${l}/admin/panel/${w}/dashboard` },
@@ -19,6 +19,8 @@ const NAV_ITEMS: { id: PanelSection; label: string; icon: typeof LayoutGrid; hre
   { id: 'guests', label: 'Lista de invitados', icon: Users, href: (w, l) => `/${l}/admin/panel/${w}/guests` },
   { id: 'confirmations', label: 'Confirmaciones', icon: CheckSquare, href: (w, l) => `/${l}/admin/panel/${w}/confirmations` },
   { id: 'tables', label: 'Mesas', icon: Table2, href: (w, l) => `/${l}/admin/panel/${w}/tables` },
+  // Spec 29 — álbum de fotos de los invitados. No aparece en bodas gratis.
+  { id: 'photos', label: 'Fotos', icon: Camera, href: (w, l) => `/${l}/admin/panel/${w}/photos` },
 ];
 
 function EventSwitcher({ weddingId, locale }: { weddingId: string; locale: string }) {
@@ -110,6 +112,7 @@ function NavLinks({
   return (
     <nav className="flex flex-col gap-1" aria-label="Secciones del panel">
       {NAV_ITEMS.map((item) => {
+        if (item.id === 'photos' && tier === 'free') return null;
         if (item.id === 'editor' && tier === 'free') {
           return <FreeEditorUpsell key={item.id} weddingId={weddingId} collapsed={collapsed} onNavigate={onNavigate} />;
         }

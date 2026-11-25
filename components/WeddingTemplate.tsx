@@ -23,6 +23,7 @@ import Template01 from './templates/Template01';
 import Template02 from './templates/Template02';
 import Template03 from './templates/Template03';
 import Template04 from './templates/Template04';
+import AlbumFab from './album/AlbumFab';
 
 interface WeddingTemplateProps {
   guestId?: string | null;
@@ -224,6 +225,10 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
             templateId={templateId}
           />
         )}
+
+        {/* Spec 29 — acceso al álbum de fotos (templates 01, 03 y 04; el 02 lo lleva en su barra fija).
+            Solo aparece con el álbum activado y desde el día de la boda. */}
+        <AlbumFab wedding={currentWedding} guestId={guestId} />
 
         {/* Reproductor de música de fondo (template-02 dibuja su propio botón, spec 25) */}
         {dynamicMusic && (

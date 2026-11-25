@@ -181,7 +181,7 @@ export function AdminStatCard({
   tone = 'ink',
 }: {
   icon: LucideIcon;
-  label: string;
+  label: React.ReactNode;
   value: React.ReactNode;
   tone?: 'ink' | 'success' | 'pending' | 'accent' | 'danger';
 }) {

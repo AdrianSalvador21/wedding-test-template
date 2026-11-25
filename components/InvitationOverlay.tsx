@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { Camera, X } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useAppSelector } from '../src/store/hooks';
 import { selectCurrentWedding } from '../src/store/slices/weddingSlice';
@@ -11,6 +11,8 @@ import { useThemePatterns, useTheme } from '../lib/theme-context';
 import { useTranslations } from '../lib/translations';
 import type { WeddingInvitation, FirebaseGuest } from '../src/types/wedding';
 import InvitationOverlayV2 from './sections-v2/InvitationOverlayV2';
+import { albumPhase } from '../lib/album';
+import { albumHref } from './album/AlbumFab';
 
 interface InvitationOverlayProps {
   guestId: string;
@@ -27,6 +29,10 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
   const currentWedding = useAppSelector(selectCurrentWedding);
   const [invitation, setInvitation] = useState<WeddingInvitation | null>(null);
   const { t } = useTranslations('invitationOverlay');
+  const { t: tAlbum } = useTranslations('album');
+  // Spec 29 — con el álbum activo (día de la boda y después), la bienvenida ofrece subir fotos.
+  // La fase depende de la hora: se calcula en el cliente.
+  const [albumCta, setAlbumCta] = useState<{ href: string; label: string } | null>(null);
   const { getBackgroundStyle } = useThemePatterns();
   const { currentTheme } = useTheme();
   const params = useParams();
@@ -118,6 +124,17 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
     };
   }, [isVisible]);
 
+  useEffect(() => {
+    if (isDemoMode || !guestId || !currentWedding) return;
+    const phase = albumPhase(currentWedding);
+    if (phase !== 'open' && phase !== 'closed') return;
+    setAlbumCta({
+      href: albumHref(currentWedding.id, currentLocale, guestId),
+      label: phase === 'open' ? tAlbum('shareCta') : tAlbum('viewAlbumCta'),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDemoMode, guestId, currentWedding, currentLocale]);
+
   const handleClose = () => {
     setIsVisible(false); // libera el bloqueo de scroll (cleanup del efecto de arriba)
     setTimeout(() => {
@@ -154,6 +171,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
         groomName={groom.name}
         date={currentWedding.event?.date ? new Date(currentWedding.event.date) : new Date()}
         onOpen={handleClose}
+        albumCta={albumCta}
       />
     );
   }
@@ -293,6 +311,18 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                   >
                     {t('openInvitation')}
                   </motion.button>
+                  {albumCta && (
+                    <motion.a
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.75, duration: 0.5, ease: 'easeOut' }}
+                      href={albumCta.href}
+                      className="mt-2.5 w-full inline-flex items-center justify-center gap-2 border border-stone-300 text-stone-700 hover:bg-stone-50 font-body font-medium py-3 px-6 rounded-xl transition-colors duration-300 text-sm tracking-wide no-underline"
+                    >
+                      <Camera className="h-4 w-4" aria-hidden="true" />
+                      {albumCta.label}
+                    </motion.a>
+                  )}
                 </div>
 
                 {/* Decorative Detail Below Button */}

@@ -8,6 +8,7 @@ import PriceStrip from './landing/PriceStrip';
 import TrustSection from './landing/TrustSection';
 import DesignGallery from './landing/DesignGallery';
 import GuestJourney from './landing/GuestJourney';
+import AlbumBanner from './landing/AlbumBanner';
 import PersonalizadoSection from './landing/PersonalizadoSection';
 import Packages from './landing/Packages';
 import MesasSection from './landing/MesasSection';
@@ -30,6 +31,7 @@ const LandingPage = () => {
         <TrustSection />
         <DesignGallery />
         <GuestJourney />
+        <AlbumBanner />
         <PersonalizadoSection />
         <Packages />
         <MesasSection />
