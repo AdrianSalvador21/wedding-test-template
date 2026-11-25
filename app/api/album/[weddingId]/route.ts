@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ALBUM_PHOTO_LIMIT, ALBUM_WEDDING_LIMIT, isUuid, isWeddingIdFormat } from '../../../../lib/album';
+import { ALBUM_PHOTO_LIMIT, ALBUM_WEDDING_LIMIT, albumStyleId, isUuid, isWeddingIdFormat } from '../../../../lib/album';
 import {
   albumDates,
   albumMode,
@@ -39,7 +39,10 @@ export async function GET(request: NextRequest, { params }: { params: { weddingI
       phase,
       mode: albumMode(wedding),
       names,
-      templateId: wedding.template?.id ?? null,
+      // Spec 30 — diseño del álbum: el template de la invitación o el estilo elegido en una boda gratis.
+      templateId: albumStyleId(wedding),
+      // Sin invitación no hay foto de portada (la página no la busca).
+      standalone: wedding.tier === 'free',
       ...albumDates(wedding),
     };
     if (phase === 'disabled' || phase === 'expired') {

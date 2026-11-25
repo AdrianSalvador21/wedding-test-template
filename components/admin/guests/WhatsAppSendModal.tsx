@@ -6,12 +6,13 @@ import { FirebaseGuest, WeddingData } from '../../../src/types/wedding';
 import { guestService } from '../../../services/guestService';
 import { track } from '../../../lib/analytics/client';
 import { normalizePhone } from '../../../lib/phone';
-import { buildDefaultWhatsAppMessage, buildGuestInvitationUrl, buildWhatsAppUrl, type WhatsAppMessageKind } from '../../../lib/whatsapp';
+import { buildDefaultWhatsAppMessage, buildGuestAlbumUrl, buildGuestInvitationUrl, buildWhatsAppUrl, type WhatsAppMessageKind } from '../../../lib/whatsapp';
 import { resolveHasEnglish } from '../../../lib/wedding-language';
 import { AdminButton, manrope, displayFont } from '../ui';
 
 // Spec 28 — modal "Enviar por WhatsApp". Abre el WhatsApp de la pareja con el mensaje escrito;
 // lo que la pareja edite se guarda solo para este invitado al pulsar "Abrir WhatsApp".
+// Spec 30 — con `album`, manda el link personal del álbum de fotos (bodas sin invitación).
 
 const MAX_SUGGESTED_LENGTH = 1000;
 
@@ -21,16 +22,20 @@ interface WhatsAppSendModalProps {
   weddingData: WeddingData;
   onClose: () => void;
   onSaved: (guestId: string, whatsappMessages: FirebaseGuest['whatsappMessages']) => void;
+  album?: boolean;
 }
 
-const KIND_LABELS: Record<WhatsAppMessageKind, string> = {
+const KIND_LABELS: Record<'invitation' | 'saveTheDate', string> = {
   invitation: 'Invitación',
   saveTheDate: 'Save the date',
 };
 
-export function WhatsAppSendModal({ guest, weddingId, weddingData, onClose, onSaved }: WhatsAppSendModalProps) {
-  const [kind, setKind] = useState<WhatsAppMessageKind>(weddingData.saveTheDate?.enabled ? 'saveTheDate' : 'invitation');
-  const invitationUrl = useMemo(() => buildGuestInvitationUrl(window.location.origin, weddingId, guest), [weddingId, guest]);
+export function WhatsAppSendModal({ guest, weddingId, weddingData, onClose, onSaved, album = false }: WhatsAppSendModalProps) {
+  const [kind, setKind] = useState<WhatsAppMessageKind>(album ? 'album' : weddingData.saveTheDate?.enabled ? 'saveTheDate' : 'invitation');
+  const invitationUrl = useMemo(
+    () => (album ? buildGuestAlbumUrl(weddingId, guest) : buildGuestInvitationUrl(window.location.origin, weddingId, guest)),
+    [album, weddingId, guest]
+  );
   const defaultText = useMemo(
     () => buildDefaultWhatsAppMessage(kind, guest, weddingData, invitationUrl),
     [kind, guest, weddingData, invitationUrl]
@@ -111,10 +116,10 @@ export function WhatsAppSendModal({ guest, weddingId, weddingData, onClose, onSa
               </span>
               <div>
                 <h3 id="whatsapp-modal-title" className="text-[19px] text-[#0A0A0A]" style={displayFont}>
-                  Enviar por WhatsApp
+                  {album ? 'Enviar link del álbum' : 'Enviar por WhatsApp'}
                 </h3>
                 <div className="text-[13px] text-[#71717A] mt-0.5">
-                  {guest.name} · {isEnglish ? 'Mensaje en inglés' : 'Mensaje en español'}
+                  {album ? `${guest.name} · Con este link, sus fotos llevan su nombre` : `${guest.name} · ${isEnglish ? 'Mensaje en inglés' : 'Mensaje en español'}`}
                 </div>
               </div>
             </div>
@@ -129,8 +134,9 @@ export function WhatsAppSendModal({ guest, weddingId, weddingData, onClose, onSa
           </div>
 
           <div className="px-6 pb-5 flex flex-col gap-3.5">
+            {!album && (
             <div role="radiogroup" aria-label="Tipo de mensaje" className="grid grid-cols-2 gap-1 p-1 bg-[#F4F4F5] rounded-xl">
-              {(Object.keys(KIND_LABELS) as WhatsAppMessageKind[]).map((k) => (
+              {(Object.keys(KIND_LABELS) as (keyof typeof KIND_LABELS)[]).map((k) => (
                 <button
                   key={k}
                   type="button"
@@ -145,6 +151,7 @@ export function WhatsAppSendModal({ guest, weddingId, weddingData, onClose, onSa
                 </button>
               ))}
             </div>
+            )}
 
             <div>
               <label htmlFor="whatsapp-message" className="block text-[13px] font-semibold text-[#27272A] mb-1.5">

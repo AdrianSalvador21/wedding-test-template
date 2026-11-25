@@ -88,25 +88,25 @@ export default function AlbumZipModal({
               {status === 'done' ? 'Descarga lista' : status === 'error' ? 'No pudimos terminar la descarga' : 'Preparando tu descarga'}
             </h3>
             <p className="text-[14px] text-[#3F3F46] m-0">
-              {photos.length} fotos visibles, en {parts} {parts === 1 ? 'archivo ZIP' : 'archivos ZIP'}. Las ocultas no se incluyen.
+              {photos.length} fotos visibles. Se guardan todas juntas en tu dispositivo{parts > 1 ? `, en ${parts} partes` : ''}. Las ocultas no se incluyen.
             </p>
           </div>
           {status === 'working' && (
             <div className="flex flex-col gap-2">
               <div className="flex justify-between text-[13px]">
-                <span className="font-semibold truncate">fotos-{weddingId}-{part}.zip</span>
+                <span className="font-semibold truncate">{parts > 1 ? `Parte ${part} de ${parts}` : 'Descargando fotos'}</span>
                 <span className="text-[#52525B] flex-shrink-0">
                   {doneInPart} de {partTotal}
                 </span>
               </div>
-              <div role="progressbar" aria-valuemin={0} aria-valuemax={partTotal} aria-valuenow={doneInPart} aria-label="Progreso del ZIP" className="h-2 rounded-full bg-[#F4F4F5] overflow-hidden">
+              <div role="progressbar" aria-valuemin={0} aria-valuemax={partTotal} aria-valuenow={doneInPart} aria-label="Progreso de la descarga" className="h-2 rounded-full bg-[#F4F4F5] overflow-hidden">
                 <div className="h-full bg-[#AE5730] transition-[width]" style={{ width: `${pct}%` }} />
               </div>
             </div>
           )}
           {status === 'error' && <p role="alert" className="text-[13px] font-semibold text-[#B91C1C] m-0">Revisa tu conexión e inténtalo de nuevo.</p>}
           {status === 'working' && (
-            <p className="text-[13px] text-[#52525B] m-0 leading-snug">Mantén esta pestaña abierta. Con más de 200 fotos se descargan varios archivos, uno tras otro.</p>
+            <p className="text-[13px] text-[#52525B] m-0 leading-snug">Mantén esta pestaña abierta. Con más de 200 fotos se descargan en varias partes, una tras otra.</p>
           )}
           <div className="flex justify-end">
             <button

@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
-import { AlertCircle, ArrowRight, CheckCircle2, Heart, LayoutGrid, Loader2, Lock, Mail, Sparkles, Users } from 'lucide-react';
+import { AlertCircle, ArrowRight, Camera, CheckCircle2, Heart, LayoutGrid, Loader2, Lock, Mail, Sparkles, Users } from 'lucide-react';
 import { manrope } from './ui';
 import { fraunces } from '../../lib/brand';
 import { useAuth } from '../../lib/auth-context';
@@ -349,6 +349,10 @@ export function NoWeddingsScreen() {
             </OnboardingFeature>
             <OnboardingFeature icon={LayoutGrid} title="Acomodo de mesas">
               Arma tus mesas y mueve invitados entre ellas para cuadrar tu salón.
+            </OnboardingFeature>
+            {/* Spec 30 — el álbum de fotos también se contrata sin invitación. */}
+            <OnboardingFeature icon={Camera} title="Álbum de fotos de tus invitados" locked>
+              Tus invitados suben sus fotos con un QR. Es un extra que activas cuando quieras.
             </OnboardingFeature>
             <OnboardingFeature
               icon={Sparkles}

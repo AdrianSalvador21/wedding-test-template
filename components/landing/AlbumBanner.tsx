@@ -66,6 +66,13 @@ export default function AlbumBanner() {
               <span className="hidden md:inline">El día de la boda, tu invitación se convierte en el lugar para compartirlas. </span>
               Sin app y sin registro: suben desde su invitación o con un QR en las mesas.
             </p>
+            {/* Spec 30 — el álbum también se contrata sin invitación (sin precio en la landing). */}
+            <span className="self-start inline-flex items-center gap-2 text-[14px] md:text-[14.5px] font-semibold text-[#4E5638] bg-[#EEF1E6] rounded-full px-3.5 py-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              No necesitas tener tu invitación con nosotros.
+            </span>
             <a
               href="/album-de-fotos"
               className="self-stretch md:self-start inline-flex items-center justify-center gap-2.5 md:mt-1.5 min-h-[48px] px-[22px] rounded-full border-[1.5px] border-[#211D19] text-[#211D19] no-underline text-[15px] font-semibold hover:bg-[#211D19] hover:text-[#FBF7F1] transition-colors"

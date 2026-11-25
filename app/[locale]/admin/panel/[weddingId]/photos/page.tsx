@@ -6,13 +6,14 @@ import { Camera, CalendarClock, Download, Eye, EyeOff, Lock, QrCode, Trash2, Use
 import { usePanelData } from '../../../../../../components/admin/panel/PanelDataContext';
 import { AdminButton, AdminStatCard, AdminStatusPill, AdminTopBar, manrope } from '../../../../../../components/admin/ui';
 import { useAuth } from '../../../../../../lib/auth-context';
-import { ALBUM_WEDDING_LIMIT, formatAlbumDate, formatAlbumTime, photoFileName, type AlbumMode, type AlbumPhase } from '../../../../../../lib/album';
+import { ALBUM_WEDDING_LIMIT, formatAlbumDate, formatAlbumTime, photoFileName, type AlbumMode, type AlbumPhase, type AlbumStyleId } from '../../../../../../lib/album';
 import AlbumQrCard, { albumPath, albumPublicUrl, downloadAlbumQr } from '../../../../../../components/admin/album/AlbumQrCard';
 import AlbumShareCard from '../../../../../../components/admin/album/AlbumShareCard';
 import DeletePhotoModal from '../../../../../../components/admin/album/DeletePhotoModal';
 import AlbumZipModal, { type ZipPhoto } from '../../../../../../components/admin/album/AlbumZipModal';
 import AlbumSalesPanel from '../../../../../../components/admin/album/AlbumSalesPanel';
 import PanelPhotoViewer from '../../../../../../components/admin/album/PanelPhotoViewer';
+import AlbumStyleCard from '../../../../../../components/admin/album/AlbumStyleCard';
 
 // Spec 29 — sección "Fotos" del panel: venta del álbum si no está activado; si lo está, el modo,
 // las fechas, el QR para las mesas y la galería con ocultar/mostrar y borrar (escritorio y celular).
@@ -30,6 +31,8 @@ interface PanelAlbum {
   phase: AlbumPhase;
   mode: AlbumMode;
   uploadsClosed: boolean;
+  standalone: boolean; // Spec 30 — boda gratis: álbum sin invitación
+  style: AlbumStyleId;
   opensAt: string | null;
   closesAt: string | null;
   revealAt: string | null;
@@ -60,7 +63,8 @@ export default function PhotosPage() {
   const [qrBusy, setQrBusy] = useState(false);
 
   const tier = weddingData?.tier === 'free' ? 'free' : 'template';
-  const enabled = tier !== 'free' && weddingData?.photoAlbum?.enabled === true;
+  // Spec 30 — también las bodas gratis tienen álbum (sin invitación) cuando el operador lo activa.
+  const enabled = weddingData?.photoAlbum?.enabled === true;
   const names = { bride: weddingData?.couple?.bride?.name || '', groom: weddingData?.couple?.groom?.name || '' };
   const language = weddingData?.defaultLanguage === 'en' ? 'en' : 'es';
 
@@ -179,6 +183,21 @@ export default function PhotosPage() {
     }
   };
 
+  // Spec 30 — estilo del álbum en una boda gratis.
+  const changeStyle = async (style: AlbumStyleId) => {
+    const res = await auth.authedFetch(`/api/panel/album/${weddingId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ style }),
+    });
+    if (!res.ok) throw new Error('style');
+    setAlbum((prev) => (prev ? { ...prev, style } : prev));
+    setWeddingData((prev) => (prev && prev.photoAlbum ? { ...prev, photoAlbum: { ...prev.photoAlbum, style } } : prev));
+  };
+
+  // Diseño del QR y del álbum: el estilo elegido (boda gratis) o el template de la invitación.
+  const albumStyle = album?.style ?? weddingData?.template?.id;
+
   const openZip = () => {
     if (!album) return;
     const visible = album.photos.filter((p) => !p.hidden);
@@ -189,7 +208,7 @@ export default function PhotosPage() {
   const downloadQr = async () => {
     setQrBusy(true);
     try {
-      await downloadAlbumQr(weddingId, weddingData?.template?.id, names, language);
+      await downloadAlbumQr(weddingId, albumStyle, names, language);
     } finally {
       setQrBusy(false);
     }
@@ -197,20 +216,11 @@ export default function PhotosPage() {
 
   if (!weddingData) return null;
 
-  if (tier === 'free') {
-    return (
-      <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA]" style={manrope}>
-        <AdminTopBar title="Fotos" />
-        <div className="px-4 sm:px-10 py-8 text-sm text-[#3F3F46]">El álbum de fotos está disponible para bodas con diseño.</div>
-      </div>
-    );
-  }
-
   if (!enabled) {
     return (
       <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA]" style={manrope}>
         <AdminTopBar title="Fotos" meta={<AdminStatusPill tone="template">Extra</AdminStatusPill>} />
-        <AlbumSalesPanel weddingId={weddingId} eventDate={weddingData.event?.date} />
+        <AlbumSalesPanel weddingId={weddingId} eventDate={weddingData.event?.date} standalone={tier === 'free'} />
       </div>
     );
   }
@@ -248,8 +258,7 @@ export default function PhotosPage() {
             </AdminButton>
             <AdminButton onClick={openZip} disabled={!album || visibleCount === 0} className="flex-[2] sm:flex-none">
               <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Descargar todo (ZIP)</span>
-              <span className="sm:hidden">Descargar todo</span>
+              Descargar todo
             </AdminButton>
           </div>
         }
@@ -277,6 +286,10 @@ export default function PhotosPage() {
               ? 'Tus invitados ya no pueden subir más. Si borras fotos, se libera espacio para nuevas.'
               : 'Al llegar al máximo ya no se podrán subir más. Las fotos ocultas también cuentan; si borras las que no quieras, se libera espacio.'}
           </div>
+        )}
+
+        {album?.standalone && (
+          <AlbumStyleCard style={album.style} names={names} albumHref={albumPath(weddingId, language)} disabled={album.phase === 'expired'} onChange={changeStyle} />
         )}
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -355,7 +368,7 @@ export default function PhotosPage() {
 
           {/* En celular el QR ya está en el botón "QR" de la barra superior. */}
           <div className="hidden lg:flex lg:flex-col [&>section]:flex-1">
-            <AlbumQrCard weddingId={weddingId} templateId={weddingData.template?.id} names={names} language={language} />
+            <AlbumQrCard weddingId={weddingId} templateId={albumStyle} names={names} language={language} />
           </div>
         </div>
 

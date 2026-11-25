@@ -112,7 +112,7 @@ function NavLinks({
   return (
     <nav className="flex flex-col gap-1" aria-label="Secciones del panel">
       {NAV_ITEMS.map((item) => {
-        if (item.id === 'photos' && tier === 'free') return null;
+        // Spec 30 — "Fotos" también en bodas gratis: ahí se vende y se usa el álbum sin invitación.
         if (item.id === 'editor' && tier === 'free') {
           return <FreeEditorUpsell key={item.id} weddingId={weddingId} collapsed={collapsed} onNavigate={onNavigate} />;
         }

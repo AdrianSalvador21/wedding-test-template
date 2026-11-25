@@ -22,7 +22,6 @@ class HasGuestsError extends Error {
 class NotFoundError extends Error {}
 class OwnersLimitError extends Error {}
 class PlannerEmailConflictError extends Error {}
-class AlbumNotAllowedError extends Error {}
 
 // Spec 29 — enciende o apaga el álbum de fotos. La primera vez que se enciende queda en modo
 // abierto y con la fecha de activación; después solo cambia `enabled` y se conservan el modo y la fecha.
@@ -146,9 +145,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
 
       const update: Record<string, unknown> = { updatedAt: now };
       if (hasAlbumChange) {
-        // El álbum es solo para bodas con diseño: una boda gratis no lo puede encender.
-        const tierAfter = hasTemplate ? 'template' : data.tier === 'free' ? 'free' : 'template';
-        if (tierAfter === 'free' && albumEnabled) return invalid('photoAlbum');
+        // Spec 30 — el álbum también se puede encender en bodas gratis (álbum sin invitación).
         const album = nextPhotoAlbum(data.photoAlbum, albumEnabled, now);
         if (album) update.photoAlbum = album;
       }
@@ -212,7 +209,6 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
         ...(hasPlannerChange ? { plannerEmail: plannerEmailValue } : {}),
       };
       if (hasAlbumChange) {
-        if (moved.tier === 'free' && albumEnabled) throw new AlbumNotAllowedError();
         const album = nextPhotoAlbum(data.photoAlbum, albumEnabled, now);
         if (album) (moved as Record<string, unknown>).photoAlbum = album;
       }
@@ -231,7 +227,6 @@ export async function PATCH(request: NextRequest, { params }: { params: { weddin
     if (error instanceof HasGuestsError) return NextResponse.json({ error: 'has_guests', guestCount: error.guestCount }, { status: 409 });
     if (error instanceof OwnersLimitError) return ownersLimit();
     if (error instanceof PlannerEmailConflictError) return invalid('plannerEmail');
-    if (error instanceof AlbumNotAllowedError) return invalid('photoAlbum');
     if (isAlreadyExists(error)) return NextResponse.json({ error: 'wedding_exists' }, { status: 409 });
     console.error('Error en PATCH /api/admin/weddings/[weddingId]:', error);
     return NextResponse.json({ error: 'server_error' }, { status: 500 });

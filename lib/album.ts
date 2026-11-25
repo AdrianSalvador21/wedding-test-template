@@ -19,6 +19,7 @@ export interface AlbumWeddingLike {
   tier?: 'free' | 'template' | string;
   event?: { date?: string };
   photoAlbum?: Partial<PhotoAlbumConfig> | null;
+  template?: { id?: string } | null;
 }
 
 // `event.date` se guarda como "YYYY-MM-DDT16:00:00.000Z": el día de la boda es la parte de la fecha.
@@ -56,8 +57,24 @@ export function expiresAt(wedding: AlbumWeddingLike): Date | null {
   return day ? mexicoCityTime(day.y + 1, day.m, day.d, 23, 59, 59) : null;
 }
 
+// Spec 30 — el álbum también funciona en bodas gratis (álbum sin invitación): basta que el
+// operador lo haya activado.
 export function isAlbumEnabled(wedding: AlbumWeddingLike): boolean {
-  return wedding.tier !== 'free' && wedding.photoAlbum?.enabled === true;
+  return wedding.photoAlbum?.enabled === true;
+}
+
+export const ALBUM_STYLE_IDS = ['template-01', 'template-02', 'template-03', 'template-04'] as const;
+export type AlbumStyleId = (typeof ALBUM_STYLE_IDS)[number];
+export const isAlbumStyleId = (value: unknown): value is AlbumStyleId => ALBUM_STYLE_IDS.includes(value as AlbumStyleId);
+export const DEFAULT_ALBUM_STYLE: AlbumStyleId = 'template-02';
+
+// Diseño con el que se ve el álbum: en una boda gratis, el estilo que eligió la pareja; en una
+// boda con diseño, el template de su invitación.
+export function albumStyleId(wedding: AlbumWeddingLike): AlbumStyleId {
+  if (wedding.tier === 'free') {
+    return isAlbumStyleId(wedding.photoAlbum?.style) ? wedding.photoAlbum.style : DEFAULT_ALBUM_STYLE;
+  }
+  return isAlbumStyleId(wedding.template?.id) ? wedding.template.id : DEFAULT_ALBUM_STYLE;
 }
 
 export function albumMode(wedding: AlbumWeddingLike): AlbumMode {

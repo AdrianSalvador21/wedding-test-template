@@ -5,7 +5,7 @@ import { Calendar, Check, MessageCircle, Plus, X } from 'lucide-react';
 import { whatsappUrl } from '../../../lib/contact';
 import { track } from '../../../lib/analytics/client';
 import { formatAlbumDate, uploadOpensAt } from '../../../lib/album';
-import { ALBUM_PANEL_FAQ, getDesign } from '../../../lib/marketing-content';
+import { ALBUM_PANEL_FAQ, ALBUM_PRICE, ALBUM_STANDALONE_PANEL_FAQ, getDesign } from '../../../lib/marketing-content';
 import { SOFT_EASE } from '../../marketing/FaqList';
 
 // Spec 29 — página de venta de la sección "Fotos" cuando el álbum no está activado: encabezado con
@@ -25,19 +25,30 @@ const WITHOUT = [
 const WITH_ALBUM = [
   'Todas en un solo lugar, con el nombre de quien la tomó',
   'Con calidad para verlas en grande o imprimirlas en tamaño postal',
-  'Las descargas todas juntas en un ZIP cuando quieras',
+  'Las descargas todas juntas en tu dispositivo cuando quieras',
 ];
-const STEPS = [
-  { n: '01', title: 'Lo activamos', body: 'Nos escribes por WhatsApp, pagas $399 y queda listo ese mismo día. El álbum se abre solo el día de tu boda.' },
-  { n: '02', title: 'Tus invitados suben fotos', body: 'Desde su invitación, con el botón "Comparte tus fotos", o escaneando el QR de las mesas. Sin app y sin registro.' },
-  { n: '03', title: 'Tú te quedas con todo', body: 'Ves cada foto con el nombre de quien la subió, ocultas o borras lo que no quieras y descargas todo en ZIP.' },
+// Spec 30 — en una boda gratis (álbum sin invitación) cambian el precio, cómo entran los
+// invitados y lo que incluye.
+const steps = (price: number, standalone: boolean) => [
+  { n: '01', title: 'Lo activamos', body: `Nos escribes por WhatsApp, pagas $${price} y queda listo ese mismo día. El álbum se abre solo el día de tu boda.` },
+  standalone
+    ? { n: '02', title: 'Tus invitados suben fotos', body: 'Entran con el QR de las mesas o con el link que les mandes por WhatsApp desde tu lista de invitados. Sin app y sin registro.' }
+    : { n: '02', title: 'Tus invitados suben fotos', body: 'Desde su invitación, con el botón "Comparte tus fotos", o escaneando el QR de las mesas. Sin app y sin registro.' },
+  { n: '03', title: 'Tú te quedas con todo', body: 'Ves cada foto con el nombre de quien la subió, ocultas o borras lo que no quieras y las descargas todas juntas en tu dispositivo cuando quieras.' },
+];
+const STANDALONE_INCLUDES = [
+  'Álbum con el estilo que elijas: Clásico, Moderno, Botánica o Jardín',
+  'Link personal para cada invitado, listo para mandar por WhatsApp',
+  'QR imprimible para las mesas',
+  'Modo álbum abierto o cámara desechable',
+  'Las descargas todas juntas en tu dispositivo cuando quieras',
 ];
 const INCLUDES = [
   'Álbum con el diseño de tu invitación',
   'Botón "Comparte tus fotos" en la invitación',
   'QR imprimible para las mesas',
   'Modo álbum abierto o cámara desechable',
-  'Descarga de todas las fotos en ZIP',
+  'Las descargas todas juntas en tu dispositivo cuando quieras',
 ];
 
 const WhatsAppIcon = ({ size = 18 }: { size?: number }) => <MessageCircle style={{ width: size, height: size }} aria-hidden="true" />;
@@ -97,9 +108,17 @@ function HeroPhones() {
   );
 }
 
-export default function AlbumSalesPanel({ weddingId, eventDate }: { weddingId: string; eventDate?: string }) {
-  const href = whatsappUrl(`Hola! Quiero activar el álbum de fotos de mi boda "${weddingId}".`);
-  const onCta = () => track('album_activation_cta_click', {});
+export default function AlbumSalesPanel({ weddingId, eventDate, standalone = false }: { weddingId: string; eventDate?: string; standalone?: boolean }) {
+  const price = standalone ? ALBUM_PRICE.standalone : ALBUM_PRICE.withInvitation;
+  const href = whatsappUrl(
+    standalone
+      ? `Hola! Quiero activar el álbum de fotos sin invitación de mi boda "${weddingId}".`
+      : `Hola! Quiero activar el álbum de fotos de mi boda "${weddingId}".`
+  );
+  const onCta = () => track('album_activation_cta_click', { standalone });
+  const STEPS = steps(price, standalone);
+  const includes = standalone ? STANDALONE_INCLUDES : INCLUDES;
+  const faq = standalone ? ALBUM_STANDALONE_PANEL_FAQ : ALBUM_PANEL_FAQ;
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   // Días que faltan: se calculan en el cliente para no desfasar el HTML del servidor.
@@ -123,11 +142,12 @@ export default function AlbumSalesPanel({ weddingId, eventDate }: { weddingId: s
           <h2 className="m-0 text-[30px] sm:text-[44px] font-semibold leading-[1.08] tracking-[-0.025em]">Las fotos de tu boda que tu fotógrafo no va a tomar.</h2>
           <p className="m-0 text-[15px] sm:text-[17px] leading-relaxed text-[#D4D4D8] max-w-[520px]">
             Tus invitados toman fotos toda la noche desde su mesa. Con el álbum llegan a ti en un solo lugar, con buena calidad y sin perseguir a nadie por WhatsApp.
+            {standalone && <span className="text-white font-semibold"> No necesitas invitación con nosotros.</span>}
           </p>
           <div className="flex flex-wrap gap-3 pt-1">
             <a href={href} target="_blank" rel="noopener noreferrer" onClick={onCta} className={`${cta} bg-[#AE5730] hover:bg-[#8F4524] text-white shadow-[0_10px_28px_rgba(174,87,48,0.45)] w-full sm:w-auto`}>
               <WhatsAppIcon />
-              Activar mi álbum · $399
+              Activar mi álbum · ${price}
             </a>
             <a href="#album-como-funciona" className={`${cta} hidden sm:inline-flex border border-[rgba(255,255,255,0.25)] text-white hover:bg-[rgba(255,255,255,0.06)]`}>
               Ver cómo funciona
@@ -204,12 +224,22 @@ export default function AlbumSalesPanel({ weddingId, eventDate }: { weddingId: s
       <section className="grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-4 items-start">
         <div className="bg-white border-[1.5px] border-[#0A0A0A] rounded-[20px] p-6 sm:p-7 flex flex-col gap-[18px]">
           <span className="text-[11px] font-semibold tracking-[0.08em] uppercase text-[#71717A]">Pago único por boda</span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-[44px] sm:text-[52px] font-semibold tracking-[-0.03em] leading-none text-[#0A0A0A]">$399</span>
+          <div className="flex items-baseline gap-2.5 flex-wrap">
+            {!standalone && (
+              <s className="text-[22px] sm:text-[26px] font-semibold tracking-[-0.02em] leading-none text-[#A1A1AA]" aria-label={`Antes $${ALBUM_PRICE.standalone}`}>
+                ${ALBUM_PRICE.standalone}
+              </s>
+            )}
+            <span className="text-[44px] sm:text-[52px] font-semibold tracking-[-0.03em] leading-none text-[#0A0A0A]">${price}</span>
             <span className="text-base font-semibold text-[#52525B]">MXN</span>
           </div>
+          {!standalone && (
+            <span className="self-start -mt-2 text-[13px] font-semibold text-[#AE5730] bg-[rgba(198,102,60,0.08)] rounded-lg px-2.5 py-1.5">
+              Precio especial por tener tu invitación con Invyta.
+            </span>
+          )}
           <div className="flex flex-col gap-2.5">
-            {INCLUDES.map((i) => (
+            {includes.map((i) => (
               <span key={i} className="flex gap-2.5 items-start text-sm font-medium text-[#27272A] leading-snug">
                 <Check className="h-4 w-4 text-[#15803D] flex-shrink-0 mt-0.5" strokeWidth={2.6} />
                 {i}
@@ -225,7 +255,7 @@ export default function AlbumSalesPanel({ weddingId, eventDate }: { weddingId: s
 
         <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-[20px] p-6 sm:p-7 flex flex-col">
           <span className="text-[11px] font-semibold tracking-[0.08em] uppercase text-[#71717A] pb-2">Preguntas frecuentes</span>
-          {ALBUM_PANEL_FAQ.map((q, i) => {
+          {faq.map((q, i) => {
             const open = openFaq === i;
             return (
               <div key={q.question} className="border-t border-[rgba(0,0,0,0.08)] py-3.5">
@@ -264,7 +294,9 @@ export default function AlbumSalesPanel({ weddingId, eventDate }: { weddingId: s
       <section className="bg-[#AE5730] text-white rounded-[20px] px-6 sm:px-10 py-8 sm:py-9 flex flex-wrap items-center justify-between gap-5">
         <div className="flex flex-col gap-1.5 max-w-[620px]">
           <h3 className="m-0 text-[22px] sm:text-[28px] font-semibold tracking-[-0.02em] leading-tight">Que ningún momento se quede en el celular de alguien más.</h3>
-          <span className="text-[15px] font-medium text-[#FBE3D6]">$399 MXN · pago único · listo el mismo día</span>
+          <span className="text-[15px] font-medium text-[#FBE3D6]">
+            {!standalone && <s className="text-[#F2B99A] mr-1.5">${ALBUM_PRICE.standalone}</s>}${price} MXN · pago único · listo el mismo día
+          </span>
         </div>
         <a href={href} target="_blank" rel="noopener noreferrer" onClick={onCta} className={`${cta} bg-white text-[#8F4524] hover:bg-[#FBF7F1]`}>
           <WhatsAppIcon />
@@ -274,7 +306,9 @@ export default function AlbumSalesPanel({ weddingId, eventDate }: { weddingId: s
 
       <div className="md:hidden fixed left-0 right-0 bottom-0 z-30 px-4 pt-3 pb-5 bg-white border-t border-[rgba(0,0,0,0.08)] shadow-[0_-8px_24px_rgba(0,0,0,0.06)] flex items-center gap-3">
         <div className="flex flex-col">
-          <span className="text-lg font-semibold text-[#0A0A0A]">$399 MXN</span>
+          <span className="text-lg font-semibold text-[#0A0A0A]">
+            {!standalone && <s className="text-[13px] text-[#A1A1AA] mr-1">${ALBUM_PRICE.standalone}</s>}${price} MXN
+          </span>
           <span className="text-[11.5px] font-medium text-[#71717A]">Pago único</span>
         </div>
         <a href={href} target="_blank" rel="noopener noreferrer" onClick={onCta} className="flex-1 inline-flex items-center justify-center gap-2 min-h-[48px] rounded-[10px] bg-[#AE5730] text-white no-underline text-sm font-semibold">

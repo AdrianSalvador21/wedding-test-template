@@ -341,7 +341,7 @@ Dependencias nuevas: `qrcode`, para el QR, y `client-zip`, para el ZIP en el nav
      - tres palomitas: "Pago único", "Sin app para tus invitados" y "Listo el mismo día";
      - en escritorio, a la derecha, dos celulares fijos en el estilo del template 02 (invitación con "Comparte tus fotos" y álbum) y el aviso "Carlos subió 6 fotos".
   2. **Aviso con la fecha de la boda:** "Su boda es el {fecha}: faltan {n} días." y "Actívalo con tiempo para imprimir el QR junto con los centros de mesa y avisar a tus invitados.", con el enlace "Activar ahora →". Sin `event.date`, o si la boda ya pasó, no se muestra.
-  3. **Sin álbum / con el álbum:** dos tarjetas. "Sin álbum": "Las fotos quedan repartidas en decenas de chats de WhatsApp", "Llegan comprimidas, borrosas o nunca llegan" y "Tienes que pedirlas una por una después de la boda". "Con el álbum de Invyta": "Todas en un solo lugar, con el nombre de quien la tomó", "Con calidad para verlas en grande o imprimirlas en tamaño postal" y "Las descargas todas juntas en un ZIP cuando quieras".
+  3. **Sin álbum / con el álbum:** dos tarjetas. "Sin álbum": "Las fotos quedan repartidas en decenas de chats de WhatsApp", "Llegan comprimidas, borrosas o nunca llegan" y "Tienes que pedirlas una por una después de la boda". "Con el álbum de Invyta": "Todas en un solo lugar, con el nombre de quien la tomó", "Con calidad para verlas en grande o imprimirlas en tamaño postal" y "Las descargas todas juntas en tu dispositivo cuando quieras".
   4. **Cómo funciona, en 3 pasos:** "Lo activamos", "Tus invitados suben fotos" y "Tú te quedas con todo".
   5. **Precio y preguntas frecuentes**, lado a lado en escritorio:
      - tarjeta "$399 MXN · Pago único por boda", con 5 conceptos incluidos, el botón "Activar por WhatsApp" y "Nos escribes, pagas y lo activamos ese mismo día.";
@@ -355,7 +355,7 @@ Dependencias nuevas: `qrcode`, para el QR, y `client-zip`, para el ZIP en el nav
   - **`AdminTopBar`:**
     - título "Fotos";
     - `meta` con `AdminStatusPill tone="active"` "Álbum activo" y "Modo: álbum abierto" o "Modo: cámara desechable";
-    - `actions` con `AdminButton variant="ghost"` "Descargar QR" y `AdminButton` "Descargar todo (ZIP)". En celular quedan "QR" y "Descargar todo".
+    - `actions` con `AdminButton variant="ghost"` "Descargar QR" y `AdminButton` "Descargar todo". En celular quedan "QR" y "Descargar todo".
   - **Compartir álbum** (`AlbumShareCard`, también en celular), debajo de los contadores:
     - el enlace general `/{defaultLanguage}/wedding/{id}/fotos` (sin `?guest=`) en un campo de solo lectura, con "Copiar enlace" (cambia a "Copiado") y "Abrir álbum" (pestaña nueva);
     - el texto "Comparte este enlace con tu familia para que vean el álbum." más "Mientras la subida esté abierta, también podrán subir fotos." o "Con la subida cerrada, solo pueden verlo.";
@@ -385,8 +385,8 @@ Dependencias nuevas: `qrcode`, para el QR, y `client-zip`, para el ZIP en el nav
     - la sugerencia "Si solo no quieres que la vean los invitados, mejor ocúltala.";
     - los botones "Cancelar" y "Borrar foto" (rojo `#B91C1C`).
   - **ZIP:**
-    - "Descargar todo (ZIP)" baja las fotos **visibles** en archivos de máximo 200 fotos cada uno: `fotos-{weddingId}-1.zip`, `-2.zip`, y así.
-    - Mientras se arma, un modal muestra "Preparando tu descarga", "{n} fotos visibles, en {k} archivo(s) ZIP. Las ocultas no se incluyen.", la barra de progreso por archivo, "Mantén esta pestaña abierta. Con más de 200 fotos se descargan varios archivos, uno tras otro." y "Cancelar".
+    - "Descargar todo" baja las fotos **visibles** en archivos de máximo 200 fotos cada uno: `fotos-{weddingId}-1.zip`, `-2.zip`, y así.
+    - Mientras se arma, un modal muestra "Preparando tu descarga", "{n} fotos visibles. Se guardan todas juntas en tu dispositivo (, en {k} partes). Las ocultas no se incluyen.", la barra de progreso por parte ("Parte {i} de {k}"), "Mantén esta pestaña abierta. Con más de 200 fotos se descargan en varias partes, una tras otra." y "Cancelar".
     - Se manda `album_zip_downloaded`.
   - **QR imprimible:**
     - Es un PNG de 1200 × 1600 px con el estilo del template.
@@ -551,7 +551,7 @@ Cada paso deja el proyecto compilando y lo que ya existe funcionando igual.
 - [ ] "Descargar QR" y "Con diseño" bajan un PNG con el estilo del template y un QR que abre `/fotos` sin `?guest=`.
 - [ ] "Solo el QR" baja un PNG cuadrado con únicamente el código.
 - [ ] El QR apunta a `https://www.invyta.me/...` también cuando el panel corre en localhost.
-- [ ] "Descargar todo (ZIP)" baja solo las fotos visibles, en archivos de máximo 200 fotos cada uno, y muestra el progreso.
+- [ ] "Descargar todo" baja solo las fotos visibles, en archivos de máximo 200 fotos cada uno, y muestra el progreso.
 
 ## Decisiones tomadas y descartadas
 
@@ -586,6 +586,7 @@ Cada paso deja el proyecto compilando y lo que ya existe funcionando igual.
   - Una foto queda en ~400 KB, y con eso el costo se mantiene en la capa sin costo.
   - **No:** guardar el original ni subir videos.
 - **Sí: se guardan 1 año desde la boda (el álbum se puede ver hasta entonces), y en este spec solo se muestra la fecha.** Decisión del usuario (pasó por 12 meses y 2 años; quedó en 1 año). El borrado automático va en otro spec.
+- **Sí: los textos para la pareja no dicen "ZIP".** Decisión del usuario: en el panel, la venta, la página pública y las preguntas frecuentes se dice "Las descargas todas juntas en tu dispositivo cuando quieras" (o "Descargar todo" en el botón). El archivo que se baja sigue siendo un `.zip`.
 - **Sí: el ZIP se arma en el navegador con `client-zip`, en partes de 200 fotos.** Así no depende del límite de tiempo de las funciones del servidor, y no se carga 1 GB en memoria.
 - **Sí: el álbum tiene página propia.** Decisión del usuario. **No:** una sección dentro de cada uno de los 4 sets de secciones.
 - **Sí: la página `/fotos` y el QR imprimible toman el diseño del template de la boda.** Decisión del usuario, después de revisar el diseño.
