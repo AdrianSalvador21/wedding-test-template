@@ -57,7 +57,7 @@ export default function TableTile({
       }}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="text-[15.5px] font-extrabold text-[#0A0A0A] truncate leading-snug">{table.name}</span>
+        <span className="text-[15.5px] font-semibold text-[#0A0A0A] truncate leading-snug">{table.name}</span>
         <ShapeBadge shape={table.shape || 'round'} />
       </div>
 
@@ -74,7 +74,7 @@ export default function TableTile({
           />
         ))}
         {overflowLabel && (
-          <span className="text-[10.5px] font-extrabold ml-0.5" style={{ color: colors.text }}>
+          <span className="text-[10.5px] font-semibold ml-0.5" style={{ color: colors.text }}>
             {overflowLabel}
           </span>
         )}
@@ -82,13 +82,13 @@ export default function TableTile({
 
       <div className="flex items-center justify-between">
         <span
-          className="text-[11.5px] font-extrabold px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0"
+          className="text-[11.5px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0"
           style={{ background: state === 'over' ? 'rgba(185,28,28,0.1)' : state === 'full' ? 'rgba(21,128,61,0.1)' : '#F4F4F5', color: colors.text }}
         >
           {occupancyLabel[state]}
         </span>
         <div className="flex items-center gap-1.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-          <span className="text-[12px] font-extrabold text-[#71717A]">
+          <span className="text-[12px] font-semibold text-[#71717A]">
             {occupied}/{table.capacity}
           </span>
           <button

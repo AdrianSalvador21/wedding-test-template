@@ -1,7 +1,7 @@
 import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
-export type ActivityType = 'guest_added' | 'guest_confirmed' | 'guest_declined';
+export type ActivityType = 'guest_added' | 'guest_confirmed' | 'guest_declined' | 'guests_imported';
 
 export interface ActivityLogEntry {
   id: string;
@@ -16,6 +16,8 @@ const MESSAGE_BY_TYPE: Record<ActivityType, (guestName: string) => string> = {
   guest_added: (name) => `${name} se agregó a la lista de invitados`,
   guest_confirmed: (name) => `${name} confirmó su asistencia`,
   guest_declined: (name) => `${name} no podrá asistir`,
+  // Spec 28 — una sola entrada por importación; `guestName` lleva el número de invitados.
+  guests_imported: (count) => `Se importaron ${count} invitados`,
 };
 
 export class ActivityService {

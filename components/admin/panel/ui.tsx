@@ -6,7 +6,8 @@ import { ChevronDown, ChevronLeft, ChevronRight, LayoutGrid, LogOut, Menu, Penci
 import { useAuthOptional } from '../../../lib/auth-context';
 import { whatsappUrl } from '../../../lib/contact';
 import { track } from '../../../lib/analytics/client';
-import { A, manrope, displayFont } from '../ui';
+import { A, manrope } from '../ui';
+import BrandWordmark from '../../BrandWordmark';
 
 export type PanelTier = 'free' | 'template';
 
@@ -39,8 +40,8 @@ function EventSwitcher({ weddingId, locale }: { weddingId: string; locale: strin
         className="flex items-center justify-between gap-2 w-full text-left bg-[#FAFAFA] border border-[rgba(0,0,0,0.08)] rounded-[10px] px-3 py-2.5"
       >
         <span className="flex flex-col gap-0.5 min-w-0">
-          <span className="text-[10px] font-bold tracking-[0.06em] text-[#9CA3AF] uppercase">Evento actual</span>
-          <span className="text-[13px] font-extrabold text-[#0A0A0A] truncate">{current?.title || weddingId}</span>
+          <span className="text-[10px] font-semibold tracking-[0.06em] text-[#9CA3AF] uppercase">Evento actual</span>
+          <span className="text-[13px] font-semibold text-[#0A0A0A] truncate">{current?.title || weddingId}</span>
         </span>
         <ChevronDown className={`h-3.5 w-3.5 text-[#71717A] flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -68,9 +69,8 @@ function EventSwitcher({ weddingId, locale }: { weddingId: string; locale: strin
   );
 }
 
-// Spec 16 — el plan gratuito no tiene Editor de invitación. Mismo tratamiento que
-// `AdminPageNav` (legacy): el link se reemplaza por un CTA de activación por
-// WhatsApp, en vez de ocultarse sin explicación.
+// Spec 16 — el plan gratuito no tiene Editor de invitación: el link se reemplaza por
+// un CTA de activación por WhatsApp, en vez de ocultarse sin explicación.
 function FreeEditorUpsell({ weddingId, collapsed, onNavigate }: { weddingId: string; collapsed: boolean; onNavigate?: () => void }) {
   return (
     <a
@@ -123,7 +123,7 @@ function NavLinks({
             title={collapsed ? item.label : undefined}
             className={`flex items-center gap-2.5 px-3 py-2.5 rounded-[10px] text-sm no-underline transition-colors ${
               collapsed ? 'justify-center' : ''
-            } ${isActive ? 'bg-[rgba(198,102,60,0.08)] text-[#AE5730] font-extrabold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'}`}
+            } ${isActive ? 'bg-[rgba(198,102,60,0.08)] text-[#AE5730] font-semibold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'}`}
           >
             <Icon className="h-[18px] w-[18px] flex-shrink-0" />
             {!collapsed && <span>{item.label}</span>}
@@ -152,7 +152,7 @@ function SidebarAccountSection({ onNavigate }: { onNavigate?: () => void }) {
       <button
         type="button"
         onClick={signOut}
-        className="inline-flex items-center gap-2 self-start text-[13px] font-bold text-[#0A0A0A] hover:text-[#AE5730] transition-colors"
+        className="inline-flex items-center gap-2 self-start text-[13px] font-semibold text-[#0A0A0A] hover:text-[#AE5730] transition-colors"
       >
         <LogOut className="h-3.5 w-3.5" />
         Cerrar sesión
@@ -181,7 +181,7 @@ function SidebarChrome({
   return (
     <div className={`flex flex-col h-full py-6 box-border ${collapsed ? 'px-2.5' : 'px-4'}`} style={manrope}>
       <div className={`pb-6 flex items-center ${collapsed ? 'justify-center' : 'justify-between px-1'}`}>
-        {!collapsed && <span className="text-xl text-[#0A0A0A]" style={displayFont}>invyta</span>}
+        {!collapsed && <BrandWordmark className="text-2xl" />}
         {onToggleCollapse && (
           <button
             type="button"
@@ -307,7 +307,7 @@ export function PanelTopBar({ onOpenMenu }: { onOpenMenu: () => void }) {
       >
         <Menu className="h-5 w-5" />
       </button>
-      <span className="text-xl text-[#0A0A0A]" style={displayFont}>invyta</span>
+      <BrandWordmark className="text-2xl" />
       <span className="w-9" aria-hidden="true" />
     </header>
   );

@@ -43,7 +43,7 @@ export function Modal({ title, sub, onClose, children, width = 680 }: { title: s
       <div role="dialog" aria-label={title} className="admin-modal bg-white rounded-2xl p-5 sm:p-7 w-full flex flex-col gap-[22px] my-auto" style={{ maxWidth: width }}>
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1.5">
-            <div className="text-[22px] font-extrabold tracking-[-0.01em] text-[#0A0A0A]">{title}</div>
+            <div className="text-[22px] font-semibold tracking-[-0.01em] text-[#0A0A0A]">{title}</div>
             {sub && <div className="text-[13px] leading-normal text-[#3F3F46]">{sub}</div>}
           </div>
           <button type="button" onClick={onClose} aria-label="Cerrar" className="h-9 w-9 flex items-center justify-center rounded-lg text-[#71717A] hover:bg-[#F4F4F5]">
@@ -74,7 +74,7 @@ export function Btn({ children, onClick, type = 'button', ghost = false, loading
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-2 h-[46px] px-5 rounded-lg text-sm font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+      className={`inline-flex items-center justify-center gap-2 h-[46px] px-5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
         ghost ? 'bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA]' : 'bg-[#111111] text-white border border-transparent hover:bg-black'
       }`}
     >
@@ -97,7 +97,7 @@ function CopyRow({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-xs font-bold tracking-[0.04em] uppercase text-[#71717A]">{label}</span>
+      <span className="text-xs font-semibold tracking-[0.04em] uppercase text-[#71717A]">{label}</span>
       <div className="flex items-center gap-2.5 border border-[rgba(0,0,0,0.08)] bg-[#FAFAFA] rounded-lg py-2 pl-3.5 pr-2">
         <span className="flex-1 min-w-0 text-[13px] text-[#0A0A0A] font-mono truncate">{value}</span>
         <button
@@ -108,7 +108,7 @@ function CopyRow({ label, value }: { label: string; value: string }) {
               setTimeout(() => setCopied(false), 2000);
             }
           }}
-          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-[13px] font-bold"
+          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-[13px] font-semibold"
         >
           {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
           {copied ? 'Copiado' : 'Copiar'}
@@ -141,7 +141,7 @@ function TemplatePicker({ value, onChange, name }: { value: TemplateId; onChange
               <img src={TEMPLATE_IMAGES[t.id]} alt="" className="w-full aspect-[4/3] object-cover object-top rounded-lg bg-[#F4F4F5]" />
               <div className="flex items-center gap-2">
                 <input type="radio" name={name} checked={selected} onChange={() => onChange(t.id)} className="accent-[#111111] m-0" />
-                <span className="text-sm font-bold text-[#0A0A0A]">{t.name}</span>
+                <span className="text-sm font-semibold text-[#0A0A0A]">{t.name}</span>
               </div>
               <span className="text-xs leading-snug text-[#71717A]">{t.description}</span>
             </label>
@@ -318,7 +318,7 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
               href={`https://wa.me/?text=${encodeURIComponent(message)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-bold"
+              className="inline-flex items-center justify-center gap-2 h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-semibold"
             >
               <MessageCircle className="h-4 w-4" />
               Abrir en WhatsApp
@@ -330,12 +330,12 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
           <span>Las fotos y la música se agregan aparte. Mientras tanto la invitación usa fotos de stock.</span>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <button type="button" onClick={reset} className="text-[13px] font-bold text-[#0A0A0A] underline">
+          <button type="button" onClick={reset} className="text-[13px] font-semibold text-[#0A0A0A] underline">
             Crear otra invitación
           </button>
           <a
-            href={`/${locale}/admin/wedding-editor/${created.id}`}
-            className="inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-bold"
+            href={`/${locale}/admin/panel/${created.id}/editor`}
+            className="inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-semibold"
           >
             Ir al editor de la invitación
           </a>
@@ -418,7 +418,7 @@ export function NewWeddingModal({ onClose, onCreated }: { onClose: () => void; o
                 setErrors((prev) => ({ ...prev, weddingId: '' }));
                 setSuggestion(null);
               }}
-              className="self-start text-xs font-bold text-[#0A0A0A] underline"
+              className="self-start text-xs font-semibold text-[#0A0A0A] underline"
             >
               Usar {suggestion}
             </button>
@@ -731,7 +731,7 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
                 <button
                   type="button"
                   onClick={() => setPlannerEmail('')}
-                  className="h-[46px] px-4 rounded-lg bg-white text-[#B91C1C] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-[13px] font-bold whitespace-nowrap"
+                  className="h-[46px] px-4 rounded-lg bg-white text-[#B91C1C] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-[13px] font-semibold whitespace-nowrap"
                 >
                   Quitar
                 </button>
@@ -771,7 +771,7 @@ export function SettingsModal({ wedding, onClose, onSaved }: { wedding: LinkedWe
                   setIdProblem(null);
                   setSuggestion(null);
                 }}
-                className="self-start text-xs font-bold text-[#0A0A0A] underline"
+                className="self-start text-xs font-semibold text-[#0A0A0A] underline"
               >
                 Usar {suggestion}
               </button>

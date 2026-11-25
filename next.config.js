@@ -62,6 +62,16 @@ const nextConfig = {
       { source: '/favicon.ico', destination: '/icon', permanent: true },
       // /disenos no es una página: la galería de diseños es una sección de la landing.
       { source: '/disenos', destination: '/#disenos', permanent: true },
+      // El panel anterior (una ruta por sección) se reemplazó por /admin/panel/{boda}/… (spec 21).
+      // Links viejos guardados o en el historial llegan a la sección equivalente del panel nuevo.
+      ...['', '/es', '/en'].flatMap((prefix) => [
+        { source: `${prefix}/admin/wedding-editor/:weddingId`, destination: `${prefix}/admin/panel/:weddingId/editor`, permanent: true },
+        { source: `${prefix}/admin/guests/:weddingId`, destination: `${prefix}/admin/panel/:weddingId/guests`, permanent: true },
+        { source: `${prefix}/admin/confirmations/:weddingId`, destination: `${prefix}/admin/panel/:weddingId/confirmations`, permanent: true },
+        { source: `${prefix}/admin/tables/:weddingId`, destination: `${prefix}/admin/panel/:weddingId/tables`, permanent: true },
+        // /admin/panel/{boda} sin sección no tiene página: entra al Dashboard.
+        { source: `${prefix}/admin/panel/:weddingId`, destination: `${prefix}/admin/panel/:weddingId/dashboard`, permanent: false },
+      ]),
     ];
   },
   async headers() {

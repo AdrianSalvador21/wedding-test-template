@@ -56,10 +56,10 @@ export function pageKey(pathname: string): string {
 }
 
 // El ID de boda viaja en la URL del admin y contiene los nombres de la pareja:
-// `/es/admin/wedding-editor/karen-y-juan` -> `/admin/wedding-editor/:weddingId`.
+// `/es/admin/panel/karen-y-juan/guests` -> `/admin/panel/:weddingId/guests`.
 // Funciona con rutas y con URLs absolutas (`$current_url`, `$referrer`).
-const ADMIN_WEDDING_URL = /(?:\/(?:es|en))?\/admin\/(wedding-editor|guests|confirmations)\/[^/?#\s]+/g;
+const ADMIN_WEDDING_URL = /(?:\/(?:es|en))?\/admin\/panel\/[^/?#\s]+/g;
 
 export function sanitizeUrl(value: string): string {
-  return value.replace(ADMIN_WEDDING_URL, '/admin/$1/:weddingId');
+  return value.replace(ADMIN_WEDDING_URL, '/admin/panel/:weddingId');
 }

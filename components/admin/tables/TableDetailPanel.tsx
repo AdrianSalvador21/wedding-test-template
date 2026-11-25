@@ -120,9 +120,9 @@ function SeatRow({
           </button>
         )}
         <Avatar name={row.displayName} />
-        <span className={`text-[13px] font-bold truncate ${muted ? 'text-[#9CA3AF]' : 'text-[#0A0A0A]'}`}>{row.displayName}</span>
+        <span className={`text-[13px] font-semibold truncate ${muted ? 'text-[#9CA3AF]' : 'text-[#0A0A0A]'}`}>{row.displayName}</span>
         {row.location === 'elsewhere' && (
-          <span className="flex-shrink-0 text-[10.5px] font-extrabold px-2 py-0.5 rounded-full bg-[#F4F4F5] text-[#71717A] whitespace-nowrap">
+          <span className="flex-shrink-0 text-[10.5px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F4F5] text-[#71717A] whitespace-nowrap">
             En {row.elsewhereTable?.name || 'otra mesa'}
           </span>
         )}
@@ -182,8 +182,8 @@ function GroupHeader({
           }
         />
       )}
-      <span className="text-[13px] font-extrabold text-[#0A0A0A] truncate">{guest.name}</span>
-      <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#111111] text-white flex-shrink-0">{count}</span>
+      <span className="text-[13px] font-semibold text-[#0A0A0A] truncate">{guest.name}</span>
+      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#111111] text-white flex-shrink-0">{count}</span>
     </div>
   );
 }
@@ -438,13 +438,13 @@ export default function TableDetailPanel({
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               {table ? (
-                <div className="text-[11px] font-extrabold uppercase tracking-wide text-[#9CA3AF]">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-[#9CA3AF]">
                   {table.name} &middot; {SHAPE_LABELS[table.shape || 'round']}
                 </div>
               ) : (
-                <div className="text-[11px] font-extrabold uppercase tracking-wide text-[#9CA3AF]">Invitados</div>
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-[#9CA3AF]">Invitados</div>
               )}
-              <span className="text-[19px] font-extrabold text-[#0A0A0A] truncate">{table ? table.name : 'Sin mesa'}</span>
+              <span className="text-[19px] font-semibold text-[#0A0A0A] truncate">{table ? table.name : 'Sin mesa'}</span>
             </div>
             <div className="flex items-center gap-1.5 flex-shrink-0">
               {table && onEditTable && (
@@ -466,7 +466,7 @@ export default function TableDetailPanel({
           {table && seatDots && (
             <>
               <div className="flex items-center gap-3">
-                <span className="text-[15px] font-extrabold text-[#0A0A0A]">
+                <span className="text-[15px] font-semibold text-[#0A0A0A]">
                   {occupied}
                   <span className="font-semibold text-[#9CA3AF]">/{capacity} personas</span>
                 </span>
@@ -479,7 +479,7 @@ export default function TableDetailPanel({
                     />
                   ))}
                   {seatDots.overflowLabel && (
-                    <span className="text-[10.5px] font-extrabold text-[#71717A] ml-0.5">{seatDots.overflowLabel}</span>
+                    <span className="text-[10.5px] font-semibold text-[#71717A] ml-0.5">{seatDots.overflowLabel}</span>
                   )}
                 </div>
               </div>
@@ -509,7 +509,7 @@ export default function TableDetailPanel({
           >
             {table && (
               <div>
-                <div className="text-[11px] font-bold uppercase tracking-wide text-[#71717A] mb-1.5">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-[#71717A] mb-1.5">
                   En esta mesa ({atTableSeats.length})
                 </div>
                 <DropZone id="zone:table">
@@ -534,7 +534,7 @@ export default function TableDetailPanel({
                                     type="button"
                                     onClick={() => onAssignSeat(row.seat.id, null)}
                                     aria-label={`Quitar a ${row.displayName} de ${table.name}`}
-                                    className="w-6 h-6 rounded-md flex items-center justify-center text-[#9CA3AF] hover:text-[#B91C1C] hover:bg-[rgba(185,28,28,0.06)] text-[15px] font-bold"
+                                    className="w-6 h-6 rounded-md flex items-center justify-center text-[#9CA3AF] hover:text-[#B91C1C] hover:bg-[rgba(185,28,28,0.06)] text-[15px] font-semibold"
                                   >
                                     ×
                                   </button>
@@ -551,7 +551,7 @@ export default function TableDetailPanel({
                                     disabled={!wouldFitOne}
                                     title={!wouldFitOne ? `${table.name} está completa` : undefined}
                                     aria-label={`Traer a ${row.displayName} a ${table.name}`}
-                                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[rgba(0,0,0,0.12)] bg-white text-[#0A0A0A] text-[11px] font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[rgba(0,0,0,0.12)] bg-white text-[#0A0A0A] text-[11px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
                                   >
                                     Traer aquí <ArrowRight className="w-3 h-3" />
                                   </button>
@@ -568,7 +568,7 @@ export default function TableDetailPanel({
                                     disabled={!wouldFitOne}
                                     title={!wouldFitOne ? `${table.name} está completa` : undefined}
                                     aria-label={`Sentar a ${row.displayName} en ${table.name}`}
-                                    className="w-6 h-6 rounded-md flex items-center justify-center border border-[rgba(0,0,0,0.12)] bg-white text-[#0A0A0A] font-bold text-[13px] disabled:opacity-40 disabled:cursor-not-allowed"
+                                    className="w-6 h-6 rounded-md flex items-center justify-center border border-[rgba(0,0,0,0.12)] bg-white text-[#0A0A0A] font-semibold text-[13px] disabled:opacity-40 disabled:cursor-not-allowed"
                                   >
                                     +
                                   </button>
@@ -585,8 +585,8 @@ export default function TableDetailPanel({
             )}
 
             <div className={table ? 'border-t border-[rgba(0,0,0,0.06)] pt-3' : ''}>
-              <div className="text-[10.5px] font-extrabold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Invitados</div>
-              <div className="text-[17px] font-extrabold text-[#0A0A0A] mb-2.5">
+              <div className="text-[10.5px] font-semibold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Invitados</div>
+              <div className="text-[17px] font-semibold text-[#0A0A0A] mb-2.5">
                 {activeFilterCount} {activeFilterLabel}
               </div>
 
@@ -611,7 +611,7 @@ export default function TableDetailPanel({
                       key={f}
                       type="button"
                       onClick={() => setFilter(f)}
-                      className={`flex-shrink-0 px-2.5 py-1.5 rounded-full text-[12px] font-bold whitespace-nowrap transition-colors ${
+                      className={`flex-shrink-0 px-2.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors ${
                         active ? 'bg-[#111111] text-white' : 'bg-[#FAFAFA] text-[#3F3F46] border border-[rgba(0,0,0,0.1)]'
                       }`}
                     >
@@ -649,7 +649,7 @@ export default function TableDetailPanel({
                                   disabled={!wouldFitOne}
                                   title={!wouldFitOne ? `${table.name} está completa` : undefined}
                                   aria-label={`Agregar a ${row.displayName} a ${table.name}`}
-                                  className="w-6 h-6 rounded-md flex items-center justify-center border border-[rgba(0,0,0,0.12)] bg-white text-[#0A0A0A] font-bold text-[13px] disabled:opacity-40 disabled:cursor-not-allowed"
+                                  className="w-6 h-6 rounded-md flex items-center justify-center border border-[rgba(0,0,0,0.12)] bg-white text-[#0A0A0A] font-semibold text-[13px] disabled:opacity-40 disabled:cursor-not-allowed"
                                 >
                                   +
                                 </button>
@@ -660,7 +660,7 @@ export default function TableDetailPanel({
                                   disabled={!wouldFitOne}
                                   title={!wouldFitOne ? `${table.name} está completa` : undefined}
                                   aria-label={`Traer a ${row.displayName} a ${table.name}`}
-                                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[rgba(0,0,0,0.12)] bg-white text-[#0A0A0A] text-[11px] font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[rgba(0,0,0,0.12)] bg-white text-[#0A0A0A] text-[11px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
                                 >
                                   Traer aquí <ArrowRight className="w-3 h-3" />
                                 </button>
@@ -672,7 +672,7 @@ export default function TableDetailPanel({
                                   if (e.target.value) onAssignSeat(row.seat.id, e.target.value);
                                   e.target.value = '';
                                 }}
-                                className="text-[11.5px] font-bold border border-[rgba(0,0,0,0.14)] rounded-md px-2 py-1.5 bg-white text-[#3F3F46] focus:outline-none"
+                                className="text-[11.5px] font-semibold border border-[rgba(0,0,0,0.14)] rounded-md px-2 py-1.5 bg-white text-[#3F3F46] focus:outline-none"
                               >
                                 <option value="" disabled>
                                   Mover a mesa…
@@ -700,7 +700,7 @@ export default function TableDetailPanel({
 
           <DragOverlay>
             {activeSeatName ? (
-              <div className="bg-white border border-[rgba(0,0,0,0.1)] rounded-lg px-3 py-2 shadow-xl text-[13px] font-bold text-[#0A0A0A]">
+              <div className="bg-white border border-[rgba(0,0,0,0.1)] rounded-lg px-3 py-2 shadow-xl text-[13px] font-semibold text-[#0A0A0A]">
                 {activeSeatName}
               </div>
             ) : null}

@@ -33,6 +33,9 @@ export interface AnalyticsEventMap {
   free_wedding_created: NoProps;
   free_wedding_limit_reached: NoProps;
   free_wedding_upgrade_cta_click: NoProps;
+  // Importar invitados y enviar por WhatsApp (spec 28)
+  guests_imported: { rows: number };
+  guest_whatsapp_opened: { kind: 'invitation' | 'saveTheDate'; edited: boolean };
 }
 
 export type AnalyticsEventName = keyof AnalyticsEventMap;

@@ -44,7 +44,7 @@ export default function DeleteTableConfirmModal({
             <button
               type="button"
               onClick={onClose}
-              className="bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] font-bold text-[13px] rounded-lg px-5 py-2.5"
+              className="bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] font-semibold text-[13px] rounded-lg px-5 py-2.5"
             >
               Cancelar
             </button>
@@ -52,7 +52,7 @@ export default function DeleteTableConfirmModal({
               type="button"
               onClick={handleConfirm}
               disabled={isDeleting}
-              className="bg-[#B91C1C] text-white font-bold text-[13px] rounded-lg px-5 py-2.5 disabled:opacity-50"
+              className="bg-[#B91C1C] text-white font-semibold text-[13px] rounded-lg px-5 py-2.5 disabled:opacity-50"
             >
               Eliminar mesa
             </button>

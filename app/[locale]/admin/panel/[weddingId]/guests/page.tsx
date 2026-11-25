@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare, ChevronUp, ChevronDown, ArrowUpDown, Search, Settings } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Check, Link, MessageSquare, MessageCircle, Upload, ChevronUp, ChevronDown, ArrowUpDown, Search, Settings } from 'lucide-react';
 import { track } from '../../../../../../lib/analytics/client';
 import { guestService, resolveGuestAttendance } from '../../../../../../services/guestService';
 import { FirebaseGuest } from '../../../../../../src/types/wedding';
@@ -10,6 +10,9 @@ import { resolveHasEnglish } from '../../../../../../lib/wedding-language';
 import { usePanelData, computeGuestStats } from '../../../../../../components/admin/panel/PanelDataContext';
 import { AdminTopBar, AdminStatusPill, AdminButton, AdminCard, manrope, displayFont } from '../../../../../../components/admin/ui';
 import { FreeWeddingSettingsModal } from '../../../../../../components/admin/FreeWeddingTools';
+import { normalizePhone } from '../../../../../../lib/phone';
+import { WhatsAppSendModal } from '../../../../../../components/admin/guests/WhatsAppSendModal';
+import { ImportGuestsModal } from '../../../../../../components/admin/guests/ImportGuestsModal';
 
 interface GuestStats {
   total: number;
@@ -39,6 +42,8 @@ const AdminGuestsContent = () => {
   const { weddingData, guests, setGuests } = usePanelData();
   const stats = useMemo<GuestStats>(() => computeGuestStats(guests), [guests]);
   const [error, setError] = useState<string | null>(null);
+  // Spec 28 — error del teléfono del formulario manual (se normaliza a E.164 al guardar)
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingGuest, setEditingGuest] = useState<FirebaseGuest | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,6 +56,9 @@ const AdminGuestsContent = () => {
   const hasEnglish = resolveHasEnglish(weddingData);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [showFreeSettings, setShowFreeSettings] = useState(false);
+  // Spec 28 — invitado cuyo modal "Enviar por WhatsApp" está abierto
+  const [whatsappGuest, setWhatsappGuest] = useState<FirebaseGuest | null>(null);
+  const [showImport, setShowImport] = useState(false);
   // Spec 16 — ausente se interpreta como 'template' (bodas creadas antes de este spec)
   const tier = weddingData?.tier ?? 'template';
 
@@ -90,6 +98,7 @@ const AdminGuestsContent = () => {
     });
     setEditingGuest(null);
     setShowForm(false);
+    setPhoneError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,6 +109,13 @@ const AdminGuestsContent = () => {
       return;
     }
 
+    const phone = normalizePhone(formData.phone);
+    if (!phone.valid) {
+      setPhoneError('Teléfono no válido. Usa 10 dígitos o el formato +lada');
+      return;
+    }
+    setPhoneError(null);
+
     try {
       setIsSubmitting(true);
       setError(null);
@@ -107,7 +123,7 @@ const AdminGuestsContent = () => {
       const guestData = {
         name: formData.name.trim(),
         email: formData.email.trim(),
-        phone: formData.phone.trim(),
+        phone: phone.value ?? '',
         // Si selectedGuestTickets es true, usar 1 por defecto, sino usar el valor del form
         guestCount: weddingData?.selectedGuestTickets ? 1 : Number(formData.guestCount),
         language: formData.language,
@@ -297,7 +313,7 @@ const AdminGuestsContent = () => {
   }
 
   const filterChipClass = (active: boolean) =>
-    `px-3.5 py-2 text-[13px] font-bold rounded-full border transition-colors ${
+    `px-3.5 py-2 text-[13px] font-semibold rounded-full border transition-colors ${
       active
         ? 'bg-[#AE5730] text-white border-[#AE5730]'
         : 'bg-[#FAFAFA] text-[#3F3F46] border-[rgba(0,0,0,0.1)] hover:bg-white'
@@ -314,7 +330,7 @@ const AdminGuestsContent = () => {
               <button
                 type="button"
                 onClick={() => setShowFreeSettings(true)}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#71717A] hover:text-[#0A0A0A]"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#71717A] hover:text-[#0A0A0A]"
               >
                 <Settings className="h-3.5 w-3.5" />
                 Ajustes
@@ -323,11 +339,19 @@ const AdminGuestsContent = () => {
           ) : undefined
         }
         actions={
-          <AdminButton onClick={() => setShowForm(true)}>
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Nuevo Invitado</span>
-            <span className="sm:hidden">Nuevo</span>
-          </AdminButton>
+          <div className="flex items-center gap-2">
+            {tier !== 'free' && (
+              <AdminButton variant="ghost" onClick={() => setShowImport(true)}>
+                <Upload className="h-4 w-4" />
+                Importar
+              </AdminButton>
+            )}
+            <AdminButton onClick={() => setShowForm(true)}>
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Nuevo Invitado</span>
+              <span className="sm:hidden">Nuevo</span>
+            </AdminButton>
+          </div>
         }
       />
       {showFreeSettings && (
@@ -382,10 +406,10 @@ const AdminGuestsContent = () => {
             <table className="w-full divide-y divide-[rgba(0,0,0,0.08)]">
               <thead className="bg-[#FAFAFA]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#71717A] uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('name')}
-                      className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-bold text-[#71717A] uppercase tracking-wider"
+                      className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-semibold text-[#71717A] uppercase tracking-wider"
                     >
                       <span>Invitado</span>
                       {sortBy === 'name' ? (
@@ -395,16 +419,16 @@ const AdminGuestsContent = () => {
                       )}
                     </button>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#71717A] uppercase tracking-wider">
                     Contacto
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#71717A] uppercase tracking-wider">
                     Personas
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#71717A] uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('status')}
-                      className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-bold text-[#71717A] uppercase tracking-wider"
+                      className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-semibold text-[#71717A] uppercase tracking-wider"
                     >
                       <span>Estado</span>
                       {sortBy === 'status' ? (
@@ -415,15 +439,15 @@ const AdminGuestsContent = () => {
                     </button>
                   </th>
                   {weddingData?.hasDiet && (
-                    <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-[#71717A] uppercase tracking-wider">
                       Restricción Dietética
                     </th>
                   )}
                   {hasEnglish && (
-                    <th className="px-6 py-3 text-left text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-[#71717A] uppercase tracking-wider">
                       <button
                         onClick={() => handleSort('language')}
-                        className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-bold text-[#71717A] uppercase tracking-wider"
+                        className="flex items-center space-x-1 hover:text-[#0A0A0A] transition-colors text-xs font-semibold text-[#71717A] uppercase tracking-wider"
                       >
                         <span>Idioma</span>
                         {sortBy === 'language' ? (
@@ -434,7 +458,7 @@ const AdminGuestsContent = () => {
                       </button>
                     </th>
                   )}
-                  <th className="px-6 py-3 text-right text-xs font-bold text-[#71717A] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-[#71717A] uppercase tracking-wider">
                     Acciones
                   </th>
                 </tr>
@@ -443,7 +467,7 @@ const AdminGuestsContent = () => {
                 {filteredAndSortedGuests.map((guest) => (
                   <tr key={guest.id} className="hover:bg-[#FAFAFA] transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-[#0A0A0A]">{guest.name}</div>
+                      <div className="text-sm font-semibold text-[#0A0A0A]">{guest.name}</div>
                       {tier !== 'free' && guest.coupleMessage && (
                         <div className="text-sm text-[#71717A] truncate max-w-xs">
                           {guest.coupleMessage}
@@ -471,7 +495,7 @@ const AdminGuestsContent = () => {
                           value={resolveGuestAttendance(guest)}
                           onChange={(e) => handleStatusChange(guest, e.target.value as 'pending' | 'confirmed' | 'declined')}
                           title={guest.rsvpConfirmation ? 'Confirmó por su enlace público' : 'Márcalo a mano'}
-                          className={`text-xs font-bold rounded-full pl-2.5 pr-1.5 py-1 border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] ${
+                          className={`text-xs font-semibold rounded-full pl-2.5 pr-1.5 py-1 border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] ${
                             resolveGuestAttendance(guest) === 'confirmed'
                               ? 'text-[#15803D] bg-[rgba(21,128,61,0.1)]'
                               : resolveGuestAttendance(guest) === 'declined'
@@ -534,6 +558,16 @@ const AdminGuestsContent = () => {
                             )}
                           </button>
                         )}
+                        {tier !== 'free' && (
+                          <button
+                            onClick={() => setWhatsappGuest(guest)}
+                            className="text-[#15803D] hover:text-[#14532D] p-2 rounded-lg hover:bg-[#F0FDF4] transition-colors"
+                            title="Enviar por WhatsApp"
+                            aria-label="Enviar por WhatsApp"
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleEdit(guest)}
                           className="text-[#3F3F46] hover:text-[#0A0A0A] p-2 rounded-lg hover:bg-[#FAFAFA] transition-colors"
@@ -562,7 +596,7 @@ const AdminGuestsContent = () => {
               <div key={guest.id} className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <div className="text-sm font-bold text-[#0A0A0A] truncate">{guest.name}</div>
+                    <div className="text-sm font-semibold text-[#0A0A0A] truncate">{guest.name}</div>
                     {guest.email && <div className="text-xs text-[#71717A] mt-1 truncate">{guest.email}</div>}
                     {guest.phone && <div className="text-xs text-[#71717A] truncate">{guest.phone}</div>}
                   </div>
@@ -570,7 +604,7 @@ const AdminGuestsContent = () => {
                     <select
                       value={resolveGuestAttendance(guest)}
                       onChange={(e) => handleStatusChange(guest, e.target.value as 'pending' | 'confirmed' | 'declined')}
-                      className={`text-xs font-bold rounded-full pl-2.5 pr-1.5 py-1 border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] ${
+                      className={`text-xs font-semibold rounded-full pl-2.5 pr-1.5 py-1 border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] ${
                         resolveGuestAttendance(guest) === 'confirmed'
                           ? 'text-[#15803D] bg-[rgba(21,128,61,0.1)]'
                           : resolveGuestAttendance(guest) === 'declined'
@@ -614,6 +648,16 @@ const AdminGuestsContent = () => {
                         title="Copiar enlace"
                       >
                         {copiedGuestId === guest.id ? <Check className="h-4 w-4" /> : <Link className="h-4 w-4" />}
+                      </button>
+                    )}
+                    {tier !== 'free' && (
+                      <button
+                        onClick={() => setWhatsappGuest(guest)}
+                        className="text-[#15803D] hover:text-[#14532D] p-2 rounded-lg hover:bg-[#F0FDF4] transition-colors"
+                        title="Enviar por WhatsApp"
+                        aria-label="Enviar por WhatsApp"
+                      >
+                        <MessageCircle className="h-4 w-4" />
                       </button>
                     )}
                     <button
@@ -713,10 +757,18 @@ const AdminGuestsContent = () => {
                         type="tel"
                         name="phone"
                         value={formData.phone}
-                        onChange={handleInputChange}
-                        className="w-full px-3.5 py-2.5 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors"
-                        placeholder="+52 999 123 4567"
+                        onChange={(e) => {
+                          handleInputChange(e);
+                          if (phoneError) setPhoneError(null);
+                        }}
+                        aria-invalid={phoneError ? true : undefined}
+                        aria-describedby={phoneError ? 'guest-phone-error' : undefined}
+                        className={`w-full px-3.5 py-2.5 border rounded-lg text-[#0A0A0A] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111] transition-colors ${phoneError ? 'border-[#B91C1C]' : 'border-[rgba(0,0,0,0.14)]'}`}
+                        placeholder="33 1234 5678"
                       />
+                      {phoneError && (
+                        <p id="guest-phone-error" className="mt-1.5 text-[12.5px] font-semibold text-[#B91C1C]">{phoneError}</p>
+                      )}
                     </div>
 
                     {/* Solo mostrar número de personas si selectedGuestTickets no está activo */}
@@ -802,6 +854,28 @@ const AdminGuestsContent = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {showImport && (
+        <ImportGuestsModal
+          weddingId={weddingId}
+          weddingData={weddingData}
+          existingGuests={guests}
+          onClose={() => setShowImport(false)}
+          onImported={(created) => setGuests((prev) => [...prev, ...created])}
+        />
+      )}
+
+      {whatsappGuest && weddingData && (
+        <WhatsAppSendModal
+          guest={whatsappGuest}
+          weddingId={weddingId}
+          weddingData={weddingData}
+          onClose={() => setWhatsappGuest(null)}
+          onSaved={(id, whatsappMessages) =>
+            setGuests((prev) => prev.map((g) => (g.id === id ? { ...g, whatsappMessages } : g)))
+          }
+        />
       )}
 
       {/* Modal para mostrar mensaje del invitado */}

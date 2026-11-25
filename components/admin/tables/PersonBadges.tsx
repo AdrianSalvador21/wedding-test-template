@@ -25,7 +25,7 @@ export { STATUS_STYLES };
 export function Avatar({ name, size = 26 }: { name: string; size?: number }) {
   return (
     <span
-      className="flex-shrink-0 rounded-full bg-[#EEEEF0] text-[#3F3F46] font-extrabold flex items-center justify-center"
+      className="flex-shrink-0 rounded-full bg-[#EEEEF0] text-[#3F3F46] font-semibold flex items-center justify-center"
       style={{ width: size, height: size, fontSize: Math.max(9, size * 0.38) }}
       aria-hidden="true"
     >
@@ -38,7 +38,7 @@ export function StatusPill({ status }: { status: AttendanceStatus }) {
   const s = STATUS_STYLES[status];
   return (
     <span
-      className="flex-shrink-0 text-[10.5px] font-extrabold px-2 py-0.5 rounded-full whitespace-nowrap"
+      className="flex-shrink-0 text-[10.5px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
       style={{ background: s.bg, color: s.text }}
     >
       {s.label}
@@ -54,7 +54,7 @@ export function StatusDot({ status }: { status: AttendanceStatus }) {
 export function SeatInitialsIcon({ name, size, color }: { name: string; size: number; color: string }) {
   return (
     <span
-      className="flex items-center justify-center rounded-full bg-white font-extrabold"
+      className="flex items-center justify-center rounded-full bg-white font-semibold"
       style={{
         width: size,
         height: size,

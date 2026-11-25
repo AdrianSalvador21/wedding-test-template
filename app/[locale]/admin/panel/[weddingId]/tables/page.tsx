@@ -171,12 +171,12 @@ const AdminTablesContent = () => {
   }
 
   const filterChipClass = (active: boolean) =>
-    `px-3.5 py-2 text-[13px] font-bold rounded-full border transition-colors ${
+    `px-3.5 py-2 text-[13px] font-semibold rounded-full border transition-colors ${
       active ? 'bg-[#AE5730] text-white border-[#AE5730]' : 'bg-[#FAFAFA] text-[#3F3F46] border-[rgba(0,0,0,0.1)] hover:bg-white'
     }`;
 
   const viewToggleClass = (active: boolean) =>
-    `flex items-center gap-1.5 text-[12.5px] font-bold px-3.5 py-2 rounded-lg transition-colors ${
+    `flex items-center gap-1.5 text-[12.5px] font-semibold px-3.5 py-2 rounded-lg transition-colors ${
       active ? 'bg-white text-[#0A0A0A] shadow-sm' : 'text-[#71717A]'
     }`;
 
@@ -191,7 +191,7 @@ const AdminTablesContent = () => {
               <button
                 type="button"
                 onClick={() => setShowFreeSettings(true)}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#71717A] hover:text-[#0A0A0A]"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#71717A] hover:text-[#0A0A0A]"
               >
                 <Settings className="h-3.5 w-3.5" />
                 Ajustes
@@ -286,12 +286,12 @@ const AdminTablesContent = () => {
             >
               <div className="flex items-center gap-3">
                 <Users className="w-4 h-4 text-[#475569] flex-shrink-0" />
-                <span className="text-[13.5px] font-extrabold text-[#0A0A0A] whitespace-nowrap">Sin mesa</span>
-                <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[rgba(71,85,105,0.08)] text-[#475569] whitespace-nowrap">
+                <span className="text-[13.5px] font-semibold text-[#0A0A0A] whitespace-nowrap">Sin mesa</span>
+                <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[rgba(71,85,105,0.08)] text-[#475569] whitespace-nowrap">
                   {unseatedCount} personas
                 </span>
               </div>
-              <span className="text-[12.5px] font-bold text-[#0A0A0A] whitespace-nowrap pl-2">Ver y asignar →</span>
+              <span className="text-[12.5px] font-semibold text-[#0A0A0A] whitespace-nowrap pl-2">Ver y asignar →</span>
             </button>
 
             {filteredTables.length === 0 ? (

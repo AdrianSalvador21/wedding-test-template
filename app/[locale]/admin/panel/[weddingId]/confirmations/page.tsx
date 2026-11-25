@@ -47,7 +47,7 @@ export default function ConfirmationsPage() {
   return (
     <main className="flex-1 px-4 sm:px-8 py-8 box-border w-full max-w-[1280px]" style={manrope}>
       <div className="mb-6">
-        <div className="text-[11px] font-extrabold tracking-[0.08em] text-[#AE5730] uppercase mb-1.5">{coupleTitle}</div>
+        <div className="text-[11px] font-semibold tracking-[0.08em] text-[#AE5730] uppercase mb-1.5">{coupleTitle}</div>
         <h1 className="m-0 text-[24px] sm:text-[28px] text-[#0A0A0A]" style={displayFont}>Confirmaciones</h1>
       </div>
 
@@ -60,7 +60,7 @@ export default function ConfirmationsPage() {
       </div>
 
       <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-7 sm:p-9 mb-8">
-        <div className="text-base font-extrabold text-[#0A0A0A] mb-2">Resumen de confirmaciones</div>
+        <div className="text-base font-semibold text-[#0A0A0A] mb-2">Resumen de confirmaciones</div>
         <div className="text-[13px] text-[#71717A] mb-7">
           {stats.confirmed} de {stats.total} invitaciones confirmaron · tasa de confirmación {confirmedPct}%
         </div>
@@ -70,15 +70,15 @@ export default function ConfirmationsPage() {
           <div className="h-full bg-[#B91C1C]" style={{ width: `${declinedPct}%` }} />
         </div>
         <div className="flex flex-wrap gap-x-10 gap-y-3 text-[13px] text-[#3F3F46] font-semibold">
-          <span className="flex items-center gap-2.5"><span className="w-2.5 h-2.5 rounded-full bg-[#15803D] flex-shrink-0" />Confirmados — <span className="font-extrabold text-[#0A0A0A]">{stats.confirmed} ({confirmedPct}%)</span></span>
-          <span className="flex items-center gap-2.5"><span className="w-2.5 h-2.5 rounded-full bg-[#475569] flex-shrink-0" />Pendientes — <span className="font-extrabold text-[#0A0A0A]">{stats.pending} ({pendingPct}%)</span></span>
-          <span className="flex items-center gap-2.5"><span className="w-2.5 h-2.5 rounded-full bg-[#B91C1C] flex-shrink-0" />Declinados — <span className="font-extrabold text-[#0A0A0A]">{stats.declined} ({declinedPct}%)</span></span>
+          <span className="flex items-center gap-2.5"><span className="w-2.5 h-2.5 rounded-full bg-[#15803D] flex-shrink-0" />Confirmados — <span className="font-semibold text-[#0A0A0A]">{stats.confirmed} ({confirmedPct}%)</span></span>
+          <span className="flex items-center gap-2.5"><span className="w-2.5 h-2.5 rounded-full bg-[#475569] flex-shrink-0" />Pendientes — <span className="font-semibold text-[#0A0A0A]">{stats.pending} ({pendingPct}%)</span></span>
+          <span className="flex items-center gap-2.5"><span className="w-2.5 h-2.5 rounded-full bg-[#B91C1C] flex-shrink-0" />Declinados — <span className="font-semibold text-[#0A0A0A]">{stats.declined} ({declinedPct}%)</span></span>
         </div>
       </div>
 
       <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl overflow-hidden">
         <div className="px-5 py-4 border-b border-[rgba(0,0,0,0.06)] flex items-center justify-between flex-wrap gap-3">
-          <span className="text-sm font-extrabold text-[#0A0A0A]">Invitados</span>
+          <span className="text-sm font-semibold text-[#0A0A0A]">Invitados</span>
           <div className="flex gap-2 flex-wrap">
             {filters.map((f) => (
               <button
@@ -87,7 +87,7 @@ export default function ConfirmationsPage() {
                 onClick={() => setFilter(f.id)}
                 className={`text-[13px] px-3.5 py-1.5 rounded-full border transition-colors ${
                   filter === f.id
-                    ? 'bg-[#AE5730] text-white border-[#AE5730] font-bold'
+                    ? 'bg-[#AE5730] text-white border-[#AE5730] font-semibold'
                     : 'bg-[#FAFAFA] text-[#3F3F46] border-[rgba(0,0,0,0.1)] font-semibold'
                 }`}
               >
@@ -100,7 +100,7 @@ export default function ConfirmationsPage() {
           <div className="px-5 py-10 text-center text-[#71717A] text-sm">No hay invitados en este filtro.</div>
         ) : (
           <>
-            <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr] gap-3 px-5 py-3 bg-[#FAFAFA] text-[11px] font-extrabold tracking-[0.04em] text-[#71717A] uppercase">
+            <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr] gap-3 px-5 py-3 bg-[#FAFAFA] text-[11px] font-semibold tracking-[0.04em] text-[#71717A] uppercase">
               <span>Invitado</span>
               <span>Personas</span>
               <span>Estado</span>
@@ -109,7 +109,7 @@ export default function ConfirmationsPage() {
               const status = resolveGuestAttendance(guest);
               return (
                 <div key={guest.id} className="grid grid-cols-2 sm:grid-cols-[2fr_1fr_1fr] gap-3 px-5 py-3.5 border-t border-[rgba(0,0,0,0.06)] items-center">
-                  <span className="text-[13px] font-bold text-[#0A0A0A]">{guest.name}</span>
+                  <span className="text-[13px] font-semibold text-[#0A0A0A]">{guest.name}</span>
                   <span className="text-[13px] text-[#3F3F46]">{guest.rsvpConfirmation?.guestCount || guest.guestCount || 1} personas</span>
                   <span className="justify-self-start">
                     <AdminStatusPill tone={STATUS_TONE[status]}>{STATUS_LABEL[status]}</AdminStatusPill>

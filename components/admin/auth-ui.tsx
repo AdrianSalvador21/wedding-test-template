@@ -3,11 +3,12 @@
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
 import { AlertCircle, ArrowRight, CheckCircle2, Heart, LayoutGrid, Loader2, Lock, Mail, Sparkles, Users } from 'lucide-react';
-import { manrope, displayFont } from './ui';
+import { manrope } from './ui';
 import { fraunces } from '../../lib/brand';
 import { useAuth } from '../../lib/auth-context';
 import { whatsappUrl } from '../../lib/contact';
 import { useFreeWeddingForm, FreeWeddingFields } from './FreeWeddingTools';
+import BrandWordmark from '../BrandWordmark';
 
 // Piezas de las pantallas de acceso (login, verificación, sin boda, sin acceso).
 // Siguen el diseño del spec 08 con la paleta neutra de los paneles.
@@ -22,14 +23,12 @@ export function formatWeddingDate(iso: string): string {
 export function AuthScreen({ children, showHelp = true }: { children: ReactNode; showHelp?: boolean }) {
   return (
     <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA] flex flex-col items-center gap-9 px-4 sm:px-6 py-12 sm:py-16" style={manrope}>
-      <span className="text-[28px] sm:text-[30px] text-[#0A0A0A]" style={displayFont}>
-        invyta
-      </span>
+      <BrandWordmark className="text-[30px] sm:text-[32px]" />
       <div className="w-full max-w-[420px] bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-6 sm:p-8 flex flex-col gap-[22px]">{children}</div>
       {showHelp && (
         <p className="text-[13px] text-[#71717A] text-center">
           ¿Problemas para entrar?{' '}
-          <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="font-bold text-[#0A0A0A]">
+          <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0A0A0A]">
             Escríbenos por WhatsApp
           </a>
         </p>
@@ -41,7 +40,7 @@ export function AuthScreen({ children, showHelp = true }: { children: ReactNode;
 export function AuthHead({ title, sub }: { title: string; sub: ReactNode }) {
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="m-0 text-[26px] font-extrabold tracking-[-0.01em] text-[#0A0A0A] leading-[1.15]">{title}</h1>
+      <h1 className="m-0 text-[26px] font-semibold tracking-[-0.01em] text-[#0A0A0A] leading-[1.15]">{title}</h1>
       <p className="m-0 text-sm leading-[1.55] text-[#3F3F46]">{sub}</p>
     </div>
   );
@@ -109,7 +108,7 @@ export function AuthField({
           <button
             type="button"
             onClick={() => setShown((s) => !s)}
-            className="absolute right-2 top-[7px] h-8 px-2.5 rounded-md bg-[#F4F4F5] text-[#3F3F46] text-xs font-bold hover:bg-[#E4E4E7]"
+            className="absolute right-2 top-[7px] h-8 px-2.5 rounded-md bg-[#F4F4F5] text-[#3F3F46] text-xs font-semibold hover:bg-[#E4E4E7]"
           >
             {shown ? 'Ocultar' : 'Mostrar'}
           </button>
@@ -140,7 +139,7 @@ export function AuthButton({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`w-full inline-flex items-center justify-center gap-2 h-[46px] px-5 rounded-lg text-sm font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+      className={`w-full inline-flex items-center justify-center gap-2 h-[46px] px-5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
         variant === 'solid'
           ? 'bg-[#AE5730] text-white border border-transparent hover:bg-[#8F4524]'
           : 'bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA]'
@@ -154,7 +153,7 @@ export function AuthButton({
 
 export function TextLink({ children, onClick }: { children: ReactNode; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className="text-[13px] font-bold text-[#AE5730] underline hover:text-[#8F4524]">
+    <button type="button" onClick={onClick} className="text-[13px] font-semibold text-[#AE5730] underline hover:text-[#8F4524]">
       {children}
     </button>
   );
@@ -178,7 +177,7 @@ export function EnteringScreen({ title, date }: { title: string; date: string })
       <div className="flex flex-col items-center gap-[18px] py-3">
         <Loader2 className="h-[34px] w-[34px] animate-spin text-[#111111]" />
         <div className="text-center flex flex-col gap-1.5">
-          <div className="text-xl font-extrabold text-[#0A0A0A]">Entrando a tu invitación</div>
+          <div className="text-xl font-semibold text-[#0A0A0A]">Entrando a tu invitación</div>
           <div className="text-sm text-[#3F3F46]">{[title, formatted].filter(Boolean).join(' · ')}</div>
         </div>
       </div>
@@ -230,7 +229,7 @@ export function VerifyEmailScreen() {
         title="Verifica tu correo"
         sub={
           <>
-            Enviamos un enlace a <strong className="text-[#0A0A0A]">{auth.email}</strong>. Ábrelo y regresa aquí para entrar.
+            Enviamos un enlace a <strong className="font-semibold text-[#0A0A0A]">{auth.email}</strong>. Ábrelo y regresa aquí para entrar.
           </>
         }
       />
@@ -260,7 +259,7 @@ function OnboardingEmphasis({ children }: { children: ReactNode }) {
 }
 
 function OnboardingTitle({ children }: { children: ReactNode }) {
-  return <h1 className="m-0 text-[25px] font-extrabold tracking-[-0.01em] text-[#0A0A0A] leading-[1.2]">{children}</h1>;
+  return <h1 className="m-0 text-[25px] font-semibold tracking-[-0.01em] text-[#0A0A0A] leading-[1.2]">{children}</h1>;
 }
 
 function OnboardingProgress({ step }: { step: number }) {
@@ -298,7 +297,7 @@ function OnboardingFeature({
         <Icon className="h-[18px] w-[18px]" />
       </div>
       <div className="flex flex-col gap-0.5 min-w-0">
-        <div className="text-sm font-extrabold text-[#0A0A0A]">{title}</div>
+        <div className="text-sm font-semibold text-[#0A0A0A]">{title}</div>
         <p className="m-0 text-xs leading-[1.5] text-[#71717A]">{children}</p>
         {link}
       </div>
@@ -340,7 +339,7 @@ export function NoWeddingsScreen() {
 
       {step === 1 && (
         <div className="flex flex-col gap-[18px]">
-          <div className="text-[11px] font-extrabold tracking-[0.1em] uppercase text-[#AE5730]">Con tu cuenta gratis</div>
+          <div className="text-[11px] font-semibold tracking-[0.1em] uppercase text-[#AE5730]">Con tu cuenta gratis</div>
           <OnboardingTitle>
             Esto es lo que vas a <OnboardingEmphasis>organizar</OnboardingEmphasis>.
           </OnboardingTitle>
@@ -360,7 +359,7 @@ export function NoWeddingsScreen() {
                   href={whatsappUrl('Hola, quiero saber más de la invitación con diseño de Invyta.')}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 mt-1 text-xs font-bold text-[#AE5730] hover:text-[#8F4524]"
+                  className="inline-flex items-center gap-1 mt-1 text-xs font-semibold text-[#AE5730] hover:text-[#8F4524]"
                 >
                   Escríbenos por WhatsApp
                   <ArrowRight className="h-3 w-3" />
@@ -371,7 +370,7 @@ export function NoWeddingsScreen() {
             </OnboardingFeature>
           </div>
           <div className="flex items-center gap-3">
-            <button type="button" onClick={() => setStep(0)} className="text-[13px] font-bold text-[#71717A] hover:text-[#0A0A0A]">
+            <button type="button" onClick={() => setStep(0)} className="text-[13px] font-semibold text-[#71717A] hover:text-[#0A0A0A]">
               Atrás
             </button>
             <div className="flex-1">
@@ -388,7 +387,7 @@ export function NoWeddingsScreen() {
           </OnboardingTitle>
           <FreeWeddingFields form={form} />
           <div className="flex items-center gap-3">
-            <button type="button" onClick={() => setStep(1)} className="text-[13px] font-bold text-[#71717A] hover:text-[#0A0A0A]">
+            <button type="button" onClick={() => setStep(1)} className="text-[13px] font-semibold text-[#71717A] hover:text-[#0A0A0A]">
               Atrás
             </button>
             <div className="flex-1">
@@ -419,14 +418,14 @@ export function NoWeddingsScreen() {
             {weddingId && (
               <a
                 href={`/${locale}/admin/panel/${weddingId}/guests`}
-                className="w-full inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-bold transition-colors"
+                className="w-full inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-semibold transition-colors"
               >
                 Agregar mis primeros invitados
               </a>
             )}
             <a
               href={`/${locale}/admin`}
-              className="w-full inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-bold transition-colors"
+              className="w-full inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-sm font-semibold transition-colors"
             >
               Ir a mis invitaciones
             </a>
@@ -437,7 +436,7 @@ export function NoWeddingsScreen() {
       {step < 2 && (
         <p className="m-0 text-xs leading-normal text-[#71717A] text-center">
           ¿Ya contrataste una invitación con diseño?{' '}
-          <a href={whatsappUrl(recoveryMessage)} target="_blank" rel="noopener noreferrer" className="font-bold text-[#0A0A0A] underline">
+          <a href={whatsappUrl(recoveryMessage)} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0A0A0A] underline">
             Escríbenos por WhatsApp
           </a>{' '}
           para ligarla a tu cuenta.
@@ -464,14 +463,14 @@ export function NoAccessScreen() {
         title="No tienes acceso a esta boda"
         sub={
           <>
-            Tu cuenta (<strong className="text-[#0A0A0A]">{auth.email}</strong>) no está ligada a esta invitación.
+            Tu cuenta (<strong className="font-semibold text-[#0A0A0A]">{auth.email}</strong>) no está ligada a esta invitación.
           </>
         }
       />
       <div className="flex flex-col gap-2.5">
         <a
           href={`/${locale}/admin`}
-          className="w-full inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-bold transition-colors"
+          className="w-full inline-flex items-center justify-center h-[46px] px-5 rounded-lg bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-semibold transition-colors"
         >
           Ir a mis invitaciones
         </a>

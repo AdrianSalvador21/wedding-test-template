@@ -110,10 +110,10 @@ export default function FixtureNode({ data }: NodeProps<FixtureNodeData>) {
           onKeyDown={(e) => {
             if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
           }}
-          className="nodrag text-[11px] font-bold text-center bg-white border border-[rgba(0,0,0,0.2)] rounded px-1.5 py-0.5 w-[90%]"
+          className="nodrag text-[11px] font-semibold text-center bg-white border border-[rgba(0,0,0,0.2)] rounded px-1.5 py-0.5 w-[90%]"
         />
       ) : (
-        <span className="text-[11px] font-bold uppercase tracking-wide text-[#3F3F46] px-2 text-center">
+        <span className="text-[11px] font-semibold uppercase tracking-wide text-[#3F3F46] px-2 text-center">
           {fixture.label}
         </span>
       )}
@@ -132,7 +132,7 @@ export default function FixtureNode({ data }: NodeProps<FixtureNodeData>) {
                 e.stopPropagation();
                 setIsRenaming(true);
               }}
-              className="nodrag text-[9px] font-bold bg-white border border-[rgba(0,0,0,0.12)] rounded px-1.5 py-0.5 text-[#3F3F46]"
+              className="nodrag text-[9px] font-semibold bg-white border border-[rgba(0,0,0,0.12)] rounded px-1.5 py-0.5 text-[#3F3F46]"
             >
               Renombrar
             </button>
@@ -142,7 +142,7 @@ export default function FixtureNode({ data }: NodeProps<FixtureNodeData>) {
                 e.stopPropagation();
                 onDelete();
               }}
-              className="nodrag text-[9px] font-bold bg-white border border-[rgba(0,0,0,0.12)] rounded px-1.5 py-0.5 text-[#B91C1C]"
+              className="nodrag text-[9px] font-semibold bg-white border border-[rgba(0,0,0,0.12)] rounded px-1.5 py-0.5 text-[#B91C1C]"
             >
               Eliminar
             </button>
