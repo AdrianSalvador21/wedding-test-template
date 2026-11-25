@@ -178,7 +178,7 @@ function WeddingEditorContent() {
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
   const [loading, setLoading] = useState(true);
   // Corrección: una boda del tier gratuito (spec 16) no tiene Editor; navegar directo a
-  // esta URL debe bloquearla aquí, no solo ocultar el link en AdminPageNav.
+  // esta URL debe bloquearla aquí, no solo ocultar el link del menú.
   const [freeTierBlocked, setFreeTierBlocked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('couple');
@@ -521,7 +521,7 @@ function WeddingEditorContent() {
                 style={{ width: `${(completedCount / tabs.length) * 100}%` }}
               />
             </div>
-            <span className="text-xs font-bold text-[#3F3F46] whitespace-nowrap">
+            <span className="text-xs font-semibold text-[#3F3F46] whitespace-nowrap">
               {completedCount}/{tabs.length} secciones
             </span>
           </div>
@@ -542,7 +542,7 @@ function WeddingEditorContent() {
                 type="button"
                 onClick={() => setEnglishPanelOpen(true)}
                 aria-pressed={englishPanelOpen}
-                className="inline-flex items-center gap-2 h-11 pl-4 pr-2 rounded-full bg-[#F5F3FF] text-[#6D28D9] border border-[rgba(109,40,217,0.25)] hover:bg-[#EDE9FE] text-[13px] font-bold transition-colors"
+                className="inline-flex items-center gap-2 h-11 pl-4 pr-2 rounded-full bg-[#F5F3FF] text-[#6D28D9] border border-[rgba(109,40,217,0.25)] hover:bg-[#EDE9FE] text-[13px] font-semibold transition-colors"
               >
                 <Globe className="h-[15px] w-[15px]" />
                 Inglés
@@ -579,7 +579,7 @@ function WeddingEditorContent() {
         >
           <div className={`flex items-center mb-3 ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
             {!sidebarCollapsed && (
-              <div className="text-[11px] font-extrabold uppercase tracking-widest text-[#71717A] px-1">
+              <div className="text-[11px] font-semibold uppercase tracking-widest text-[#71717A] px-1">
                 Contenido de la boda
               </div>
             )}
@@ -600,14 +600,14 @@ function WeddingEditorContent() {
               title={sidebarCollapsed ? saveTheDateTab.label : undefined}
               className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm text-left transition-colors ${
                 sidebarCollapsed ? 'justify-center' : ''
-              } ${activeTab === saveTheDateTab.id ? 'bg-[rgba(198,102,60,0.08)] text-[#AE5730] font-bold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'}`}
+              } ${activeTab === saveTheDateTab.id ? 'bg-[rgba(198,102,60,0.08)] text-[#AE5730] font-semibold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'}`}
             >
               <CalendarHeart className="h-[18px] w-[18px] flex-shrink-0" />
               {!sidebarCollapsed && (
                 <>
                   <span className="flex-1">{saveTheDateTab.label}</span>
                   <span
-                    className={`text-[11px] font-extrabold px-2 py-0.5 rounded-full ${
+                    className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
                       saveTheDateOn ? 'bg-[#F0FDF4] text-[#15803D]' : 'bg-[#F4F4F5] text-[#52525B]'
                     }`}
                   >
@@ -839,7 +839,7 @@ function CoupleSection({
       
       {/* Nombres */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Nombres</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Nombres</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
@@ -870,7 +870,7 @@ function CoupleSection({
 
       {/* Teléfonos */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Teléfonos</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Teléfonos</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
@@ -910,7 +910,7 @@ function CoupleSection({
             className="h-[18px] w-[18px] mt-0.5 accent-[#111111] flex-shrink-0"
           />
           <label htmlFor="has-english" className="flex flex-col gap-1 cursor-pointer">
-            <span className="text-[15px] font-bold text-[#0A0A0A]">¿Tendrás invitaciones en inglés?</span>
+            <span className="text-[15px] font-semibold text-[#0A0A0A]">¿Tendrás invitaciones en inglés?</span>
             <span className="text-[13px] leading-relaxed text-[#71717A]">
               Por defecto tus invitados ven la invitación solo en español. Actívalo si alguno la necesitará en inglés.
             </span>
@@ -920,7 +920,7 @@ function CoupleSection({
           <div className="flex items-start gap-2.5 bg-[#F5F3FF] border border-[rgba(109,40,217,0.25)] rounded-[10px] px-3.5 py-3 text-[13px] leading-relaxed text-[#4C1D95]">
             <Globe className="h-4 w-4 flex-shrink-0 mt-0.5 text-[#6D28D9]" />
             <span>
-              Ahora verás campos en inglés en cada sección. Tradúcelos con IA campo por campo, o todos a la vez desde el botón <strong>Inglés</strong> de la barra superior.
+              Ahora verás campos en inglés en cada sección. Tradúcelos con IA campo por campo, o todos a la vez desde el botón <strong className="font-semibold">Inglés</strong> de la barra superior.
             </span>
           </div>
         )}
@@ -930,7 +930,7 @@ function CoupleSection({
       <div className="space-y-4 sm:space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[rgba(0,0,0,0.08)] pb-2">
           <div className="flex items-center gap-2">
-            <h3 className="text-[15px] font-bold text-[#0A0A0A]">Historia de Amor</h3>
+            <h3 className="text-[15px] font-semibold text-[#0A0A0A]">Historia de Amor</h3>
             {storyGeneratedByAi && <AiBadge>Generado con IA</AiBadge>}
           </div>
           <AiButton onClick={() => setShowStoryModal(true)} disabled={storyLimitReached}>
@@ -982,7 +982,7 @@ function CoupleSection({
 
       {/* Frase especial */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Frase Especial</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Frase Especial</h3>
         <div className="space-y-4 sm:space-y-6">
           <div>
             <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
@@ -1047,7 +1047,7 @@ function EventSection({ data, onChange }: SectionProps) {
 
       {/* Fecha y hora */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Fecha y Hora</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Fecha y Hora</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
@@ -1076,7 +1076,7 @@ function EventSection({ data, onChange }: SectionProps) {
 
       {/* Código de vestimenta */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Código de Vestimenta</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Código de Vestimenta</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
@@ -1152,7 +1152,7 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
       
       {/* Lugar de ceremonia */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Ceremonia</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Ceremonia</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
@@ -1206,7 +1206,7 @@ function VenuesSection({ ceremonyVenue, receptionVenue, onChange }: VenuesSectio
 
       {/* Lugar de recepción */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Recepción</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Recepción</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
@@ -1397,11 +1397,11 @@ function TimelineSection({
         <div className="flex items-start gap-2.5 bg-[#F5F3FF] border border-[rgba(109,40,217,0.25)] rounded-[10px] px-3.5 py-3 text-[13px] leading-relaxed text-[#4C1D95]">
           <Info className="h-4 w-4 flex-shrink-0 mt-0.5 text-[#6D28D9]" />
           <span className="flex-1">
-            <strong>Basado en tu información:</strong> hora del evento {ceremonyTime || 'sin definir'}
+            <strong className="font-semibold">Basado en tu información:</strong> hora del evento {ceremonyTime || 'sin definir'}
             {(ceremony.name || ceremony.address) && <> · ceremonia en {ceremony.name || ceremony.address}</>}
             {(reception.name || reception.address) && <> · recepción en {[reception.name, reception.address].filter(Boolean).join(', ')}</>}.
           </span>
-          <button type="button" onClick={() => ai.goToTab('event')} className="font-bold text-[#6D28D9] hover:text-[#5B21B6] whitespace-nowrap">
+          <button type="button" onClick={() => ai.goToTab('event')} className="font-semibold text-[#6D28D9] hover:text-[#5B21B6] whitespace-nowrap">
             Editar en Evento
           </button>
         </div>
@@ -1410,19 +1410,19 @@ function TimelineSection({
       {suggestions.length > 0 && (
         <div className="bg-[#F5F3FF] border border-[rgba(109,40,217,0.2)] rounded-xl p-3 sm:p-4 lg:p-6 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 className="text-base font-bold text-[#6D28D9]">Itinerario sugerido</h3>
+            <h3 className="text-base font-semibold text-[#6D28D9]">Itinerario sugerido</h3>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={acceptAllSuggestions}
-                className="text-[12px] font-bold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3 py-1.5 rounded-full transition-colors"
+                className="text-[12px] font-semibold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3 py-1.5 rounded-full transition-colors"
               >
                 Agregar todas
               </button>
               <button
                 type="button"
                 onClick={discardAllSuggestions}
-                className="text-[12px] font-bold text-[#6D28D9] border border-[rgba(109,40,217,0.3)] hover:bg-white px-3 py-1.5 rounded-full transition-colors"
+                className="text-[12px] font-semibold text-[#6D28D9] border border-[rgba(109,40,217,0.3)] hover:bg-white px-3 py-1.5 rounded-full transition-colors"
               >
                 Descartar todas
               </button>
@@ -1435,12 +1435,12 @@ function TimelineSection({
                 className="bg-white rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-[rgba(109,40,217,0.15)]"
               >
                 <div>
-                  <div className="text-[12px] font-bold text-[#6D28D9]">{event.time} · {event.icon}</div>
-                  <div className="text-sm font-bold text-[#0A0A0A]">{event.title.es}</div>
+                  <div className="text-[12px] font-semibold text-[#6D28D9]">{event.time} · {event.icon}</div>
+                  <div className="text-sm font-semibold text-[#0A0A0A]">{event.title.es}</div>
                   <div className="text-[13px] text-[#3F3F46]">{event.description.es}</div>
                   {event.title.en && (
                     <div className="text-[12px] text-[#71717A]">
-                      <span className="font-bold">EN</span> {event.title.en} · {event.description.en}
+                      <span className="font-semibold">EN</span> {event.title.en} · {event.description.en}
                     </div>
                   )}
                 </div>
@@ -1448,14 +1448,14 @@ function TimelineSection({
                   <button
                     type="button"
                     onClick={() => acceptSuggestion(index)}
-                    className="text-[12px] font-bold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3 py-1.5 rounded-full transition-colors"
+                    className="text-[12px] font-semibold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3 py-1.5 rounded-full transition-colors"
                   >
                     Agregar
                   </button>
                   <button
                     type="button"
                     onClick={() => discardSuggestion(index)}
-                    className="text-[12px] font-bold text-[#71717A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] px-3 py-1.5 rounded-full transition-colors"
+                    className="text-[12px] font-semibold text-[#71717A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] px-3 py-1.5 rounded-full transition-colors"
                   >
                     Descartar
                   </button>
@@ -1470,7 +1470,7 @@ function TimelineSection({
         {timelineData.map((event: {id: string; title?: {es: string; en: string}; time?: string; description?: {es: string; en: string}; icon?: string}, index: number) => (
           <div key={event.id} className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-              <h3 className="text-base font-bold text-[#0A0A0A]">Evento #{index + 1}</h3>
+              <h3 className="text-base font-semibold text-[#0A0A0A]">Evento #{index + 1}</h3>
               <button
                 onClick={() => removeTimelineEvent(index)}
                 className="self-start sm:self-center text-[#B91C1C] hover:text-[#7F1D1D] text-sm font-semibold px-3 py-1 border border-[rgba(185,28,28,0.3)] rounded-full hover:bg-[rgba(185,28,28,0.06)] transition-colors"
@@ -1566,7 +1566,7 @@ function TimelineSection({
           <button
             type="button"
             onClick={addTimelineEvent}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#AE5730] text-white rounded-full hover:bg-[#8F4524] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold shadow-[0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#AE5730] text-white rounded-full hover:bg-[#8F4524] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
           >
             + {timelineData.length === 0 ? 'Agregar Primer Evento' : 'Agregar Evento'}
           </button>
@@ -1633,7 +1633,7 @@ function AccommodationSection({
           {suggest.button}
           <button
             onClick={addHotel}
-            className="bg-[#AE5730] text-white px-4 py-2 rounded-full hover:bg-[#8F4524] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold"
+            className="bg-[#AE5730] text-white px-4 py-2 rounded-full hover:bg-[#8F4524] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-semibold"
           >
             + Agregar Hotel
           </button>
@@ -1650,7 +1650,7 @@ function AccommodationSection({
           return (
             <div key={hotel.id} className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-                <h3 className="text-base font-bold text-[#0A0A0A]">Hotel #{index + 1}</h3>
+                <h3 className="text-base font-semibold text-[#0A0A0A]">Hotel #{index + 1}</h3>
                 <button
                   onClick={() => removeHotel(index)}
                   className="self-start sm:self-center text-[#B91C1C] hover:text-[#7F1D1D] text-sm font-semibold px-3 py-1 border border-[rgba(185,28,28,0.3)] rounded-full hover:bg-[rgba(185,28,28,0.06)] transition-colors"
@@ -1815,7 +1815,7 @@ function RecommendedPlacesSection({
           {suggest.button}
           <button
             onClick={addPlace}
-            className="bg-[#AE5730] text-white px-4 py-2 rounded-full hover:bg-[#8F4524] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold"
+            className="bg-[#AE5730] text-white px-4 py-2 rounded-full hover:bg-[#8F4524] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-semibold"
           >
             + Agregar Lugar
           </button>
@@ -1832,7 +1832,7 @@ function RecommendedPlacesSection({
           return (
             <div key={place.id} className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-                <h3 className="text-base font-bold text-[#0A0A0A]">Lugar #{index + 1}</h3>
+                <h3 className="text-base font-semibold text-[#0A0A0A]">Lugar #{index + 1}</h3>
                 <button
                   onClick={() => removePlace(index)}
                   className="self-start sm:self-center text-[#B91C1C] hover:text-[#7F1D1D] text-sm font-semibold px-3 py-1 border border-[rgba(185,28,28,0.3)] rounded-full hover:bg-[rgba(185,28,28,0.06)] transition-colors"
@@ -2033,10 +2033,10 @@ function GiftsSection({ data, onChange }: SectionProps) {
             {/* Lista de registros */}
             <div className="space-y-4 sm:space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h3 className="text-base font-bold text-[#0A0A0A]">Tiendas de Regalos</h3>
+                <h3 className="text-base font-semibold text-[#0A0A0A]">Tiendas de Regalos</h3>
                 <button
                   onClick={addRegistry}
-                  className="bg-[#AE5730] text-white px-4 py-2 rounded-full hover:bg-[#8F4524] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-bold"
+                  className="bg-[#AE5730] text-white px-4 py-2 rounded-full hover:bg-[#8F4524] focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.15)] focus:ring-offset-2 transition-colors text-sm font-semibold"
                 >
                   + Agregar Tienda
                 </button>
@@ -2050,7 +2050,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
                   return (
                     <div key={registry.id} className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-                        <h4 className="text-base font-bold text-[#0A0A0A]">Tienda #{index + 1}</h4>
+                        <h4 className="text-base font-semibold text-[#0A0A0A]">Tienda #{index + 1}</h4>
                         <button
                           onClick={() => removeRegistry(index)}
                           className="self-start sm:self-center text-[#B91C1C] hover:text-[#7F1D1D] text-sm font-semibold px-3 py-1 border border-[rgba(185,28,28,0.3)] rounded-full hover:bg-[rgba(185,28,28,0.06)] transition-colors"
@@ -2146,7 +2146,7 @@ function GiftsSection({ data, onChange }: SectionProps) {
 
               {!!giftRegistryData.bankAccount && (
                 <div className="bg-[#FAFAFA] p-3 sm:p-4 lg:p-6 rounded-xl border border-[rgba(0,0,0,0.08)]">
-                  <h4 className="text-base font-bold text-[#0A0A0A] mb-4">Información Bancaria</h4>
+                  <h4 className="text-base font-semibold text-[#0A0A0A] mb-4">Información Bancaria</h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -2261,7 +2261,7 @@ function SocialSection({ data, onChange }: SectionProps) {
       
       {/* Hashtag de la boda */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Hashtag de la Boda</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Hashtag de la Boda</h3>
         <div>
           <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
             Hashtag Principal
@@ -2281,7 +2281,7 @@ function SocialSection({ data, onChange }: SectionProps) {
 
       {/* Redes sociales de la pareja */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Redes Sociales de la Pareja</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Redes Sociales de la Pareja</h3>
         
         {/* Instagram de la novia */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -2342,7 +2342,7 @@ function SocialSection({ data, onChange }: SectionProps) {
 
       {/* Email de contacto */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Contacto</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Contacto</h3>
         <div>
           <label className="block text-[13px] font-semibold text-[#27272A] mb-2">
             Email de la Pareja
@@ -2374,7 +2374,7 @@ function SettingsSection({ data, onChange }: SectionProps) {
       
       {/* Evento solo para adultos */}
       <div className="space-y-4 sm:space-y-6">
-        <h3 className="text-[15px] font-bold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Evento Solo para Adultos</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] border-b border-[rgba(0,0,0,0.08)] pb-2">Evento Solo para Adultos</h3>
         
         <div className="flex items-center">
           <input
@@ -2514,7 +2514,7 @@ function SaveTheDateSection({
             <span className={`absolute top-[3px] h-[22px] w-[22px] rounded-full bg-white shadow transition-all ${enabled ? 'left-[23px]' : 'left-[3px]'}`} />
           </button>
           <div className="flex-1 flex flex-col gap-1">
-            <span className="text-[15px] font-extrabold text-[#0A0A0A]">Mostrar “Aparta la fecha” en lugar de la invitación</span>
+            <span className="text-[15px] font-semibold text-[#0A0A0A]">Mostrar “Aparta la fecha” en lugar de la invitación</span>
             <span className="text-[13px] leading-relaxed text-[#71717A]">
               {enabled
                 ? 'Tus invitados ven la pantalla “Aparta la fecha” en el mismo link de su invitación.'
@@ -2522,7 +2522,7 @@ function SaveTheDateSection({
             </span>
           </div>
           <span
-            className={`hidden sm:inline-flex flex-shrink-0 h-[26px] items-center px-2.5 rounded-full text-xs font-extrabold ${
+            className={`hidden sm:inline-flex flex-shrink-0 h-[26px] items-center px-2.5 rounded-full text-xs font-semibold ${
               enabled ? 'bg-[#F0FDF4] text-[#15803D]' : 'bg-[#F4F4F5] text-[#52525B]'
             }`}
           >
@@ -2532,13 +2532,13 @@ function SaveTheDateSection({
         <div className="flex gap-2.5 items-start bg-[#F4F4F5] rounded-[10px] px-3.5 py-2.5 text-[13px] leading-normal text-[#3F3F46]">
           <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
           <span>
-            Tus invitados no verán el cambio hasta que pulses <strong>Guardar cambios</strong>.
+            Tus invitados no verán el cambio hasta que pulses <strong className="font-semibold">Guardar cambios</strong>.
           </span>
         </div>
       </section>
 
       <section className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] px-4 sm:px-[22px] py-5 space-y-[18px]">
-        <h3 className="text-[15px] font-extrabold text-[#0A0A0A]">Lo que se muestra</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A]">Lo que se muestra</h3>
         <div className="space-y-1.5">
           <label htmlFor="std-place" className="block text-[13px] font-semibold text-[#27272A]">Ciudad o lugar</label>
           <input
@@ -2593,11 +2593,11 @@ function SaveTheDateSection({
           <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
           <span>
             La foto, los nombres y la fecha se toman de las pestañas{' '}
-            <button type="button" onClick={() => goToTab('couple')} className="font-bold text-[#AE5730] underline">
+            <button type="button" onClick={() => goToTab('couple')} className="font-semibold text-[#AE5730] underline">
               Pareja
             </button>{' '}
             y{' '}
-            <button type="button" onClick={() => goToTab('event')} className="font-bold text-[#AE5730] underline">
+            <button type="button" onClick={() => goToTab('event')} className="font-semibold text-[#AE5730] underline">
               Evento
             </button>
             . El diseño es el mismo que eligieron para su invitación.
@@ -2606,12 +2606,12 @@ function SaveTheDateSection({
       </section>
 
       <section className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] px-4 sm:px-[22px] py-5 space-y-3.5">
-        <h3 className="text-[15px] font-extrabold text-[#0A0A0A]">Qué ven tus invitados en su link</h3>
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A]">Qué ven tus invitados en su link</h3>
         <div className="flex flex-wrap gap-3.5">
           <div className={card(enabled)}>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-extrabold text-[#0A0A0A]">Encendido</span>
-              {enabled && <span className="text-[11px] font-extrabold uppercase tracking-[0.06em] text-[#AE5730]">Ahora</span>}
+              <span className="text-sm font-semibold text-[#0A0A0A]">Encendido</span>
+              {enabled && <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#AE5730]">Ahora</span>}
             </div>
             <p className="text-[13px] leading-relaxed text-[#3F3F46]">
               Una sola pantalla: foto, nombres, fecha, ciudad, cuenta regresiva, botón para agregar al calendario e “Invitación formal próximamente”. Sin confirmación de asistencia ni el resto de las secciones.
@@ -2619,8 +2619,8 @@ function SaveTheDateSection({
           </div>
           <div className={card(!enabled)}>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-extrabold text-[#0A0A0A]">Apagado</span>
-              {!enabled && <span className="text-[11px] font-extrabold uppercase tracking-[0.06em] text-[#AE5730]">Ahora</span>}
+              <span className="text-sm font-semibold text-[#0A0A0A]">Apagado</span>
+              {!enabled && <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#AE5730]">Ahora</span>}
             </div>
             <p className="text-[13px] leading-relaxed text-[#3F3F46]">
               La invitación completa, con confirmación de asistencia, ubicación, itinerario y regalos. Es el mismo link: no tienes que mandar uno nuevo.
@@ -2631,7 +2631,7 @@ function SaveTheDateSection({
 
       <section className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] px-4 sm:px-[22px] py-5 space-y-3">
         <div className="space-y-1">
-          <h3 className="text-[15px] font-extrabold text-[#0A0A0A]">Revisa cómo se ve</h3>
+          <h3 className="text-[15px] font-semibold text-[#0A0A0A]">Revisa cómo se ve</h3>
           <p className="text-[13px] leading-relaxed text-[#71717A]">
             Ambas vistas muestran lo último que guardaste, aunque el interruptor esté apagado, para que compares las dos antes de mandarlas. Tus invitados solo ven “Aparta la fecha” cuando está encendido y guardado.
           </p>
@@ -2641,7 +2641,7 @@ function SaveTheDateSection({
             href={`${publicUrl}/aparta-la-fecha`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-11 items-center justify-center gap-2 px-4 rounded-[10px] bg-[#111111] text-white text-sm font-bold no-underline hover:bg-black"
+            className="inline-flex h-11 items-center justify-center gap-2 px-4 rounded-[10px] bg-[#111111] text-white text-sm font-semibold no-underline hover:bg-black"
           >
             Ver save the date
             <ExternalLink className="h-3.5 w-3.5" />
@@ -2650,7 +2650,7 @@ function SaveTheDateSection({
             href={`${publicUrl}?vista=completa`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-11 items-center justify-center gap-2 px-4 rounded-[10px] bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] text-sm font-bold no-underline hover:bg-[#FAFAFA]"
+            className="inline-flex h-11 items-center justify-center gap-2 px-4 rounded-[10px] bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] text-sm font-semibold no-underline hover:bg-[#FAFAFA]"
           >
             Ver invitación completa
             <ExternalLink className="h-3.5 w-3.5" />

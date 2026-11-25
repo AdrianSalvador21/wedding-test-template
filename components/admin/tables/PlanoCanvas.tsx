@@ -587,7 +587,7 @@ function PlanoCanvasInner({
             ? () => setArmedTrayItem((cur) => (cur?.kind === kind && cur.id === id ? null : { kind, id }))
             : undefined
         }
-        className={`flex-shrink-0 text-[12px] font-bold rounded-lg px-2.5 py-2 whitespace-nowrap transition-colors ${
+        className={`flex-shrink-0 text-[12px] font-semibold rounded-lg px-2.5 py-2 whitespace-nowrap transition-colors ${
           isTouchDevice ? 'cursor-pointer' : 'cursor-grab'
         } ${
           isArmed
@@ -632,10 +632,10 @@ function PlanoCanvasInner({
       >
         <Avatar name={displayName} size={22} />
         <div className="flex-1 min-w-0 flex flex-col items-start gap-1">
-          <span className="text-[12.5px] font-bold leading-snug break-words">{displayName}</span>
+          <span className="text-[12.5px] font-semibold leading-snug break-words">{displayName}</span>
           {!isArmed &&
             (seatedAt ? (
-              <span className="flex-shrink-0 text-[10.5px] font-extrabold px-2 py-0.5 rounded-full bg-[#F4F4F5] text-[#71717A] whitespace-nowrap">
+              <span className="flex-shrink-0 text-[10.5px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F4F5] text-[#71717A] whitespace-nowrap">
                 En {seatedAt.name}
               </span>
             ) : (
@@ -667,7 +667,7 @@ function PlanoCanvasInner({
       <div className="flex-shrink-0 bg-white border border-[rgba(0,0,0,0.08)] rounded-xl overflow-hidden">
         <div className="flex items-start justify-between gap-3 px-4 py-2.5">
           <div className="min-w-0">
-            <span className="text-[13px] font-bold uppercase tracking-wide text-[#71717A]">
+            <span className="text-[13px] font-semibold uppercase tracking-wide text-[#71717A]">
               Mesas
               {!trayEmpty && <span className="normal-case font-semibold text-[#9CA3AF] ml-1.5">sin colocar</span>}
             </span>
@@ -701,7 +701,7 @@ function PlanoCanvasInner({
             <button
               type="button"
               onClick={() => setShowFixtureForm(true)}
-              className="flex-shrink-0 inline-flex items-center gap-1.5 bg-[#FAFAFA] border border-[rgba(0,0,0,0.12)] rounded-lg px-3 py-2 text-[12px] font-bold text-[#3F3F46]"
+              className="flex-shrink-0 inline-flex items-center gap-1.5 bg-[#FAFAFA] border border-[rgba(0,0,0,0.12)] rounded-lg px-3 py-2 text-[12px] font-semibold text-[#3F3F46]"
             >
               <Plus className="w-3.5 h-3.5" /> Objeto de salón
             </button>
@@ -739,7 +739,7 @@ function PlanoCanvasInner({
         {/* Aviso del flujo "toca y toca" en touch: solo aparece con algo armado desde la
             bandeja, así que en escritorio (drag-and-drop nativo, sin cambios) nunca se ve. */}
         {armedTrayItem && (
-          <div className="absolute z-20 left-1/2 -translate-x-1/2 top-3 bg-[#111111] text-white text-[12px] font-bold px-3.5 py-2 rounded-lg shadow-md whitespace-nowrap">
+          <div className="absolute z-20 left-1/2 -translate-x-1/2 top-3 bg-[#111111] text-white text-[12px] font-semibold px-3.5 py-2 rounded-lg shadow-md whitespace-nowrap">
             {armedTrayItem.kind === 'seat' ? 'Toca una mesa para asignarla' : 'Toca el lienzo para colocarla'}
           </div>
         )}
@@ -749,15 +749,15 @@ function PlanoCanvasInner({
         <div className="absolute z-10 left-3 bottom-3 flex items-center gap-3.5 bg-white border border-[rgba(0,0,0,0.12)] rounded-lg px-3.5 py-2 shadow-sm">
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full border-2 border-[#D4D4D8]" />
-            <span className="text-[10.5px] font-bold text-[#71717A]">Con espacio</span>
+            <span className="text-[10.5px] font-semibold text-[#71717A]">Con espacio</span>
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full border-2 border-[#15803D]" />
-            <span className="text-[10.5px] font-bold text-[#71717A]">Completa</span>
+            <span className="text-[10.5px] font-semibold text-[#71717A]">Completa</span>
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full border-2 border-[#B91C1C]" />
-            <span className="text-[10.5px] font-bold text-[#71717A]">Excedida</span>
+            <span className="text-[10.5px] font-semibold text-[#71717A]">Excedida</span>
           </span>
         </div>
 
@@ -819,8 +819,8 @@ function PlanoCanvasInner({
             className={isDesktop ? 'w-[280px] h-full flex flex-col p-3' : 'h-[260px] w-full flex flex-col p-3'}
           >
             <div className="mb-2 flex-shrink-0">
-              <div className="text-[10.5px] font-extrabold uppercase tracking-wide text-[#9CA3AF]">Invitados</div>
-              <div className="text-[16px] font-extrabold text-[#0A0A0A] mt-0.5">
+              <div className="text-[10.5px] font-semibold uppercase tracking-wide text-[#9CA3AF]">Invitados</div>
+              <div className="text-[16px] font-semibold text-[#0A0A0A] mt-0.5">
                 {guestTrayCounts[guestTrayFilter]}{' '}
                 {guestTrayFilter === 'unassigned' ? 'sin mesa' : guestTrayFilter === 'assigned' ? 'asignados' : 'en total'}
               </div>
@@ -847,7 +847,7 @@ function PlanoCanvasInner({
                     key={f}
                     type="button"
                     onClick={() => setGuestTrayFilter(f)}
-                    className={`flex-shrink-0 px-2 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-colors ${
+                    className={`flex-shrink-0 px-2 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition-colors ${
                       active ? 'bg-[#111111] text-white' : 'bg-[#FAFAFA] text-[#3F3F46] border border-[rgba(0,0,0,0.1)]'
                     }`}
                   >
@@ -875,7 +875,7 @@ function PlanoCanvasInner({
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
           >
             <span
-              className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#9CA3AF]"
+              className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[#9CA3AF]"
               style={isDesktop ? { writingMode: 'vertical-rl', transform: 'rotate(180deg)' } : undefined}
             >
               Invitados

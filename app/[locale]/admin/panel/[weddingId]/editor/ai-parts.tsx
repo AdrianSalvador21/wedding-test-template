@@ -173,7 +173,7 @@ export function EnField({
           type="button"
           onClick={translate}
           disabled={disabled}
-          className="inline-flex items-center gap-1.5 text-[12px] font-bold text-[#6D28D9] hover:text-[#5B21B6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#6D28D9] hover:text-[#5B21B6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <Sparkles className="h-3.5 w-3.5" />
           {loading ? 'Traduciendo...' : ai.translateLimit ? TRANSLATE_LIMIT_TEXT : `Traducir con IA${usageHint(ai, 'translate', 5)}`}
@@ -188,7 +188,7 @@ export function EnField({
         <div className="mt-1.5 flex items-center gap-2 text-[12px] text-[#71717A]">
           <RefreshCw className="h-3.5 w-3.5" />
           <span>El español cambió desde la traducción.</span>
-          <button type="button" onClick={translate} disabled={disabled} className="font-bold text-[#6D28D9] underline disabled:opacity-50">
+          <button type="button" onClick={translate} disabled={disabled} className="font-semibold text-[#6D28D9] underline disabled:opacity-50">
             Retraducir
           </button>
         </div>
@@ -306,7 +306,7 @@ export function useAiPlaceSuggestions(opts: {
       {!hasAddress && (
         <div className="flex items-center gap-3 border border-dashed border-[rgba(0,0,0,0.25)] rounded-xl px-4 py-3.5 text-sm text-[#3F3F46]">
           <span className="flex-1">{opts.helpText}</span>
-          <button type="button" onClick={() => ai.goToTab('venues')} className="font-bold text-[#6D28D9] hover:text-[#5B21B6] whitespace-nowrap">
+          <button type="button" onClick={() => ai.goToTab('venues')} className="font-semibold text-[#6D28D9] hover:text-[#5B21B6] whitespace-nowrap">
             Ir a Lugares
           </button>
         </div>
@@ -317,12 +317,12 @@ export function useAiPlaceSuggestions(opts: {
         <div className="flex items-start gap-3 bg-white border border-[rgba(0,0,0,0.14)] rounded-xl px-4 py-3.5 text-sm text-[#3F3F46]">
           <AlertCircle className="h-5 w-5 flex-shrink-0 text-[#3F3F46]" />
           <div className="flex-1">
-            <div className="font-bold text-[#0A0A0A]">No pudimos ubicar la zona con la dirección actual</div>
+            <div className="font-semibold text-[#0A0A0A]">No pudimos ubicar la zona con la dirección actual</div>
             <div>
               Agrega ciudad y estado en Lugares y vuelve a intentar. No se descontó ningún uso.
             </div>
           </div>
-          <button type="button" onClick={() => ai.goToTab('venues')} className="font-bold text-[#6D28D9] hover:text-[#5B21B6] whitespace-nowrap">
+          <button type="button" onClick={() => ai.goToTab('venues')} className="font-semibold text-[#6D28D9] hover:text-[#5B21B6] whitespace-nowrap">
             Ir a Lugares
           </button>
         </div>
@@ -332,20 +332,20 @@ export function useAiPlaceSuggestions(opts: {
           <div className="flex items-start gap-3 bg-white border border-[rgba(0,0,0,0.14)] rounded-xl px-4 py-3 text-[13px] leading-relaxed text-[#3F3F46]">
             <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
             <span>
-              La IA puede equivocarse de nombre o sugerir un negocio que ya cerró. Abre <strong>Ver en Maps</strong> y confirma que existe antes de agregarlo.
+              La IA puede equivocarse de nombre o sugerir un negocio que ya cerró. Abre <strong className="font-semibold">Ver en Maps</strong> y confirma que existe antes de agregarlo.
             </span>
           </div>
           <div className="bg-[#F5F3FF] border border-[rgba(109,40,217,0.25)] rounded-xl p-3 sm:p-4 lg:p-5 space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-bold text-[#6D28D9]">{opts.heading}</h3>
+                <h3 className="text-base font-semibold text-[#6D28D9]">{opts.heading}</h3>
                 <p className="text-[12px] text-[#4C1D95]">{opts.subtitle}</p>
               </div>
               <div className="flex gap-2">
-                <button type="button" onClick={addAll} className="text-[12px] font-bold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3 py-1.5 rounded-full transition-colors">
+                <button type="button" onClick={addAll} className="text-[12px] font-semibold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3 py-1.5 rounded-full transition-colors">
                   Agregar todas
                 </button>
-                <button type="button" onClick={() => setSuggestions([])} className="text-[12px] font-bold text-[#6D28D9] bg-white border border-[rgba(109,40,217,0.3)] hover:bg-[#F5F3FF] px-3 py-1.5 rounded-full transition-colors">
+                <button type="button" onClick={() => setSuggestions([])} className="text-[12px] font-semibold text-[#6D28D9] bg-white border border-[rgba(109,40,217,0.3)] hover:bg-[#F5F3FF] px-3 py-1.5 rounded-full transition-colors">
                   Descartar todas
                 </button>
               </div>
@@ -354,24 +354,24 @@ export function useAiPlaceSuggestions(opts: {
               {suggestions.map((s, index) => (
                 <div key={`${s.name}-${index}`} className="bg-white rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-[rgba(109,40,217,0.15)]">
                   <div className="min-w-0">
-                    <div className="text-[12px] font-bold text-[#6D28D9] uppercase tracking-wide">{CATEGORY_LABEL[s.category] || s.category}</div>
-                    <div className="text-sm font-bold text-[#0A0A0A]">{s.name}</div>
+                    <div className="text-[12px] font-semibold text-[#6D28D9] uppercase tracking-wide">{CATEGORY_LABEL[s.category] || s.category}</div>
+                    <div className="text-sm font-semibold text-[#0A0A0A]">{s.name}</div>
                     <div className="text-[13px] text-[#3F3F46]">{s.reason}</div>
                     {s.reasonEn && (
                       <div className="text-[12px] text-[#71717A]">
-                        <span className="font-bold">EN</span> {s.reasonEn}
+                        <span className="font-semibold">EN</span> {s.reasonEn}
                       </div>
                     )}
-                    <a href={s.mapsUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1.5 text-[12px] font-bold text-[#6D28D9] hover:text-[#5B21B6]">
+                    <a href={s.mapsUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#6D28D9] hover:text-[#5B21B6]">
                       <ExternalLink className="h-3 w-3" />
                       Ver en Maps
                     </a>
                   </div>
                   <div className="flex gap-2 self-start sm:self-center flex-shrink-0">
-                    <button type="button" onClick={() => addOne(index)} className="text-[12px] font-bold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3 py-1.5 rounded-full transition-colors">
+                    <button type="button" onClick={() => addOne(index)} className="text-[12px] font-semibold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3 py-1.5 rounded-full transition-colors">
                       Agregar
                     </button>
-                    <button type="button" onClick={() => setSuggestions((prev) => prev.filter((_, i) => i !== index))} className="text-[12px] font-bold text-[#71717A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] px-3 py-1.5 rounded-full transition-colors">
+                    <button type="button" onClick={() => setSuggestions((prev) => prev.filter((_, i) => i !== index))} className="text-[12px] font-semibold text-[#71717A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] px-3 py-1.5 rounded-full transition-colors">
                       Descartar
                     </button>
                   </div>
@@ -455,7 +455,7 @@ export function EnglishPanel({
         <div role="dialog" aria-label="Revisar traducciones" className="admin-modal bg-white rounded-2xl w-full max-w-[1060px] max-h-[92vh] flex flex-col overflow-hidden">
           <div className="p-5 sm:p-6 pb-3 space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-[20px] font-extrabold text-[#0A0A0A]">Revisar traducciones</h3>
+              <h3 className="text-[20px] font-semibold text-[#0A0A0A]">Revisar traducciones</h3>
               <button type="button" onClick={onClose} aria-label="Cerrar" className="text-[#71717A] hover:text-[#0A0A0A]">
                 <X className="h-5 w-5" />
               </button>
@@ -466,7 +466,7 @@ export function EnglishPanel({
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
-            <div className="hidden md:grid grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)] gap-5 px-6 py-2 text-[11px] font-extrabold tracking-widest uppercase text-[#71717A]">
+            <div className="hidden md:grid grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)] gap-5 px-6 py-2 text-[11px] font-semibold tracking-widest uppercase text-[#71717A]">
               <span>Campo</span>
               <span>Español</span>
               <span>Inglés (editable)</span>
@@ -474,7 +474,7 @@ export function EnglishPanel({
             {rows.map((row, i) => (
               <div key={row.field.id} className="grid grid-cols-1 md:grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)] gap-2 md:gap-5 px-6 py-3.5 border-t border-[rgba(0,0,0,0.08)] items-start">
                 <div>
-                  <div className="text-[13px] font-bold text-[#0A0A0A]">{row.field.label}</div>
+                  <div className="text-[13px] font-semibold text-[#0A0A0A]">{row.field.label}</div>
                   <div className="text-[12px] text-[#71717A]">{row.field.tabLabel}</div>
                 </div>
                 <div className="text-sm leading-relaxed text-[#3F3F46]">{row.field.es}</div>
@@ -519,7 +519,7 @@ export function EnglishPanel({
       <div role="dialog" aria-label="Inglés" className="admin-drawer bg-white w-full max-w-[460px] h-full flex flex-col shadow-[-12px_0_40px_rgba(0,0,0,0.12)]">
         <div className="p-6 pb-4 space-y-3.5 border-b border-[rgba(0,0,0,0.08)]">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5 text-[20px] font-extrabold text-[#0A0A0A]">
+            <div className="flex items-center gap-2.5 text-[20px] font-semibold text-[#0A0A0A]">
               <Globe className="h-5 w-5 text-[#6D28D9]" />
               Inglés
             </div>
@@ -528,7 +528,7 @@ export function EnglishPanel({
             </button>
           </div>
           <div className="text-sm text-[#3F3F46]">
-            {done} de {total} campos traducidos.{pending.length > 0 && <> Faltan <strong>{pending.length}</strong>.</>}
+            {done} de {total} campos traducidos.{pending.length > 0 && <> Faltan <strong className="font-semibold">{pending.length}</strong>.</>}
           </div>
           <div className="h-1.5 rounded-full bg-[#E4E4E7] overflow-hidden">
             <div className="h-full bg-[#6D28D9]" style={{ width: `${total ? (done / total) * 100 : 0}%` }} />
@@ -538,7 +538,7 @@ export function EnglishPanel({
           {pending.length === 0 && <p className="text-sm text-[#71717A] py-6 text-center">No falta nada por traducir.</p>}
           {Object.entries(groups).map(([tabLabel, fields]) => (
             <div key={tabLabel} className="mb-2">
-              <div className="text-[11px] font-extrabold tracking-widest uppercase text-[#71717A] px-1 pt-2 pb-1">{tabLabel}</div>
+              <div className="text-[11px] font-semibold tracking-widest uppercase text-[#71717A] px-1 pt-2 pb-1">{tabLabel}</div>
               {fields.map((f) => (
                 <div key={f.id} className="flex items-center gap-2.5 min-h-[40px] px-1">
                   <span className="h-3.5 w-3.5 rounded-full border-[1.5px] border-[#D4D4D8] flex-shrink-0" />
@@ -549,7 +549,7 @@ export function EnglishPanel({
                       ai.goToTab(f.tab);
                       onClose();
                     }}
-                    className="text-[12px] font-bold text-[#6D28D9] hover:text-[#5B21B6]"
+                    className="text-[12px] font-semibold text-[#6D28D9] hover:text-[#5B21B6]"
                   >
                     Ir al campo
                   </button>
@@ -570,7 +570,7 @@ export function EnglishPanel({
             type="button"
             onClick={translateAll}
             disabled={loading || ai.translateLimit || pending.length === 0}
-            className="w-full h-12 inline-flex items-center justify-center gap-2 rounded-lg bg-[#6D28D9] hover:bg-[#5B21B6] text-white text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full h-12 inline-flex items-center justify-center gap-2 rounded-lg bg-[#6D28D9] hover:bg-[#5B21B6] text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Sparkles className="h-4 w-4" />
             {loading ? 'Traduciendo...' : ai.translateLimit ? TRANSLATE_LIMIT_TEXT : `Traducir lo que falta (${batch.length})`}
@@ -628,7 +628,7 @@ export function AiStoryModal({
     <Overlay onClose={onClose}>
       <div role="dialog" aria-label="Redactor de textos con IA" className="admin-modal bg-white rounded-2xl p-6 max-w-[600px] w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="flex items-center gap-2.5 text-[18px] font-extrabold text-[#0A0A0A]">
+          <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#0A0A0A]">
             <Sparkles className="h-[18px] w-[18px] text-[#6D28D9]" />
             Redactor de textos con IA
           </h3>

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Activity, CalendarDays, CheckSquare, MapPin, MessageSquare, Table2, UserPlus, UtensilsCrossed, XCircle } from 'lucide-react';
+import { Activity, CalendarDays, CheckSquare, MapPin, MessageSquare, Table2, Upload, UserPlus, UtensilsCrossed, XCircle } from 'lucide-react';
 import { usePanelData, computeGuestStats, computeTableStats } from '../../../../../../components/admin/panel/PanelDataContext';
 import { getSeatedGuestCount } from '../../../../../../services/guestService';
 import { activityService, type ActivityLogEntry, type ActivityType } from '../../../../../../services/activityService';
@@ -18,12 +18,14 @@ const ACTIVITY_ICON: Record<ActivityType, typeof UserPlus> = {
   guest_added: UserPlus,
   guest_confirmed: CheckSquare,
   guest_declined: XCircle,
+  guests_imported: Upload,
 };
 
 const ACTIVITY_COLOR: Record<ActivityType, string> = {
   guest_added: '#0A0A0A',
   guest_confirmed: '#15803D',
   guest_declined: '#B91C1C',
+  guests_imported: '#0A0A0A',
 };
 
 function formatRelativeTime(iso: string): string {
@@ -110,7 +112,7 @@ export default function DashboardPage() {
     <main className="flex-1 px-4 sm:px-8 py-8 box-border w-full max-w-[1280px]" style={manrope}>
       <div className="flex items-start justify-between gap-6 flex-wrap mb-7">
         <div>
-          <div className="text-[11px] font-extrabold tracking-[0.08em] text-[#AE5730] uppercase mb-1.5">Panorama general</div>
+          <div className="text-[11px] font-semibold tracking-[0.08em] text-[#AE5730] uppercase mb-1.5">Panorama general</div>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="m-0 text-[28px] sm:text-[32px] text-[#0A0A0A] leading-tight" style={displayFont}>{coupleTitle}</h1>
             <AdminStatusPill tone={weddingData?.isActive ? 'active' : 'draft'}>
@@ -136,10 +138,10 @@ export default function DashboardPage() {
           <div className="flex items-center gap-4 flex-shrink-0">
             <div className="w-px self-stretch bg-[rgba(0,0,0,0.08)]" />
             <div className="text-right">
-              <div className="text-[10px] font-extrabold tracking-[0.1em] text-[#71717A] uppercase mb-1.5">Cuenta regresiva</div>
+              <div className="text-[10px] font-semibold tracking-[0.1em] text-[#71717A] uppercase mb-1.5">Cuenta regresiva</div>
               <div className="flex items-center gap-2.5 justify-end">
                 <span className="text-[52px] leading-none text-[#AE5730] tracking-[-0.03em]" style={displayFont}>{daysToEvent}</span>
-                <span className="text-[13px] text-[#3F3F46] font-bold leading-tight text-left max-w-[60px]">
+                <span className="text-[13px] text-[#3F3F46] font-semibold leading-tight text-left max-w-[60px]">
                   días<br />para el<br />gran día
                 </span>
               </div>
@@ -155,7 +157,7 @@ export default function DashboardPage() {
         >
           <div className="flex items-center gap-2 mb-3.5">
             <CheckSquare className="h-3.5 w-3.5 text-[#AE5730]" />
-            <span className="text-[11px] font-extrabold tracking-[0.08em] text-[#AE5730] uppercase">Confirmaciones</span>
+            <span className="text-[11px] font-semibold tracking-[0.08em] text-[#AE5730] uppercase">Confirmaciones</span>
           </div>
           <div className="flex items-baseline gap-2 mb-3.5">
             <span className="text-[28px] text-[#AE5730] font-semibold">{confirmedPct}%</span>
@@ -169,15 +171,15 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between text-[13px] text-[#3F3F46] font-semibold">
               <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#15803D]" />Confirmados</span>
-              <span className="font-extrabold text-[#0A0A0A]">{guestStats.confirmed}</span>
+              <span className="font-semibold text-[#0A0A0A]">{guestStats.confirmed}</span>
             </div>
             <div className="flex items-center justify-between text-[13px] text-[#3F3F46] font-semibold">
               <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#475569]" />Pendientes</span>
-              <span className="font-extrabold text-[#0A0A0A]">{guestStats.pending}</span>
+              <span className="font-semibold text-[#0A0A0A]">{guestStats.pending}</span>
             </div>
             <div className="flex items-center justify-between text-[13px] text-[#3F3F46] font-semibold">
               <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#B91C1C]" />Declinados</span>
-              <span className="font-extrabold text-[#0A0A0A]">{guestStats.declined}</span>
+              <span className="font-semibold text-[#0A0A0A]">{guestStats.declined}</span>
             </div>
           </div>
         </a>
@@ -185,7 +187,7 @@ export default function DashboardPage() {
         <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-3.5">
             <Table2 className="h-3.5 w-3.5 text-[#AE5730]" />
-            <span className="text-[11px] font-extrabold tracking-[0.08em] text-[#AE5730] uppercase">Asignación de mesas</span>
+            <span className="text-[11px] font-semibold tracking-[0.08em] text-[#AE5730] uppercase">Asignación de mesas</span>
           </div>
           <div className="flex items-baseline gap-2 mb-3.5">
             <span className="text-[28px] text-[#AE5730] font-semibold">{tableStats.seatedGuests}</span>
@@ -203,7 +205,7 @@ export default function DashboardPage() {
               {tablePreview.map((t) => (
                 <div key={t.id} className="flex items-center justify-between text-[13px] text-[#3F3F46] font-semibold">
                   <span>{t.name}</span>
-                  <span className="font-extrabold text-[#0A0A0A]">{t.occupied}/{t.capacity}</span>
+                  <span className="font-semibold text-[#0A0A0A]">{t.occupied}/{t.capacity}</span>
                 </div>
               ))}
             </div>
@@ -215,7 +217,7 @@ export default function DashboardPage() {
         <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-3.5">
             <UtensilsCrossed className="h-3.5 w-3.5 text-[#AE5730]" />
-            <span className="text-[11px] font-extrabold tracking-[0.08em] text-[#AE5730] uppercase">Restricciones alimenticias</span>
+            <span className="text-[11px] font-semibold tracking-[0.08em] text-[#AE5730] uppercase">Restricciones alimenticias</span>
           </div>
           {weddingData?.hasDiet ? (
             <>
@@ -227,7 +229,7 @@ export default function DashboardPage() {
                 {Object.entries(dietBreakdown.counts).map(([key, count]) => (
                   <div key={key} className="flex items-center justify-between text-[13px] text-[#3F3F46] font-semibold">
                     <span>{DIET_LABELS[key]}</span>
-                    <span className="font-extrabold text-[#0A0A0A]">{count}</span>
+                    <span className="font-semibold text-[#0A0A0A]">{count}</span>
                   </div>
                 ))}
               </div>
@@ -240,7 +242,7 @@ export default function DashboardPage() {
         <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-3.5">
             <Activity className="h-3.5 w-3.5 text-[#AE5730]" />
-            <span className="text-[11px] font-extrabold tracking-[0.08em] text-[#AE5730] uppercase">Actividad reciente</span>
+            <span className="text-[11px] font-semibold tracking-[0.08em] text-[#AE5730] uppercase">Actividad reciente</span>
           </div>
           {recentActivity.length > 0 ? (
             <div className="flex flex-col gap-3">
@@ -266,14 +268,14 @@ export default function DashboardPage() {
       <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-5 mt-5">
         <div className="flex items-center gap-2 mb-4">
           <MessageSquare className="h-3.5 w-3.5 text-[#AE5730]" />
-          <span className="text-[11px] font-extrabold tracking-[0.08em] text-[#AE5730] uppercase">Mensajes de los invitados</span>
+          <span className="text-[11px] font-semibold tracking-[0.08em] text-[#AE5730] uppercase">Mensajes de los invitados</span>
         </div>
         {recentMessages.length > 0 ? (
           <div className="flex flex-col divide-y divide-[rgba(0,0,0,0.06)]">
             {recentMessages.map((guest) => (
               <div key={guest.id} className="py-3 first:pt-0 last:pb-0">
                 <div className="flex items-center justify-between gap-3 mb-1">
-                  <span className="text-[13px] font-extrabold text-[#0A0A0A]">{guest.name}</span>
+                  <span className="text-[13px] font-semibold text-[#0A0A0A]">{guest.name}</span>
                   <span className="text-[11px] text-[#9CA3AF] font-semibold flex-shrink-0">{formatRelativeTime(guest.rsvpConfirmation!.submittedAt)}</span>
                 </div>
                 <p className="text-[13px] text-[#3F3F46] italic leading-relaxed">&ldquo;{guest.rsvpConfirmation!.message}&rdquo;</p>

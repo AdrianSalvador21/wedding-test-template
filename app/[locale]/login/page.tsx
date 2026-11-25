@@ -153,7 +153,7 @@ function LoginContent() {
           title="Revisa tu correo"
           sub={
             <>
-              Si <strong className="text-[#0A0A0A]">{email.trim()}</strong> tiene una cuenta, te enviamos un enlace para crear una nueva contraseña. Puede tardar un par de minutos; revisa también la carpeta de spam.
+              Si <strong className="font-semibold text-[#0A0A0A]">{email.trim()}</strong> tiene una cuenta, te enviamos un enlace para crear una nueva contraseña. Puede tardar un par de minutos; revisa también la carpeta de spam.
             </>
           }
         />

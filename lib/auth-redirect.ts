@@ -1,6 +1,6 @@
 import type { LinkedWedding } from './auth-context';
 
-const NEXT_PATTERN = /^\/(?:[a-z]{2}\/)?admin(?:\/(?:wedding-editor|guests|confirmations)\/([A-Za-z0-9_-]+))?\/?$/;
+const NEXT_PATTERN = /^\/(?:[a-z]{2}\/)?admin(?:\/panel\/([A-Za-z0-9_-]+)(?:\/(?:dashboard|editor|guests|confirmations|tables))?)?\/?$/;
 
 // A dónde llevar a la cuenta tras iniciar sesión:
 // 1. `next` (solo rutas internas de admin) si pertenece a una de sus bodas — así vuelve a la

@@ -108,7 +108,7 @@ export default function TableFormModal({
                     <button
                       type="button"
                       onClick={() => setCapacity((c) => Math.max(1, c - 1))}
-                      className="w-9 h-9 rounded-lg border border-[rgba(0,0,0,0.12)] bg-white font-bold text-[16px]"
+                      className="w-9 h-9 rounded-lg border border-[rgba(0,0,0,0.12)] bg-white font-semibold text-[16px]"
                       aria-label="Reducir capacidad"
                     >
                       −
@@ -118,12 +118,12 @@ export default function TableFormModal({
                       min={1}
                       value={capacity}
                       onChange={(e) => setCapacity(parseInt(e.target.value, 10) || 1)}
-                      className="flex-1 text-center px-3 py-2 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] font-bold focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
+                      className="flex-1 text-center px-3 py-2 border border-[rgba(0,0,0,0.14)] rounded-lg text-[#0A0A0A] font-semibold focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
                     />
                     <button
                       type="button"
                       onClick={() => setCapacity((c) => c + 1)}
-                      className="w-9 h-9 rounded-lg border border-[rgba(0,0,0,0.12)] bg-white font-bold text-[16px]"
+                      className="w-9 h-9 rounded-lg border border-[rgba(0,0,0,0.12)] bg-white font-semibold text-[16px]"
                       aria-label="Aumentar capacidad"
                     >
                       +
@@ -139,7 +139,7 @@ export default function TableFormModal({
                         key={s.value}
                         type="button"
                         onClick={() => setShape(s.value)}
-                        className={`flex-1 min-w-[90px] text-center text-[12.5px] font-bold px-3 py-2.5 rounded-lg border-[1.5px] transition-colors ${
+                        className={`flex-1 min-w-[90px] text-center text-[12.5px] font-semibold px-3 py-2.5 rounded-lg border-[1.5px] transition-colors ${
                           shape === s.value
                             ? 'bg-[#111111] border-[#111111] text-white'
                             : 'bg-white border-[rgba(0,0,0,0.1)] text-[#3F3F46]'
@@ -164,14 +164,14 @@ export default function TableFormModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] font-bold text-[13px] rounded-lg px-5 py-2.5"
+                className="bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] font-semibold text-[13px] rounded-lg px-5 py-2.5"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#111111] text-white font-bold text-[13px] rounded-lg px-5 py-2.5 disabled:opacity-50"
+                className="bg-[#111111] text-white font-semibold text-[13px] rounded-lg px-5 py-2.5 disabled:opacity-50"
               >
                 {table ? 'Guardar cambios' : 'Crear mesa'}
               </button>

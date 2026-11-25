@@ -48,6 +48,12 @@ export interface FirebaseGuest {
   updatedAt: string;
   /** @deprecated (spec 12) Reemplazado por FirebaseTableSeat (spec 23). Solo se lee una vez para migrar sus sub-asientos; no se escribe más. */
   tableId?: string | null;
+  // Spec 28 — mensaje de WhatsApp editado por la pareja para este invitado.
+  // Ausente = se usa el mensaje por defecto. Se guarda ya con el nombre y el link escritos.
+  whatsappMessages?: {
+    invitation?: string;
+    saveTheDate?: string;
+  };
 }
 
 // Tipos para gestión de mesas (spec 12)

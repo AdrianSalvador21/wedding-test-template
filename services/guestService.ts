@@ -6,6 +6,8 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
+  writeBatch,
   query,
   where,
   orderBy,
@@ -14,6 +16,7 @@ import {
 import { db } from '../lib/firebase';
 import { cleanUndefinedFields } from '../lib/firestore-utils';
 import { FirebaseGuest } from '../src/types/wedding';
+import type { ImportGuestData } from '../lib/guestImport';
 import { activityService } from './activityService';
 import { seatService } from './seatService';
 
@@ -52,13 +55,14 @@ export class GuestService {
   /**
    * Genera un ID único para el invitado basado en su nombre
    */
-  private generateGuestId(name: string, weddingId: string): string {
+  private generateGuestId(name: string, weddingId: string, suffix?: string): string {
     const cleanName = name.toLowerCase()
       .replace(/[^a-z0-9]/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
     
-    const timestamp = Date.now().toString().slice(-4);
+    // Spec 28 — la importación pasa su propio sufijo (id del documento); el alta manual sigue igual.
+    const timestamp = suffix ?? Date.now().toString().slice(-4);
     return `${cleanName}-${timestamp}`;
   }
 
@@ -185,6 +189,45 @@ export class GuestService {
   }
 
   /**
+   * Spec 28 — crea en bloque los invitados de una importación (máximo 500, el límite de un
+   * `writeBatch`). El id del documento se conoce antes de escribir, así que el `guestId` usa
+   * sus primeros 6 caracteres en lugar del sufijo de `Date.now()`, que se repetiría en bloque.
+   * Registra una sola entrada de actividad para toda la importación.
+   */
+  async importGuests(weddingId: string, rows: ImportGuestData[]): Promise<FirebaseGuest[]> {
+    try {
+      const now = new Date().toISOString();
+      const batch = writeBatch(db);
+      const created: FirebaseGuest[] = rows.map((row) => {
+        const ref = doc(collection(db, this.GUESTS_COLLECTION));
+        const guest = cleanUndefinedFields({
+          weddingId,
+          guestId: this.generateGuestId(row.name, weddingId, ref.id.slice(0, 6).toLowerCase()),
+          name: row.name,
+          email: row.email,
+          phone: row.phone,
+          guestCount: row.guestCount,
+          language: row.language,
+          coupleMessage: row.coupleMessage,
+          plusOneAllowed: false,
+          rsvpStatus: 'pending' as const,
+          createdAt: now,
+          updatedAt: now,
+        });
+        batch.set(ref, guest);
+        return { id: ref.id, ...guest } as FirebaseGuest;
+      });
+
+      await batch.commit();
+      await activityService.log(weddingId, 'guests_imported', String(created.length));
+      return created;
+    } catch (error) {
+      console.error('Error importando invitados:', error);
+      throw new Error('No se pudieron importar los invitados');
+    }
+  }
+
+  /**
    * Actualiza un invitado existente
    */
   async updateGuest(guestId: string, guestData: Partial<Omit<FirebaseGuest, 'id' | 'createdAt'>>): Promise<void> {
@@ -279,6 +322,22 @@ export class GuestService {
     } catch (error) {
       console.error('Error actualizando el estado del invitado:', error);
       throw new Error('No se pudo actualizar el estado del invitado');
+    }
+  }
+
+  /**
+   * Spec 28 — guarda (o borra, con `text = null`) el mensaje de WhatsApp editado para este
+   * invitado. Escribe solo esa clave con notación de punto: no pasa por `updateGuest`, así que
+   * no registra actividad ni reconcilia asientos, y no toca `updatedAt`.
+   */
+  async saveWhatsAppMessage(id: string, kind: 'invitation' | 'saveTheDate', text: string | null): Promise<void> {
+    try {
+      await updateDoc(doc(db, this.GUESTS_COLLECTION, id), {
+        [`whatsappMessages.${kind}`]: text === null ? deleteField() : text,
+      });
+    } catch (error) {
+      console.error('Error guardando el mensaje de WhatsApp:', error);
+      throw new Error('No se pudo guardar el mensaje de WhatsApp');
     }
   }
 

@@ -1,12 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Menu, Sparkles, X } from 'lucide-react';
-import AccountControls from './AccountControls';
-import { useAuthOptional } from '../../lib/auth-context';
-import { whatsappUrl } from '../../lib/contact';
-import { track } from '../../lib/analytics/client';
 
 // Tokens de paleta "Dashboard Neutral" (blanco / negro / grises, sin serif ni
 // acentos cálidos) — ver specs/04-rediseno-paneles-admin.md, decisión tomada
@@ -34,96 +29,9 @@ export const A = {
 // Antes tipografiado en Fraunces (serif); ahora solo peso/tracking sobre
 // Manrope — se mantiene el nombre `displayFont` (no `fraunces`) para que el
 // código no sugiera una fuente que ya no se usa.
-export const displayFont = { fontWeight: 800, letterSpacing: '-0.01em' };
+// El peso máximo del panel es 600: nada de 700/800 (font-bold, font-extrabold, <strong> sin clase).
+export const displayFont = { fontWeight: 600, letterSpacing: '-0.01em' };
 export const manrope = { fontFamily: 'var(--font-manrope), sans-serif' };
-
-// Navegación entre los paneles de una misma boda (Editor de invitación /
-// Gestión de invitados), para poder compartir un enlace y que la otra
-// persona pueda saltar al otro panel sin editar la URL a mano.
-export function AdminPageNav({
-  weddingId,
-  locale,
-  active,
-  tier = 'template',
-}: {
-  weddingId: string;
-  locale: string;
-  active: 'editor' | 'guests' | 'tables';
-  // Spec 16 — 'free' oculta el tab Editor (esa boda no tiene) y muestra el CTA de upgrade.
-  tier?: 'free' | 'template';
-}) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const auth = useAuthOptional();
-  const showAllLink = !!auth && (auth.isAdmin || auth.weddings.length > 1);
-
-  const linkClass = (isActive: boolean) =>
-    `text-sm px-3.5 py-1.5 rounded-lg font-semibold transition-colors ${
-      isActive ? 'bg-[#F4F4F5] text-[#0A0A0A]' : 'text-[#71717A] hover:text-[#0A0A0A] hover:bg-[#FAFAFA]'
-    }`;
-
-  const links = (
-    <>
-      {tier !== 'free' && (
-        <a href={`/${locale}/admin/wedding-editor/${weddingId}`} className={linkClass(active === 'editor')}>
-          Editor de invitación
-        </a>
-      )}
-      <a href={`/${locale}/admin/guests/${weddingId}`} className={linkClass(active === 'guests')}>
-        Invitados
-      </a>
-      <a href={`/${locale}/admin/tables/${weddingId}`} className={linkClass(active === 'tables')}>
-        Mesas
-      </a>
-      {tier === 'free' && (
-        <a
-          href={whatsappUrl(`Hola! Quiero activar mi boda "${weddingId}" con una invitación digital.`)}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => track('free_wedding_upgrade_cta_click', {})}
-          className="inline-flex items-center gap-1.5 text-sm px-3.5 py-1.5 rounded-lg font-semibold text-[#0A0A0A] border border-dashed border-[rgba(0,0,0,0.22)] hover:bg-[#FAFAFA] transition-colors"
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          Activa tu invitación digital
-        </a>
-      )}
-      {showAllLink && (
-        <a href={`/${locale}/admin`} className={linkClass(false)}>
-          Mis invitaciones
-        </a>
-      )}
-    </>
-  );
-
-  return (
-    <div className="relative flex items-center gap-2 sm:gap-4" style={manrope}>
-      <nav className="hidden md:flex items-center gap-1">{links}</nav>
-      <div className="hidden md:block">
-        <AccountControls />
-      </div>
-      <button
-        type="button"
-        onClick={() => setMenuOpen((o) => !o)}
-        aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
-        aria-expanded={menuOpen}
-        className="md:hidden h-11 w-11 flex items-center justify-center rounded-lg text-[#0A0A0A] hover:bg-[#FAFAFA]"
-      >
-        {menuOpen ? <X className="h-[22px] w-[22px]" /> : <Menu className="h-[22px] w-[22px]" />}
-      </button>
-      {menuOpen && (
-        <div className="md:hidden absolute right-0 top-full mt-2 w-[min(88vw,320px)] bg-white border border-[rgba(0,0,0,0.08)] rounded-xl shadow-lg p-3 z-50 flex flex-col gap-1">
-          <div className="flex flex-col gap-1">{links}</div>
-          {auth?.user && (
-            <div className="mt-2 pt-3 border-t border-[rgba(0,0,0,0.08)] flex flex-col gap-2">
-              <div className="text-xs text-[#71717A]">Sesión iniciada como</div>
-              <div className="text-sm font-bold text-[#0A0A0A] break-all">{auth.email}</div>
-              <AccountControls compact />
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export function AdminTopBar({
   backHref,
@@ -147,7 +55,7 @@ export function AdminTopBar({
         {backHref && (
           <a
             href={backHref}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#9CA3AF] hover:text-[#3F3F46] transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9CA3AF] hover:text-[#3F3F46] transition-colors mb-2"
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6}>
               <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -191,7 +99,7 @@ export function AdminStatusPill({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full ${pillToneClass[tone]} ${className}`}
+      className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${pillToneClass[tone]} ${className}`}
     >
       {children}
     </span>
@@ -220,7 +128,7 @@ export function AdminSidebarNavItem({
       title={collapsed ? label : undefined}
       className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm text-left transition-colors ${
         collapsed ? 'justify-center' : ''
-      } ${active ? 'bg-[rgba(198,102,60,0.08)] text-[#AE5730] font-bold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'}`}
+      } ${active ? 'bg-[rgba(198,102,60,0.08)] text-[#AE5730] font-semibold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'}`}
     >
       <Icon className="h-[18px] w-[18px] flex-shrink-0" />
       {!collapsed && (
@@ -256,7 +164,7 @@ export function AdminSectionChip({
       onClick={onClick}
       className={`inline-flex items-center gap-1.5 flex-shrink-0 text-[13px] px-3.5 py-2 rounded-full border whitespace-nowrap transition-colors ${
         active
-          ? 'bg-[#AE5730] text-white border-[#AE5730] font-bold'
+          ? 'bg-[#AE5730] text-white border-[#AE5730] font-semibold'
           : 'bg-[#FAFAFA] text-[#3F3F46] border-[rgba(0,0,0,0.1)] font-semibold'
       }`}
     >
@@ -286,7 +194,7 @@ export function AdminStatCard({
   };
   return (
     <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-xl px-4 py-3.5 flex items-center justify-between gap-2">
-      <div className="flex items-center gap-1.5 text-[13px] font-bold tracking-wide text-[#71717A] min-w-0">
+      <div className="flex items-center gap-1.5 text-[13px] font-semibold tracking-wide text-[#71717A] min-w-0">
         <Icon className="h-[13px] w-[13px] flex-shrink-0" style={{ color: toneColor[tone] }} />
         <span className="leading-snug">{label}</span>
       </div>
@@ -350,7 +258,7 @@ export function AdminButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex items-center justify-center gap-2 font-bold text-sm rounded-lg px-5 py-2.5 min-h-[44px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variantClass} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 font-semibold text-sm rounded-lg px-5 py-2.5 min-h-[44px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variantClass} ${className}`}
       style={manrope}
     >
       {children}
@@ -402,7 +310,7 @@ export function AiButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex items-center justify-center gap-1.5 font-bold text-[13px] rounded-lg px-3.5 py-2 min-h-[36px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variantClass} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 font-semibold text-[13px] rounded-lg px-3.5 py-2 min-h-[36px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variantClass} ${className}`}
       style={manrope}
     >
       {children}
@@ -419,7 +327,7 @@ export function AiBadge({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full ${className}`}
+      className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full ${className}`}
       style={{ color: '#6D28D9', background: '#F5F3FF' }}
     >
       {children}

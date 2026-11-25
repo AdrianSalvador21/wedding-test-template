@@ -5,17 +5,16 @@ import { ChevronDown, LogOut, ShieldCheck } from 'lucide-react';
 import { useAuthOptional } from '../../lib/auth-context';
 
 // Correo de la sesión, etiqueta de operador y "Cerrar sesión". No importa ui.tsx para
-// poder usarse dentro de AdminPageNav sin crear un ciclo de importaciones.
+// no crear un ciclo de importaciones.
 //
 // En escritorio (!compact) todo vive detrás de un único control de cuenta (avatar +
 // flecha): antes el badge "Admin", el correo y el botón "Cerrar sesión" competían por
 // espacio directo en la barra superior y se sentía saturado en pantallas anchas
-// (spec 13). El modo `compact`, usado dentro del menú hamburguesa móvil de
-// AdminPageNav, no cambia — ahí no había ese problema.
+// (spec 13). El modo `compact` muestra los controles sueltos, sin el menú desplegable.
 // `menuPlacement="up"` — para cuando el control vive pegado al fondo de un contenedor alto
 // (el sidebar del panel nuevo, spec 21): el menú abriendo hacia abajo se salía del viewport
-// y hacía crecer la página (scroll no deseado al abrirlo). `AdminPageNav` (en la barra
-// superior) sigue usando el valor por defecto, 'down', sin cambios.
+// y hacía crecer la página (scroll no deseado al abrirlo). En una barra superior se usa
+// el valor por defecto, 'down'.
 export default function AccountControls({ compact = false, menuPlacement = 'down' }: { compact?: boolean; menuPlacement?: 'down' | 'up' }) {
   const auth = useAuthOptional();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -53,7 +52,7 @@ export default function AccountControls({ compact = false, menuPlacement = 'down
       <button
         type="button"
         onClick={signOut}
-        className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-[13px] font-bold transition-colors"
+        className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors"
       >
         <LogOut className="h-3.5 w-3.5" />
         Cerrar sesión
@@ -71,7 +70,7 @@ export default function AccountControls({ compact = false, menuPlacement = 'down
         aria-label="Cuenta"
         className="flex items-center gap-1.5 pl-1 pr-2 h-9 rounded-full bg-[#F4F4F5] border border-[rgba(0,0,0,0.08)] hover:bg-[#EDEDEF] transition-colors"
       >
-        <span className="w-7 h-7 rounded-full bg-[#0A0A0A] text-white text-[11px] font-extrabold flex items-center justify-center flex-shrink-0">
+        <span className="w-7 h-7 rounded-full bg-[#0A0A0A] text-white text-[11px] font-semibold flex items-center justify-center flex-shrink-0">
           {initial}
         </span>
         <ChevronDown className={`h-3.5 w-3.5 text-[#3F3F46] transition-transform ${menuOpen ? 'rotate-180' : ''}`} />
@@ -85,13 +84,13 @@ export default function AccountControls({ compact = false, menuPlacement = 'down
           }`}
         >
           <div className="flex items-center gap-2.5 px-2.5 py-2">
-            <span className="w-9 h-9 rounded-full bg-[#0A0A0A] text-white text-[13px] font-extrabold flex items-center justify-center flex-shrink-0">
+            <span className="w-9 h-9 rounded-full bg-[#0A0A0A] text-white text-[13px] font-semibold flex items-center justify-center flex-shrink-0">
               {initial}
             </span>
             <div className="min-w-0 flex flex-col gap-1">
-              <span className="text-[12.5px] font-bold text-[#0A0A0A] truncate">{auth.email}</span>
+              <span className="text-[12.5px] font-semibold text-[#0A0A0A] truncate">{auth.email}</span>
               {auth.isAdmin && (
-                <span className="inline-flex items-center gap-1 w-fit h-[18px] px-[7px] rounded-full bg-[#0A0A0A] text-white text-[10px] font-bold">
+                <span className="inline-flex items-center gap-1 w-fit h-[18px] px-[7px] rounded-full bg-[#0A0A0A] text-white text-[10px] font-semibold">
                   <ShieldCheck className="h-[9px] w-[9px]" />
                   Admin
                 </span>
@@ -103,7 +102,7 @@ export default function AccountControls({ compact = false, menuPlacement = 'down
             type="button"
             role="menuitem"
             onClick={signOut}
-            className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] font-bold text-[#0A0A0A] hover:bg-[#FAFAFA] transition-colors text-left"
+            className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] font-semibold text-[#0A0A0A] hover:bg-[#FAFAFA] transition-colors text-left"
           >
             <LogOut className="h-3.5 w-3.5" />
             Cerrar sesión

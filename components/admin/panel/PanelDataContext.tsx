@@ -9,8 +9,8 @@ import { guestService, resolveGuestAttendance, getSeatedGuestCount } from '../..
 import { tableService } from '../../../services/tableService';
 import { FirebaseGuest, FirebaseTable, WeddingData } from '../../../src/types/wedding';
 
-// Misma migración que ya usan `wedding-editor` y `guests` (duplicada ahí también,
-// sigue el patrón existente de no extraerla a un lib compartido) — se necesita aquí
+// Misma migración que usa el Editor (duplicada ahí también, sigue el patrón
+// existente de no extraerla a un lib compartido) — se necesita aquí
 // porque el layout del panel nuevo hace el único fetch de `weddingData` para las 5
 // secciones, y debe dejar el documento en el mismo formato migrado que ya esperan.
 function migrateWeddingData(data: Record<string, unknown>): WeddingData {
@@ -25,8 +25,8 @@ function migrateWeddingData(data: Record<string, unknown>): WeddingData {
   if (data.showConfirmCta !== undefined) migrated.showConfirmCta = data.showConfirmCta as boolean;
 
   // Spec 16 — una boda gratuita no tiene Editor para apagar `selectedGuestTickets`,
-  // así que se autocorrige aquí (mismo ajuste que ya hacían `wedding-editor` y
-  // `guests` por separado) — sin esto, "Número de Personas" quedaría oculto para
+  // así que se autocorrige aquí (mismo ajuste que hacían las páginas del panel anterior,
+  // eliminadas) — sin esto, "Número de Personas" quedaría oculto para
   // siempre en una boda gratuita creada antes de este ajuste.
   if (migrated.tier === 'free' && migrated.selectedGuestTickets !== false) {
     migrated.selectedGuestTickets = false;

@@ -91,7 +91,7 @@ export default function TableNode({ data }: NodeProps<TableNodeData>) {
           transition: 'box-shadow .15s, transform .15s',
         }}
       >
-        <span className="text-[9px] font-bold leading-none z-10">
+        <span className="text-[9px] font-semibold leading-none z-10">
           {occupied}/{table.capacity}
         </span>
 
@@ -130,7 +130,7 @@ export default function TableNode({ data }: NodeProps<TableNodeData>) {
 
         {layout.overflowSeats > 0 && (
           <div
-            className="absolute flex items-center justify-center rounded-full font-extrabold text-white"
+            className="absolute flex items-center justify-center rounded-full font-semibold text-white"
             style={{ right: -6, bottom: -2, width: 20, height: 20, fontSize: 9, background: '#111111' }}
           >
             +{layout.overflowSeats}
@@ -138,7 +138,7 @@ export default function TableNode({ data }: NodeProps<TableNodeData>) {
         )}
       </div>
       <span
-        className="max-w-[110px] text-center text-[10.5px] font-extrabold text-[#0A0A0A] bg-white/95 rounded px-1.5 py-0.5 leading-tight shadow-sm"
+        className="max-w-[110px] text-center text-[10.5px] font-semibold text-[#0A0A0A] bg-white/95 rounded px-1.5 py-0.5 leading-tight shadow-sm"
         // Spec 17 — separación calculada, no fija: garantiza que ningún ícono (sin
         // importar cuántos grupos tenga la mesa) quede encima del nombre, sea cual sea
         // el ángulo donde caiga su ancla.

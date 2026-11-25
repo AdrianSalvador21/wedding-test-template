@@ -30,6 +30,7 @@ import {
 import { NewWeddingModal, OwnersModal, SettingsModal } from '../../../components/admin/OperatorTools';
 import { FreeWeddingModal } from '../../../components/admin/FreeWeddingTools';
 import { useAuth, type LinkedWedding } from '../../../lib/auth-context';
+import BrandWordmark from '../../../components/BrandWordmark';
 
 // Display del template Moderno (spec 25); la fuente ya se carga para todo app/[locale]
 // desde invitation-fonts.css.
@@ -146,15 +147,15 @@ function Monogram({ title, dotClass, className }: { title: string; dotClass: str
 
 function TierPill({ tier }: { tier: 'free' | 'template' }) {
   return tier === 'free' ? (
-    <span className="w-fit text-xs font-bold px-2.5 py-1 rounded-full bg-[#F4F4F5] text-[#3F3F46]">Gratis · invitados y mesas</span>
+    <span className="w-fit text-xs font-semibold px-2.5 py-1 rounded-full bg-[#F4F4F5] text-[#3F3F46]">Gratis · invitados y mesas</span>
   ) : (
-    <span className="w-fit text-xs font-bold px-2.5 py-1 rounded-full bg-[rgba(198,102,60,0.1)] text-[#8F4524]">Con plantilla</span>
+    <span className="w-fit text-xs font-semibold px-2.5 py-1 rounded-full bg-[rgba(198,102,60,0.1)] text-[#8F4524]">Con plantilla</span>
   );
 }
 
 function CelebratedPill({ days }: { days: number }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full bg-white text-[#52525B] border border-[rgba(0,0,0,0.08)]">
+    <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-white text-[#52525B] border border-[rgba(0,0,0,0.08)]">
       <Check className="h-3.5 w-3.5" />
       {celebratedLabel(days)}
     </span>
@@ -179,13 +180,13 @@ function shortcutsFor(wedding: LinkedWedding, locale: string): { label: string; 
 function UpgradeBox({ wedding }: { wedding: LinkedWedding }) {
   return (
     <div className="rounded-xl bg-[#FBF5F1] border border-[rgba(174,87,48,0.16)] px-3.5 py-3 flex flex-col gap-1.5">
-      <span className="text-[13px] font-bold text-[#0A0A0A]">Aún sin invitación digital</span>
+      <span className="text-[13px] font-semibold text-[#0A0A0A]">Aún sin invitación digital</span>
       <a
         href={whatsappUrl(`Hola! Quiero activar mi boda "${wedding.id}" con una invitación digital.`)}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => track('free_wedding_upgrade_cta_click', {})}
-        className="inline-flex w-fit items-center gap-1.5 text-[13px] font-bold text-[#AE5730] hover:text-[#8F4524]"
+        className="inline-flex w-fit items-center gap-1.5 text-[13px] font-semibold text-[#AE5730] hover:text-[#8F4524]"
       >
         <Sparkles className="h-3.5 w-3.5" />
         Activar con una plantilla
@@ -205,7 +206,7 @@ function PanelButton({ wedding, locale, days, className = '' }: { wedding: Linke
   return (
     <a
       href={`/${locale}/admin/panel/${wedding.id}/dashboard`}
-      className={`inline-flex items-center justify-center gap-2 h-[46px] px-5 rounded-[10px] text-sm font-bold transition-colors ${tone} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 h-[46px] px-5 rounded-[10px] text-sm font-semibold transition-colors ${tone} ${className}`}
     >
       {past ? 'Ver panel' : 'Abrir panel'}
       <ArrowRight className="h-4 w-4" />
@@ -286,7 +287,7 @@ function FeaturedWeddingCard({ wedding, locale }: { wedding: LinkedWedding; loca
               className="min-h-[48px] rounded-xl border border-[rgba(0,0,0,0.08)] bg-white p-3 md:p-3.5 flex md:flex-col items-center md:items-start gap-2.5 text-[#0A0A0A] hover:border-[rgba(174,87,48,0.35)] hover:bg-[#FBF5F1] transition-colors"
             >
               <Icon className="h-[18px] w-[18px] md:h-5 md:w-5 text-[#AE5730] flex-shrink-0" />
-              <span className="text-[13px] md:text-sm font-bold">
+              <span className="text-[13px] md:text-sm font-semibold">
                 <span className="md:hidden">{shortLabel}</span>
                 <span className="hidden md:inline">{label}</span>
               </span>
@@ -302,7 +303,7 @@ function FeaturedWeddingCard({ wedding, locale }: { wedding: LinkedWedding; loca
               href={`/${locale}/wedding/${wedding.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 min-h-[44px] text-[13px] md:text-sm font-bold text-[#3F3F46] hover:text-[#0A0A0A]"
+              className="inline-flex items-center justify-center gap-1.5 min-h-[44px] text-[13px] md:text-sm font-semibold text-[#3F3F46] hover:text-[#0A0A0A]"
             >
               <ExternalLink className="h-4 w-4" />
               Ver invitación como invitado
@@ -346,7 +347,7 @@ function WeddingCard({ wedding, locale }: { wedding: LinkedWedding; locale: stri
       </div>
       <div className="p-5 flex flex-col gap-3 flex-grow">
         <TierPill tier={tier} />
-        <h2 className={`m-0 text-[21px] font-extrabold tracking-[-0.01em] break-words ${past ? 'text-[#3F3F46]' : 'text-[#0A0A0A]'}`}>{wedding.title}</h2>
+        <h2 className={`m-0 text-[21px] font-semibold tracking-[-0.01em] break-words ${past ? 'text-[#3F3F46]' : 'text-[#0A0A0A]'}`}>{wedding.title}</h2>
         {parts && (
           <div className="flex items-baseline gap-2.5 pb-3 border-b border-[#E7E2DA]">
             <span className={`text-lg font-normal tracking-[-0.01em] ${past ? 'text-[#57524B]' : 'text-[#1E1C19]'}`} style={moderno}>
@@ -421,9 +422,9 @@ function OperatorWeddingCard({
   return (
     <article className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-[18px] flex flex-col gap-3.5 min-w-0 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
       <div className="flex items-center gap-3">
-        <div className={`h-11 w-11 flex-shrink-0 rounded-full box-border flex items-center justify-center text-sm font-extrabold ${avatarTone}`}>{initials}</div>
+        <div className={`h-11 w-11 flex-shrink-0 rounded-full box-border flex items-center justify-center text-sm font-semibold ${avatarTone}`}>{initials}</div>
         <div className="flex flex-col gap-0.5 min-w-0 flex-grow">
-          <span className={`text-base font-extrabold break-words ${past ? 'text-[#3F3F46]' : 'text-[#0A0A0A]'}`}>{wedding.title}</span>
+          <span className={`text-base font-semibold break-words ${past ? 'text-[#3F3F46]' : 'text-[#0A0A0A]'}`}>{wedding.title}</span>
           {parts && (
             <span className="text-xs text-[#52525B]">
               {parts.short}
@@ -453,7 +454,7 @@ function OperatorWeddingCard({
       </div>
       <div className="flex flex-col gap-2 rounded-[10px] bg-[#FAFAFA] px-3 py-2.5 text-xs text-[#3F3F46]">
         <DataRow label="Plan">
-          <span className={`font-bold ${tier === 'free' ? '' : 'text-[#8F4524]'}`}>{tier === 'free' ? 'Gratis' : 'Con plantilla'}</span>
+          <span className={`font-semibold ${tier === 'free' ? '' : 'text-[#8F4524]'}`}>{tier === 'free' ? 'Gratis' : 'Con plantilla'}</span>
         </DataRow>
         <DataRow label="ID">
           <span className="font-mono">{wedding.id}</span>
@@ -463,7 +464,7 @@ function OperatorWeddingCard({
           <span className={`inline-flex items-center gap-2 ${owners.length ? '' : 'text-[#9A3412]'}`}>
             <Mail className="h-3.5 w-3.5" />
             {owners.length ? `${owners.length} ${owners.length === 1 ? 'correo' : 'correos'}` : 'Sin correos'}
-            <button type="button" onClick={onEditOwners} className="font-bold text-[#0A0A0A] hover:underline">
+            <button type="button" onClick={onEditOwners} className="font-semibold text-[#0A0A0A] hover:underline">
               Editar
             </button>
           </span>
@@ -486,17 +487,17 @@ function CreateFreeTile({ onClick }: { onClick: () => void }) {
           <Plus className="h-[18px] w-[18px] text-[#AE5730]" />
         </span>
         <span className="flex flex-col gap-0.5">
-          <span className="text-[15px] font-extrabold text-[#0A0A0A]">Crear otra boda gratis</span>
+          <span className="text-[15px] font-semibold text-[#0A0A0A]">Crear otra boda gratis</span>
           <span className="hidden sm:block text-[13px] text-[#52525B]">Invitados y mesas sin costo, para otra fecha o evento.</span>
         </span>
       </span>
-      <span className="hidden sm:block text-[13px] font-bold text-[#AE5730]">Empezar</span>
+      <span className="hidden sm:block text-[13px] font-semibold text-[#AE5730]">Empezar</span>
     </button>
   );
 }
 
 const primaryButton =
-  'inline-flex items-center gap-2 h-[46px] px-5 rounded-[10px] bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-bold';
+  'inline-flex items-center gap-2 h-[46px] px-5 rounded-[10px] bg-[#AE5730] text-white hover:bg-[#8F4524] text-sm font-semibold';
 
 export default function AdminHomePage() {
   const auth = useAuth();
@@ -551,9 +552,7 @@ export default function AdminHomePage() {
   return (
     <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA]" style={manrope}>
       <div className="bg-white border-b border-[rgba(0,0,0,0.06)] px-4 sm:px-10 h-[60px] flex items-center justify-between gap-4">
-        <span className="text-xl sm:text-2xl text-[#0A0A0A]" style={displayFont}>
-          invyta
-        </span>
+        <BrandWordmark className="text-2xl sm:text-[28px]" />
         <AccountControls />
       </div>
 
@@ -562,7 +561,7 @@ export default function AdminHomePage() {
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div className="flex flex-col gap-1.5">
               {auth.isAdmin && (
-                <div className="text-[11px] font-extrabold tracking-[0.12em] text-[#AE5730] uppercase">Panel de operador</div>
+                <div className="text-[11px] font-semibold tracking-[0.12em] text-[#AE5730] uppercase">Panel de operador</div>
               )}
               <h1 className="m-0 text-[26px] sm:text-[30px] text-[#0A0A0A]" style={displayFont}>
                 {single ? 'Mi invitación' : 'Mis invitaciones'}
@@ -570,16 +569,16 @@ export default function AdminHomePage() {
               <p className="m-0 text-sm text-[#3F3F46]">{subtitle}</p>
               {auth.isAdmin && !empty && (
                 <div className="flex gap-2 flex-wrap mt-1.5">
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#F4F4F5] text-[#3F3F46]">
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#F4F4F5] text-[#3F3F46]">
                     {auth.weddings.length} {auth.weddings.length === 1 ? 'invitación' : 'invitaciones'}
                   </span>
                   {templateCount > 0 && (
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[rgba(198,102,60,0.1)] text-[#8F4524]">
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[rgba(198,102,60,0.1)] text-[#8F4524]">
                       {templateCount} con plantilla
                     </span>
                   )}
                   {freeCount > 0 && (
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#F4F4F5] text-[#3F3F46]">
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#F4F4F5] text-[#3F3F46]">
                       {freeCount} {freeCount === 1 ? 'gratuita' : 'gratuitas'}
                     </span>
                   )}
@@ -596,7 +595,7 @@ export default function AdminHomePage() {
               <button
                 type="button"
                 onClick={() => setShowFreeNew(true)}
-                className="inline-flex w-fit items-center gap-2 h-[46px] px-5 rounded-[10px] bg-white text-[#AE5730] border border-[rgba(198,102,60,0.35)] hover:bg-[rgba(198,102,60,0.06)] text-sm font-bold"
+                className="inline-flex w-fit items-center gap-2 h-[46px] px-5 rounded-[10px] bg-white text-[#AE5730] border border-[rgba(198,102,60,0.35)] hover:bg-[rgba(198,102,60,0.06)] text-sm font-semibold"
               >
                 <Plus className="h-4 w-4" />
                 Crear otra boda gratis
@@ -637,7 +636,7 @@ export default function AdminHomePage() {
               <div className="h-24 w-24 rounded-full border-[1.5px] border-dashed border-[rgba(174,87,48,0.4)] bg-[#FBF5F1] flex items-center justify-center">
                 <Mail className="h-9 w-9 text-[#AE5730]" strokeWidth={1.8} />
               </div>
-              <div className="text-xl font-extrabold text-[#0A0A0A]">Todavía no hay invitaciones</div>
+              <div className="text-xl font-semibold text-[#0A0A0A]">Todavía no hay invitaciones</div>
               <div className="text-sm text-[#3F3F46] max-w-[440px] leading-relaxed">
                 Crea la primera: solo necesitas los nombres, los correos con los que entrarán, la fecha y la plantilla.
               </div>
@@ -653,14 +652,14 @@ export default function AdminHomePage() {
               <div className="h-16 w-16 rounded-full bg-[#F4F4F5] flex items-center justify-center">
                 <Search className="h-[26px] w-[26px] text-[#52525B]" />
               </div>
-              <div className="text-lg font-extrabold text-[#0A0A0A] break-words">Ninguna invitación coincide con «{query}»</div>
+              <div className="text-lg font-semibold text-[#0A0A0A] break-words">Ninguna invitación coincide con «{query}»</div>
               <div className="text-sm text-[#3F3F46] max-w-[460px] leading-relaxed">
                 Busca por nombre de la pareja, ID de la boda, correo con acceso o correo del planner.
               </div>
               <button
                 type="button"
                 onClick={() => setQuery('')}
-                className="mt-0.5 inline-flex items-center justify-center h-11 px-[18px] rounded-[10px] bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#F4F4F5] text-sm font-bold"
+                className="mt-0.5 inline-flex items-center justify-center h-11 px-[18px] rounded-[10px] bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] hover:bg-[#F4F4F5] text-sm font-semibold"
               >
                 Limpiar búsqueda
               </button>
