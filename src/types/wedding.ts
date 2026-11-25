@@ -320,6 +320,7 @@ export interface PhotoAlbumConfig {
   enabled: boolean; // lo escribe solo el operador
   mode: 'open' | 'disposable'; // lo elige la pareja; 'open' por defecto
   activatedAt: string; // ISO, la primera vez que el operador lo enciende
+  uploadsClosed?: boolean; // la pareja cerró la subida antes de tiempo: el álbum queda solo para ver
 }
 
 // Spec 29 — una foto subida por un invitado (colección albumPhotos). Solo la lee y escribe el servidor.

@@ -53,7 +53,7 @@ const CONTROL = [
   { n: '1', title: 'Decides qué se ve', body: 'Oculta o borra cualquier foto al momento.' },
   { n: '2', title: 'Solo para tus invitados', body: 'Entra quien tiene el link de tu boda o el QR de las mesas.' },
   { n: '3', title: 'Tres semanas para compartir', body: 'Hasta 30 fotos por invitación, desde el día de la boda.' },
-  { n: '4', title: 'Dos años para descargarlas', body: 'Las fotos se guardan 2 años desde tu boda.' },
+  { n: '4', title: 'Un año para descargarlas', body: 'Las fotos se guardan 1 año desde tu boda.' },
 ];
 const INCLUDES = [
   'Álbum con el diseño de tu invitación',

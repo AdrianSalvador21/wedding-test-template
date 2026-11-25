@@ -85,7 +85,8 @@ Todo este spec aplica **solo a bodas con `tier !== 'free'`**.
 4. **Página pública del álbum** en `/{locale}/wedding/{id}/fotos`, **con el diseño del template de la boda**.
    - Con `?guest={guestId}`, las fotos se atribuyen a esa invitación con su nombre.
    - Sin `?guest=` (QR general), se usa un id anónimo del dispositivo y un nombre opcional.
-5. **Ventana de subida:** desde las 00:00 del día de la boda hasta las 23:59 del día +21 (3 semanas), en hora de la Ciudad de México.
+5. **Tope de 2,000 fotos por boda** (`ALBUM_WEDDING_LIMIT`), contando las ocultas. Al llegar, la API rechaza más subidas, el invitado ve "El álbum de los novios ya está lleno. ¡Gracias por compartir tus fotos!" y el panel muestra un aviso desde el 80 % (el contador "Fotos subidas" no muestra el tope). Borrar fotos libera espacio.
+5b. **Ventana de subida:** desde las 00:00 del día de la boda hasta las 23:59 del día +21 (3 semanas), en hora de la Ciudad de México.
 6. **Acceso desde la invitación:**
    - **Templates 01, 03 y 04:** un botón flotante "Comparte tus fotos" abajo a la izquierda, con el estilo de botón de cada template.
    - **Template 02:** sin botón flotante. El día de la boda, `StickyConfirmBarV2` cambia su botón "Confirmar" por "Comparte tus fotos".
@@ -101,7 +102,7 @@ Todo este spec aplica **solo a bodas con `tier !== 'free'`**.
    - la galería, con el filtro "Todas / Ocultas", y ocultar o mostrar y borrar en cada foto;
    - la descarga en ZIP y el QR imprimible por template;
    - el aviso de hasta cuándo se guardan las fotos.
-9. **Retención de 2 años desde la fecha de la boda.** Se guarda la fecha y se muestra el aviso. Las fotos no se borran solas en este spec.
+9. **Retención de 1 año desde la fecha de la boda.** Se guarda la fecha y se muestra el aviso. Las fotos no se borran solas en este spec.
 10. **Textos del invitado en español e inglés**, según el idioma de la URL.
 11. **Página de venta en el panel** para las bodas sin el álbum activado.
 12. **Banner en la landing y página pública `/album-de-fotos`** con el detalle, el precio y las preguntas frecuentes.
@@ -135,6 +136,7 @@ export interface PhotoAlbumConfig {
   enabled: boolean;              // lo escribe solo el operador
   mode: 'open' | 'disposable';   // lo elige la pareja; 'open' por defecto
   activatedAt: string;           // ISO, la primera vez que el operador lo enciende
+  uploadsClosed?: boolean;       // la pareja cerró la subida antes de tiempo: el álbum queda solo para ver
 }
 
 photoAlbum?: PhotoAlbumConfig;
@@ -147,12 +149,13 @@ Las fechas no se guardan. Se calculan con `event.date` en `lib/album.ts`, en la 
 | `uploadOpensAt(wedding)` | 00:00 del día de la boda |
 | `uploadClosesAt(wedding)` | 23:59:59 del día de la boda + 21 |
 | `revealAt(wedding)` | 10:00 del día siguiente a la boda |
-| `expiresAt(wedding)` | final del día de la boda + 2 años |
+| `expiresAt(wedding)` | final del día de la boda + 1 año |
 | `albumPhase(wedding, now)` | `'disabled' \| 'before' \| 'open' \| 'closed' \| 'expired'` |
 
 - Sin `event.date`, la fase es `'before'` y la página dice "La fecha de la boda aún no está definida".
 - Apagar el álbum (`enabled: false`) da `'disabled'` y no borra fotos.
 - El modo se puede cambiar solo en la fase `'before'`.
+- **Cierre por la pareja:** con `uploadsClosed: true`, dentro de la ventana la fase es `'closed'` (antes del día de la boda sigue siendo `'before'`). La pareja puede volver a abrirla mientras dure la ventana. En modo cámara desechable, cerrar la subida también revela el álbum completo (`isRevealed` da `true`), porque se cierra para compartirlo.
 
 ### Colección nueva `albumPhotos`
 
@@ -209,10 +212,10 @@ Un objeto `ALBUM_THEMES: Record<'template-01' | 'template-02' | 'template-03' | 
 | --- | --- | --- |
 | `GET /api/album/[weddingId]?guest=&device=` | público | Devuelve `{ phase, mode, revealAt, names, templateId, remaining, photos }`. En modo abierto, `photos` son todas las fotos con `hidden: false`. En modo desechable, antes de `revealAt`, solo las del mismo `guestId` o `deviceId`. Cada foto trae `{ id, thumbUrl, url, width, height, uploaderName, createdAt }`. |
 | `POST /api/album/[weddingId]/photos` | público | `multipart/form-data` con `photo` (JPEG ≤ 1.5 MB), `thumb` (JPEG ≤ 200 KB), `guestId` o `deviceId`, y `name` opcional. Valida y escribe en Storage y en `albumPhotos`. |
-| `GET /api/panel/album/[weddingId]` | dueño u operador | Devuelve todas las fotos, incluidas las ocultas, y `stats: { total, hidden, participants }`. `participants` es el número de `guestId` y `deviceId` distintos. |
+| `GET /api/panel/album/[weddingId]` | dueño u operador | Devuelve todas las fotos, incluidas las ocultas, `uploadsClosed` y `stats: { total, hidden, participants }`. `participants` es el número de `guestId` y `deviceId` distintos. |
 | `PATCH /api/panel/album/[weddingId]/photos/[photoId]` | dueño u operador | `{ hidden: boolean }`. |
 | `DELETE /api/panel/album/[weddingId]/photos/[photoId]` | dueño u operador | Borra los dos archivos de Storage y el documento. |
-| `PATCH /api/panel/album/[weddingId]` | dueño u operador | `{ mode }`. Solo en la fase `'before'`; si no, responde 409. |
+| `PATCH /api/panel/album/[weddingId]` | dueño u operador | `{ mode }` y/o `{ uploadsClosed }`. El modo solo en la fase `'before'` (si no, 409 `mode_locked`); `uploadsClosed` en cualquier fase menos `'expired'` (409 `album_expired`). Responde `{ mode, uploadsClosed, phase }`. |
 | `PATCH /api/admin/weddings/[weddingId]` (existente) | operador | Acepta `photoAlbum: { enabled: boolean }`. La primera vez que se enciende escribe `mode: 'open'` y `activatedAt`. |
 
 Validaciones de `POST .../photos`, en este orden:
@@ -224,6 +227,7 @@ Validaciones de `POST .../photos`, en este orden:
 | `guestId` no corresponde a un invitado de esa boda | 400 `invalid_guest` |
 | No llega ni `guestId` ni un `deviceId` con formato uuid | 400 `missing_uploader` |
 | El archivo no es `image/jpeg` o pasa del tamaño | 400 `invalid_file` |
+| La boda ya tiene 2,000 fotos (incluidas las ocultas) | 429 `album_full` |
 | Ya hay 30 fotos para ese `guestId` o `deviceId` | 429 `limit_reached` |
 
 **`requireWeddingAccess(req, weddingId)`** se agrega en `lib/serverAuth.ts`. Pasa si el correo verificado es de un operador o está en `weddingOwners/{weddingId}.emails`.
@@ -234,13 +238,15 @@ Validaciones de `POST .../photos`, en este orden:
 - `album_zip_downloaded: { photos: number }`
 - `album_qr_downloaded: NoProps`
 - `album_activation_cta_click: NoProps`
+- `album_uploads_toggled: { closed: boolean }`
+- `album_link_copied: NoProps`
 
 ### Archivos nuevos
 
 | Archivo | Contenido |
 | --- | --- |
 | `storage.rules` | `allow read, write: if false` para todo |
-| `lib/album.ts` | fechas, `albumPhase`, `ALBUM_PHOTO_LIMIT = 30` (funciones puras) |
+| `lib/album.ts` | fechas, `albumPhase`, `ALBUM_PHOTO_LIMIT = 30`, `ALBUM_WEDDING_LIMIT = 2000` (funciones puras) |
 | `lib/imageCompress.ts` | `compressImage(file)` → `{ photo: Blob, thumb: Blob, width, height }` con `createImageBitmap` y canvas |
 | `lib/firebase-admin.ts` (cambio) | se agrega `getAdminBucket()` |
 | `app/api/album/[weddingId]/route.ts` | GET público |
@@ -256,6 +262,8 @@ Validaciones de `POST .../photos`, en este orden:
 | `components/admin/album/AlbumQrCard.tsx` | QR imprimible por template (PNG) |
 | `components/admin/album/DeletePhotoModal.tsx` | modal para confirmar el borrado |
 | `components/admin/album/AlbumZipModal.tsx` | progreso de la descarga en ZIP |
+| `components/admin/album/PanelPhotoViewer.tsx` | visor a pantalla completa de las fotos en el panel |
+| `components/admin/album/AlbumShareCard.tsx` | "Compartir álbum": enlace para copiar o abrir, y el interruptor para cerrar la subida |
 | `components/admin/album/AlbumSalesPanel.tsx` | página de venta del panel (álbum sin activar) |
 | `lib/albumServer.ts` | utilidades del servidor (lectura de bodas y fotos, guardado en Storage) |
 | `app/api/panel/album/[weddingId]/photos/[photoId]/route.ts` (GET) | entrega el JPEG de una foto para el ZIP, sin depender de configurar CORS en el bucket |
@@ -270,7 +278,7 @@ Dependencias nuevas: `qrcode`, para el QR, y `client-zip`, para el ZIP en el nav
 
 ### Página del invitado (`/fotos`)
 
-- **Se ve con el estilo del template de la boda** (`ALBUM_THEMES[templateId]`), como en la página "Por template" del canvas. La columna es móvil, de máximo 480 px, centrada en escritorio.
+- **Se ve con el estilo del template de la boda** (`ALBUM_THEMES[templateId]`), como en la página "Por template" del canvas. En celular es una columna de máximo 480 px. Desde 768 px se ensancha a 960 px, con la galería en 3 columnas (Clásico 4) y los controles en un bloque de 560 px. **Desde 1024 px son dos columnas**, como en la página "Álbum en escritorio" del canvas: a la izquierda, fija (sticky) y de 360–440 px, el encabezado del template en tamaño grande y los controles de subida; a la derecha, "Fotos de todos" en 4 columnas (Clásico 5). En escritorio la ventana de subida es un modal centrado de 520 px en vez de la hoja desde abajo.
 - **Encabezado:** lleva "Álbum de la boda", los nombres de los novios con el adorno de su template y la fecha.
 - **Estados según la fase:**
 
@@ -280,7 +288,7 @@ Dependencias nuevas: `qrcode`, para el QR, y `client-zip`, para el ZIP en el nav
 | `open`, modo abierto | El saludo, el botón "Subir fotos", el contador "Te quedan {n} de 30 fotos", la nota de privacidad y la cuadrícula "Fotos de todos", de la más reciente a la más antigua, con el nombre de quien subió cada una. |
 | `open`, modo desechable | Una tarjeta "Cámara desechable · El álbum se revela el {fecha} a las 10:00. Mientras, solo tú ves tus fotos.", el botón, el contador, "Tus fotos" y el aviso "Las fotos de los demás invitados aparecerán aquí el {fecha} a las 10:00." |
 | `open`, con 30 fotos ya subidas | El botón deshabilitado y "Ya subiste tus 30 fotos. ¡Gracias!". |
-| `closed` o después de `revealAt` | "Ya no se reciben fotos", "Gracias por compartir. Aquí están las {n} fotos de la boda." y la cuadrícula completa. En modo desechable se ve completa solo después de `revealAt`. |
+| `closed` | El álbum como recuerdo de los novios, sin botón de subir ni avisos: el mensaje "Estos son los momentos de nuestra boda, vistos a través de sus ojos. Gracias por compartirlos con nosotros: los guardaremos siempre.", la firma "Con cariño, {novia} & {novio}" (con la "y" en el 04), el título "Nuestros recuerdos" y la cuadrícula completa. Se puede ver hasta que vence el álbum (1 año después de la boda). |
 | `expired`, `disabled` o `free` | "Este álbum no está disponible." y "Si crees que es un error, pregúntales a los novios." |
 
 - **Con link personal:** el saludo es "Hola, {guest.name}. Comparte las fotos que tomaste hoy." No se pide nombre.
@@ -315,7 +323,10 @@ Dependencias nuevas: `qrcode`, para el QR, y `client-zip`, para el ZIP en el nav
 - **Template 02:**
   - No usa `AlbumFab`.
   - En la fase `'open'`, `StickyConfirmBarV2` cambia el subtítulo por "Hoy es el día" y el botón "Confirmar" por "Comparte tus fotos". En la fase `'closed'`, por "Ver álbum".
-  - La barra mantiene su regla de aparecer al salir del hero y ocultarse en el RSVP.
+  - Con el álbum activo, la barra se ve desde que se abre la invitación y no se oculta al llegar al RSVP: es el acceso a las fotos. Sin el álbum activo mantiene su regla de aparecer al salir del hero y ocultarse en el RSVP.
+- **Tarjeta de bienvenida del invitado** (`InvitationOverlay` en los templates 01, 03 y 04, e `InvitationOverlayV2` en el 02):
+  - En las fases `'open'` y `'closed'`, debajo de "Abrir invitación" aparece un botón secundario "Comparte tus fotos" (o "Ver álbum"), con ícono de cámara, que lleva a `/fotos?guest={guestId}`.
+  - No aparece en el modo demo ni sin el álbum activo.
 
 ### Sección "Fotos" del panel
 
@@ -345,17 +356,27 @@ Dependencias nuevas: `qrcode`, para el QR, y `client-zip`, para el ZIP en el nav
     - título "Fotos";
     - `meta` con `AdminStatusPill tone="active"` "Álbum activo" y "Modo: álbum abierto" o "Modo: cámara desechable";
     - `actions` con `AdminButton variant="ghost"` "Descargar QR" y `AdminButton` "Descargar todo (ZIP)". En celular quedan "QR" y "Descargar todo".
+  - **Compartir álbum** (`AlbumShareCard`, también en celular), debajo de los contadores:
+    - el enlace general `/{defaultLanguage}/wedding/{id}/fotos` (sin `?guest=`) en un campo de solo lectura, con "Copiar enlace" (cambia a "Copiado") y "Abrir álbum" (pestaña nueva);
+    - el texto "Comparte este enlace con tu familia para que vean el álbum." más "Mientras la subida esté abierta, también podrán subir fotos." o "Con la subida cerrada, solo pueden verlo.";
+    - el interruptor **"Recibir fotos de los invitados"**, con su estado: "Abierta hasta el {cierre}: tus invitados pueden subir fotos.", "Cerrada: el álbum solo se puede ver. Puedes volver a abrirla hasta el {cierre}.", "Se abre el día de la boda y dura hasta el {cierre}." o, si la ventana ya terminó, "La subida cerró el {cierre}. El álbum solo se puede ver." (sin interruptor);
+    - en modo cámara desechable, con la subida abierta: "Al cerrarla, el álbum completo se revela para todos."
+    - Con la subida cerrada, el encabezado suma la etiqueta "Subida cerrada".
   - **4 contadores (`AdminStatCard`):** "Fotos subidas", "Invitaciones que participaron" ("Participaron" en celular), "Ocultas" y "Cierre de subida" ({día} {mes abreviado}). En escritorio van en 4 columnas; en celular, en 2 × 2.
-  - **3 tarjetas, solo en escritorio:**
+  - **3 tarjetas** (en escritorio, en 3 columnas; en celular se apilan "Modo del álbum" y "Fechas", y el QR queda en el botón "QR" de la barra superior):
     - **Modo del álbum:** dos opciones (`role="radio"`), "Álbum abierto" ("Cada foto aparece en el álbum en cuanto se sube.") y "Cámara desechable" ("Cada invitado ve solo sus fotos. El álbum se revela el {fecha} a las 10:00."). Desde el día de la boda se bloquean con "El modo ya no se puede cambiar".
     - **Fechas:** "Subida de fotos · Del {apertura} al {cierre}", "Se guardan hasta · {expiresAt}. Descárgalas antes." y "Hasta 30 fotos por invitación o por teléfono."
-    - **QR para las mesas:** una vista previa, "Imprímelo y ponlo en cada mesa. Abre el álbum sin necesidad de la invitación." y el enlace "Ver y descargar".
+    - **QR para las mesas:** una vista previa, "Imprímelo y ponlo en cada mesa. Abre el álbum sin necesidad de la invitación." y, bajo "Descargar", dos botones: **"Con diseño"** (el PNG de 1200 × 1600 con el estilo del template, `qr-album-{id}.png`) y **"Solo el QR"** (PNG de 1200 × 1200, negro sobre blanco con margen, `qr-album-{id}-solo.png`, para meterlo en un diseño propio).
+    - El QR y el enlace de "Compartir álbum" usan siempre el dominio de producción (`SITE.url`): `https://www.invyta.me/wedding/{id}/fotos` (en inglés, `/en/wedding/{id}/fotos`), aunque el panel se abra en localhost o en un preview. "Abrir álbum" usa la ruta relativa.
   - **Galería:**
     - Lleva un filtro segmentado "Todas · {total} / Ocultas · {ocultas}".
     - Cada foto muestra la miniatura cuadrada y debajo el nombre de quien subió ("Invitado" si no hay), la hora y dos acciones: ocultar o mostrar, y borrar.
     - En escritorio, las acciones son íconos de 34 px junto al nombre, en una cuadrícula de `minmax(160px, 1fr)`.
     - En celular, la cuadrícula es de 2 columnas, y debajo del nombre y la hora van dos botones de 44 px, ocultar o mostrar y borrar, a lo ancho de la foto.
+    - Cada foto tiene también **"Descargar"** (ícono en escritorio, botón de 44 px en celular y en el visor): baja la foto de 2048 px con el nombre `{quien-subio}-{fecha}-{id}.jpg`, **directo de Firebase**: al subirla, la foto completa se guarda con `Content-Disposition: attachment; filename="..."` (`photoFileName`), así el enlace la descarga en vez de abrirla, y si ya se vio en el visor el navegador la toma de su caché.
+    - Cada tarjeta de la galería lleva dos líneas: arriba el nombre y la hora; abajo las tres acciones (Descargar, Ocultar/Mostrar, Borrar) en botones del mismo ancho (44 px de alto en celular, 36 px en escritorio).
     - Una foto oculta se ve al 35 % de opacidad, con la etiqueta "Oculta".
+    - **Visor:** al tocar una miniatura se abre `PanelPhotoViewer` a pantalla completa, sobre la lista filtrada: "{i} de {total}", anterior y siguiente (botones, flechas del teclado o deslizando en celular), Esc para cerrar, el nombre de quien la subió y la hora, y los botones "Ocultar"/"Mostrar" y "Borrar" (abre `DeletePhotoModal` por encima). Si la foto sale de la lista, el visor pasa a la que quedó en su lugar.
   - **Borrar** abre `DeletePhotoModal`, no `confirm()`. Lleva:
     - la miniatura;
     - "¿Borrar esta foto?";
@@ -415,7 +436,7 @@ Cada paso deja el proyecto compilando y lo que ya existe funcionando igual.
    - Agregar `PhotoAlbumConfig`, `photoAlbum?` y `AlbumPhoto`.
    - Crear `lib/album.ts`, `components/album/albumThemes.ts` y los 4 eventos de analytics.
    - Agregar `getAdminBucket()` y `requireWeddingAccess`.
-   - Prueba: `npm run build` sin errores. `albumPhase` con una boda del 2027-03-14 da `'before'` el 13 a las 23:59, `'open'` el 14 a las 00:00 y el 4 de abril a las 23:59, `'closed'` el 5 de abril y `'expired'` el 2029-03-15. `revealAt` da el 2027-03-15 a las 10:00, hora de la Ciudad de México.
+   - Prueba: `npm run build` sin errores. `albumPhase` con una boda del 2027-03-14 da `'before'` el 13 a las 23:59, `'open'` el 14 a las 00:00 y el 4 de abril a las 23:59, `'closed'` el 5 de abril y `'expired'` el 2028-03-15. `revealAt` da el 2027-03-15 a las 10:00, hora de la Ciudad de México.
 3. **Activación por el operador.**
    - Extender `PATCH /api/admin/weddings/[weddingId]` y `SettingsModal`.
    - Prueba: al encenderlo en una boda `template` queda `photoAlbum = { enabled: true, mode: 'open', activatedAt }`. Al apagarlo y volver a encenderlo se conservan `mode` y `activatedAt`. En una boda `free` responde 400.
@@ -482,11 +503,16 @@ Cada paso deja el proyecto compilando y lo que ya existe funcionando igual.
 
 - [ ] En la fase `'open'`, los templates 01, 03 y 04 muestran "Comparte tus fotos" abajo a la izquierda, y el 02 lo muestra en su barra fija en lugar de "Confirmar". En los cuatro lleva a `/fotos` conservando `?guest=`.
 - [ ] El hero de cada template se ve igual que en producción, salvo por el botón nuevo.
+- [ ] En el 02, con el álbum activo, la barra con "Comparte tus fotos" se ve desde que se abre la invitación, sin hacer scroll.
+- [ ] Con el álbum activo, la tarjeta de bienvenida del invitado muestra "Comparte tus fotos" junto a "Abrir invitación", y lleva a `/fotos` con su `?guest=`.
 - [ ] `/fotos` usa los colores, las tipografías y los adornos del template de la boda, y no muestra numerales de sección.
 - [ ] Antes del día de la boda, `/fotos` dice "El álbum se abre el día de la boda" y no deja subir.
-- [ ] El día +22 de la boda, `/fotos` dice "Ya no se reciben fotos" y el servidor rechaza las subidas con 403.
+- [ ] El día +22 de la boda, `/fotos` muestra el mensaje de los novios y el álbum completo, sin botón de subir, y el servidor rechaza las subidas con 403.
 - [ ] Con link personal, `/fotos` saluda con el nombre del invitado, y sus fotos aparecen con ese nombre.
 - [ ] Con el link general, las fotos aparecen con el nombre escrito o, si está vacío, con "Invitado". El contador dice "en este teléfono".
+- [ ] Con 2,000 fotos en la boda (contando ocultas), una subida más responde 429 `album_full`; `/fotos` desactiva "Subir fotos" con "El álbum de los novios ya está lleno…" y las fotos en espera se marcan como fallidas. Al borrar una, se puede volver a subir.
+- [ ] El panel muestra un aviso ámbar desde 1,600 fotos y rojo en 2,000; el contador "Fotos subidas" muestra solo el número.
+- [ ] En escritorio (1440 px) `/fotos` muestra dos columnas: el encabezado y "Subir fotos" fijos a la izquierda y la galería en 4 columnas (5 en el Clásico) a la derecha; la subida se abre en un modal centrado. En celular se ve igual que antes.
 - [ ] Ninguna foto guardada pasa de 2048 px en su lado mayor, y cada una tiene su miniatura de 480 px.
 - [ ] Al llegar a 30 fotos, el botón se deshabilita con "Ya subiste tus 30 fotos. ¡Gracias!", y la API responde 429.
 - [ ] Con el QR general, un mismo navegador tampoco pasa de 30 fotos.
@@ -512,13 +538,26 @@ Cada paso deja el proyecto compilando y lo que ya existe funcionando igual.
 - [ ] El filtro "Ocultas" muestra solo las fotos ocultas, y "Todas" muestra todas.
 - [ ] Cada foto muestra el nombre de quien la subió, la hora, ocultar o mostrar y borrar, en escritorio y en celular.
 - [ ] En celular, los botones de ocultar y borrar miden al menos 44 px de alto.
+- [ ] Al tocar una foto del panel se abre el visor a pantalla completa, y se puede pasar a la anterior y a la siguiente con botones, teclado o deslizando en celular.
+- [ ] Desde el visor se puede ocultar, mostrar y borrar la foto.
+- [ ] Cada foto se puede descargar una por una desde la galería (escritorio y celular) y desde el visor.
 - [ ] "Borrar" pide confirmar en `DeletePhotoModal` y elimina la foto y sus 2 archivos de Storage.
 - [ ] El modo se puede cambiar antes del día de la boda, y desde ese día aparece bloqueado.
-- [ ] El panel muestra la ventana de subida y "Se guardan hasta {boda + 2 años}. Descárgalas antes."
-- [ ] "Descargar QR" baja un PNG con el estilo del template y un QR que abre `/fotos` sin `?guest=`.
+- [ ] "Compartir álbum" copia y abre el enlace `/wedding/{id}/fotos`, en escritorio y en celular.
+- [ ] Al apagar "Recibir fotos de los invitados", `/fotos` muestra el mensaje de los novios y el álbum completo, la API rechaza subidas con 403 y la invitación cambia "Comparte tus fotos" por "Ver álbum". Al volver a encenderlo, todo regresa.
+- [ ] En modo cámara desechable, cerrar la subida muestra el álbum completo a todos, sin esperar al revelado.
+- [ ] En celular se ven las tarjetas "Modo del álbum" y "Fechas", y el modo se puede cambiar desde ahí.
+- [ ] El panel muestra la ventana de subida y "Se guardan hasta {boda + 1 año}. Descárgalas antes."
+- [ ] "Descargar QR" y "Con diseño" bajan un PNG con el estilo del template y un QR que abre `/fotos` sin `?guest=`.
+- [ ] "Solo el QR" baja un PNG cuadrado con únicamente el código.
+- [ ] El QR apunta a `https://www.invyta.me/...` también cuando el panel corre en localhost.
 - [ ] "Descargar todo (ZIP)" baja solo las fotos visibles, en archivos de máximo 200 fotos cada uno, y muestra el progreso.
 
 ## Decisiones tomadas y descartadas
+
+- **Sí: tope de 2,000 fotos por boda.** Decisión del usuario, con el álbum a $399. Una boda típica junta de 300 a 600 fotos (estimación propia), y en el peor caso (150 invitados recorriendo todo el álbum y el ZIP bajado un par de veces) 2,000 fotos cuestan ~$40 MXN al año entre Storage y descargas: ~10 % del precio. Además acota el abuso del QR general (30 por teléfono, pero teléfonos sin límite) y el tamaño de la lista que hoy se carga completa.
+  - **Sí: las ocultas cuentan.** Siguen ocupando Storage; solo borrar libera espacio.
+  - **No (por ahora):** vender ampliaciones (+2,000 por un extra). Queda como idea si alguna boda llega al tope.
 
 - **Sí: no se crea un panel de invitados.** El link de la invitación ya funciona como su "panel", en línea con la idea de "el mismo link evoluciona" del spec 27.
 - **Sí: dos accesos, el link personal y el QR general.** Decisión del usuario.
@@ -530,6 +569,7 @@ Cada paso deja el proyecto compilando y lo que ya existe funcionando igual.
   - **No:** AWS S3, que es el que más cobra por descarga.
   - El bucket va en `us-central1` porque la capa sin costo solo aplica en regiones de EE. UU.
 - **Sí: todo pasa por el servidor.** `storage.rules` y `albumPhotos` están cerrados para los clientes. Así el límite de 30, la ventana de subida y el revelado diferido no se pueden saltar desde el navegador, aunque el resto de Firestore siga abierto.
+- **Sí: el QR no se guarda.** Se genera en el navegador cada vez, a partir de una URL fija por boda (sin token ni caducidad propia). Un QR impreso sirve mientras exista el álbum: antes de la boda muestra "todavía no", durante la ventana permite subir, luego solo ver, y al año dice que el álbum ya no está disponible.
 - **Sí: URLs con token de descarga.** Funcionan con las reglas cerradas, y el servidor decide a quién se las da.
 - **Sí: es un extra de $399 MXN que activa el operador después del pago por WhatsApp.** Decisión del usuario. **No:** incluirlo en los paquetes ni cobrarlo en línea.
 - **Sí: sin el álbum activado, la invitación no menciona las fotos, y el panel sí ofrece el álbum.** Decisión del usuario.
@@ -545,7 +585,7 @@ Cada paso deja el proyecto compilando y lo que ya existe funcionando igual.
 - **Sí: solo fotos, comprimidas a 2048 px con una miniatura de 480 px.** Decisión del usuario.
   - Una foto queda en ~400 KB, y con eso el costo se mantiene en la capa sin costo.
   - **No:** guardar el original ni subir videos.
-- **Sí: se guardan 2 años desde la boda, y en este spec solo se muestra la fecha.** Decisión del usuario (antes eran 12 meses). El borrado automático va en otro spec.
+- **Sí: se guardan 1 año desde la boda (el álbum se puede ver hasta entonces), y en este spec solo se muestra la fecha.** Decisión del usuario (pasó por 12 meses y 2 años; quedó en 1 año). El borrado automático va en otro spec.
 - **Sí: el ZIP se arma en el navegador con `client-zip`, en partes de 200 fotos.** Así no depende del límite de tiempo de las funciones del servidor, y no se carga 1 GB en memoria.
 - **Sí: el álbum tiene página propia.** Decisión del usuario. **No:** una sección dentro de cada uno de los 4 sets de secciones.
 - **Sí: la página `/fotos` y el QR imprimible toman el diseño del template de la boda.** Decisión del usuario, después de revisar el diseño.
@@ -564,6 +604,13 @@ Cada paso deja el proyecto compilando y lo que ya existe funcionando igual.
   - **No:** usar el Drive de la pareja como almacenamiento del álbum. Si la pareja revoca el permiso o se le llena el Drive, el álbum se rompe en plena boda.
 - **Sí: la página de venta del panel se rediseñó con prácticas de marketing** (encabezado con demostración, urgencia con la fecha real de la boda, sin/con, pasos, precio anclado por invitado y preguntas frecuentes). Decisión del usuario. **No:** testimonios ni cifras de uso, porque no hay reseñas reales; **no:** comparar el precio con la competencia, porque Convite también cobra $399.
 - **Sí: la landing solo lleva un banner sin precio, y el detalle va en `/album-de-fotos`.** Decisión del usuario: la landing ya es extensa. **No:** agregarlo al menú principal.
+- **Sí: la pareja puede cerrar la subida antes de tiempo y compartir el enlace del álbum.** Decisión del usuario: así la familia ve el álbum completo sin poder subir. Es el mismo enlace del QR general, sin `?guest=`. Se puede reabrir mientras dure la ventana.
+  - **Sí: en modo cámara desechable, cerrar la subida revela el álbum.** Si no, quien abra el enlace no vería nada hasta el día siguiente.
+  - **No:** un enlace distinto "solo para ver". Con la subida cerrada, el mismo enlace ya es de solo lectura.
+- **Sí: con la subida cerrada, `/fotos` se siente como un regalo de los novios**: un mensaje en su voz y su firma, sin "Ya no se reciben fotos". Decisión del usuario.
+- **Sí: la descarga de una foto va directo a la URL de Firebase, con `Content-Disposition`.** No pasa por Vercel ni necesita CORS, y si la foto ya se vio en el visor, el navegador la toma de su caché.
+  - **Sí: el ZIP pasa por `GET /api/panel/album/.../photos/[photoId]`.** Para armar el ZIP el código tiene que leer los bytes, y eso entre dominios exige CORS. Cuesta la salida de Firebase más el tráfico de Vercel, ~400 KB por foto. **Para después:** configurar CORS en el bucket y que el ZIP baje directo de Firebase.
+  - **Sí: caché de un año en las imágenes** (`Cache-Control: public, max-age=31536000`). Al recargar el panel o el álbum, las miniaturas y las fotos salen de la caché del navegador. Solo se vuelve a pedir la lista (JSON, lecturas de Firestore).
 - **Sí: las fotos se suben de una en una.** Una foto comprimida queda muy por debajo del límite de 4.5 MB por petición de Vercel, y si una falla no se pierden las demás.
 
 ## Riesgos
@@ -573,8 +620,8 @@ Cada paso deja el proyecto compilando y lo que ya existe funcionando igual.
 | Blaze pide tarjeta y factura si se pasa la capa sin costo. | Se usa compresión, el límite de 30, el bucket en `us-central1` y una alerta de presupuesto de US$5. |
 | Las fotos HEIC de iPhone no se pueden leer en un navegador que no sea Safari. | Safari las convierte a JPEG al elegirlas con `accept="image/*"`. Si `createImageBitmap` falla, la foto se marca "Formato no compatible" y las demás siguen. |
 | Alguien sube contenido inapropiado desde el QR general. | La pareja puede ocultar o borrar la foto. Además hay un límite por dispositivo y solo se sube durante la ventana. |
-| Se abusa del QR general borrando los datos del navegador. | Se acepta. Es abuso casual y el peor caso está acotado por la ventana de 22 días. |
-| Las fotos se acumulan después de 2 años porque no se borran solas. | La fecha queda calculada y visible. El borrado va en un spec propio antes de que la primera boda cumpla 2 años. |
+| Se abusa del QR general borrando los datos del navegador. | Se acepta. Es abuso casual y el peor caso está acotado por la ventana de 22 días y el tope de 2,000 fotos por boda. |
+| Las fotos se acumulan después de 1 año porque no se borran solas. | La fecha queda calculada y visible. El borrado va en un spec propio antes de que la primera boda cumpla 1 año. |
 | Una URL con token que se comparte queda abierta para siempre. | Se acepta. Son URLs largas y no se pueden adivinar. Ocultar una foto la quita de la API, pero no invalida su URL. Borrarla sí. |
 | Calcular las fechas con la zona horaria del servidor (UTC) corre la ventana 6 horas. | `lib/album.ts` usa siempre `America/Mexico_City` y se prueba en el paso 2. |
 | Las reglas abiertas de `weddings` dejan que un cliente escriba `photoAlbum.enabled`. | El servidor valida `enabled` al subir, pero un cliente podría activarse el álbum sin pagar. Se acepta por ahora, igual que los demás campos. Cerrarlo va junto con el endurecimiento de las reglas. |

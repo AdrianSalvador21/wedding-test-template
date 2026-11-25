@@ -5,6 +5,9 @@
 import type { PhotoAlbumConfig } from '../src/types/wedding';
 
 export const ALBUM_PHOTO_LIMIT = 30;
+// Máximo de fotos por boda (incluidas las ocultas, que también ocupan espacio). Mantiene el costo
+// de Storage y descargas en ~10 % del precio del álbum y evita abusos del QR general.
+export const ALBUM_WEDDING_LIMIT = 2000;
 export const ALBUM_TIME_ZONE = 'America/Mexico_City';
 const MX_UTC_OFFSET_HOURS = 6;
 
@@ -47,10 +50,10 @@ export function revealAt(wedding: AlbumWeddingLike): Date | null {
   return day ? mexicoCityTime(day.y, day.m, day.d + 1, 10) : null;
 }
 
-// Las fotos se guardan hasta el final del día de la boda + 2 años.
+// Las fotos se guardan hasta el final del día de la boda + 1 año.
 export function expiresAt(wedding: AlbumWeddingLike): Date | null {
   const day = weddingDay(wedding);
-  return day ? mexicoCityTime(day.y + 2, day.m, day.d, 23, 59, 59) : null;
+  return day ? mexicoCityTime(day.y + 1, day.m, day.d, 23, 59, 59) : null;
 }
 
 export function isAlbumEnabled(wedding: AlbumWeddingLike): boolean {
@@ -61,6 +64,11 @@ export function albumMode(wedding: AlbumWeddingLike): AlbumMode {
   return wedding.photoAlbum?.mode === 'disposable' ? 'disposable' : 'open';
 }
 
+// La pareja puede cerrar la subida antes de que termine la ventana (y volver a abrirla).
+export function areUploadsClosedByCouple(wedding: AlbumWeddingLike): boolean {
+  return wedding.photoAlbum?.uploadsClosed === true;
+}
+
 export function albumPhase(wedding: AlbumWeddingLike, now: Date = new Date()): AlbumPhase {
   if (!isAlbumEnabled(wedding)) return 'disabled';
   const opens = uploadOpensAt(wedding);
@@ -69,14 +77,16 @@ export function albumPhase(wedding: AlbumWeddingLike, now: Date = new Date()): A
   if (!opens || !closes || !expires) return 'before';
   const t = now.getTime();
   if (t < opens.getTime()) return 'before';
-  if (t <= closes.getTime()) return 'open';
+  if (t <= closes.getTime()) return areUploadsClosedByCouple(wedding) ? 'closed' : 'open';
   if (t <= expires.getTime()) return 'closed';
   return 'expired';
 }
 
-// En modo desechable, antes del revelado cada invitado solo ve sus fotos.
+// En modo desechable, antes del revelado cada invitado solo ve sus fotos. Si la pareja cierra la
+// subida, el álbum se revela completo: lo cierra para compartirlo.
 export function isRevealed(wedding: AlbumWeddingLike, now: Date = new Date()): boolean {
   if (albumMode(wedding) === 'open') return true;
+  if (areUploadsClosedByCouple(wedding)) return true;
   const reveal = revealAt(wedding);
   return !!reveal && now.getTime() >= reveal.getTime();
 }
@@ -95,3 +105,18 @@ export const isWeddingIdFormat = (id: string): boolean => /^[a-zA-Z0-9_-]{3,50}$
 
 export const isUuid = (value: unknown): value is string =>
   typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+
+// Nombre de archivo sin acentos ni espacios, para los JPG y los ZIP que se descargan.
+export const slug = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase() || 'invitado';
+
+// Nombre con el que se descarga una foto: {invitado}-{fecha}-{id}.jpg. El servidor lo guarda como
+// Content-Disposition del archivo en Storage, así el botón "Descargar" baja la foto directo de
+// Firebase (o de la caché del navegador) sin pasar por nuestro servidor.
+export const photoFileName = (photo: { id: string; uploaderName?: string | null; createdAt: string }) =>
+  `${slug(photo.uploaderName || 'invitado')}-${photo.createdAt.slice(0, 10)}-${photo.id.slice(0, 6).toLowerCase()}.jpg`;

@@ -440,7 +440,7 @@ export const ALBUM_FAQ: FaqItem[] = [
   },
   {
     question: '¿Cuánto tiempo se guardan?',
-    answer: '2 años desde la fecha de tu boda. Puedes descargarlas todas en ZIP cuando quieras.',
+    answer: '1 año desde la fecha de tu boda. Puedes descargarlas todas en ZIP cuando quieras.',
     group: ALBUM_GROUP,
   },
   {

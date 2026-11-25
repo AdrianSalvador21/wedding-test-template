@@ -39,8 +39,10 @@ export interface AnalyticsEventMap {
   // Álbum de fotos de los invitados (spec 29)
   album_photo_uploaded: { mode: 'open' | 'disposable'; source: 'guest' | 'device' };
   album_zip_downloaded: { photos: number };
-  album_qr_downloaded: NoProps;
+  album_qr_downloaded: { variant: 'design' | 'plain' };
   album_activation_cta_click: NoProps;
+  album_uploads_toggled: { closed: boolean };
+  album_link_copied: NoProps;
 }
 
 export type AnalyticsEventName = keyof AnalyticsEventMap;

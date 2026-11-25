@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { displayFont, manrope } from '../ui';
 import { track } from '../../../lib/analytics/client';
+import { slug } from '../../../lib/album';
 
 // Spec 29 — descarga de las fotos visibles en ZIP, armado en el navegador con client-zip, en
 // archivos de máximo 200 fotos (fotos-{weddingId}-1.zip, -2.zip…). Así no depende del límite de
@@ -15,14 +16,6 @@ export interface ZipPhoto {
   uploaderName: string | null;
   createdAt: string;
 }
-
-const slug = (value: string) =>
-  value
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-zA-Z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .toLowerCase() || 'invitado';
 
 export default function AlbumZipModal({
   weddingId,

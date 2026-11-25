@@ -31,7 +31,7 @@ export default function DeletePhotoModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto" style={manrope}>
+    <div className="fixed inset-0 z-[70] overflow-y-auto" style={manrope}>
       <div className="flex items-center justify-center min-h-screen px-4">
         <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)]" onClick={onClose}></div>
 

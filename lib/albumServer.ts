@@ -37,6 +37,11 @@ export async function countUploaderPhotos(db: FirebaseFirestore.Firestore, weddi
   return agg.data().count;
 }
 
+export async function countWeddingPhotos(db: FirebaseFirestore.Firestore, weddingId: string): Promise<number> {
+  const agg = await db.collection('albumPhotos').where('weddingId', '==', weddingId).count().get();
+  return agg.data().count;
+}
+
 export async function listWeddingPhotos(db: FirebaseFirestore.Firestore, weddingId: string): Promise<AlbumPhoto[]> {
   // Se ordena en memoria (de la más reciente a la más antigua): una boda tiene a lo sumo unos miles
   // de fotos y así la consulta no depende de que el índice compuesto ya esté desplegado.
@@ -53,12 +58,18 @@ export function downloadUrl(bucketName: string, path: string, token: string): st
 
 export type AdminBucket = ReturnType<typeof AdminModule.getAdminBucket>;
 
-export async function saveJpeg(bucket: AdminBucket, path: string, data: Buffer): Promise<string> {
+// Con downloadName, el archivo se sirve como descarga (Content-Disposition: attachment): un <img>
+// lo muestra igual, pero un enlace a la URL lo guarda con ese nombre en vez de abrirlo.
+export async function saveJpeg(bucket: AdminBucket, path: string, data: Buffer, downloadName?: string): Promise<string> {
   const token = randomUUID();
   await bucket.file(path).save(data, {
     resumable: false,
     contentType: 'image/jpeg',
-    metadata: { cacheControl: 'public, max-age=31536000', metadata: { firebaseStorageDownloadTokens: token } },
+    metadata: {
+      cacheControl: 'public, max-age=31536000',
+      ...(downloadName ? { contentDisposition: `attachment; filename="${downloadName}"` } : {}),
+      metadata: { firebaseStorageDownloadTokens: token },
+    },
   });
   return downloadUrl(bucket.name, path, token);
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ALBUM_PHOTO_LIMIT, isUuid, isWeddingIdFormat } from '../../../../../lib/album';
-import { albumMode, albumPhase, countUploaderPhotos, findGuest, getAdminDeps, loadWedding, saveJpeg, toPublicPhoto } from '../../../../../lib/albumServer';
+import { ALBUM_PHOTO_LIMIT, ALBUM_WEDDING_LIMIT, isUuid, isWeddingIdFormat, photoFileName } from '../../../../../lib/album';
+import { albumMode, albumPhase, countUploaderPhotos, countWeddingPhotos, findGuest, getAdminDeps, loadWedding, saveJpeg, toPublicPhoto } from '../../../../../lib/albumServer';
 import type { AlbumPhoto } from '../../../../../src/types/wedding';
 
 export const runtime = 'nodejs';
@@ -21,7 +21,7 @@ const toInt = (value: FormDataEntryValue | null) => {
 };
 
 // Spec 29 — subida pública de una foto (ya comprimida en el teléfono). Las validaciones van en el
-// orden del spec: boda/fase, invitado, archivo y límite de 20 por invitación o dispositivo.
+// orden del spec: boda/fase, invitado, archivo, tope de la boda y límite de 30 por invitación o dispositivo.
 export async function POST(request: NextRequest, { params }: { params: { weddingId: string } }) {
   const weddingId = params.weddingId;
   if (!isWeddingIdFormat(weddingId)) return fail(404, 'album_unavailable');
@@ -59,15 +59,18 @@ export async function POST(request: NextRequest, { params }: { params: { wedding
     const thumb = form.get('thumb');
     if (!isJpegFile(photo, MAX_PHOTO_BYTES) || !isJpegFile(thumb, MAX_THUMB_BYTES)) return fail(400, 'invalid_file');
 
-    const used = await countUploaderPhotos(db, weddingId, uploader);
+    const [weddingCount, used] = await Promise.all([countWeddingPhotos(db, weddingId), countUploaderPhotos(db, weddingId, uploader)]);
+    if (weddingCount >= ALBUM_WEDDING_LIMIT) return fail(429, 'album_full');
     if (used >= ALBUM_PHOTO_LIMIT) return fail(429, 'limit_reached');
 
     const ref = db.collection('albumPhotos').doc();
     const storagePath = `albums/${weddingId}/${ref.id}.jpg`;
     const thumbPath = `albums/${weddingId}/${ref.id}_thumb.jpg`;
     const bucket = getBucket();
+    const createdAt = new Date().toISOString();
+    const downloadName = photoFileName({ id: ref.id, uploaderName: uploader.name, createdAt });
     const [url, thumbUrl] = await Promise.all([
-      saveJpeg(bucket, storagePath, Buffer.from(await photo.arrayBuffer())),
+      saveJpeg(bucket, storagePath, Buffer.from(await photo.arrayBuffer()), downloadName),
       saveJpeg(bucket, thumbPath, Buffer.from(await thumb.arrayBuffer())),
     ]);
 
@@ -84,13 +87,14 @@ export async function POST(request: NextRequest, { params }: { params: { wedding
       height: toInt(form.get('height')),
       sizeBytes: photo.size,
       hidden: false,
-      createdAt: new Date().toISOString(),
+      createdAt,
     };
     await ref.set(doc);
 
     return NextResponse.json({
       photo: toPublicPhoto({ ...doc, id: ref.id }),
-      remaining: Math.max(0, ALBUM_PHOTO_LIMIT - used - 1),
+      remaining: Math.max(0, Math.min(ALBUM_PHOTO_LIMIT - used - 1, ALBUM_WEDDING_LIMIT - weddingCount - 1)),
+      albumFull: weddingCount + 1 >= ALBUM_WEDDING_LIMIT,
       mode: albumMode(wedding),
     });
   } catch (error) {

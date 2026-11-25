@@ -1,19 +1,29 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { Download, QrCode } from 'lucide-react';
 import { track } from '../../../lib/analytics/client';
+import { SITE } from '../../../lib/site';
 import { getAlbumTheme, type AlbumTheme } from '../../album/albumThemes';
 
 // Spec 29 — QR imprimible para las mesas: PNG de 1200 × 1600 px con el estilo del template de la
 // boda, "Álbum de la boda", los nombres, el QR del link general (/[idioma]/wedding/[id]/fotos, sin
 // ?guest=) y "Escanea y comparte tus fotos de la boda". Se dibuja en el navegador con <canvas>.
+// También se puede bajar solo el QR (PNG cuadrado, negro sobre blanco) para meterlo en un diseño propio.
+// Nada se guarda: el QR se genera cada vez a partir de la URL, que es fija para cada boda.
 
 const W = 1200;
 const H = 1600;
 
+// Ruta del álbum. En español va sin prefijo (/es/... redirige ahí), así el QR queda más corto.
+export function albumPath(weddingId: string, language: string): string {
+  return `${language === 'en' ? '/en' : ''}/wedding/${encodeURIComponent(weddingId)}/fotos`;
+}
+
+// URL pública del álbum, siempre con el dominio de producción: es la que va en el QR impreso y la
+// que se copia para compartir, aunque el panel se abra en localhost o en un preview.
 export function albumPublicUrl(weddingId: string, language: string): string {
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  return `${origin}/${language === 'en' ? 'en' : 'es'}/wedding/${encodeURIComponent(weddingId)}/fotos`;
+  return `${SITE.url}${albumPath(weddingId, language)}`;
 }
 
 type Ctx = CanvasRenderingContext2D & { letterSpacing?: string };
@@ -215,27 +225,44 @@ function inlineNamesLeft(ctx: Ctx, x: number, y: number, parts: { value: string;
   });
 }
 
+// Solo el QR: 1200 × 1200 px, negro sobre blanco y con margen, el formato más fácil de escanear.
+export async function renderPlainQrPng(url: string): Promise<Blob> {
+  const QRCode = (await import('qrcode')).default;
+  const canvas = document.createElement('canvas');
+  await QRCode.toCanvas(canvas, url, { width: 1200, margin: 4, errorCorrectionLevel: 'M', color: { dark: '#000000', light: '#FFFFFF' } });
+  return await new Promise<Blob>((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('png'))), 'image/png'));
+}
+
+function saveBlob(blob: Blob, fileName: string) {
+  const href = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(href), 2000);
+}
+
 export async function downloadAlbumQr(weddingId: string, templateId: string | null | undefined, names: { bride: string; groom: string }, language: string) {
   const blob = await renderAlbumQrPng(templateId, names, albumPublicUrl(weddingId, language), {
     eyebrow: 'Álbum de la boda',
     line: 'Escanea y comparte tus fotos de la boda',
     sub: 'Sin app ni registro',
   });
-  const href = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = href;
-  a.download = `qr-album-${weddingId}.png`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(href), 2000);
-  track('album_qr_downloaded', {});
+  saveBlob(blob, `qr-album-${weddingId}.png`);
+  track('album_qr_downloaded', { variant: 'design' });
+}
+
+export async function downloadPlainAlbumQr(weddingId: string, language: string) {
+  saveBlob(await renderPlainQrPng(albumPublicUrl(weddingId, language)), `qr-album-${weddingId}-solo.png`);
+  track('album_qr_downloaded', { variant: 'plain' });
 }
 
 // Tarjeta "QR para las mesas" del panel: vista previa y descarga.
 export default function AlbumQrCard({ weddingId, templateId, names, language }: { weddingId: string; templateId: string | null | undefined; names: { bride: string; groom: string }; language: string }) {
   const [preview, setPreview] = useState<string>('');
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState<'design' | 'plain' | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -250,14 +277,17 @@ export default function AlbumQrCard({ weddingId, templateId, names, language }: 
     };
   }, [weddingId, language]);
 
-  const download = async () => {
-    setBusy(true);
+  const download = async (variant: 'design' | 'plain') => {
+    setBusy(variant);
     try {
-      await downloadAlbumQr(weddingId, templateId, names, language);
+      if (variant === 'design') await downloadAlbumQr(weddingId, templateId, names, language);
+      else await downloadPlainAlbumQr(weddingId, language);
     } finally {
-      setBusy(false);
+      setBusy(null);
     }
   };
+  const btn =
+    'flex-1 inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3 rounded-lg border border-[rgba(0,0,0,0.14)] bg-white hover:bg-[#FAFAFA] text-[13px] font-semibold text-[#0A0A0A] disabled:opacity-50';
 
   return (
     <section className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-5 flex flex-col gap-3">
@@ -269,9 +299,19 @@ export default function AlbumQrCard({ weddingId, templateId, names, language }: 
         </div>
         <span className="text-[13px] font-medium text-[#3F3F46] leading-normal">Imprímelo y ponlo en cada mesa. Abre el álbum sin necesidad de la invitación.</span>
       </div>
-      <button type="button" onClick={download} disabled={busy} className="self-start text-[13px] font-semibold text-[#AE5730] hover:text-[#8F4524] disabled:opacity-50">
-        {busy ? 'Preparando…' : 'Ver y descargar'}
-      </button>
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-medium text-[#71717A]">Descargar</span>
+        <div className="flex gap-2">
+          <button type="button" onClick={() => void download('design')} disabled={busy !== null} className={btn}>
+            <Download className="h-4 w-4" />
+            {busy === 'design' ? 'Preparando…' : 'Con diseño'}
+          </button>
+          <button type="button" onClick={() => void download('plain')} disabled={busy !== null} className={btn}>
+            <QrCode className="h-4 w-4" />
+            {busy === 'plain' ? 'Preparando…' : 'Solo el QR'}
+          </button>
+        </div>
+      </div>
     </section>
   );
 }

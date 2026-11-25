@@ -33,6 +33,12 @@ export default function StickyConfirmBarV2() {
 
   useEffect(() => {
     if (!showConfirm) return;
+    // Spec 29 — con el álbum activo la barra es el acceso a las fotos: se ve desde que se abre
+    // la invitación y no se oculta al llegar al RSVP.
+    if (albumActive) {
+      setVisible(true);
+      return;
+    }
     let frame = 0;
     const update = () => {
       frame = 0;
@@ -53,7 +59,7 @@ export default function StickyConfirmBarV2() {
       window.removeEventListener('resize', onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [showConfirm]);
+  }, [showConfirm, albumActive]);
 
   if (!showConfirm || !weddingData) return null;
 

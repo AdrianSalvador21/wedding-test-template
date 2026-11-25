@@ -6,11 +6,13 @@ import { Camera, CalendarClock, Download, Eye, EyeOff, Lock, QrCode, Trash2, Use
 import { usePanelData } from '../../../../../../components/admin/panel/PanelDataContext';
 import { AdminButton, AdminStatCard, AdminStatusPill, AdminTopBar, manrope } from '../../../../../../components/admin/ui';
 import { useAuth } from '../../../../../../lib/auth-context';
-import { formatAlbumDate, formatAlbumTime, type AlbumMode, type AlbumPhase } from '../../../../../../lib/album';
-import AlbumQrCard, { downloadAlbumQr } from '../../../../../../components/admin/album/AlbumQrCard';
+import { ALBUM_WEDDING_LIMIT, formatAlbumDate, formatAlbumTime, photoFileName, type AlbumMode, type AlbumPhase } from '../../../../../../lib/album';
+import AlbumQrCard, { albumPath, albumPublicUrl, downloadAlbumQr } from '../../../../../../components/admin/album/AlbumQrCard';
+import AlbumShareCard from '../../../../../../components/admin/album/AlbumShareCard';
 import DeletePhotoModal from '../../../../../../components/admin/album/DeletePhotoModal';
 import AlbumZipModal, { type ZipPhoto } from '../../../../../../components/admin/album/AlbumZipModal';
 import AlbumSalesPanel from '../../../../../../components/admin/album/AlbumSalesPanel';
+import PanelPhotoViewer from '../../../../../../components/admin/album/PanelPhotoViewer';
 
 // Spec 29 — sección "Fotos" del panel: venta del álbum si no está activado; si lo está, el modo,
 // las fechas, el QR para las mesas y la galería con ocultar/mostrar y borrar (escritorio y celular).
@@ -27,6 +29,7 @@ interface PanelPhoto {
 interface PanelAlbum {
   phase: AlbumPhase;
   mode: AlbumMode;
+  uploadsClosed: boolean;
   opensAt: string | null;
   closesAt: string | null;
   revealAt: string | null;
@@ -53,6 +56,7 @@ export default function PhotosPage() {
   const [zipPhotos, setZipPhotos] = useState<ZipPhoto[] | null>(null);
   const [modeError, setModeError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const [qrBusy, setQrBusy] = useState(false);
 
   const tier = weddingData?.tier === 'free' ? 'free' : 'template';
@@ -83,6 +87,14 @@ export default function PhotosPage() {
   );
 
   const visiblePhotos = useMemo(() => (album ? album.photos.filter((p) => (filter === 'hidden' ? p.hidden : true)) : []), [album, filter]);
+
+  // Si la foto del visor sale de la lista (se borró, o se mostró estando en "Ocultas"), el visor
+  // pasa a la que quedó en su lugar; sin fotos, se cierra.
+  useEffect(() => {
+    if (viewerIndex === null) return;
+    if (visiblePhotos.length === 0) setViewerIndex(null);
+    else if (viewerIndex >= visiblePhotos.length) setViewerIndex(visiblePhotos.length - 1);
+  }, [visiblePhotos, viewerIndex]);
 
   const setHidden = async (photo: PanelPhoto, hidden: boolean) => {
     setBusyId(photo.id);
@@ -118,6 +130,34 @@ export default function PhotosPage() {
       return { ...prev, photos, stats: { ...prev.stats, total: photos.length, hidden: photos.filter((p) => p.hidden).length } };
     });
     setDeleteTarget(null);
+  };
+
+  // Spec 29 — descarga una foto (2048 px) por la misma ruta con sesión que usa el ZIP, así no
+  // depende de configurar CORS en el bucket. El nombre lleva a quien la subió y la fecha.
+  // Descarga directa desde Firebase: el archivo trae Content-Disposition (ver saveJpeg), así que
+  // el enlace lo guarda en vez de abrirlo. Si la foto ya se vio en el visor, el navegador la toma de
+  // su caché y no vuelve a bajarla.
+  const downloadPhoto = (photo: { id: string; url: string; uploaderName: string | null; createdAt: string }) => {
+    const a = document.createElement('a');
+    a.href = photo.url;
+    a.download = photoFileName(photo);
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  // Spec 29 — la pareja cierra o abre la subida de fotos de los invitados.
+  const toggleUploads = async (closed: boolean) => {
+    const res = await auth.authedFetch(`/api/panel/album/${weddingId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uploadsClosed: closed }),
+    });
+    if (!res.ok) throw new Error('uploads');
+    const data = await res.json();
+    setAlbum((prev) => (prev ? { ...prev, uploadsClosed: data.uploadsClosed, phase: data.phase } : prev));
+    setWeddingData((prev) => (prev && prev.photoAlbum ? { ...prev, photoAlbum: { ...prev.photoAlbum, uploadsClosed: data.uploadsClosed } } : prev));
   };
 
   const changeMode = async (mode: AlbumMode) => {
@@ -195,6 +235,7 @@ export default function PhotosPage() {
         meta={
           <>
             <AdminStatusPill tone="active">Álbum activo</AdminStatusPill>
+            {album?.phase === 'closed' && <AdminStatusPill tone="pending">Subida cerrada</AdminStatusPill>}
             {album && <span className="text-[12.5px] font-semibold text-[#71717A]">{album.mode === 'open' ? 'Modo: álbum abierto' : 'Modo: cámara desechable'}</span>}
           </>
         }
@@ -224,6 +265,20 @@ export default function PhotosPage() {
           </div>
         )}
 
+        {album && album.stats.total >= ALBUM_WEDDING_LIMIT * 0.8 && (
+          // Aviso de espacio: desde el 80 % del tope de la boda (las ocultas también cuentan).
+          <div role="status" className={`rounded-2xl border p-4 sm:p-5 text-sm leading-normal ${album.stats.total >= ALBUM_WEDDING_LIMIT ? 'bg-[#FEF2F2] border-[rgba(185,28,28,0.2)] text-[#7F1D1D]' : 'bg-[#FFFBEB] border-[rgba(180,83,9,0.2)] text-[#78350F]'}`}>
+            <span className="font-semibold">
+              {album.stats.total >= ALBUM_WEDDING_LIMIT
+                ? `Tu álbum llegó al máximo de ${ALBUM_WEDDING_LIMIT.toLocaleString('es-MX')} fotos.`
+                : `Tu álbum va en ${album.stats.total.toLocaleString('es-MX')} de ${ALBUM_WEDDING_LIMIT.toLocaleString('es-MX')} fotos.`}
+            </span>{' '}
+            {album.stats.total >= ALBUM_WEDDING_LIMIT
+              ? 'Tus invitados ya no pueden subir más. Si borras fotos, se libera espacio para nuevas.'
+              : 'Al llegar al máximo ya no se podrán subir más. Las fotos ocultas también cuentan; si borras las que no quieras, se libera espacio.'}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <AdminStatCard icon={Camera} label="Fotos subidas" value={album ? album.stats.total : '—'} />
           <AdminStatCard
@@ -236,7 +291,20 @@ export default function PhotosPage() {
           <AdminStatCard icon={CalendarClock} label="Cierre de subida" value={closesShort} />
         </div>
 
-        <div className="hidden lg:grid grid-cols-3 gap-5">
+        {album && (
+          <AlbumShareCard
+            url={albumPublicUrl(weddingId, language)}
+            openHref={albumPath(weddingId, language)}
+            phase={album.phase}
+            mode={album.mode}
+            uploadsClosed={album.uploadsClosed}
+            windowEnded={!!album.closesAt && Date.now() > new Date(album.closesAt).getTime()}
+            closesLabel={closesLong}
+            onToggleUploads={toggleUploads}
+          />
+        )}
+
+        <div className="grid gap-4 lg:grid-cols-3 lg:gap-5">
           <section className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-5 flex flex-col gap-3">
             <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#71717A]">Modo del álbum</span>
             <div role="radiogroup" aria-label="Modo del álbum" className="flex flex-col gap-2">
@@ -285,7 +353,10 @@ export default function PhotosPage() {
             <span className="text-[12.5px] font-semibold text-[#71717A]">Hasta 30 fotos por invitación o por teléfono.</span>
           </section>
 
-          <AlbumQrCard weddingId={weddingId} templateId={weddingData.template?.id} names={names} language={language} />
+          {/* En celular el QR ya está en el botón "QR" de la barra superior. */}
+          <div className="hidden lg:flex lg:flex-col [&>section]:flex-1">
+            <AlbumQrCard weddingId={weddingId} templateId={weddingData.template?.id} names={names} language={language} />
+          </div>
         </div>
 
         <section className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-4 sm:p-5 flex flex-col gap-4">
@@ -316,36 +387,34 @@ export default function PhotosPage() {
 
           {visiblePhotos.length > 0 && (
             <div className="grid grid-cols-2 gap-3 sm:gap-3.5 sm:[grid-template-columns:repeat(auto-fill,minmax(160px,1fr))]">
-              {visiblePhotos.map((p) => {
+              {visiblePhotos.map((p, i) => {
                 const name = p.uploaderName || 'Invitado';
                 const toggleLabel = p.hidden ? 'Mostrar foto' : 'Ocultar foto';
                 return (
                   <div key={p.id} className="flex flex-col gap-1.5 sm:gap-2 min-w-0">
-                    <div className="relative aspect-square rounded-[10px] overflow-hidden bg-[#F4F4F5]">
+                    <button
+                      type="button"
+                      onClick={() => setViewerIndex(i)}
+                      aria-label={`Ver foto de ${name}`}
+                      className="relative aspect-square rounded-[10px] overflow-hidden bg-[#F4F4F5] cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[#AE5730] focus-visible:ring-offset-2"
+                    >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={p.thumbUrl} alt={`Foto de ${name}`} loading="lazy" className="absolute inset-0 w-full h-full object-cover" style={{ opacity: p.hidden ? 0.35 : 1 }} />
+                      <img src={p.thumbUrl} alt={`Foto de ${name}`} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-[1.03]" style={{ opacity: p.hidden ? 0.35 : 1 }} />
                       {p.hidden && <span className="absolute left-2 top-2 text-xs font-semibold text-[#3F3F46] bg-[#F4F4F5] px-2.5 py-0.5 rounded-full">Oculta</span>}
+                    </button>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[13px] font-semibold text-[#0A0A0A] truncate">{name}</span>
+                      <span className="text-xs font-medium text-[#71717A]">{photoWhen(p.createdAt)}</span>
                     </div>
-                    <div className="flex justify-between items-center gap-1.5">
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-[13px] font-semibold text-[#0A0A0A] truncate">{name}</span>
-                        <span className="text-xs font-medium text-[#71717A]">{photoWhen(p.createdAt)}</span>
-                      </div>
-                      <div className="hidden sm:flex gap-0.5 flex-shrink-0">
-                        <button type="button" aria-label={toggleLabel} title={toggleLabel} disabled={busyId === p.id} onClick={() => void setHidden(p, !p.hidden)} className="w-[34px] h-[34px] rounded-lg text-[#3F3F46] hover:bg-[#F4F4F5] flex items-center justify-center disabled:opacity-50">
-                          {p.hidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                        </button>
-                        <button type="button" aria-label="Borrar foto" title="Borrar" onClick={() => setDeleteTarget(p)} className="w-[34px] h-[34px] rounded-lg text-[#B91C1C] hover:bg-[rgba(185,28,28,0.06)] flex items-center justify-center">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="flex sm:hidden gap-1.5">
-                      <button type="button" aria-label={toggleLabel} disabled={busyId === p.id} onClick={() => void setHidden(p, !p.hidden)} className="flex-1 h-11 rounded-lg border border-[rgba(0,0,0,0.14)] bg-white text-[#3F3F46] flex items-center justify-center disabled:opacity-50">
-                        {p.hidden ? <Eye className="h-[17px] w-[17px]" /> : <EyeOff className="h-[17px] w-[17px]" />}
+                    <div className="flex gap-1.5">
+                      <button type="button" aria-label="Descargar foto" title="Descargar" onClick={() => downloadPhoto(p)} className="flex-1 h-11 sm:h-9 rounded-lg border border-[rgba(0,0,0,0.14)] bg-white text-[#3F3F46] hover:bg-[#F4F4F5] flex items-center justify-center">
+                        <Download className="h-4 w-4" />
                       </button>
-                      <button type="button" aria-label="Borrar foto" onClick={() => setDeleteTarget(p)} className="flex-1 h-11 rounded-lg border border-[rgba(185,28,28,0.25)] bg-white text-[#B91C1C] flex items-center justify-center">
-                        <Trash2 className="h-[17px] w-[17px]" />
+                      <button type="button" aria-label={toggleLabel} title={toggleLabel} disabled={busyId === p.id} onClick={() => void setHidden(p, !p.hidden)} className="flex-1 h-11 sm:h-9 rounded-lg border border-[rgba(0,0,0,0.14)] bg-white text-[#3F3F46] hover:bg-[#F4F4F5] flex items-center justify-center disabled:opacity-50">
+                        {p.hidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      </button>
+                      <button type="button" aria-label="Borrar foto" title="Borrar" onClick={() => setDeleteTarget(p)} className="flex-1 h-11 sm:h-9 rounded-lg border border-[rgba(185,28,28,0.25)] bg-white text-[#B91C1C] hover:bg-[rgba(185,28,28,0.06)] flex items-center justify-center">
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
@@ -356,6 +425,25 @@ export default function PhotosPage() {
         </section>
       </div>
 
+      {viewerIndex !== null && visiblePhotos[viewerIndex] && (
+        <PanelPhotoViewer
+          photos={visiblePhotos}
+          index={viewerIndex}
+          busy={busyId === visiblePhotos[viewerIndex].id}
+          when={photoWhen}
+          onMove={setViewerIndex}
+          onClose={() => setViewerIndex(null)}
+          onToggleHidden={(photo) => {
+            const target = album?.photos.find((x) => x.id === photo.id);
+            if (target) void setHidden(target, !target.hidden);
+          }}
+          onDownload={downloadPhoto}
+          onDelete={(photo) => {
+            const target = album?.photos.find((x) => x.id === photo.id);
+            if (target) setDeleteTarget(target);
+          }}
+        />
+      )}
       {deleteTarget && (
         <DeletePhotoModal
           thumbUrl={deleteTarget.thumbUrl}

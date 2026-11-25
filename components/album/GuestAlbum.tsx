@@ -30,8 +30,10 @@ interface AlbumData {
   closesAt: string | null;
   revealAt: string | null;
   expiresAt: string | null;
+  revealed?: boolean;
   guestName: string | null;
   remaining: number;
+  albumFull?: boolean; // la boda llegó al tope de ALBUM_WEDDING_LIMIT fotos
   photos: PublicPhoto[];
   total: number;
 }
@@ -128,7 +130,7 @@ function AlbumHeader({ theme, names, dateText, heroImage, eyebrow, photosLabel }
   const { bride, groom } = names;
   if (theme.header === 'classic') {
     return (
-      <header style={{ position: 'relative', height: 250, overflow: 'hidden', color: '#FFFFFF', background: '#2a2119' }}>
+      <header className="ga-hd-classic" style={{ position: 'relative', height: 250, overflow: 'hidden', color: '#FFFFFF', background: '#2a2119' }}>
         {heroImage && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={heroImage} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 28%' }} />
@@ -152,7 +154,7 @@ function AlbumHeader({ theme, names, dateText, heroImage, eyebrow, photosLabel }
   if (theme.header === 'modern') {
     const initials = `${bride.charAt(0)}·${groom.charAt(0)}`;
     return (
-      <header style={{ padding: '26px 24px 18px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <header className="ga-pad ga-hd-modern" style={{ padding: '26px 24px 18px', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <p style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 10, fontSize: 11, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#7A5A3C' }}>
             <span style={{ width: 22, height: 1, background: '#7A5A3C' }} />
@@ -178,12 +180,12 @@ function AlbumHeader({ theme, names, dateText, heroImage, eyebrow, photosLabel }
   }
   if (theme.header === 'botanical') {
     return (
-      <header style={{ position: 'relative', padding: '24px 28px 18px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', overflow: 'hidden' }}>
+      <header className="ga-hd-botanical" style={{ position: 'relative', padding: '24px 28px 18px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', overflow: 'hidden' }}>
         <Branch style={{ left: -14, top: 30 }} />
         <Branch mirrored style={{ right: -14, top: 30 }} />
         <p style={{ margin: 0, fontSize: 11, fontWeight: 500, letterSpacing: '0.34em', textTransform: 'uppercase', color: '#B5643A' }}>{eyebrow}</p>
         {heroImage && (
-          <div style={{ width: 92, height: 108, padding: 5, border: '1px solid #C8BBA4', borderRadius: '999px 999px 0 0', boxSizing: 'border-box' }}>
+          <div className="ga-arch" style={{ width: 92, height: 108, padding: 5, border: '1px solid #C8BBA4', borderRadius: '999px 999px 0 0', boxSizing: 'border-box' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={heroImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 30%', borderRadius: '999px 999px 0 0', display: 'block' }} />
           </div>
@@ -196,7 +198,7 @@ function AlbumHeader({ theme, names, dateText, heroImage, eyebrow, photosLabel }
     );
   }
   return (
-    <header style={{ background: '#2E3323', color: '#F4EFE3', padding: '44px 24px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, textAlign: 'center' }}>
+    <header className="ga-hd-garden" style={{ background: '#2E3323', color: '#F4EFE3', padding: '44px 24px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, textAlign: 'center' }}>
       <p style={{ margin: 0, fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#C9A98C' }}>{eyebrow}</p>
       <h1 style={{ margin: '4px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'Georgia, serif', fontWeight: 400, lineHeight: 1.12 }}>
         <span style={{ fontSize: 34, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{bride}</span>
@@ -208,10 +210,49 @@ function AlbumHeader({ theme, names, dateText, heroImage, eyebrow, photosLabel }
   );
 }
 
+// En celular el álbum es una columna de 480 px. En tablet se ensancha a 960 px con 3 columnas
+// (el Clásico, de cuadros chicos, 4). Desde 1024 px son dos columnas, como en la página "Álbum en
+// escritorio" del canvas: a la izquierda, fija, el encabezado del template y los controles de
+// subida; a la derecha, la galería en 4 columnas (Clásico 5). La ventana de subida se centra.
+const LAYOUT_CSS = `
+.ga-col{max-width:480px;margin:0 auto}
+.ga-grid{grid-template-columns:repeat(var(--ga-cols),minmax(0,1fr));grid-auto-flow:dense}
+@media (min-width:768px){
+  .ga-col{max-width:960px}
+  .ga-pad{padding-left:40px!important;padding-right:40px!important}
+  .ga-controls{max-width:560px;width:100%;box-sizing:border-box}
+  .ga-center{margin-left:auto;margin-right:auto}
+  .ga-grid{grid-template-columns:repeat(var(--ga-cols-md),minmax(0,1fr))}
+}
+@media (min-width:1024px){
+  .ga-col{max-width:none;display:grid;grid-template-columns:minmax(360px,440px) minmax(0,1fr)}
+  .ga-aside{position:sticky;top:0;height:100dvh;overflow-y:auto;border-right:var(--ga-line);box-sizing:border-box}
+  .ga-aside .ga-controls{max-width:none;margin:0}
+  .ga-main{padding:44px 56px 56px!important;gap:22px!important;min-width:0}
+  .ga-grid{grid-template-columns:repeat(var(--ga-cols-lg),minmax(0,1fr))}
+  .ga-grid-gap{gap:var(--ga-gap-lg)!important}
+  .ga-chip{font-size:11px!important;padding:3px 9px!important;left:8px!important;bottom:8px!important}
+  .ga-hd-classic{height:380px!important}
+  .ga-hd-classic h1{font-size:64px!important}
+  .ga-hd-modern{padding:44px 40px 8px!important;gap:26px!important}
+  .ga-hd-modern h1{font-size:76px!important}
+  .ga-hd-botanical{padding:48px 32px 12px!important;gap:14px!important}
+  .ga-hd-botanical .ga-arch{width:124px!important;height:146px!important;padding:6px!important}
+  .ga-hd-botanical h1{font-size:48px!important}
+  .ga-hd-garden{padding:64px 32px 56px!important}
+  .ga-hd-garden h1 > span:not(:nth-child(2)){font-size:40px!important}
+  .ga-sheet-wrap{align-items:center;justify-content:center;background:rgba(31,26,23,0.45)}
+  .ga-sheet-wrap > .ga-backdrop{position:absolute;inset:0;background:transparent!important}
+  .ga-sheet{position:relative;max-width:520px!important;border-radius:var(--ga-modal-radius)!important;padding:28px 28px 24px!important;box-shadow:0 24px 60px rgba(0,0,0,0.25)}
+  .ga-sheet-handle{display:none}
+}
+`;
+
 function PhotoGrid({ theme, photos, showNames, guestLabel, onOpen }: { theme: AlbumTheme; photos: PublicPhoto[]; showNames: boolean; guestLabel: string; onOpen: (index: number) => void }) {
   const { cols, gap, radius, aspect, wideEvery } = theme.grid;
+  const gridVars = { '--ga-cols': cols, '--ga-cols-md': Math.max(cols, 3) + (cols >= 3 ? 1 : 0), '--ga-cols-lg': Math.max(cols, 3) + 1 + (cols >= 3 ? 1 : 0) } as CSSProperties;
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap }}>
+    <div className="ga-grid ga-grid-gap" style={{ display: 'grid', gap, ...gridVars, ['--ga-gap-lg' as string]: `${Math.max(gap, 10)}px` }}>
       {photos.map((p, i) => {
         const wide = wideEvery && i % wideEvery === 0;
         return (
@@ -235,7 +276,7 @@ function PhotoGrid({ theme, photos, showNames, guestLabel, onOpen }: { theme: Al
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={p.thumbUrl} alt="" loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
             {showNames && (
-              <span style={{ position: 'absolute', left: 6, bottom: 6, maxWidth: 'calc(100% - 12px)', fontSize: 10, fontWeight: 500, color: '#FFFFFF', background: 'rgba(20,18,15,0.55)', padding: '2px 7px', borderRadius: theme.chipRadius, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'inherit' }}>
+              <span className="ga-chip" style={{ position: 'absolute', left: 6, bottom: 6, maxWidth: 'calc(100% - 12px)', fontSize: 10, fontWeight: 500, color: '#FFFFFF', background: 'rgba(20,18,15,0.55)', padding: '2px 7px', borderRadius: theme.chipRadius, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'inherit' }}>
                 {p.uploaderName || guestLabel}
               </span>
             )}
@@ -386,10 +427,17 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
           update(key, { status: 'done', progress: 100 });
           const photo = res.body.photo as PublicPhoto | undefined;
           const remaining = typeof res.body.remaining === 'number' ? res.body.remaining : undefined;
-          setData((prev) => (prev ? { ...prev, remaining: remaining ?? Math.max(0, prev.remaining - 1), photos: photo ? [photo, ...prev.photos] : prev.photos, total: prev.total + 1 } : prev));
+          const albumFull = res.body.albumFull === true;
+          setData((prev) => (prev ? { ...prev, remaining: remaining ?? Math.max(0, prev.remaining - 1), albumFull, photos: photo ? [photo, ...prev.photos] : prev.photos, total: prev.total + 1 } : prev));
           track('album_photo_uploaded', { mode: data.mode, source: guestId ? 'guest' : 'device' });
         } else {
-          if (res.status === 429) setData((prev) => (prev ? { ...prev, remaining: 0 } : prev));
+          if (res.status === 429) {
+            const albumFull = res.body.error === 'album_full';
+            setData((prev) => (prev ? { ...prev, remaining: 0, albumFull: albumFull || prev.albumFull } : prev));
+            // Sin espacio no tiene caso intentar las que siguen en espera.
+            setQueue(itemsRef.current.map((it) => (it.key === key || it.status === 'waiting' ? { ...it, status: 'failed' } : it)));
+            continue;
+          }
           update(key, { status: 'failed' });
         }
       } catch (error) {
@@ -427,6 +475,11 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
 
   const rootStyle: CSSProperties = { minHeight: '100dvh', background: theme.bg, color: theme.ink, fontFamily: theme.fontFamily };
   const column: CSSProperties = { maxWidth: 480, margin: '0 auto', minHeight: '100dvh', background: theme.bg };
+  // Columna que se ensancha en tablet y escritorio (ver LAYOUT_CSS).
+  const wideColumn = { minHeight: '100dvh', background: theme.bg, '--ga-line': theme.dashed.replace('dashed', 'solid') } as CSSProperties;
+  const layoutStyle = <style>{LAYOUT_CSS}</style>;
+  // El Moderno alinea todo a la izquierda; los demás templates centran el bloque de controles.
+  const controlsClass = theme.header === 'modern' ? 'ga-controls ga-pad' : 'ga-controls ga-pad ga-center';
 
   if (loadError) {
     return (
@@ -478,9 +531,10 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
   if (phase === 'before') {
     return (
       <div style={rootStyle}>
-        <div style={column}>
-          {header}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, padding: '56px 32px', textAlign: 'center' }}>
+        {layoutStyle}
+        <div className="ga-col" style={wideColumn}>
+          <aside className="ga-aside">{header}</aside>
+          <div className="ga-main" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '56px 32px', textAlign: 'center' }}>
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={theme.fill} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <rect x="3.5" y="5" width="17" height="15" rx="2" /><path d="M3.5 10h17" /><path d="M8 3v4" /><path d="M16 3v4" />
             </svg>
@@ -494,27 +548,29 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
   }
 
   const isOpenPhase = phase === 'open';
-  const revealed = mode === 'open' || (data.revealAt ? Date.now() >= new Date(data.revealAt).getTime() : false);
+  const revealed = data.revealed ?? (mode === 'open' || (data.revealAt ? Date.now() >= new Date(data.revealAt).getTime() : false));
   const used = ALBUM_PHOTO_LIMIT - data.remaining;
   const limitReached = data.remaining <= 0;
-  const gridTitle = revealed ? t('allPhotos') : t('yourPhotos');
+  const gridTitle = !isOpenPhase ? t('closedGridTitle') : revealed ? t('allPhotos') : t('yourPhotos');
   const doneCount = items.filter((it) => it.status === 'done').length;
   const activeIndex = items.findIndex((it) => it.status === 'uploading');
   const finished = items.length > 0 && items.every((it) => it.status === 'done' || it.status === 'failed' || it.status === 'unsupported');
 
   return (
     <div style={rootStyle}>
-      <div style={column}>
+      {layoutStyle}
+      <div className="ga-col" style={wideColumn}>
+        <aside className="ga-aside">
         {header}
 
-        <section style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <section className={controlsClass} style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {!isOpenPhase && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '12px 14px', border: theme.dashed, ...(theme.card.borderRadius !== undefined ? { borderRadius: theme.card.borderRadius } : {}) }}>
-                <LockIcon color={theme.body} />
-                <span style={{ fontSize: 14, fontWeight: 600 }}>{t('closedTitle')}</span>
-              </div>
-              <span style={{ fontSize: 13, color: theme.muted, paddingTop: 6 }}>{fill(t('closedBody'), { n: data.total })}</span>
+            // Con la subida cerrada el álbum es un recuerdo de los novios: un mensaje suyo, sin avisos.
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'start', gap: 12, textAlign: 'start', padding: '0px 0px 6px' }}>
+              <p style={{ margin: 0, ...theme.heading, fontSize: 21, lineHeight: 1.4, textTransform: 'none', letterSpacing: 'normal' }}>{t('closedMessage')}</p>
+              <span style={{ fontSize: 13, color: theme.muted }}>
+                {fill(t('closedSignature'), { names: `${data.names.bride} ${theme.qr.joiner} ${data.names.groom}` })}
+              </span>
             </div>
           )}
 
@@ -572,7 +628,7 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <span style={{ fontSize: 13, color: theme.body }}>
                   {limitReached ? (
-                    <span style={{ fontWeight: 600, color: theme.ink }}>{t('limitReached')}</span>
+                    <span style={{ fontWeight: 600, color: theme.ink }}>{data.albumFull ? t('albumFull') : t('limitReached')}</span>
                   ) : (
                     fill(isGuestLink ? t('remaining') : t('remainingDevice'), { n: data.remaining })
                   )}
@@ -586,7 +642,9 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
           )}
         </section>
 
-        <section style={{ padding: '2px 20px 32px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        </aside>
+
+        <section className="ga-pad ga-main" style={{ padding: '2px 20px 32px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
             <h2 style={{ margin: 0, ...theme.heading }}>{gridTitle}</h2>
             {revealed && <span style={{ fontSize: 12, color: theme.muted }}>{fill(t('photosCount'), { n: data.photos.length })}</span>}
@@ -606,10 +664,10 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
       </div>
 
       {sheetOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ flex: 1, background: 'rgba(31,26,23,0.45)' }} onClick={finished ? closeSheet : undefined} aria-hidden="true" />
-          <section role="dialog" aria-modal="true" aria-label={t('upload')} style={{ background: '#FFFFFF', color: '#1F1A17', borderRadius: '22px 22px 0 0', padding: '12px 20px 28px', display: 'flex', flexDirection: 'column', gap: 14, maxHeight: '80dvh', overflowY: 'auto', fontFamily: theme.fontFamily, width: '100%', maxWidth: 480, margin: '0 auto', boxSizing: 'border-box' }}>
-            <div style={{ width: 40, height: 4, borderRadius: 99, background: '#D9D0C4', alignSelf: 'center' }} />
+        <div className="ga-sheet-wrap" style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', flexDirection: 'column', ['--ga-modal-radius' as string]: theme.button.borderRadius === 0 ? '0px' : '18px' }}>
+          <div className="ga-backdrop" style={{ flex: 1, background: 'rgba(31,26,23,0.45)' }} onClick={finished ? closeSheet : undefined} aria-hidden="true" />
+          <section className="ga-sheet" role="dialog" aria-modal="true" aria-label={t('upload')} style={{ background: '#FFFFFF', color: '#1F1A17', borderRadius: '22px 22px 0 0', padding: '12px 20px 28px', display: 'flex', flexDirection: 'column', gap: 14, maxHeight: '80dvh', overflowY: 'auto', fontFamily: theme.fontFamily, width: '100%', maxWidth: 480, margin: '0 auto', boxSizing: 'border-box' }}>
+            <div className="ga-sheet-handle" style={{ width: 40, height: 4, borderRadius: 99, background: '#D9D0C4', alignSelf: 'center' }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>
                 {finished ? fill(t('doneTitle'), { n: doneCount }) : fill(t('uploadingTitle'), { i: Math.max(1, (activeIndex >= 0 ? activeIndex : doneCount) + 1), n: items.length })}

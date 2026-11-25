@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ALBUM_PHOTO_LIMIT, isUuid, isWeddingIdFormat } from '../../../../lib/album';
+import { ALBUM_PHOTO_LIMIT, ALBUM_WEDDING_LIMIT, isUuid, isWeddingIdFormat } from '../../../../lib/album';
 import {
   albumDates,
   albumMode,
@@ -43,13 +43,16 @@ export async function GET(request: NextRequest, { params }: { params: { weddingI
       ...albumDates(wedding),
     };
     if (phase === 'disabled' || phase === 'expired') {
-      return NextResponse.json({ ...base, guestName: null, remaining: 0, photos: [], total: 0 });
+      return NextResponse.json({ ...base, guestName: null, remaining: 0, albumFull: false, photos: [], total: 0 });
     }
 
     const guest = guestParam ? await findGuest(db, weddingId, guestParam) : null;
     const uploader = guest ? { guestId: guestParam } : isUuid(deviceParam) ? { deviceId: deviceParam } : null;
 
-    const all = (await listWeddingPhotos(db, weddingId)).filter((p) => !p.hidden);
+    const stored = await listWeddingPhotos(db, weddingId);
+    // El tope de la boda cuenta también las ocultas: siguen ocupando espacio hasta que se borran.
+    const weddingLeft = Math.max(0, ALBUM_WEDDING_LIMIT - stored.length);
+    const all = stored.filter((p) => !p.hidden);
     const revealed = isRevealed(wedding);
     const visible = revealed
       ? all
@@ -59,8 +62,10 @@ export async function GET(request: NextRequest, { params }: { params: { weddingI
 
     return NextResponse.json({
       ...base,
+      revealed,
       guestName: guest?.name ?? null,
-      remaining: Math.max(0, ALBUM_PHOTO_LIMIT - used),
+      remaining: Math.max(0, Math.min(ALBUM_PHOTO_LIMIT - used, weddingLeft)),
+      albumFull: weddingLeft === 0,
       photos: visible.map(toPublicPhoto),
       total: all.length,
     });
