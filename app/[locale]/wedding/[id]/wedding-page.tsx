@@ -7,7 +7,7 @@ import { isSaveTheDateDemo, sanitizeDemoGuestName } from '../../../../lib/save-t
 
 export interface WeddingPageProps {
   params: { id: string; locale: string };
-  searchParams: { guest?: string; vista?: string; invitado?: string };
+  searchParams: { guest?: string; preview?: string; vista?: string; invitado?: string };
 }
 
 // Generar metadatos dinámicos para cada boda
@@ -108,16 +108,24 @@ export async function generateWeddingMetadata({ params }: WeddingPageProps): Pro
   };
 }
 
+const LEGACY_PREVIEW: Record<string, string> = { completa: 'full', 'aparta-la-fecha': 'save-the-date', dia: 'event-day' };
+
 // Compartido con /wedding/[id]/aparta-la-fecha (spec 27), que fuerza la vista del save the date.
 export function renderWeddingPage(params: WeddingPageProps['params'], searchParams: WeddingPageProps['searchParams'], forceSaveTheDate: boolean) {
   const weddingId = params.id;
   const guestId = searchParams.guest || null;
+  // Vistas previas que abren los botones del Editor: ?preview=full | save-the-date | event-day.
+  // `?vista=completa | aparta-la-fecha | dia` (nombres anteriores) se sigue aceptando por si alguien
+  // guardó un link viejo.
+  const preview = searchParams.preview || LEGACY_PREVIEW[searchParams.vista || ''] || '';
   // Spec 27 — vista previa de la invitación completa mientras el save the date está activo
-  const previewFull = searchParams.vista === 'completa';
-  // y vista previa del save the date aunque el interruptor esté apagado (botón del Editor)
-  const previewSaveTheDate = forceSaveTheDate || searchParams.vista === 'aparta-la-fecha';
+  const previewFull = preview === 'full';
+  // y vista previa del save the date aunque el interruptor esté apagado
+  const previewSaveTheDate = forceSaveTheDate || preview === 'save-the-date';
   // Solo en las demos de save the date: nombre de invitado de muestra por ?invitado=
   const demoGuestName = isSaveTheDateDemo(weddingId) ? sanitizeDemoGuestName(searchParams.invitado) : null;
+  // Spec 32 — vista previa del pase del día del evento (botón "Ver pase" del Editor)
+  const previewEventDay = preview === 'event-day';
 
-  return <WeddingPageClient weddingId={weddingId} guestId={guestId} previewFull={previewFull} previewSaveTheDate={previewSaveTheDate} demoGuestName={demoGuestName} />;
+  return <WeddingPageClient weddingId={weddingId} guestId={guestId} previewFull={previewFull} previewSaveTheDate={previewSaveTheDate} demoGuestName={demoGuestName} previewEventDay={previewEventDay} />;
 }

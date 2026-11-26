@@ -219,7 +219,15 @@ export default function PhotosPage() {
   if (!enabled) {
     return (
       <div className="admin-form min-h-screen min-h-[100dvh] bg-[#FAFAFA]" style={manrope}>
-        <AdminTopBar title="Fotos" meta={<AdminStatusPill tone="template">Extra</AdminStatusPill>} />
+        <AdminTopBar
+          title={
+            // "Extra" junto al título y no en una línea aparte: el header queda del mismo alto que el resto.
+            <span className="inline-flex items-center gap-2.5">
+              Fotos
+              <AdminStatusPill tone="template">Extra</AdminStatusPill>
+            </span>
+          }
+        />
         <AlbumSalesPanel weddingId={weddingId} eventDate={weddingData.event?.date} standalone={tier === 'free'} />
       </div>
     );

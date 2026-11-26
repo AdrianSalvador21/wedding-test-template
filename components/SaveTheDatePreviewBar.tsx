@@ -3,12 +3,13 @@
 import { useTranslations } from '../lib/translations';
 
 // Spec 27 — franja fija sobre la invitación completa cuando un admin o dueño la abre con
-// `?vista=completa` mientras el save the date está activo. Solo la ve quien tiene sesión.
+// `?preview=full` mientras el save the date está activo. Solo la ve quien tiene sesión.
 export default function SaveTheDatePreviewBar({ weddingId }: { weddingId: string }) {
   const { t, currentLanguage } = useTranslations('saveTheDate');
   const guestViewHref = (() => {
     if (typeof window === 'undefined') return `/${currentLanguage}/wedding/${weddingId}`;
     const url = new URL(window.location.href);
+    url.searchParams.delete('preview');
     url.searchParams.delete('vista');
     return url.pathname + url.search;
   })();

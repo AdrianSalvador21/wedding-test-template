@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 
-// Spec 27 — `?vista=completa` solo muestra la invitación completa (con el save the date activo) a
+// Spec 27 — `?preview=full` (antes `?vista=completa`) solo muestra la invitación completa (con el save the date activo) a
 // quien tenga sesión de Firebase y sea admin o dueño de la boda. El sitio público no tiene
 // AuthProvider, así que se resuelve aquí con el mismo endpoint que usa el panel, que no escribe nada.
 // Solo trabaja cuando `enabled` es true: el resto de las visitas no tocan Auth ni la red.

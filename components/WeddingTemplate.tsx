@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { AnimatePresence } from 'framer-motion';
 import { useWedding } from '../src/store/hooks';
 import { useTranslations } from '../lib/translations';
 import { ThemeProvider } from '../lib/theme-context';
@@ -25,16 +26,22 @@ import Template02 from './templates/Template02';
 import Template03 from './templates/Template03';
 import Template04 from './templates/Template04';
 import AlbumFab from './album/AlbumFab';
+import EventDayPass from './eventDay/EventDayPass';
+import EventDayReopenButton from './eventDay/EventDayReopenButton';
+import { EventDayContext, type EventDayReopen } from './eventDay/EventDayContext';
+import { useEventDayPass } from '../hooks/useEventDayPass';
+import { eventDayConfig, isEventDayActive } from '../lib/eventDay';
 
 interface WeddingTemplateProps {
   guestId?: string | null;
   weddingId?: string;
-  previewFull?: boolean; // Spec 27 — ?vista=completa
-  previewSaveTheDate?: boolean; // Spec 27 — ?vista=aparta-la-fecha o /aparta-la-fecha: muestra el save the date aunque esté apagado
+  previewFull?: boolean; // Spec 27 — ?preview=full
+  previewSaveTheDate?: boolean; // Spec 27 — ?preview=save-the-date o /aparta-la-fecha: muestra el save the date aunque esté apagado
   demoGuestName?: string | null; // Spec 27 — nombre de muestra (?invitado=) en las demos de save the date
+  previewEventDay?: boolean; // Spec 32 — ?preview=event-day: el pase del día del evento con cualquier fecha (solo admin o dueño)
 }
 
-export default function WeddingTemplate({ guestId, weddingId, previewFull = false, previewSaveTheDate = false, demoGuestName = null }: WeddingTemplateProps) {
+export default function WeddingTemplate({ guestId, weddingId, previewFull = false, previewSaveTheDate = false, demoGuestName = null, previewEventDay = false }: WeddingTemplateProps) {
   const { currentWedding, loading, error, initialized } = useWedding();
   const { t } = useTranslations('template');
   const [showOverlay, setShowOverlay] = useState(false);
@@ -51,12 +58,18 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
     console.log('🔍 WeddingTemplate - dynamicMusic:', dynamicMusic);
   }
 
-  // Spec 27 — con el save the date activo, la invitación completa solo se ve con ?vista=completa y
+  // Spec 27 — con el save the date activo, la invitación completa solo se ve con ?preview=full y
   // sesión de admin o dueño. Sin el parámetro, el hook no toca Auth ni la red.
   const saveTheDateOn = !!currentWedding?.saveTheDate?.enabled;
   const { allowed: canPreviewFull, checking: checkingPreview } = useCanPreviewFull(
     currentWedding?.id,
     previewFull && saveTheDateOn
+  );
+
+  // Spec 32 — vista previa del pase (?preview=event-day): misma regla de sesión que ?preview=full.
+  const { allowed: canPreviewEventDay, checking: checkingEventDayPreview } = useCanPreviewFull(
+    currentWedding?.id,
+    previewEventDay && !!guestId
   );
 
   const router = useRouter();
@@ -81,8 +94,12 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
 
           // Validar idioma del invitado
           if (guest.language && guest.language !== currentLocale) {
-            // Redireccionar al idioma correcto del invitado
-            const correctUrl = `/${guest.language}/wedding/${currentWedding.id}?guest=${guestId}`;
+            // Redireccionar al idioma correcto del invitado. Spec 32 — se conserva ?preview= (o el
+            // nombre anterior ?vista=) para que las vistas previas funcionen con invitados en inglés.
+            const query = new URLSearchParams(window.location.search);
+            const previewParam = query.has('preview') ? 'preview' : query.has('vista') ? 'vista' : null;
+            const previewValue = previewParam ? query.get(previewParam) : null;
+            const correctUrl = `/${guest.language}/wedding/${currentWedding.id}?guest=${guestId}${previewParam && previewValue ? `&${previewParam}=${encodeURIComponent(previewValue)}` : ''}`;
             router.replace(correctUrl);
             return;
           }
@@ -130,9 +147,34 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
 
   // Spec 31 — `invitation_opened` cuando ya se pinta la invitación o el save the date (no en la
   // carga, ni con error, ni en una boda gratis sin activar). Refleja las mismas condiciones de abajo.
-  const isReady = initialized && !loading && !guestLoading && !checkingPreview && !error && !!currentWedding;
+  const isReady = initialized && !loading && !guestLoading && !checkingPreview && !checkingEventDayPreview && !error && !!currentWedding;
   const isFreeWedding = (currentWedding?.tier ?? 'template') === 'free';
-  const showsSaveTheDate = previewSaveTheDate || (saveTheDateOn && !canPreviewFull);
+  // Spec 32 — la vista previa del pase (?preview=event-day con sesión de dueño o admin) también pasa por
+  // encima del save the date, para revisarlo sin apagarlo.
+  const previewingEventDay = previewEventDay && !!guestId && canPreviewEventDay;
+  const showsSaveTheDate = !previewingEventDay && (previewSaveTheDate || (saveTheDateOn && !canPreviewFull));
+
+  // Spec 32 — modo "Día del evento". La boda solo llega en el cliente (el servidor pinta la carga),
+  // así que la ventana se puede calcular en el render sin desfasar la hidratación. Calcularlo aquí y
+  // no en un efecto evita que la invitación se pinte un instante antes del pase.
+  const eventDayNow = useMemo(() => !!currentWedding && isEventDayActive(currentWedding), [currentWedding]);
+  const eventDay = currentWedding ? eventDayConfig(currentWedding) : null;
+  // El pase solo existe con ?guest= válido, en una boda con diseño, sin save the date en pantalla y
+  // para invitaciones no declinadas. Su estado abierto/cerrado vive en memoria: al recargar se abre.
+  const passEligible =
+    !!guestInfo &&
+    !!guestId &&
+    !isFreeWedding &&
+    !showsSaveTheDate &&
+    guestInfo.rsvpStatus !== 'declined' &&
+    (eventDayNow || previewingEventDay);
+  const [passClosed, setPassClosed] = useState(false);
+  const showPass = passEligible && !passClosed;
+  const passData = useEventDayPass(guestInfo, passEligible, !!eventDay?.showFloorPlan);
+  const reopenValue = useMemo<EventDayReopen | null>(
+    () => (passEligible && passClosed ? { reopen: () => setPassClosed(false), tableName: passData.people[0]?.table?.name ?? null } : null),
+    [passEligible, passClosed, passData.people]
+  );
   useInvitationOpened(
     isReady && !isFreeWedding && currentWedding
       ? {
@@ -145,7 +187,8 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
   );
 
   // Estado de carga
-  if (!initialized || loading || guestLoading || checkingPreview) {
+  // Spec 32 — con el pase en pantalla, la carga sigue hasta tener sus mesas: así se pinta completo.
+  if (!initialized || loading || guestLoading || checkingPreview || checkingEventDayPreview || (showPass && passData.loading)) {
     return <InvitationLoading message={guestLoading ? 'Cargando información del invitado...' : t('loading')} />;
   }
 
@@ -203,10 +246,14 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
   return (
     <ThemeProvider weddingTheme={weddingTheme}>
       <MusicControlProvider>
+      <EventDayContext.Provider value={reopenValue}>
       {saveTheDateOn && canPreviewFull && <SaveTheDatePreviewBar weddingId={currentWedding.id} />}
       <main className="min-h-screen">
         {(() => {
-          const overlayVisible = showOverlay || showDemoOverlay;
+          // Spec 32 — durante la ventana del día del evento no hay overlay de bienvenida: lo
+          // reemplaza el pase. Mientras el pase está abierto cuenta como overlay, así el Hero espera
+          // y hace su animación de entrada al pulsar "Ver invitación", como al cerrar la bienvenida.
+          const overlayVisible = (showOverlay && !passEligible) || showDemoOverlay || showPass;
 
           if (templateId === 'template-04') {
             return <Template04 overlayVisible={overlayVisible} />;
@@ -221,7 +268,7 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
         })()}
         
         {/* Overlay de invitación personalizada */}
-        {showOverlay && guestId && currentWedding && (
+        {showOverlay && !passEligible && guestId && currentWedding && (
           <InvitationOverlay
             guestId={guestId}
             weddingId={currentWedding.id}
@@ -247,11 +294,29 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
             Solo aparece con el álbum activado y desde el día de la boda. */}
         <AlbumFab wedding={currentWedding} guestId={guestId} />
 
-        {/* Reproductor de música de fondo (template-02 dibuja su propio botón, spec 25) */}
-        {dynamicMusic && (
+        {/* Spec 32 — pase del día del evento encima de la invitación, y "Mi mesa" para reabrirlo. */}
+        <AnimatePresence>
+        {showPass && guestInfo && guestId && eventDay && (
+          <EventDayPass
+            key="event-day-pass"
+            wedding={currentWedding}
+            guest={guestInfo}
+            guestUrlId={guestId}
+            data={passData}
+            config={eventDay}
+            onClose={() => setPassClosed(true)}
+          />
+        )}
+        </AnimatePresence>
+        <EventDayReopenButton wedding={currentWedding} />
+
+        {/* Reproductor de música de fondo (template-02 dibuja su propio botón, spec 25). Mientras el
+            pase está abierto no se monta, para que un toque en el pase no arranque la música. */}
+        {dynamicMusic && !showPass && (
           <MusicPlayer music={dynamicMusic} showFloatingButton={templateId !== 'template-02'} />
         )}
       </main>
+      </EventDayContext.Provider>
       </MusicControlProvider>
 
       {/* Footer Invyta */}

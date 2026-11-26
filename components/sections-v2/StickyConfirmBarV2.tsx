@@ -9,6 +9,8 @@ import { V2_COLORS, V2_FONTS, v2ButtonProps } from './ui';
 import { v2DateLocale, v2Fill, v2WeddingDate } from './sections';
 import { albumPhase, type AlbumPhase } from '../../lib/album';
 import { albumHref } from '../album/AlbumFab';
+import { useEventDayReopen } from '../eventDay/EventDayContext';
+import { TableIcon } from '../eventDay/EventDayReopenButton';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -19,6 +21,9 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export default function StickyConfirmBarV2() {
   const { t, currentLanguage } = useTranslations('template02');
   const { t: tAlbum } = useTranslations('album');
+  const { t: tEventDay } = useTranslations('eventDay');
+  // Spec 32 — con el pase del día del evento cerrado, el lado izquierdo de la barra lo vuelve a abrir.
+  const eventDay = useEventDayReopen();
   const weddingData = useAppSelector(selectCurrentWedding);
   const reduceMotion = useReducedMotion();
   const [visible, setVisible] = useState(false);
@@ -29,13 +34,13 @@ export default function StickyConfirmBarV2() {
     setAlbum({ phase: albumPhase(weddingData), guestId: new URLSearchParams(window.location.search).get('guest') });
   }, [weddingData]);
   const albumActive = album?.phase === 'open' || album?.phase === 'closed';
-  const showConfirm = weddingData?.showConfirmCta !== false || albumActive;
+  const showConfirm = weddingData?.showConfirmCta !== false || albumActive || !!eventDay;
 
   useEffect(() => {
     if (!showConfirm) return;
     // Spec 29 — con el álbum activo la barra es el acceso a las fotos: se ve desde que se abre
     // la invitación y no se oculta al llegar al RSVP.
-    if (albumActive) {
+    if (albumActive || eventDay) {
       setVisible(true);
       return;
     }
@@ -59,7 +64,7 @@ export default function StickyConfirmBarV2() {
       window.removeEventListener('resize', onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [showConfirm, albumActive]);
+  }, [showConfirm, albumActive, eventDay]);
 
   if (!showConfirm || !weddingData) return null;
 
@@ -91,14 +96,32 @@ export default function StickyConfirmBarV2() {
             className="flex h-16 items-center justify-between gap-3 rounded-full pl-[22px] pr-2 shadow-[0_12px_30px_-14px_rgba(30,28,25,0.35)]"
             style={{ backgroundColor: V2_COLORS.paper, border: `1px solid ${V2_COLORS.rule}`, color: V2_COLORS.ink }}
           >
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <span className="truncate text-[13px] font-semibold">
-                {weddingData.couple.bride.name} &amp; {weddingData.couple.groom.name}
-              </span>
-              <span className="truncate text-xs" style={{ color: V2_COLORS.graphite }}>
-                {album?.phase === 'open' ? tAlbum('todayIsTheDay') : countdown ? `${shortDate} · ${countdown}` : shortDate}
-              </span>
-            </div>
+            {eventDay ? (
+              <button
+                type="button"
+                data-track-action="event_day_reopen"
+                onClick={eventDay.reopen}
+                className="-ml-3.5 flex h-12 min-w-0 cursor-pointer items-center gap-2.5 rounded-full border-0 px-3.5 text-left"
+                style={{ backgroundColor: V2_COLORS.stone, color: V2_COLORS.ink, fontFamily: V2_FONTS.body }}
+              >
+                <TableIcon color={V2_COLORS.bronze} />
+                <span className="flex min-w-0 flex-col gap-px">
+                  <span className="truncate text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: V2_COLORS.graphite }}>
+                    {tEventDay('reopen')}
+                  </span>
+                  {eventDay.tableName && <span className="truncate text-sm font-semibold">{eventDay.tableName}</span>}
+                </span>
+              </button>
+            ) : (
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span className="truncate text-[13px] font-semibold">
+                  {weddingData.couple.bride.name} &amp; {weddingData.couple.groom.name}
+                </span>
+                <span className="truncate text-xs" style={{ color: V2_COLORS.graphite }}>
+                  {album?.phase === 'open' ? tAlbum('todayIsTheDay') : countdown ? `${shortDate} · ${countdown}` : shortDate}
+                </span>
+              </div>
+            )}
             {albumActive && album ? (
               <a data-track-action="album_open" href={albumHref(weddingData.id, currentLanguage, album.guestId)} {...v2ButtonProps('primary', 'sm', 'h-12 shrink-0 gap-2 px-5 text-sm')}>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
