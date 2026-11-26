@@ -48,6 +48,8 @@ export interface FirebaseGuest {
   updatedAt: string;
   /** @deprecated (spec 12) Reemplazado por FirebaseTableSeat (spec 23). Solo se lee una vez para migrar sus sub-asientos; no se escribe más. */
   tableId?: string | null;
+  // Spec 33 — invitación creada por una hostess para alguien que llegó sin invitación.
+  addedAtDoor?: { by: string; at: string };
   // Spec 28 — mensaje de WhatsApp editado por la pareja para este invitado.
   // Ausente = se usa el mensaje por defecto. Se guarda ya con el nombre y el link escritos.
   whatsappMessages?: {
@@ -325,6 +327,67 @@ export interface EventDayConfig {
   showAlbum: boolean; // botón del álbum (solo si el álbum está en fase open o closed)
 }
 
+// Spec 33 — check-in el día del evento. Público y sin secretos: el código del link de hostess vive
+// en `checkInAccess/{weddingId}`, que solo leen las rutas de servidor.
+export interface CheckInConfig {
+  enabled: boolean;
+  enabledAt?: string; // ISO, primera activación
+}
+
+// Spec 33 — una persona (invitación + seatIndex) marcada como llegada. Id del documento:
+// `${weddingId}__${guestDocId}__${seatIndex}`. Solo la leen y escriben rutas de servidor.
+export interface CheckInRecord {
+  weddingId: string;
+  guestDocId: string;
+  seatIndex: number;
+  arrived: boolean; // false = se deshizo
+  arrivedAt?: string;
+  by: string; // nombre de la hostess
+  at: string; // ISO de la acción; gana la más reciente
+  updatedAt: string; // ISO del servidor
+}
+
+export type CheckInActivityType = 'arrived' | 'undone' | 'moved' | 'walk_in';
+
+export interface CheckInActivity {
+  id?: string;
+  weddingId: string;
+  type: CheckInActivityType;
+  by: string;
+  guestName: string;
+  detail?: string;
+  at: string;
+}
+
+// Acciones de la hostess (iguales en línea y sin conexión).
+export type CheckInOp =
+  | { opId: string; type: 'arrive' | 'undo'; guestDocId: string; seatIndex: number; at: string; by: string }
+  | { opId: string; type: 'move'; guestDocId: string; seatIndex: number; tableId: string | null; at: string; by: string }
+  | { opId: string; type: 'walkIn'; name: string; count: number; tableId: string | null; at: string; by: string };
+
+export interface CheckInSnapshotGuest {
+  docId: string;
+  guestId: string;
+  name: string;
+  status: 'confirmed' | 'pending' | 'declined';
+  count: number;
+  seats: (string | null)[]; // tableId por seatIndex
+  plusOneName: string | null;
+  addedAtDoor: boolean;
+}
+
+// Foto de la boda para la hostess: solo lo necesario para recibir gente (sin teléfonos, correos,
+// mensajes ni dietas).
+export interface CheckInSnapshot {
+  wedding: { id: string; bride: string; groom: string; date: string | null; tier: 'free' | 'template' };
+  tables: Pick<FirebaseTable, 'id' | 'name' | 'capacity' | 'shape' | 'posX' | 'posY'>[];
+  fixtures: Pick<FirebaseVenueFixture, 'id' | 'type' | 'label' | 'posX' | 'posY' | 'width' | 'height'>[];
+  guests: CheckInSnapshotGuest[];
+  checkIns: Record<string, { arrived: boolean; at: string; arrivedAt?: string; by: string }>; // clave `${guestDocId}__${seatIndex}`
+  serverTime: string;
+  version: string;
+}
+
 // Spec 29 — álbum de fotos de los invitados. Ausente = no activado.
 export interface PhotoAlbumConfig {
   enabled: boolean; // lo escribe solo el operador
@@ -405,6 +468,7 @@ export interface WeddingData {
   saveTheDate?: SaveTheDateConfig; // Spec 27 — modo "Aparta la fecha"; ausente = apagado
   photoAlbum?: PhotoAlbumConfig; // Spec 29 — álbum de fotos de los invitados; ausente = no activado
   eventDay?: EventDayConfig; // Spec 32 — modo "Día del evento"; ausente = deshabilitado
+  checkIn?: CheckInConfig; // Spec 33 — check-in el día del evento; ausente = desactivado
   status: 'draft' | 'active' | 'archived';
   languages: string[];
   defaultLanguage: string;

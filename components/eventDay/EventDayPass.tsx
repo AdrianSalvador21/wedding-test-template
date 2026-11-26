@@ -9,6 +9,7 @@ import { albumHref } from '../album/AlbumFab';
 import { SITE } from '../../lib/site';
 import type { EventDayPassData, EventDayPerson } from '../../hooks/useEventDayPass';
 import EventDayFloorPlan, { hasPlacedTables, type FloorPlanTheme } from './EventDayFloorPlan';
+import { EntryQrBlock } from '../checkIn/EntryQr';
 
 // Spec 32 — pase del invitado el día de la boda. Se abre ANTES de la invitación (encima de ella) y
 // "Ver invitación" lo cierra. Un estilo por template, tomado de SaveTheDate.tsx y albumThemes.ts;
@@ -107,12 +108,13 @@ interface Props {
   wedding: WeddingData;
   guest: FirebaseGuest;
   guestUrlId: string; // el valor de ?guest= de la URL, para el link del álbum
+  entryQrUrl?: string | null; // Spec 33 — con el check-in activo, el link personal que va en el QR de entrada
   data: EventDayPassData;
   config: EventDayConfig;
   onClose: () => void;
 }
 
-export default function EventDayPass({ wedding, guest, guestUrlId, data, config, onClose }: Props) {
+export default function EventDayPass({ wedding, guest, guestUrlId, entryQrUrl = null, data, config, onClose }: Props) {
   const { t, currentLanguage } = useTranslations('eventDay');
   const { t: tAlbum } = useTranslations('album');
   const reduce = useReducedMotion();
@@ -160,6 +162,14 @@ export default function EventDayPass({ wedding, guest, guestUrlId, data, config,
   const albumLink = albumHref(wedding.id, locale, guestUrlId);
   const personLabel = (p: EventDayPerson) => p.name || fill(t('companion'), { n: p.seatIndex });
   const brandHref = `${SITE.url}/?src=invitacion`;
+
+  // Spec 33 — QR de entrada debajo de "Tu mesa". Sin mesa ni plano, el QR es el protagonista.
+  const qrBlock = (step: number) =>
+    entryQrUrl && !data.loading ? (
+      <motion.div {...up(step)} className="w-full">
+        <EntryQrBlock templateId={templateId} url={entryQrUrl} guestName={guest.name} count={Math.max(1, people.length)} big={!showTable && !showPlan} />
+      </motion.div>
+    ) : null;
 
   const planLabels = {
     aria: t('floorPlanAria'),
@@ -262,6 +272,7 @@ export default function EventDayPass({ wedding, guest, guestUrlId, data, config,
                 )}
               </motion.section>
             )}
+            {qrBlock(4)}
             <motion.div {...up(5)} className="w-full">
             <Actions
               className="mt-1 flex w-full flex-col gap-3 lg:flex-row"
@@ -335,6 +346,7 @@ export default function EventDayPass({ wedding, guest, guestUrlId, data, config,
                 )}
               </motion.section>
             )}
+            {qrBlock(5)}
             {showPlan && (
               <motion.section {...up(5)} aria-label={t('floorPlan')} className="flex flex-col gap-3 rounded-[5px] p-4 lg:hidden" style={{ background: C.paper, border: `1px solid ${C.rule}` }}>
                 <PlanLegend label={label} graphite={C.graphite} bronze={C.bronze} title={t('floorPlan')} you={t('yourTable')} />
@@ -407,6 +419,7 @@ export default function EventDayPass({ wedding, guest, guestUrlId, data, config,
                   )}
                 </div>
               )}
+              {qrBlock(5)}
               {showPlan && (
                 <motion.section {...up(5)} aria-label={t('floorPlan')} className="box-border flex w-full flex-col items-center gap-2.5 rounded-[28px] px-3.5 pb-3.5 pt-[18px] lg:hidden" style={{ border: `1px solid ${C.sand}` }}>
                   <p className="m-0 text-[22px] font-medium italic" style={{ fontFamily: cormorant }}>{t('floorPlan')}</p>
@@ -476,6 +489,7 @@ export default function EventDayPass({ wedding, guest, guestUrlId, data, config,
                 })}
               </section>
             )}
+            {qrBlock(1)}
             {showPlan && (
               <section aria-label={t('floorPlan')} className="flex w-full flex-col items-center gap-3 lg:hidden">
                 <p className="m-0 text-[11px]" style={{ ...smallCaps, color: C.muted }}>{t('floorPlan')}</p>

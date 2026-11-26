@@ -69,3 +69,12 @@ export function SeatInitialsIcon({ name, size, color }: { name: string; size: nu
     </span>
   );
 }
+
+// Spec 33 — invitación creada por una hostess en la entrada (llegó sin invitación).
+export function DoorBadge({ className = '' }: { className?: string }) {
+  return (
+    <span className={`inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-full bg-[#EFF6FF] px-2 py-0.5 text-[10.5px] font-semibold text-[#1D4ED8] ${className}`}>
+      Agregado en la entrada
+    </span>
+  );
+}

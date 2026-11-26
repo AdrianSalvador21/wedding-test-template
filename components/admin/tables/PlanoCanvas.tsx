@@ -25,7 +25,7 @@ import { track } from '../../../lib/analytics/client';
 import TableNode, { SHAPE_GEOMETRY, type TableNodeData } from './nodes/TableNode';
 import FixtureNode, { type FixtureNodeData } from './nodes/FixtureNode';
 import FixtureFormModal, { type FixtureFormValues } from './FixtureFormModal';
-import { Avatar, StatusPill } from './PersonBadges';
+import { Avatar, StatusPill, DoorBadge } from './PersonBadges';
 import type { PartyInput } from './seatLayout';
 import styles from './plano-overrides.module.css';
 
@@ -641,6 +641,7 @@ function PlanoCanvasInner({
             ) : (
               <StatusPill status={resolveGuestAttendance(guest)} />
             ))}
+          {guest.addedAtDoor && <DoorBadge />}
         </div>
       </div>
     );

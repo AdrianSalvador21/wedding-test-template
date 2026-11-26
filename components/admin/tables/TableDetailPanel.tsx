@@ -19,7 +19,7 @@ import { FirebaseGuest, FirebaseTable, FirebaseTableSeat } from '../../../src/ty
 import { getSeatDisplayName } from '../../../services/seatService';
 import { resolveGuestAttendance, type AttendanceStatus } from '../../../services/guestService';
 import { getOccupancyState, getSeatDots } from './occupancy';
-import { Avatar, StatusPill, StatusDot } from './PersonBadges';
+import { Avatar, StatusPill, StatusDot, DoorBadge } from './PersonBadges';
 
 export type TableDetailTarget = { type: 'table'; table: FirebaseTable } | { type: 'unassigned' };
 
@@ -127,6 +127,7 @@ function SeatRow({
           </span>
         )}
         {row.location !== 'elsewhere' && <StatusPill status={row.status} />}
+        {row.guest.addedAtDoor && <DoorBadge />}
       </div>
       <div className="flex-shrink-0">{rightSlot}</div>
     </div>

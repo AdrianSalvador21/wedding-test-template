@@ -619,6 +619,15 @@
     "planNear": "Near your table",
     "planWhole": "Whole venue",
     "planNearHint": "Zoomed in on your table because the venue has many tables.",
-    "planWholeHint": "Every table in the venue. Yours stays highlighted."
+    "planWholeHint": "Every table in the venue. Yours stays highlighted.",
+    "entryQrTitle": "Your entry QR",
+    "entryQrHint": "Show it at the reception. If you don't have it at hand, they'll look you up by name.",
+    "entryQrShort": "Show it at the reception",
+    "myPass": "My pass",
+    "myQr": "My entry QR",
+    "forReception": "For the reception",
+    "close": "Close",
+    "onePerson": "1 guest",
+    "entryQrAria": "Entry QR for {name}"
   }
 }

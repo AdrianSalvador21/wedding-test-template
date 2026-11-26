@@ -10,7 +10,7 @@ import { v2DateLocale, v2Fill, v2WeddingDate } from './sections';
 import { albumPhase, type AlbumPhase } from '../../lib/album';
 import { albumHref } from '../album/AlbumFab';
 import { useEventDayReopen } from '../eventDay/EventDayContext';
-import { TableIcon } from '../eventDay/EventDayReopenButton';
+import { QrIcon, TableIcon } from '../eventDay/EventDayReopenButton';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -104,12 +104,16 @@ export default function StickyConfirmBarV2() {
                 className="-ml-3.5 flex h-12 min-w-0 cursor-pointer items-center gap-2.5 rounded-full border-0 px-3.5 text-left"
                 style={{ backgroundColor: V2_COLORS.stone, color: V2_COLORS.ink, fontFamily: V2_FONTS.body }}
               >
-                <TableIcon color={V2_COLORS.bronze} />
+                {eventDay.kind === 'mesa' ? <TableIcon color={V2_COLORS.bronze} /> : <span style={{ color: V2_COLORS.bronze, display: 'flex' }}><QrIcon /></span>}
                 <span className="flex min-w-0 flex-col gap-px">
                   <span className="truncate text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: V2_COLORS.graphite }}>
-                    {tEventDay('reopen')}
+                    {eventDay.kind === 'mesa' ? tEventDay('reopen') : eventDay.kind === 'pase' ? tEventDay('myPass') : tEventDay('myQr')}
                   </span>
-                  {eventDay.tableName && <span className="truncate text-sm font-semibold">{eventDay.tableName}</span>}
+                  {eventDay.kind === 'qr' ? (
+                    <span className="truncate text-sm font-semibold">{tEventDay('forReception')}</span>
+                  ) : (
+                    eventDay.tableName && <span className="truncate text-sm font-semibold">{eventDay.tableName}</span>
+                  )}
                 </span>
               </button>
             ) : (

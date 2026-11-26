@@ -15,6 +15,7 @@ function sectionFromPathname(pathname: string | null): PanelSection {
   if (pathname.includes('/confirmations')) return 'confirmations';
   if (pathname.includes('/guests')) return 'guests';
   if (pathname.includes('/tables')) return 'tables';
+  if (pathname.includes('/checkin')) return 'checkin';
   if (pathname.includes('/photos')) return 'photos';
   return 'dashboard';
 }

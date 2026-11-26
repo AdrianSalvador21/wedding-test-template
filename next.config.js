@@ -17,6 +17,7 @@ const NOINDEX_SOURCES = [
   '/:locale(es|en)/typography-test',
   '/typography-test',
   '/api/:path*',
+  '/check-in/:path*', // spec 33: modo hostess
 ];
 
 /** @type {import('next').NextConfig} */

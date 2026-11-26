@@ -32,14 +32,19 @@ export function isEventDayEnabled(wedding: EventDayWeddingLike): boolean {
   return wedding.eventDay?.enabled === true;
 }
 
-// Habilitado y dentro de la ventana. Sin `event.date` nunca se activa.
-export function isEventDayActive(wedding: EventDayWeddingLike, now: Date = new Date()): boolean {
-  if (!isEventDayEnabled(wedding)) return false;
+// Spec 33 — solo la ventana (00:00 del día de la boda a 06:00 del día siguiente, hora CDMX), sin
+// mirar si "Día del evento" está habilitado: el QR de entrada depende solo del check-in.
+export function isInEventDayWindow(wedding: EventDayWeddingLike, now: Date = new Date()): boolean {
   const starts = eventDayStartsAt(wedding);
   const ends = eventDayEndsAt(wedding);
   if (!starts || !ends) return false;
   const t = now.getTime();
   return t >= starts.getTime() && t < ends.getTime();
+}
+
+// Habilitado y dentro de la ventana. Sin `event.date` nunca se activa.
+export function isEventDayActive(wedding: EventDayWeddingLike, now: Date = new Date()): boolean {
+  return isEventDayEnabled(wedding) && isInEventDayWindow(wedding, now);
 }
 
 // Configuración completa con los valores por defecto para campos que falten.

@@ -8,6 +8,9 @@ import { createContext, useContext } from 'react';
 export interface EventDayReopen {
   reopen: () => void;
   tableName: string | null;
+  // Spec 33 — 'mesa': pase sin QR ("Mi mesa"); 'pase': pase con QR ("Mi pase"); 'qr': sin pase,
+  // abre la hoja del QR de entrada ("Mi QR de entrada").
+  kind: 'mesa' | 'pase' | 'qr';
 }
 
 export const EventDayContext = createContext<EventDayReopen | null>(null);
