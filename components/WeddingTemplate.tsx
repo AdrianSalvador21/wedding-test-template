@@ -30,7 +30,9 @@ import EventDayPass from './eventDay/EventDayPass';
 import EventDayReopenButton from './eventDay/EventDayReopenButton';
 import { EventDayContext, type EventDayReopen } from './eventDay/EventDayContext';
 import { useEventDayPass } from '../hooks/useEventDayPass';
-import { eventDayConfig, isEventDayActive } from '../lib/eventDay';
+import { eventDayConfig, isEventDayActive, isInEventDayWindow } from '../lib/eventDay';
+import { EntryQrSheet, guestInvitationUrl } from './checkIn/EntryQr';
+import { getSeatedGuestCount } from '../services/guestService';
 
 interface WeddingTemplateProps {
   guestId?: string | null;
@@ -171,10 +173,22 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
   const [passClosed, setPassClosed] = useState(false);
   const showPass = passEligible && !passClosed;
   const passData = useEventDayPass(guestInfo, passEligible, !!eventDay?.showFloorPlan);
-  const reopenValue = useMemo<EventDayReopen | null>(
-    () => (passEligible && passClosed ? { reopen: () => setPassClosed(false), tableName: passData.people[0]?.table?.name ?? null } : null),
-    [passEligible, passClosed, passData.people]
-  );
+  // Spec 33 — QR de entrada: existe siempre que el check-in esté activo, con o sin "Día del evento".
+  // Con el pase va dentro de él ("Mi pase" al cerrarlo); sin el pase, en el botón "Mi QR de entrada".
+  const checkInOn = currentWedding?.checkIn?.enabled === true;
+  const inWindow = useMemo(() => !!currentWedding && isInEventDayWindow(currentWedding), [currentWedding]);
+  const entryQrUrl =
+    checkInOn && guestInfo && guestId && currentWedding ? guestInvitationUrl(currentWedding.id, guestInfo.language || currentLocale, guestId) : null;
+  const qrOnlyEligible =
+    !!entryQrUrl && !passEligible && !isFreeWedding && !showsSaveTheDate && guestInfo?.rsvpStatus !== 'declined' && inWindow;
+  const [qrSheetOpen, setQrSheetOpen] = useState(false);
+  const reopenValue = useMemo<EventDayReopen | null>(() => {
+    if (passEligible && passClosed) {
+      return { reopen: () => setPassClosed(false), tableName: passData.people[0]?.table?.name ?? null, kind: entryQrUrl ? 'pase' : 'mesa' };
+    }
+    if (qrOnlyEligible) return { reopen: () => setQrSheetOpen(true), tableName: null, kind: 'qr' };
+    return null;
+  }, [passEligible, passClosed, passData.people, entryQrUrl, qrOnlyEligible]);
   useInvitationOpened(
     isReady && !isFreeWedding && currentWedding
       ? {
@@ -302,6 +316,7 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
             wedding={currentWedding}
             guest={guestInfo}
             guestUrlId={guestId}
+            entryQrUrl={entryQrUrl}
             data={passData}
             config={eventDay}
             onClose={() => setPassClosed(true)}
@@ -309,6 +324,15 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
         )}
         </AnimatePresence>
         <EventDayReopenButton wedding={currentWedding} />
+        {qrSheetOpen && entryQrUrl && guestInfo && (
+          <EntryQrSheet
+            templateId={templateId}
+            url={entryQrUrl}
+            guestName={guestInfo.name}
+            count={getSeatedGuestCount(guestInfo)}
+            onClose={() => setQrSheetOpen(false)}
+          />
+        )}
 
         {/* Reproductor de música de fondo (template-02 dibuja su propio botón, spec 25). Mientras el
             pase está abierto no se monta, para que un toque en el pase no arranque la música. */}

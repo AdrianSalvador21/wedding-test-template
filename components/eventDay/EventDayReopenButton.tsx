@@ -29,6 +29,16 @@ const STYLES: Record<string, CSSProperties> = {
   'template-04': { height: 48, padding: '0 18px', background: '#2E3323', color: '#F4EFE3', border: '1px solid #B7AD90', borderRadius: 0, fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', boxShadow: '0 8px 22px rgba(20,22,14,0.35)' },
 };
 
+const QrIcon = ({ size = 18 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden="true">
+    <rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1" />
+    <rect x="14" y="3.5" width="6.5" height="6.5" rx="1" />
+    <rect x="3.5" y="14" width="6.5" height="6.5" rx="1" />
+    <path d="M14 14h2.5v2.5H14zM18 18h2.5v2.5H18zM14 18.5v2M18.5 14h2" />
+  </svg>
+);
+export { QrIcon };
+
 export default function EventDayReopenButton({ wedding }: { wedding: WeddingData }) {
   const reopen = useEventDayReopen();
   const { t } = useTranslations('eventDay');
@@ -50,8 +60,8 @@ export default function EventDayReopenButton({ wedding }: { wedding: WeddingData
       onClick={reopen.reopen}
       style={{ position: 'fixed', left: 16, bottom, zIndex: 40, display: 'inline-flex', alignItems: 'center', gap: 10, cursor: 'pointer', ...style }}
     >
-      <TableIcon size={templateId === 'template-04' ? 17 : 18} />
-      {t('reopen')}
+      {reopen.kind === 'mesa' ? <TableIcon size={templateId === 'template-04' ? 17 : 18} /> : <QrIcon size={templateId === 'template-04' ? 17 : 18} />}
+      {reopen.kind === 'mesa' ? t('reopen') : reopen.kind === 'pase' ? t('myPass') : t('myQr')}
     </button>
   );
 }

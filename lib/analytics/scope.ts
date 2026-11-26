@@ -47,6 +47,8 @@ export function resolveScope(pathname: string): TrackingScope {
   if (wedding) return isDemoId(wedding.id) ? 'demo' : 'invitation';
 
   if (path === '/login' || path === '/admin' || path.startsWith('/admin/')) return 'admin';
+  // Spec 33 — el modo hostess es una herramienta del personal: se mide como admin, con la ruta saneada.
+  if (path.startsWith('/check-in/')) return 'admin';
 
   return null;
 }
@@ -66,6 +68,7 @@ export function pageKey(pathname: string): string {
   if (path === '/aviso-de-privacidad') return 'privacidad';
   if (path.startsWith('/disenos/')) return `disenos-${path.slice('/disenos/'.length)}`;
   if (path.startsWith('/wedding/')) return demoIdFromPath(pathname) ? 'demo' : 'invitacion';
+  if (path.startsWith('/check-in/')) return 'check-in';
   return path.slice(1).replace(/\//g, '-') || 'home';
 }
 
@@ -78,7 +81,11 @@ export function pageTitleFor(pathname: string, scope: TrackingScope): string | n
     if (subpage === 'album') return 'Álbum';
     return 'Invitación';
   }
-  if (scope === 'admin') return trimTrailingSlash(stripLocale(pathname)) === '/login' ? 'Login' : 'Admin';
+  if (scope === 'admin') {
+    const path = trimTrailingSlash(stripLocale(pathname));
+    if (path.startsWith('/check-in/')) return 'Check-in';
+    return path === '/login' ? 'Login' : 'Admin';
+  }
   return null;
 }
 
@@ -91,6 +98,8 @@ export function pageTitleFor(pathname: string, scope: TrackingScope): string | n
 //   `/en/wedding/karen-y-juan/fotos`      -> `/en/wedding/:weddingId/fotos` (las demos se conservan)
 const ADMIN_WEDDING_PATH = /(?:\/(?:es|en))?\/admin\/panel\/[^/?#\s]+/g;
 const WEDDING_ID_PATH = /\/wedding\/([^/?#\s]+)/g;
+// Spec 33 — el código secreto del link de hostess nunca sale del navegador.
+const CHECK_IN_CODE_PATH = /\/check-in\/[^/?#\s]+/g;
 
 // Lista permitida de parámetros de consulta: cualquier otro (`guest`, `invitado`, `notrack`,
 // `ga_debug` o uno nuevo con datos personales) se elimina.
@@ -109,6 +118,7 @@ const ALLOWED_QUERY_PARAMS = new Set([
 export function sanitizePath(pathname: string): string {
   return pathname
     .replace(ADMIN_WEDDING_PATH, '/admin/panel/:weddingId')
+    .replace(CHECK_IN_CODE_PATH, '/check-in/:code')
     .replace(WEDDING_ID_PATH, (match, id: string) => (isDemoId(id) ? match : '/wedding/:weddingId'));
 }
 

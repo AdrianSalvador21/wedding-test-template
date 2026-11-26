@@ -22,6 +22,7 @@ export const NON_LOCALIZED_PATHS = [
   '/wedding-planners',
   '/preguntas-frecuentes',
   '/album-de-fotos', // spec 29: página pública del álbum de fotos de los invitados
+  '/check-in', // spec 33: modo hostess (solo en español, noindex)
   '/aviso-de-privacidad', // spec 11: aviso de la medición; noindex y fuera de MARKETING_PAGES
   '/disenos',
   '/icon',

@@ -13,6 +13,7 @@ import { FreeWeddingSettingsModal } from '../../../../../../components/admin/Fre
 import { normalizePhone } from '../../../../../../lib/phone';
 import { WhatsAppSendModal } from '../../../../../../components/admin/guests/WhatsAppSendModal';
 import { ImportGuestsModal } from '../../../../../../components/admin/guests/ImportGuestsModal';
+import { DoorBadge } from '../../../../../../components/admin/tables/PersonBadges';
 
 interface GuestStats {
   total: number;
@@ -471,6 +472,7 @@ const AdminGuestsContent = () => {
                   <tr key={guest.id} className="hover:bg-[#FAFAFA] transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-semibold text-[#0A0A0A]">{guest.name}</div>
+                      {guest.addedAtDoor && <DoorBadge className="mt-1" />}
                       {tier !== 'free' && guest.coupleMessage && (
                         <div className="text-sm text-[#71717A] truncate max-w-xs">
                           {guest.coupleMessage}
@@ -600,6 +602,7 @@ const AdminGuestsContent = () => {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-sm font-semibold text-[#0A0A0A] truncate">{guest.name}</div>
+                    {guest.addedAtDoor && <DoorBadge className="mt-1" />}
                     {guest.email && <div className="text-xs text-[#71717A] mt-1 truncate">{guest.email}</div>}
                     {guest.phone && <div className="text-xs text-[#71717A] truncate">{guest.phone}</div>}
                   </div>

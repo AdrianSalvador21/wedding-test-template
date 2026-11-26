@@ -45,7 +45,8 @@ import {
   ExternalLink,
   Armchair,
   TriangleAlert,
-  ChevronDown
+  ChevronDown,
+  QrCode
 } from 'lucide-react';
 import { seatService } from '../../../../../../services/seatService';
 import { getSeatedGuestCount, resolveGuestAttendance } from '../../../../../../services/guestService';
@@ -2729,6 +2730,7 @@ function EventDaySection({
   const update = (patch: Partial<typeof config>) => onChange('eventDay', { ...config, ...patch });
   const albumOn = data ? isAlbumEnabled(data) : false;
   const saveTheDateOn = !!data?.saveTheDate?.enabled;
+  const checkInOn = data?.checkIn?.enabled === true;
 
   const starts = data ? eventDayStartsAt(data) : null;
   const ends = data ? eventDayEndsAt(data) : null;
@@ -2872,6 +2874,23 @@ function EventDaySection({
           albumOn ? '“Comparte tus fotos”, el mismo que ya aparece en la invitación el día de la boda.' : 'Activa el álbum en Fotos para mostrar este botón.',
           !albumOn
         )}
+        {/* Spec 33 — el QR de entrada no tiene interruptor aquí: depende solo del check-in. */}
+        <div className={`flex items-start gap-3.5 py-3.5 border-t border-[rgba(0,0,0,0.06)] ${checkInOn ? '' : 'opacity-70'}`}>
+          <span className="flex-shrink-0 mt-0.5 h-[26px] w-11 rounded-full bg-[#F4F4F5] flex items-center justify-center">
+            <QrCode className="h-4 w-4 text-[#71717A]" />
+          </span>
+          <div className="flex flex-col gap-0.5">
+            <span className="inline-flex flex-wrap items-center gap-2 text-sm font-semibold text-[#0A0A0A]">
+              QR de entrada
+              {checkInOn && <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#F0FDF4] text-[#15803D]">Por el check-in</span>}
+            </span>
+            <span className="text-[13px] leading-relaxed text-[#71717A]">
+              {checkInOn ? 'Aparece en el pase porque el check-in está activo. Se controla desde ' : 'Activa el '}
+              <a href={`/${locale}/admin/panel/${weddingId}/checkin`} className="font-semibold text-[#AE5730] underline">Check-in</a>
+              {checkInOn ? '.' : ' para que cada invitado tenga un QR para la recepción.'}
+            </span>
+          </div>
+        </div>
       </section>
 
       {unseated !== null && unseated > 0 && (

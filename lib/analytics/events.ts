@@ -50,6 +50,15 @@ export interface AnalyticsEventMap {
   invitation_opened: { page_type: 'invitation' | 'save_the_date' | 'album'; has_guest: boolean };
   rsvp_submitted: { attending: 'yes' | 'no'; guest_count: number };
   invitation_interaction: { action: InvitationAction };
+  // Check-in el día del evento (spec 33). Sin datos personales.
+  checkin_enabled: NoProps;
+  checkin_link_rotated: NoProps;
+  hostess_opened: { device: 'phone' | 'tablet' };
+  checkin_scan: { result: 'ok' | 'dupe' | 'other_wedding' | 'not_found' };
+  checkin_arrive: { people: number };
+  checkin_walk_in: { people: number };
+  checkin_move: NoProps;
+  checkin_offline_synced: { count: number };
 }
 
 export const INVITATION_ACTIONS = [

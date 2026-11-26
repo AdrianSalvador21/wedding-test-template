@@ -619,6 +619,15 @@
     "planNear": "Cerca de tu mesa",
     "planWhole": "Todo el salón",
     "planNearHint": "Se abre acercado a tu mesa porque el salón tiene muchas mesas.",
-    "planWholeHint": "Todas las mesas del salón. Tu mesa sigue resaltada."
+    "planWholeHint": "Todas las mesas del salón. Tu mesa sigue resaltada.",
+    "entryQrTitle": "Tu QR de entrada",
+    "entryQrHint": "Muéstralo en la recepción. Si no lo traes a la mano, te buscan por nombre.",
+    "entryQrShort": "Muéstralo en la recepción",
+    "myPass": "Mi pase",
+    "myQr": "Mi QR de entrada",
+    "forReception": "Para la recepción",
+    "close": "Cerrar",
+    "onePerson": "1 persona",
+    "entryQrAria": "QR de entrada de {name}"
   }
 }
