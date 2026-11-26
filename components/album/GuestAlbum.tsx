@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useTranslations } from '../../lib/translations';
 import { track } from '../../lib/analytics/client';
+import { startTrace } from '../../lib/analytics/perf';
+import { useInvitationOpened } from '../../lib/analytics/useInvitationOpened';
+import { SITE } from '../../lib/site';
 import { compressImage, UnsupportedImageError } from '../../lib/imageCompress';
 import { ALBUM_PHOTO_LIMIT, formatAlbumDate, formatAlbumTime, type AlbumMode, type AlbumPhase } from '../../lib/album';
 import { getAlbumTheme, type AlbumTheme } from './albumThemes';
@@ -404,6 +407,14 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
   const theme = getAlbumTheme(data?.templateId);
   const guestLabel = t('guestFallback');
 
+  // Spec 31 — `invitation_opened` del álbum en cuanto carga (no si el álbum no existe o está apagado).
+  // Un álbum sin invitación (spec 30) no tiene plantilla: viaja como 'none'.
+  useInvitationOpened(
+    data && data.phase !== 'disabled'
+      ? { weddingId, templateId: data.templateId || 'none', pageType: 'album', hasGuest: isGuestLink }
+      : null
+  );
+
   const dateText = useMemo(() => (data?.opensAt ? formatAlbumDate(new Date(data.opensAt), locale) : ''), [data?.opensAt, locale]);
   const revealText = useMemo(() => (data?.revealAt ? formatAlbumDate(new Date(data.revealAt), locale, { day: 'numeric', month: 'long' }) : ''), [data?.revealAt, locale]);
 
@@ -426,7 +437,14 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
           form.append('deviceId', deviceId);
           if (name.trim()) form.append('name', name.trim());
         }
-        const res = await postPhoto(`/api/album/${encodeURIComponent(weddingId)}/photos`, form, (p) => update(key, { progress: p }));
+        const uploadTrace = startTrace('album_photo_upload');
+        const res = await postPhoto(`/api/album/${encodeURIComponent(weddingId)}/photos`, form, (p) => update(key, { progress: p })).catch(
+          (error: unknown) => {
+            uploadTrace.stop('error', { template_id: data.templateId || 'none' });
+            throw error;
+          }
+        );
+        uploadTrace.stop(res.status === 200 ? 'ok' : 'error', { template_id: data.templateId || 'none' });
         if (res.status === 200) {
           update(key, { status: 'done', progress: 100 });
           const photo = res.body.photo as PublicPhoto | undefined;
@@ -664,6 +682,15 @@ export default function GuestAlbum({ weddingId, locale, guestId }: { weddingId: 
               <span style={{ fontSize: 13, lineHeight: 1.4, color: theme.body }}>{fill(t('disposableLocked'), { date: revealText })}</span>
             </div>
           )}
+          {/* Spec 31 — el álbum se mide: el aviso de privacidad queda al alcance del invitado. */}
+          <a
+            href={`${SITE.url}/aviso-de-privacidad`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ alignSelf: 'center', marginTop: 12, fontSize: 12, color: theme.muted, textDecoration: 'none' }}
+          >
+            {locale === 'en' ? 'Privacy' : 'Privacidad'}
+          </a>
         </section>
       </div>
 

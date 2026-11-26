@@ -30,6 +30,7 @@ export default function AlbumFab({ wedding, guestId }: { wedding: WeddingData; g
   const theme = getAlbumTheme(templateId);
   return (
     <a
+      data-track-action="album_open"
       href={albumHref(wedding.id, currentLanguage, guestId)}
       style={{
         position: 'fixed',

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion, type Variants } from 'framer-motion';
+import type { InvitationAction } from '../../lib/analytics/events';
 
 // Paleta fija del rediseño "Jardín Editorial" (no conectada al selector de 10 temas)
 export const v4Colors = {
@@ -233,6 +234,7 @@ export function V4Button({
   disabled = false,
   variant = 'outline',
   className = '',
+  trackAction,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -241,6 +243,8 @@ export function V4Button({
   disabled?: boolean;
   variant?: 'outline' | 'solid' | 'solid-light';
   className?: string;
+  // Spec 31 — acción medida como `invitation_interaction` (listener delegado).
+  trackAction?: InvitationAction;
 }) {
   const base =
     'inline-flex items-center justify-center gap-2 px-7 py-3.5 text-[11px] font-sans tracking-[0.2em] uppercase transition-opacity duration-300 disabled:opacity-50 disabled:cursor-not-allowed';
@@ -251,13 +255,13 @@ export function V4Button({
   };
   if (href) {
     return (
-      <a href={href} className={`${base} hover:opacity-75 ${className}`} style={styles[variant]}>
+      <a href={href} data-track-action={trackAction} className={`${base} hover:opacity-75 ${className}`} style={styles[variant]}>
         {children}
       </a>
     );
   }
   return (
-    <button type={type} onClick={onClick} disabled={disabled} className={`${base} hover:opacity-75 ${className}`} style={styles[variant]}>
+    <button type={type} onClick={onClick} data-track-action={trackAction} disabled={disabled} className={`${base} hover:opacity-75 ${className}`} style={styles[variant]}>
       {children}
     </button>
   );

@@ -68,6 +68,7 @@ const Location = () => {
                     <p className="text-sm text-gray-600 font-body">{ceremonyAddress}</p>
                   </div>
                   <button
+                    data-track-action="map"
                     onClick={() => openExternalLink(ceremonyUrl)}
                     className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent text-sm"
                   >
@@ -97,6 +98,7 @@ const Location = () => {
                     <p className="text-sm text-gray-600 font-body">{receptionAddress}</p>
                   </div>
                   <button
+                    data-track-action="map"
                     onClick={() => openExternalLink(receptionMapsUrl)}
                     className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent text-sm"
                   >
@@ -120,6 +122,7 @@ const Location = () => {
                     <p className="text-base lg:text-lg text-gray-600 font-body">{ceremonyAddress || 'Xohitepec, Mor.'}</p>
                   </div>
                   <button
+                    data-track-action="map"
                     onClick={() => openExternalLink(ceremonyUrl)}
                     className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent text-base"
                   >
@@ -138,6 +141,7 @@ const Location = () => {
                     <p className="text-base lg:text-lg text-gray-600 font-body">{receptionAddress || 'Xohitepec, Mor.'}</p>
                   </div>
                   <button
+                    data-track-action="map"
                     onClick={() => openExternalLink(receptionMapsUrl)}
                     className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent text-base"
                   >
@@ -202,6 +206,7 @@ const Location = () => {
                     <p className="text-sm text-gray-600 font-body">{ceremonyAddress}</p>
                   </div>
                   <button
+                    data-track-action="map"
                     onClick={() => openExternalLink(ceremonyUrl)}
                     className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent text-sm"
                   >
@@ -231,6 +236,7 @@ const Location = () => {
                     <p className="text-sm text-gray-600 font-body">{receptionAddress}</p>
                   </div>
                   <button
+                    data-track-action="map"
                     onClick={() => openExternalLink(receptionMapsUrl)}
                     className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent text-sm"
                   >
@@ -254,6 +260,7 @@ const Location = () => {
                     <p className="text-base lg:text-lg text-gray-600 font-body">{ceremonyAddress || 'Xohitepec, Mor.'}</p>
                   </div>
                   <button
+                    data-track-action="map"
                     onClick={() => openExternalLink(ceremonyUrl)}
                     className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent text-base"
                   >
@@ -272,6 +279,7 @@ const Location = () => {
                     <p className="text-base lg:text-lg text-gray-600 font-body">{receptionAddress || 'Xohitepec, Mor.'}</p>
                   </div>
                   <button
+                    data-track-action="map"
                     onClick={() => openExternalLink(receptionMapsUrl)}
                     className="inline-flex items-center text-accent hover:text-accent-dark transition-colors font-body bg-transparent text-base"
                   >

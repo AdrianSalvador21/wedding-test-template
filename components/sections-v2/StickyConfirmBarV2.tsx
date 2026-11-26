@@ -100,7 +100,7 @@ export default function StickyConfirmBarV2() {
               </span>
             </div>
             {albumActive && album ? (
-              <a href={albumHref(weddingData.id, currentLanguage, album.guestId)} {...v2ButtonProps('primary', 'sm', 'h-12 shrink-0 gap-2 px-5 text-sm')}>
+              <a data-track-action="album_open" href={albumHref(weddingData.id, currentLanguage, album.guestId)} {...v2ButtonProps('primary', 'sm', 'h-12 shrink-0 gap-2 px-5 text-sm')}>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M14.5 4h-5L7.5 6.5H4a1 1 0 0 0-1 1V19a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7.5a1 1 0 0 0-1-1h-3.5z" />
                   <circle cx="12" cy="13" r="3.5" />

@@ -38,6 +38,7 @@ export default function AccommodationV4() {
                   </p>
                 )}
                 <a
+                  data-track-action="map"
                   href={hotel.mapsUrl || `https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`}
                   target="_blank"
                   rel="noopener noreferrer"

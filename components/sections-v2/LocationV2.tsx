@@ -86,6 +86,7 @@ export default function LocationV2() {
                         </p>
                       )}
                       <a
+                        data-track-action="map"
                         href={mapsHref(stop)}
                         target="_blank"
                         rel="noopener noreferrer"

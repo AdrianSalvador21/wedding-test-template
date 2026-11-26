@@ -241,6 +241,7 @@ function CalendarPicker({
     <button
       type="button"
       onClick={onClick}
+      data-track-action="calendar"
       className="flex w-full items-center gap-3.5 text-left"
       style={
         theme.numbered
@@ -353,6 +354,16 @@ export default function SaveTheDate({ wedding, guestName }: SaveTheDateProps) {
     <div className="relative flex h-9 items-center justify-center md:h-11" style={{ background: bg, borderTop: border }}>
       <a href={brandHref} target="_blank" rel="noopener noreferrer" className="text-lg no-underline hover:opacity-80" style={{ color, fontFamily: font }}>
         invyta
+      </a>
+      {/* Spec 31 — el save the date se mide: el aviso de privacidad queda al alcance del invitado. */}
+      <a
+        href={`${SITE.url}/aviso-de-privacidad`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute right-4 text-[11px] no-underline opacity-70 hover:opacity-100"
+        style={{ color, fontFamily: font }}
+      >
+        {locale === 'en' ? 'Privacy' : 'Privacidad'}
       </a>
     </div>
   );

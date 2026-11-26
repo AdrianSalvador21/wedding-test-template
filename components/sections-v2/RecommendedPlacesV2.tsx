@@ -38,6 +38,7 @@ export default function RecommendedPlacesV2() {
                 return (
                   <V2StaggerItem as="li" key={place.id || `${place.name}-${index}`} style={{ borderBottom: `1px solid ${V2_COLORS.rule}` }}>
                     <a
+                      data-track-action="map"
                       href={getMapsUrl(place)}
                       target="_blank"
                       rel="noopener noreferrer"

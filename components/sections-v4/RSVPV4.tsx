@@ -11,6 +11,8 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { guestService } from '../../services/guestService';
 import { isDemoId } from '../../lib/analytics/demos';
+import { track } from '../../lib/analytics/client';
+import { startTrace } from '../../lib/analytics/perf';
 import { FirebaseRSVP, FirebaseGuest } from '../../src/types/wedding';
 import { V4BgMotif, V4Button, V4Container, V4CornerFlourish, V4Reveal, V4Section, V4SectionHeading, v4Colors } from './ui';
 
@@ -145,6 +147,8 @@ function RSVPContentV4() {
         submittedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
+      // Spec 31 — misma medición en las demos (sin escritura ni traza de rendimiento).
+      track('rsvp_submitted', { attending: data.attendance === 'yes' ? 'yes' : 'no', guest_count: data.guestCount ? parseInt(data.guestCount, 10) : 1 });
       setIsSubmitted(true);
       setIsSubmitting(false);
       return;
@@ -156,6 +160,7 @@ function RSVPContentV4() {
       return;
     }
 
+    const rsvpTrace = startTrace('rsvp_submit');
     try {
       let guestCount = 1;
       let targetGuest = guestInfo;
@@ -215,8 +220,11 @@ function RSVPContentV4() {
         submittedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
+      rsvpTrace.stop('ok', { template_id: 'template-04' });
+      track('rsvp_submitted', { attending: data.attendance === 'yes' ? 'yes' : 'no', guest_count: guestCount });
       setIsSubmitted(true);
     } catch (err) {
+      rsvpTrace.stop('error', { template_id: 'template-04' });
       console.error('Error guardando RSVP:', err);
       setError('Error al guardar la confirmación. Por favor, intenta de nuevo.');
     } finally {

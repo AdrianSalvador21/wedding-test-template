@@ -177,6 +177,7 @@ const Footer = () => {
               <div className="flex justify-center space-x-4">
                 {bridPhone && (
                   <button
+                    data-track-action="contact_couple"
                     onClick={() => handleWhatsAppClick(bridPhone)}
                     className="flex items-center space-x-2 px-4 py-2 rounded-full transition-colors"
                   >
@@ -186,6 +187,7 @@ const Footer = () => {
                 )}
                 {groomPhone && (
                   <button
+                    data-track-action="contact_couple"
                     onClick={() => handleWhatsAppClick(groomPhone)}
                     className="flex items-center space-x-2 px-4 py-2 rounded-full transition-colors"
                   >
@@ -332,6 +334,7 @@ const Footer = () => {
                   <>
                     {bridPhone && (
                       <button
+                        data-track-action="contact_couple"
                         onClick={() => handleWhatsAppClick(bridPhone)}
                         className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
                       >
@@ -344,6 +347,7 @@ const Footer = () => {
                     )}
                     {groomPhone && (
                       <button
+                        data-track-action="contact_couple"
                         onClick={() => handleWhatsAppClick(groomPhone)}
                         className={`flex items-center space-x-2 ${hoverClass} transition-colors`}
                       >

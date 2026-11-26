@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { Check, Copy } from 'lucide-react';
+import type { InvitationAction } from '../../lib/analytics/events';
 
 // Template02 "Moderno" (spec 25): retícula editorial, filetes de 1 px, display Bricolage
 // Grotesque sobre texto Plus Jakarta Sans y ritmo piedra/tinta. Paleta fija, no conectada al
@@ -253,6 +254,7 @@ export function V2CopyButton({
   ariaLabel,
   onInk = false,
   iconOnly = false,
+  trackAction,
 }: {
   value: string;
   label: string;
@@ -260,6 +262,8 @@ export function V2CopyButton({
   ariaLabel: string;
   onInk?: boolean;
   iconOnly?: boolean;
+  // Spec 31 — acción medida como `invitation_interaction` (listener delegado).
+  trackAction?: InvitationAction;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -285,6 +289,7 @@ export function V2CopyButton({
   return (
     <button
       type="button"
+      data-track-action={trackAction}
       onClick={handleCopy}
       aria-label={copied ? copiedLabel : ariaLabel}
       className={`inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition-colors ${iconOnly ? 'w-11' : 'px-[14px]'}`}

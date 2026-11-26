@@ -83,6 +83,7 @@ const Accommodation = () => {
 
                   {/* Botón de ubicación */}
                   <button
+                    data-track-action="map"
                     onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-accent hover:text-accent-dark transition-colors font-body font-medium text-sm"
                   >
@@ -172,6 +173,7 @@ const Accommodation = () => {
 
                     {/* Botón de ubicación */}
                     <button
+                      data-track-action="map"
                       onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
                       className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-accent hover:text-accent-dark transition-colors font-body font-medium text-sm"
                     >

@@ -1,46 +1,35 @@
-// Cliente de analítica con PostHog (spec 11). Todo el módulo es no-op si:
-//  - falta NEXT_PUBLIC_POSTHOG_KEY (desarrollo local y ramas de vista previa),
-//  - el dispositivo tiene el interruptor de tráfico propio (`invyta:notrack`), o
+// Fachada de analítica (specs 11 y 31) sobre Google Analytics para Firebase (`ga.ts`).
+// Todo es no-op si:
+//  - falta NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID, o el build no es de producción y la pestaña no
+//    activó `?ga_debug=1` (ver `env.ts`),
+//  - el dispositivo tiene el interruptor de tráfico propio (`invyta:notrack`),
+//  - la ruta está fuera de alcance (el proveedor llama `setCaptureEnabled(false)`), o
 //  - se ejecuta en el servidor.
-// `posthog-js` se importa de forma dinámica y en tiempo ocioso: no entra al bundle inicial.
-import type { CaptureResult, PostHog, Properties } from 'posthog-js';
+// La firma de `track()` es la misma desde el spec 11: los componentes no dependen del proveedor.
 import type { AnalyticsEventMap, AnalyticsEventName } from './events';
-import { sanitizeUrl } from './scope';
+import { isNotrack, NOTRACK_KEY, setNotrackFlag } from './env';
+import { gaDisable, gaEvent, gaPageView, gaSetAdPersonalization, gaSetUser, type GaParams } from './ga';
+import { pageTitleFor, sanitizeUrl, type TrackingScope } from './scope';
 
-const KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-const API_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || '/ingest';
-const UI_HOST = 'https://us.posthog.com';
-
-export const NOTRACK_KEY = 'invyta:notrack';
+export { isNotrack, NOTRACK_KEY };
 export const SRC_KEY = 'invyta:src';
 
-let instance: PostHog | null = null;
-let initPromise: Promise<PostHog | null> | null = null;
-// Estado deseado: el proveedor lo fija por ruta y se aplica en cuanto PostHog esté listo.
+// Estado deseado: el proveedor lo fija por ruta.
 let captureEnabled = true;
-let recordingWanted = false;
+// Parámetros que acompañan a todos los eventos (`src`; `template_id` e `is_demo` en invitaciones).
+let globalParams: GaParams = {};
+let invitationParams: GaParams = {};
+// `page_location` saneado de la página anterior, para el `page_referrer` de las navegaciones internas.
+let lastLocation: string | null = null;
 
 // ---------------------------------------------------------------------------
 // Interruptor de tráfico propio
 // ---------------------------------------------------------------------------
 
-export function isNotrack(): boolean {
-  try {
-    return typeof window !== 'undefined' && window.localStorage.getItem(NOTRACK_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
-
 export function setNotrack(on: boolean): void {
-  try {
-    if (on) window.localStorage.setItem(NOTRACK_KEY, '1');
-    else window.localStorage.removeItem(NOTRACK_KEY);
-  } catch {
-    // Almacenamiento bloqueado: sin interruptor persistente, la medición sigue las reglas normales.
-  }
-  // Al activarlo se corta de inmediato lo que ya estuviera corriendo (before_send descarta lo demás).
-  if (on) instance?.stopSessionRecording();
+  setNotrackFlag(on);
+  // Al activarlo se corta de inmediato lo que ya estuviera corriendo.
+  if (on) gaDisable();
 }
 
 // `?notrack=1` activa y `?notrack=0` desactiva la exclusión de este dispositivo.
@@ -132,124 +121,56 @@ export function getSrc(): string {
 }
 
 // ---------------------------------------------------------------------------
-// PostHog
+// Captura
 // ---------------------------------------------------------------------------
 
-function sanitizeProps(props: Properties | undefined): Properties | undefined {
-  if (!props) return props;
-  const out: Properties = { ...props };
-  for (const key of Object.keys(out)) {
-    const value = out[key];
-    if (typeof value === 'string') out[key] = sanitizeUrl(value);
-  }
-  return out;
-}
-
-// Descarta lo que no debe salir y quita el ID de boda de las URLs del admin.
-function beforeSend(event: CaptureResult | null): CaptureResult | null {
-  if (!event || !captureEnabled || isNotrack()) return null;
-  return {
-    ...event,
-    properties: sanitizeProps(event.properties) ?? event.properties,
-    $set: sanitizeProps(event.$set),
-    $set_once: sanitizeProps(event.$set_once),
-  };
-}
-
-function whenIdle(fn: () => void): void {
-  const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number };
-  if (typeof w.requestIdleCallback === 'function') w.requestIdleCallback(fn, { timeout: 3000 });
-  else setTimeout(fn, 1);
-}
-
-export function initAnalytics(): Promise<PostHog | null> {
-  if (typeof window === 'undefined' || !KEY || isNotrack()) return Promise.resolve(null);
-  if (initPromise) return initPromise;
-  const key = KEY;
-
-  initPromise = new Promise<PostHog | null>((resolve) => {
-    whenIdle(async () => {
-      try {
-        const { default: posthog } = await import('posthog-js');
-        posthog.init(key, {
-          api_host: API_HOST,
-          ui_host: UI_HOST,
-          persistence: 'sessionStorage', // sin cookies; el identificador muere al cerrar la pestaña
-          autocapture: false,
-          capture_pageview: false, // el proveedor captura $pageview en cada cambio de ruta
-          capture_pageleave: true, // trae la profundidad de scroll del $pageview anterior
-          person_profiles: 'identified_only',
-          disable_session_recording: true, // se activa solo en 'marketing' y 'demo'
-          session_recording: { maskAllInputs: true },
-          // Solo eventos explícitos: nada de banderas, encuestas, heatmaps ni excepciones.
-          advanced_disable_flags: true,
-          disable_surveys: true,
-          disable_web_experiments: true,
-          capture_heatmaps: false,
-          capture_dead_clicks: false,
-          capture_exceptions: false,
-          rageclick: false,
-          before_send: beforeSend,
-        });
-        instance = posthog;
-        if (recordingWanted && captureEnabled && !isNotrack()) posthog.startSessionRecording();
-        resolve(posthog);
-      } catch {
-        // Sin red o bloqueado: la analítica nunca debe romper el sitio.
-        initPromise = null;
-        resolve(null);
-      }
-    });
-  });
-  return initPromise;
-}
-
-function whenReady(fn: (ph: PostHog) => void): void {
-  void initAnalytics().then((ph) => {
-    if (ph) fn(ph);
-  });
+function canCapture(): boolean {
+  return typeof window !== 'undefined' && captureEnabled && !isNotrack();
 }
 
 // Habilita o detiene la captura de eventos (fuera de alcance: no se manda nada).
 export function setCaptureEnabled(on: boolean): void {
   captureEnabled = on;
-  if (!on) {
-    recordingWanted = false;
-    instance?.stopSessionRecording();
-  }
-}
-
-// La grabación solo se pide en 'marketing' y 'demo'.
-export function setRecording(on: boolean): void {
-  recordingWanted = on;
-  if (!instance) return; // se aplica al terminar de iniciar
-  if (on && captureEnabled && !isNotrack()) instance.startSessionRecording();
-  else instance.stopSessionRecording();
 }
 
 export function track<K extends AnalyticsEventName>(name: K, props: AnalyticsEventMap[K]): void {
-  if (!captureEnabled || isNotrack()) return;
-  whenReady((ph) => ph.capture(name, props));
+  if (!canCapture()) return;
+  gaEvent(name, { ...globalParams, ...invitationParams, ...(props as GaParams) });
 }
 
-export function capturePageview(): void {
-  if (!captureEnabled || isNotrack()) return;
-  whenReady((ph) => ph.capture('$pageview'));
+// `page_view` con la URL, el referente y el título saneados. Los mismos valores quedan como
+// parámetros por defecto, así ningún evento posterior viaja con `document.location`.
+export function capturePageview(pathname: string, scope: TrackingScope): void {
+  if (!canCapture()) return;
+  const location = sanitizeUrl(window.location.href);
+  const referrer = lastLocation ?? sanitizeUrl(document.referrer);
+  lastLocation = location;
+  gaPageView({ location, referrer, title: pageTitleFor(pathname, scope) ?? document.title }, { ...globalParams, ...invitationParams });
 }
 
 // Propiedades que acompañan a todos los eventos de la sesión (por ejemplo `src`).
 export function registerProps(props: Record<string, string>): void {
-  whenReady((ph) => ph.register(props));
+  globalParams = { ...globalParams, ...props };
 }
 
-// Identifica a una cuenta del admin solo por su uid de Firebase (nunca correo ni ID de boda).
-export function identifyUser(uid: string): void {
-  if (!captureEnabled || isNotrack()) return;
-  whenReady((ph) => ph.identify(uid));
+// Plantilla de la invitación abierta. `null` al salir de las invitaciones y demos.
+export function setInvitationContext(context: { template_id: string; is_demo: boolean } | null): void {
+  invitationParams = context ? { ...context } : {};
 }
 
-// Al cerrar sesión: nuevo identificador anónimo.
+// Solo marketing y demos alimentan audiencias de remarketing.
+export function setAdPersonalization(on: boolean): void {
+  if (!canCapture()) return;
+  gaSetAdPersonalization(on);
+}
+
+// Identifica a una cuenta del admin solo por su uid de Firebase y su tipo (nunca correo ni ID de boda).
+export function identifyUser(uid: string, accountType: 'couple' | 'planner'): void {
+  if (!canCapture()) return;
+  gaSetUser(uid, { account_type: accountType });
+}
+
+// Al cerrar sesión: los eventos siguientes ya no llevan `user_id`.
 export function resetAnalytics(): void {
-  if (!instance) return;
-  instance.reset();
+  gaSetUser(null, { account_type: null });
 }

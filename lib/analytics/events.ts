@@ -1,21 +1,23 @@
-// Catálogo de eventos de analítica (spec 11). Nombres en snake_case y propiedades
-// sin datos personales: nunca correo, nombre, teléfono ni ID de boda.
+// Catálogo de eventos de analítica (specs 11 y 31). Nombres en snake_case y propiedades
+// sin datos personales: nunca correo, nombre, teléfono, ID de boda ni ID de invitado.
 //
-// Propiedades globales (super properties) en todos los eventos: `src`.
-// PostHog agrega por sí mismo $current_url, $pathname, $referrer, $referring_domain y utm_*.
+// Parámetros que `client.ts` agrega a todos los eventos: `src`, y en invitaciones y demos
+// `template_id` e `is_demo`. GA4 agrega `page_location` (saneado), `page_title` y los datos de sesión.
+// Los booleanos viajan como 'true' / 'false' (GA4 no los maneja).
 
 type NoProps = Record<string, never>;
 
 export interface AnalyticsEventMap {
-  // Prospecto
-  cta_click: { location: string; page: string; package?: 'basico' | 'personalizado' };
+  // Prospecto. `generate_lead` (antes `cta_click`) es el evento recomendado de GA4: clic a WhatsApp de Invyta.
+  generate_lead: { location: string; page: string; package?: 'basico' | 'personalizado' };
   demo_click: { demo_id: string; location: string };
   demo_opened: { demo_id: string };
   section_viewed: { section: string; page: string };
   site_link_click: { from: 'demo' | 'invitacion'; page: string };
   // Admin (solo con sesión iniciada; la persona se identifica por uid)
-  signup_completed: NoProps;
-  login_completed: NoProps;
+  // Eventos recomendados de GA4 (antes `signup_completed` y `login_completed`)
+  sign_up: { method: 'password' };
+  login: { method: 'password' };
   email_verified: NoProps;
   password_reset_requested: NoProps;
   editor_saved: NoProps;
@@ -44,7 +46,23 @@ export interface AnalyticsEventMap {
   album_style_changed: { style: string };
   album_uploads_toggled: { closed: boolean };
   album_link_copied: NoProps;
+  // Invitaciones reales y demos (spec 31). Sin ID de boda ni de invitado.
+  invitation_opened: { page_type: 'invitation' | 'save_the_date' | 'album'; has_guest: boolean };
+  rsvp_submitted: { attending: 'yes' | 'no'; guest_count: number };
+  invitation_interaction: { action: InvitationAction };
 }
+
+export const INVITATION_ACTIONS = [
+  'map',
+  'calendar',
+  'gift_registry',
+  'gift_copy',
+  'music_play',
+  'contact_couple',
+  'album_open',
+] as const;
+
+export type InvitationAction = (typeof INVITATION_ACTIONS)[number];
 
 export type AnalyticsEventName = keyof AnalyticsEventMap;
 

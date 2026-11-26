@@ -27,7 +27,7 @@ export default function AddToCalendarButtonV2({
   };
 
   return (
-    <V2Button variant={variant} size={size} onClick={handleClick} className={className}>
+    <V2Button variant={variant} size={size} onClick={handleClick} data-track-action="calendar" className={className}>
       <CalendarPlus className="h-[18px] w-[18px]" aria-hidden="true" strokeWidth={1.6} />
       {t('hero.addToCalendar')}
     </V2Button>

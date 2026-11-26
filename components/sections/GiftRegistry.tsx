@@ -105,6 +105,7 @@ export default function GiftRegistry() {
                   <div className="grid gap-3 md:grid-cols-2 mt-4">
                     {giftRegistry.registries.map((registry) => (
                       <a
+                        data-track-action="gift_registry"
                         key={registry.id}
                         href={registry.url}
                         target="_blank"
@@ -188,6 +189,7 @@ export default function GiftRegistry() {
                           <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.accountNumber}</p>
                         </div>
                         <button
+                          data-track-action="gift_copy"
                           onClick={() => copyToClipboard(giftRegistry.bankAccount?.accountNumber || '', 'account')}
                           className="p-2 text-text/70 hover:text-primary transition-colors"
                           title={t('copyAccountNumber')}
@@ -204,6 +206,7 @@ export default function GiftRegistry() {
                           <p className="font-body font-medium text-dark">{giftRegistry.bankAccount.clabe}</p>
                         </div>
                         <button
+                          data-track-action="gift_copy"
                           onClick={() => copyToClipboard(giftRegistry.bankAccount?.clabe || '', 'clabe')}
                           className="p-2 text-text/70 hover:text-primary transition-colors"
                           title={t('copyClabe')}

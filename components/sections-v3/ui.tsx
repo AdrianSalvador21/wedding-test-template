@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion, type Variants } from 'framer-motion';
+import type { InvitationAction } from '../../lib/analytics/events';
 
 // Paleta fija del rediseño "Botánica Editorial" (no conectada al selector de 10 temas)
 export const v3Colors = {
@@ -443,6 +444,7 @@ export function V3PillButton({
   href,
   disabled = false,
   className = '',
+  trackAction,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -450,19 +452,21 @@ export function V3PillButton({
   href?: string;
   disabled?: boolean;
   className?: string;
+  // Spec 31 — acción medida como `invitation_interaction` (listener delegado).
+  trackAction?: InvitationAction;
 }) {
   const classes = `inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-jost text-[13px] font-medium tracking-[0.12em] uppercase transition-all duration-300 border disabled:opacity-50 disabled:cursor-not-allowed ${className}`;
   const style: React.CSSProperties = { borderColor: v3Colors.accent, color: v3Colors.accent };
 
   if (href) {
     return (
-      <a href={href} className={`v3-pill ${classes}`} style={style}>
+      <a href={href} data-track-action={trackAction} className={`v3-pill ${classes}`} style={style}>
         {children}
       </a>
     );
   }
   return (
-    <button type={type} onClick={onClick} disabled={disabled} className={`v3-pill ${classes}`} style={style}>
+    <button type={type} onClick={onClick} data-track-action={trackAction} disabled={disabled} className={`v3-pill ${classes}`} style={style}>
       {children}
     </button>
   );

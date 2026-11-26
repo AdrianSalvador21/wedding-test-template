@@ -35,7 +35,6 @@ export const config = {
     /*
      * Match all request paths except for the ones starting with:
      * - api (API routes)
-     * - ingest (proxy de PostHog, spec 11; next.config.js lo reescribe)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - assets (public assets like images)
@@ -43,6 +42,6 @@ export const config = {
      * sitemap.xml, site.webmanifest, .well-known/…): esos archivos no pasan
      * por la reescritura de idioma.
      */
-    '/((?!api|ingest|_next/static|_next/image|assets|.*\\..*).*)',
+    '/((?!api|_next/static|_next/image|assets|.*\\..*).*)',
   ],
 };

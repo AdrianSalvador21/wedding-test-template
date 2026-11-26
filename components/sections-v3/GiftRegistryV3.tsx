@@ -68,6 +68,7 @@ export default function GiftRegistryV3() {
                     <div className="grid gap-3 md:grid-cols-2 mt-5">
                       {giftRegistry.registries.map((registry) => (
                         <a
+                          data-track-action="gift_registry"
                           key={registry.id}
                           href={registry.url}
                           target="_blank"
@@ -128,6 +129,7 @@ export default function GiftRegistryV3() {
                             <p className="mt-2 font-jost text-sm text-[#34302A] font-medium break-all">{giftRegistry.bankAccount.accountNumber}</p>
                           </div>
                           <button
+                            data-track-action="gift_copy"
                             onClick={() => copyToClipboard(giftRegistry.bankAccount?.accountNumber || '', 'account')}
                             className="shrink-0 w-10 h-10 rounded-full border flex items-center justify-center hover:opacity-80 transition-opacity"
                             style={{ borderColor: `${v3Colors.accent}3D` }}
@@ -144,6 +146,7 @@ export default function GiftRegistryV3() {
                             <p className="mt-2 font-jost text-sm text-[#34302A] font-medium break-all">{giftRegistry.bankAccount.clabe}</p>
                           </div>
                           <button
+                            data-track-action="gift_copy"
                             onClick={() => copyToClipboard(giftRegistry.bankAccount?.clabe || '', 'clabe')}
                             className="shrink-0 w-10 h-10 rounded-full border flex items-center justify-center hover:opacity-80 transition-opacity"
                             style={{ borderColor: `${v3Colors.accent}3D` }}

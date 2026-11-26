@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { doc } from 'firebase/firestore';
 import { saveWeddingDoc } from '../../../../../../lib/weddingSave';
 import { track } from '../../../../../../lib/analytics/client';
+import { startTrace } from '../../../../../../lib/analytics/perf';
 import { db } from '../../../../../../lib/firebase';
 import { WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../../src/types/wedding';
 import EditorNotAvailablePanel from '../../../../../../components/admin/panel/EditorNotAvailablePanel';
@@ -296,7 +297,14 @@ function WeddingEditorContent() {
         updatedAt: new Date().toISOString()
       };
       
-      await saveWeddingDoc(docRef, updatedData);
+      const saveTrace = startTrace('editor_save');
+      try {
+        await saveWeddingDoc(docRef, updatedData);
+      } catch (saveError) {
+        saveTrace.stop('error', { template_id: weddingData.template?.id });
+        throw saveError;
+      }
+      saveTrace.stop('ok', { template_id: weddingData.template?.id });
       track('editor_saved', {});
       setWeddingData(updatedData);
       savedSnapshot.current = serializeForDirty(updatedData);

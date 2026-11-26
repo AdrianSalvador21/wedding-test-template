@@ -62,7 +62,7 @@ export default function RecommendedPlacesV3() {
                     : place.description}
                 </p>
                 <div className="pt-6 mt-auto">
-                  <V3PillButton onClick={() => openExternalLink(getMapsUrl(place))} className="w-full justify-center">
+                  <V3PillButton trackAction="map" onClick={() => openExternalLink(getMapsUrl(place))} className="w-full justify-center">
                     <MapPin className="w-4 h-4" />
                     {t('button')}
                   </V3PillButton>

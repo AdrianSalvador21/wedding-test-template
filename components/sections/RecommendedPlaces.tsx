@@ -146,6 +146,7 @@ const RecommendedPlaces = () => {
 
                 {/* Botón de Maps */}
                 <motion.button
+                  data-track-action="map"
                   onClick={() => openExternalLink(getMapsUrl(place))}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-accent hover:text-accent-dark transition-colors font-body font-medium text-sm"
                   whileHover={{ scale: 1.02 }}

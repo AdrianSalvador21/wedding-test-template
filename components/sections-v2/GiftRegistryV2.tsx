@@ -56,6 +56,7 @@ export default function GiftRegistryV2() {
                   return (
                     <V2StaggerItem as="li" key={registry.id || registry.name} style={{ borderBottom: `1px solid ${V2_COLORS.rule}` }}>
                       <a
+                        data-track-action="gift_registry"
                         href={registry.url}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -124,6 +125,7 @@ export default function GiftRegistryV2() {
                       <span className="break-all text-[17px] font-medium tracking-[0.08em]">{bank.accountNumber}</span>
                     </div>
                     <V2CopyButton
+                      trackAction="gift_copy"
                       value={bank.accountNumber}
                       label={t('gifts.copy')}
                       copiedLabel={t('gifts.copied')}
@@ -145,6 +147,7 @@ export default function GiftRegistryV2() {
                       <span className="break-all text-[17px] font-medium tracking-[0.06em]">{bank.clabe}</span>
                     </div>
                     <V2CopyButton
+                      trackAction="gift_copy"
                       value={bank.clabe}
                       label={t('gifts.copy')}
                       copiedLabel={t('gifts.copied')}
