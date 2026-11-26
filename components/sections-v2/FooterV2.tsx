@@ -63,6 +63,7 @@ export default function FooterV2() {
                     <span style={v2DisplayStyle(22, 400, -0.02)}>{person.name}</span>
                     {person.phone && (
                       <a
+                        data-track-action="contact_couple"
                         href={`tel:${person.phone.replace(/[^\d+]/g, '')}`}
                         className={linkClass}
                         style={{ color: V2_COLORS.ink }}

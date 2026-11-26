@@ -112,10 +112,10 @@ function LoginContent() {
     try {
       if (mode === 'signin') {
         await signInWithEmailAndPassword(auth, cleanEmail, password);
-        track('login_completed', {});
+        track('login', { method: 'password' });
       } else if (mode === 'signup') {
         const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
-        track('signup_completed', {});
+        track('sign_up', { method: 'password' });
         await sendEmailVerification(cred.user);
       } else {
         try {

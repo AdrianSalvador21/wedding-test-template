@@ -132,7 +132,7 @@ export default function InvitationOverlayV2({
                 <ArrowRight className="h-[18px] w-[18px]" aria-hidden="true" strokeWidth={1.8} />
               </button>
               {albumCta && (
-                <a href={albumCta.href} {...v2ButtonProps('inverseOutline', 'lg', 'w-full')}>
+                <a data-track-action="album_open" href={albumCta.href} {...v2ButtonProps('inverseOutline', 'lg', 'w-full')}>
                   <Camera className="h-[18px] w-[18px]" aria-hidden="true" strokeWidth={1.8} />
                   {albumCta.label}
                 </a>

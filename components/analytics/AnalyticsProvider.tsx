@@ -5,48 +5,53 @@ import { usePathname } from 'next/navigation';
 import {
   applyNotrackParam,
   capturePageview,
-  initAnalytics,
   registerProps,
   resolveSrc,
+  setAdPersonalization,
   setCaptureEnabled,
-  setRecording,
+  setInvitationContext,
   track,
 } from '../../lib/analytics/client';
 import { installClickTracking } from '../../lib/analytics/click-tracking';
+import { applyGaDebugParam } from '../../lib/analytics/env';
+import { setPerfScope } from '../../lib/analytics/perf';
 import { demoIdFromPath, resolveScope } from '../../lib/analytics/scope';
 import { observeSections } from '../../lib/analytics/section-tracking';
 
-// Punto único de entrada de la analítica (spec 11). No renderiza nada.
-// En cada cambio de ruta decide si se mide (`resolveScope`), y si es así inicia PostHog,
-// captura `$pageview` y activa la grabación solo en marketing y demos. En rutas fuera de
-// alcance (invitaciones reales, /api, etc.) detiene la captura y la grabación.
+// Punto único de entrada de la analítica (specs 11 y 31). No renderiza nada.
+// En cada cambio de ruta decide si se mide (`resolveScope`). Si es así, manda `page_view` saneado
+// a GA4 y fija la personalización de anuncios (solo marketing y demos). También enciende las trazas
+// automáticas de Performance solo en marketing y demos. Fuera de alcance (/api, rutas
+// desconocidas) detiene la captura.
 export default function AnalyticsProvider() {
   const pathname = usePathname();
 
-  // Clics de WhatsApp, demos y salida de las demos al sitio (una sola vez por carga).
+  // Clics de WhatsApp, demos, salida de las demos al sitio e interacciones de las invitaciones.
   useEffect(() => installClickTracking(), []);
 
   useEffect(() => {
     applyNotrackParam();
+    applyGaDebugParam();
 
     const scope = resolveScope(pathname);
+    setPerfScope(scope);
+    if (scope !== 'invitation' && scope !== 'demo') setInvitationContext(null);
+
     if (!scope) {
       setCaptureEnabled(false);
       return;
     }
 
     setCaptureEnabled(true);
-    const src = resolveSrc();
-    void initAnalytics();
-    registerProps({ src });
-    setRecording(scope === 'marketing' || scope === 'demo');
-    capturePageview();
+    registerProps({ src: resolveSrc() });
+    setAdPersonalization(scope === 'marketing' || scope === 'demo');
+    capturePageview(pathname, scope);
 
     const demoId = demoIdFromPath(pathname);
     if (demoId) track('demo_opened', { demo_id: demoId });
 
-    // Qué secciones llega a ver la persona (landing y páginas de marketing).
-    if (scope === 'marketing') return observeSections(pathname);
+    // Qué secciones llega a ver la persona (sitio, demos e invitaciones).
+    if (scope !== 'admin') return observeSections(pathname);
   }, [pathname]);
 
   return null;

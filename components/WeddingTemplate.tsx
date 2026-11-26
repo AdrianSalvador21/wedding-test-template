@@ -11,6 +11,7 @@ import { FirebaseGuest } from '../src/types/wedding';
 import { useWeddingMusic } from '../hooks/useWeddingMusic';
 import { SITE } from '../lib/site';
 import { isDemoId } from '../lib/analytics/demos';
+import { useInvitationOpened } from '../lib/analytics/useInvitationOpened';
 import InvitationNotActivated from './InvitationNotActivated';
 import SaveTheDate from './SaveTheDate';
 import InvitationLoading from './InvitationLoading';
@@ -127,6 +128,22 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
     }
   }, [guestId, currentWedding, guestLoading]);
 
+  // Spec 31 — `invitation_opened` cuando ya se pinta la invitación o el save the date (no en la
+  // carga, ni con error, ni en una boda gratis sin activar). Refleja las mismas condiciones de abajo.
+  const isReady = initialized && !loading && !guestLoading && !checkingPreview && !error && !!currentWedding;
+  const isFreeWedding = (currentWedding?.tier ?? 'template') === 'free';
+  const showsSaveTheDate = previewSaveTheDate || (saveTheDateOn && !canPreviewFull);
+  useInvitationOpened(
+    isReady && !isFreeWedding && currentWedding
+      ? {
+          weddingId: currentWedding.id,
+          templateId: currentWedding.template?.id || 'template-01',
+          pageType: showsSaveTheDate ? 'save_the_date' : 'invitation',
+          hasGuest: !!guestId,
+        }
+      : null
+  );
+
   // Estado de carga
   if (!initialized || loading || guestLoading || checkingPreview) {
     return <InvitationLoading message={guestLoading ? 'Cargando información del invitado...' : t('loading')} />;
@@ -170,7 +187,7 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
 
   // Spec 27 — modo "Aparta la fecha": el mismo link (con o sin ?guest=) muestra solo el save the
   // date, sin overlay de bienvenida, overlay de demo ni música.
-  if (previewSaveTheDate || (saveTheDateOn && !canPreviewFull)) {
+  if (showsSaveTheDate) {
     return <SaveTheDate wedding={currentWedding} guestName={guestInfo?.name || demoGuestName || null} />;
   }
 
@@ -250,6 +267,15 @@ export default function WeddingTemplate({ guestId, weddingId, previewFull = fals
               <div className="text-xl font-serif font-bold text-white">
                 invyta
               </div>
+            </a>
+            {/* Spec 31 — la invitación se mide: el aviso de privacidad queda al alcance del invitado. */}
+            <a
+              href={`${SITE.url}/aviso-de-privacidad`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block font-serif text-xs text-white/80 hover:opacity-80 transition-opacity"
+            >
+              {currentLocale === 'en' ? 'Privacy' : 'Privacidad'}
             </a>
           </div>
         </div>

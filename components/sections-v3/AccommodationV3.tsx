@@ -41,6 +41,7 @@ export default function AccommodationV3() {
                 )}
                 <div className="pt-6 mt-auto">
                   <V3PillButton
+                    data-track-action="map"
                     onClick={() => openExternalLink(`https://maps.google.com/maps?q=${encodeURIComponent(hotel.name)}`)}
                     className="w-full justify-center"
                   >

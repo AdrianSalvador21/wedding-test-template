@@ -316,6 +316,7 @@ const InvitationOverlay: React.FC<InvitationOverlayProps> = ({ guestId, weddingI
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 1.75, duration: 0.5, ease: 'easeOut' }}
+                      data-track-action="album_open"
                       href={albumCta.href}
                       className="mt-2.5 w-full inline-flex items-center justify-center gap-2 border border-stone-300 text-stone-700 hover:bg-stone-50 font-body font-medium py-3 px-6 rounded-xl transition-colors duration-300 text-sm tracking-wide no-underline"
                     >

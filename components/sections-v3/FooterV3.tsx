@@ -117,6 +117,7 @@ export default function FooterV3() {
           <V3Reveal delay={0.2} className="mt-8 flex flex-col items-center gap-2">
             {bridePhone && (
               <a
+                data-track-action="contact_couple"
                 href={getWhatsAppUrl(bridePhone)}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -128,6 +129,7 @@ export default function FooterV3() {
             )}
             {groomPhone && (
               <a
+                data-track-action="contact_couple"
                 href={getWhatsAppUrl(groomPhone)}
                 target="_blank"
                 rel="noopener noreferrer"

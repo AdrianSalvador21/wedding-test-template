@@ -19,6 +19,8 @@ export default function MusicToggleV2({ pinned }: { pinned: boolean }) {
   return (
     <button
       type="button"
+      // Spec 31 — solo cuenta el clic que inicia la reproducción.
+      data-track-action={music.isPlaying ? undefined : 'music_play'}
       onClick={music.toggle}
       aria-label={label}
       title={label}

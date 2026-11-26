@@ -70,6 +70,7 @@ export default function GiftRegistryV4() {
                     </span>
                     <button
                       type="button"
+                      data-track-action="gift_copy"
                       onClick={() => copyToClipboard(giftRegistry.bankAccount?.accountNumber || '', 'account')}
                       className="shrink-0 w-8 h-8 rounded-full border flex items-center justify-center hover:opacity-75"
                       style={{ borderColor: 'rgba(244,239,227,.3)' }}
@@ -86,6 +87,7 @@ export default function GiftRegistryV4() {
                     </span>
                     <button
                       type="button"
+                      data-track-action="gift_copy"
                       onClick={() => copyToClipboard(giftRegistry.bankAccount?.clabe || '', 'clabe')}
                       className="shrink-0 w-8 h-8 rounded-full border flex items-center justify-center hover:opacity-75"
                       style={{ borderColor: 'rgba(244,239,227,.3)' }}
@@ -109,6 +111,7 @@ export default function GiftRegistryV4() {
               <div className="grid grid-cols-2 gap-3">
                 {giftRegistry.registries.map((registry) => (
                   <a
+                    data-track-action="gift_registry"
                     key={registry.id}
                     href={registry.url}
                     target="_blank"

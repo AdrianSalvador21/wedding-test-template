@@ -5,7 +5,7 @@ import { fraunces } from '../../lib/brand';
 import { pageMetadata } from '../../lib/page-metadata';
 import { SITE } from '../../lib/site';
 
-// Aviso de la medición del sitio (spec 11). No es una página de captación: lleva `noindex`
+// Aviso de la medición del sitio (specs 11 y 31). No es una página de captación: lleva `noindex`
 // y no está en MARKETING_PAGES (no entra al sitemap).
 export const metadata: Metadata = {
   ...pageMetadata({
@@ -61,50 +61,61 @@ export default function PrivacyNoticePage() {
                 De dónde llegaste (por ejemplo, el enlace de nuestro Instagram o el sitio que te mandó aquí), el tipo de
                 dispositivo y navegador, y un país y ciudad aproximados.
               </li>
-              <li>
-                Grabaciones de tu visita (cómo se mueve el cursor o el dedo por la página) para entender dónde se
-                atoran las personas. Lo que escribes en cualquier campo de formulario se enmascara y no se registra.
-              </li>
+              <li>Cuánto tarda en cargar la página, para hacerla más rápida.</li>
             </ul>
             <p>
               Si nos escribes por WhatsApp desde un botón del sitio, el mensaje termina con una etiqueta corta, como{' '}
               <span className="font-bold text-[#211D19]">(ref: paquetes-basico-ig-bio)</span>, que nos dice desde qué
               página y canal llegaste. Puedes borrarla antes de enviar el mensaje.
             </p>
+            <p>No grabamos tu visita.</p>
           </Block>
 
-          <Block title="Qué no medimos">
+          <Block title="Qué medimos en las invitaciones">
+            <p>
+              En las invitaciones que reciben los invitados de una boda, en su página de &quot;Aparta la fecha&quot; y en
+              su álbum de fotos, registramos:
+            </p>
             <ul className="list-disc pl-6 flex flex-col gap-1.5">
+              <li>Que se abrió la invitación, el save the date o el álbum, y con qué diseño.</li>
+              <li>Si se confirmó la asistencia (sí o no) y cuántos pases se confirmaron.</li>
               <li>
-                Las invitaciones que reciben los invitados de una boda real: no se mide nada de lo que haces ahí, y no
-                se graba.
+                Si se tocó el mapa, agregar al calendario, la mesa de regalos, copiar una cuenta, la música, el contacto
+                con los novios o el acceso al álbum.
               </li>
-              <li>Los paneles de administración no se graban.</li>
-              <li>No usamos tu nombre, correo ni teléfono para la medición del sitio.</li>
+              <li>Qué secciones de la invitación se llegan a ver y que se subió una foto al álbum.</li>
             </ul>
+            <p>
+              Nunca enviamos a la herramienta de medición el nombre, el mensaje, el teléfono ni el correo de los
+              invitados, ni el nombre o el identificador de la boda: el enlace se registra sin ellos.
+            </p>
           </Block>
 
           <Block title="Cuentas de los paneles de administración">
             <p>
               Si tienes una cuenta para administrar tu invitación, registramos qué pasos del panel usas (iniciar sesión,
               guardar cambios, agregar invitados, copiar enlaces, usar el asistente con IA) ligados a un identificador
-              interno de tu cuenta. No enviamos tu correo, tu nombre, el nombre de tu boda ni datos de tus invitados a
-              la herramienta de medición.
+              interno de tu cuenta y a si es una cuenta de pareja o de wedding planner. No enviamos tu correo, tu nombre,
+              el nombre de tu boda ni datos de tus invitados a la herramienta de medición.
             </p>
           </Block>
 
-          <Block title="Cookies y almacenamiento en tu navegador">
+          <Block title="Cookies">
             <p>
-              No usamos cookies para la medición. Un identificador anónimo se guarda solo en la pestaña que tienes
-              abierta (almacenamiento de sesión) y se borra cuando la cierras; por eso no reconocemos a la misma persona
-              entre una visita y otra. También guardamos en la pestaña el origen de tu visita mientras dure.
+              Usamos las cookies de Google Analytics (<span className="font-bold text-[#211D19]">_ga</span> y{' '}
+              <span className="font-bold text-[#211D19]">_ga_&lt;ID&gt;</span>) para distinguir una visita de otra y
+              reconocer cuando vuelves. Duran hasta 2 años, que es el valor por defecto de Google Analytics, y puedes
+              borrarlas desde tu navegador en cualquier momento. Además guardamos en la pestaña que tienes abierta el
+              origen de tu visita mientras dure.
             </p>
           </Block>
 
           <Block title="Con quién compartimos los datos">
             <p>
-              Usamos PostHog para la medición. Los datos se envían por nuestro propio dominio a sus servidores en
-              Estados Unidos y no se venden ni se usan para publicidad.
+              Usamos Google Analytics para Firebase y Firebase Performance Monitoring, de Google, cuyos servidores están
+              en Estados Unidos. Las señales de Google están desactivadas. Los datos de las páginas públicas y de las
+              demos pueden usarse para mostrar anuncios de Invyta a quien ya visitó el sitio. Los de las invitaciones y
+              los paneles de administración nunca se usan para publicidad. No vendemos los datos.
             </p>
           </Block>
 
@@ -125,12 +136,12 @@ export default function PrivacyNoticePage() {
               <a href={`mailto:${SITE.email}`} className="font-bold text-[#AE5730] underline">
                 {SITE.email}
               </a>
-              . Como no identificamos a las personas que visitan el sitio, cuéntanos desde qué dispositivo y en qué
-              fecha lo visitaste para poder ayudarte.
+              . Como no sabemos quién eres a partir de la medición, cuéntanos desde qué dispositivo y en qué fecha
+              visitaste el sitio para poder ayudarte.
             </p>
           </Block>
 
-          <p className="text-sm text-[#5A534B]">Última actualización: 26 de septiembre de 2026.</p>
+          <p className="text-sm text-[#5A534B]">Última actualización: 25 de noviembre de 2026.</p>
         </div>
       </Section>
     </PageShell>

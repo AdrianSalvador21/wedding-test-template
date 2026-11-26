@@ -44,6 +44,7 @@ export default function AccommodationV2() {
                       </p>
                     )}
                     <a
+                      data-track-action="map"
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"

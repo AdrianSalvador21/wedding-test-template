@@ -197,6 +197,8 @@ export default function MusicPlayer({ music, className = '', showFloatingButton 
 
                 {/* Botón de música minimalista con colores del tema */}
           <button
+            // Spec 31 — solo cuenta el clic que inicia la reproducción.
+            data-track-action={isPlaying ? undefined : 'music_play'}
             onClick={togglePlay}
             className="w-12 h-12 backdrop-blur-sm rounded-full border flex items-center justify-center transition-all duration-300 hover:scale-105 group"
             style={{

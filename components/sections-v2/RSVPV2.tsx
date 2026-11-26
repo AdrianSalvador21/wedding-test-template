@@ -11,6 +11,8 @@ import { useAppSelector } from '../../src/store/hooks';
 import { selectCurrentWedding } from '../../src/store/slices/weddingSlice';
 import { guestService } from '../../services/guestService';
 import { isDemoId } from '../../lib/analytics/demos';
+import { track } from '../../lib/analytics/client';
+import { startTrace } from '../../lib/analytics/perf';
 import { FirebaseRSVP, FirebaseGuest } from '../../src/types/wedding';
 import { V2_COLORS, V2_FONTS, V2Container, V2Reveal, V2Rings, V2Section, V2SectionHeading, V2SectionLayout, V2Button, v2ButtonProps, v2DisplayStyle } from './ui';
 import { useV2SectionNumber, v2Fill, v2FormatSentenceDate, v2Localized, v2WeddingDate } from './sections';
@@ -188,6 +190,8 @@ const RSVPContentV2 = () => {
         submittedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
+      // Spec 31 — misma medición en las demos (sin escritura ni traza de rendimiento).
+      track('rsvp_submitted', { attending: data.attendance === 'yes' ? 'yes' : 'no', guest_count: data.guestCount ? parseInt(data.guestCount, 10) : 1 });
       setIsSubmitted(true);
       setIsSubmitting(false);
       return;
@@ -201,6 +205,7 @@ const RSVPContentV2 = () => {
     setIsSubmitting(true);
     setError(null);
 
+    const rsvpTrace = startTrace('rsvp_submit');
     try {
       let guestCount = 1;
       let targetGuest = guestInfo;
@@ -282,8 +287,11 @@ const RSVPContentV2 = () => {
         updatedAt: new Date().toISOString()
       });
 
+      rsvpTrace.stop('ok', { template_id: 'template-02' });
+      track('rsvp_submitted', { attending: data.attendance === 'yes' ? 'yes' : 'no', guest_count: guestCount });
       setIsSubmitted(true);
     } catch (err) {
+      rsvpTrace.stop('error', { template_id: 'template-02' });
       console.error('❌ Error guardando RSVP:', err);
       setError('Error al guardar la confirmación. Por favor, intenta de nuevo.');
     } finally {

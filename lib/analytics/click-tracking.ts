@@ -1,11 +1,13 @@
-// Listener de clics delegado (spec 11). Un solo punto para medir los botones de WhatsApp,
-// los enlaces a demos y la salida de las demos al sitio, sin editar cada botón.
-//
-// Solo actúa en rutas 'marketing' y 'demo'. Nunca lanza errores: la analítica no puede
-// romper un clic.
+// Listener de clics delegado (specs 11 y 31). Un solo punto para medir:
+//  - en 'marketing' y 'demo': los botones de WhatsApp de Invyta, los enlaces a demos y la salida
+//    de las demos al sitio, sin editar cada botón;
+//  - en 'invitation' y 'demo': los controles marcados con `data-track-action` (mapa, calendario,
+//    regalos, música, contacto con la pareja, álbum) -> `invitation_interaction`.
+// Nunca lanza errores: la analítica no puede romper un clic.
 import { DEFAULT_WHATSAPP_MESSAGE, WHATSAPP_NUMBER } from '../contact';
 import { SITE } from '../site';
 import { getSrc, track } from './client';
+import { INVITATION_ACTIONS, type InvitationAction } from './events';
 import { demoIdFromPath, pageKey, resolveScope } from './scope';
 
 const WHATSAPP_PREFIX = `https://wa.me/${WHATSAPP_NUMBER}`;
@@ -47,13 +49,24 @@ export function withRefTag(href: string, ref: string): string {
   return `${url.origin}${url.pathname}?text=${encodeURIComponent(`${message}\n\n(ref: ${ref})`)}`;
 }
 
+function isInvitationAction(value: string | null): value is InvitationAction {
+  return !!value && (INVITATION_ACTIONS as readonly string[]).includes(value);
+}
+
 function handleClick(event: MouseEvent): void {
   const target = event.target;
   if (!(target instanceof Element)) return;
+  const scope = resolveScope(window.location.pathname);
+
+  // Interacciones dentro de una invitación (botones o enlaces marcados con `data-track-action`).
+  // El clic medio (`auxclick`) solo abre enlaces: en un botón no hace nada y no se cuenta.
+  if ((scope === 'invitation' || scope === 'demo') && (event.type === 'click' || target.closest('a[href]'))) {
+    const action = target.closest('[data-track-action]')?.getAttribute('data-track-action') ?? null;
+    if (isInvitationAction(action)) track('invitation_interaction', { action });
+  }
+
   const anchor = target.closest('a[href]');
   if (!(anchor instanceof HTMLAnchorElement)) return;
-
-  const scope = resolveScope(window.location.pathname);
   if (scope !== 'marketing' && scope !== 'demo') return;
 
   const page = pageKey(window.location.pathname);
@@ -62,7 +75,7 @@ function handleClick(event: MouseEvent): void {
   // WhatsApp de Invyta (el resto de wa.me, como el de la pareja en una demo, no se toca)
   if (href === WHATSAPP_PREFIX || href.startsWith(`${WHATSAPP_PREFIX}?`) || href.startsWith(`${WHATSAPP_PREFIX}/`)) {
     const { location, pkg } = placementOf(anchor);
-    track('cta_click', pkg ? { location, page, package: pkg } : { location, page });
+    track('generate_lead', pkg ? { location, page, package: pkg } : { location, page });
     anchor.href = withRefTag(href, `${page}-${location}-${getSrc()}`);
     return;
   }

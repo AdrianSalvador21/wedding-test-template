@@ -54,6 +54,7 @@ export default function RecommendedPlacesV4() {
             <V4Reveal key={place.id} delay={index * 0.08}>
               <div className="border p-5" style={{ borderColor: 'rgba(43,42,34,.18)' }}>
                 <a
+                  data-track-action="map"
                   href={getMapsUrl(place)}
                   target="_blank"
                   rel="noopener noreferrer"

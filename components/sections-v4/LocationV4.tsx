@@ -65,7 +65,7 @@ export default function LocationV4() {
               )}
               {venue.mapsUrl && (
                 <div className="mt-5">
-                  <V4Button onClick={() => openExternalLink(venue.mapsUrl as string)}>
+                  <V4Button trackAction="map" onClick={() => openExternalLink(venue.mapsUrl as string)}>
                     <MapPin className="w-3.5 h-3.5" />
                     {t('directions')}
                   </V4Button>

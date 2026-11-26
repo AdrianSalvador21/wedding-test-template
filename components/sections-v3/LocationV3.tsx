@@ -50,7 +50,7 @@ export default function LocationV3() {
                 <h3 className="mt-3 font-cormorant italic text-2xl text-[#34302A]">{v.venue}</h3>
                 {v.address && <p className="mt-2 font-jost text-sm text-[#6B6255]">{v.address}</p>}
                 <div className="flex justify-center mt-auto pt-6">
-                  <V3PillButton onClick={() => openExternalLink(v.mapsUrl)}>
+                  <V3PillButton trackAction="map" onClick={() => openExternalLink(v.mapsUrl)}>
                     <MapPin className="w-4 h-4" />
                     {t('directions')}
                   </V3PillButton>
