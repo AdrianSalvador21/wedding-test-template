@@ -603,5 +603,22 @@
     "shareCta": "Share your photos",
     "viewAlbumCta": "View album",
     "todayIsTheDay": "Today is the day"
+  },
+  "eventDay": {
+    "greeting": "Hi, {name}",
+    "today": "Today is the big day",
+    "yourTable": "Your table",
+    "noTable": "You'll be shown to your seat when you arrive",
+    "companion": "Guest {n}",
+    "floorPlan": "Venue layout",
+    "viewInvitation": "View invitation",
+    "reopen": "My table",
+    "people": "{count} guests",
+    "weddingOf": "{couple}'s wedding",
+    "floorPlanAria": "Venue layout with your table highlighted",
+    "planNear": "Near your table",
+    "planWhole": "Whole venue",
+    "planNearHint": "Zoomed in on your table because the venue has many tables.",
+    "planWholeHint": "Every table in the venue. Yours stays highlighted."
   }
 }

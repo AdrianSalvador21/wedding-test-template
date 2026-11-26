@@ -603,5 +603,22 @@
     "shareCta": "Comparte tus fotos",
     "viewAlbumCta": "Ver álbum",
     "todayIsTheDay": "Hoy es el día"
+  },
+  "eventDay": {
+    "greeting": "Hola, {name}",
+    "today": "Hoy es el gran día",
+    "yourTable": "Tu mesa",
+    "noTable": "Tu lugar te lo indicarán a tu llegada",
+    "companion": "Acompañante {n}",
+    "floorPlan": "Así está el salón",
+    "viewInvitation": "Ver invitación",
+    "reopen": "Mi mesa",
+    "people": "{count} personas",
+    "weddingOf": "Boda de {couple}",
+    "floorPlanAria": "Plano del salón con tu mesa resaltada",
+    "planNear": "Cerca de tu mesa",
+    "planWhole": "Todo el salón",
+    "planNearHint": "Se abre acercado a tu mesa porque el salón tiene muchas mesas.",
+    "planWholeHint": "Todas las mesas del salón. Tu mesa sigue resaltada."
   }
 }

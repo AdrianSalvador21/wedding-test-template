@@ -316,6 +316,15 @@ export interface SaveTheDateConfig {
   message?: string | { es: string; en: string }; // vacío = no se muestra
 }
 
+// Spec 32 — modo "Día del evento". Ausente = deshabilitado (bodas existentes no cambian).
+// Ya habilitado, se activa solo de 00:00 del día de la boda a 06:00 del día siguiente (hora CDMX).
+export interface EventDayConfig {
+  enabled: boolean; // la pareja lo habilita; se activa solo en la ventana del día de la boda
+  showTable: boolean; // mesa de cada persona de la invitación
+  showFloorPlan: boolean; // plano del salón con sus mesas resaltadas
+  showAlbum: boolean; // botón del álbum (solo si el álbum está en fase open o closed)
+}
+
 // Spec 29 — álbum de fotos de los invitados. Ausente = no activado.
 export interface PhotoAlbumConfig {
   enabled: boolean; // lo escribe solo el operador
@@ -395,6 +404,7 @@ export interface WeddingData {
   plannerEmail?: string | null; // Spec 17 — correo del wedding planner atribuido a esta boda, si aplica
   saveTheDate?: SaveTheDateConfig; // Spec 27 — modo "Aparta la fecha"; ausente = apagado
   photoAlbum?: PhotoAlbumConfig; // Spec 29 — álbum de fotos de los invitados; ausente = no activado
+  eventDay?: EventDayConfig; // Spec 32 — modo "Día del evento"; ausente = deshabilitado
   status: 'draft' | 'active' | 'archived';
   languages: string[];
   defaultLanguage: string;

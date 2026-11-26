@@ -23,7 +23,7 @@ export interface AlbumWeddingLike {
 }
 
 // `event.date` se guarda como "YYYY-MM-DDT16:00:00.000Z": el día de la boda es la parte de la fecha.
-function weddingDay(wedding: AlbumWeddingLike): { y: number; m: number; d: number } | null {
+export function weddingDay(wedding: AlbumWeddingLike): { y: number; m: number; d: number } | null {
   const raw = wedding.event?.date;
   if (typeof raw !== 'string') return null;
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(raw);
@@ -32,7 +32,7 @@ function weddingDay(wedding: AlbumWeddingLike): { y: number; m: number; d: numbe
 }
 
 // Instante UTC de una hora local de la Ciudad de México. Date.UTC normaliza días fuera de rango.
-function mexicoCityTime(y: number, m: number, d: number, h: number, min = 0, s = 0): Date {
+export function mexicoCityTime(y: number, m: number, d: number, h: number, min = 0, s = 0): Date {
   return new Date(Date.UTC(y, m - 1, d, h + MX_UTC_OFFSET_HOURS, min, s));
 }
 

@@ -231,6 +231,7 @@ function CalendarPicker({
   const googleUrl = () => {
     // El evento debe llevar al link de la invitación, no a la vista previa ni a la demo con nombre.
     const url = new URL(window.location.href);
+    url.searchParams.delete('preview');
     url.searchParams.delete('vista');
     url.searchParams.delete('invitado');
     url.pathname = url.pathname.replace(/\/aparta-la-fecha\/?$/, '');

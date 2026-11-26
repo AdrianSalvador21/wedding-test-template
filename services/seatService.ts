@@ -55,6 +55,21 @@ export class SeatService {
   }
 
   /**
+   * Spec 32 — todos los sub-asientos ya persistidos de una boda, solo lectura (no crea los que
+   * faltan). Lo usa la pestaña "Día del evento" del Editor para contar personas sin mesa.
+   */
+  async getWeddingSeats(weddingId: string): Promise<FirebaseTableSeat[]> {
+    try {
+      const seatsQuery = query(collection(db, this.SEATS_COLLECTION), where('weddingId', '==', weddingId));
+      const querySnapshot = await getDocs(seatsQuery);
+      return querySnapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }) as FirebaseTableSeat);
+    } catch (error) {
+      console.error('Error obteniendo sub-asientos de la boda:', error);
+      throw new Error('No se pudieron obtener los asientos de la boda');
+    }
+  }
+
+  /**
    * Genera de forma perezosa los sub-asientos faltantes de un invitado (spec 23): si
    * no existía ninguno, crea exactamente `getSeatedGuestCount(guest)` y todos heredan
    * el `tableId` del modelo anterior (migración transparente desde spec 12); si ya

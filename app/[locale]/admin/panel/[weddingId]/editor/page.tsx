@@ -7,7 +7,7 @@ import { saveWeddingDoc } from '../../../../../../lib/weddingSave';
 import { track } from '../../../../../../lib/analytics/client';
 import { startTrace } from '../../../../../../lib/analytics/perf';
 import { db } from '../../../../../../lib/firebase';
-import { WeddingData, AccommodationOption, GiftRegistryItem } from '../../../../../../src/types/wedding';
+import { WeddingData, AccommodationOption, GiftRegistryItem, FirebaseTableSeat } from '../../../../../../src/types/wedding';
 import EditorNotAvailablePanel from '../../../../../../components/admin/panel/EditorNotAvailablePanel';
 import { createInitialWeddingData } from '../../../../../../lib/wedding-defaults';
 import { AdminTopBar, AdminSidebarNavItem, AdminSectionChip, AdminButton, AiButton, AiBadge, manrope, displayFont } from '../../../../../../components/admin/ui';
@@ -42,8 +42,15 @@ import {
   Globe,
   Info,
   CalendarHeart,
-  ExternalLink
+  ExternalLink,
+  Armchair,
+  TriangleAlert,
+  ChevronDown
 } from 'lucide-react';
+import { seatService } from '../../../../../../services/seatService';
+import { getSeatedGuestCount, resolveGuestAttendance } from '../../../../../../services/guestService';
+import { DEFAULT_EVENT_DAY, eventDayEndsAt, eventDayStartsAt } from '../../../../../../lib/eventDay';
+import { ALBUM_TIME_ZONE, isAlbumEnabled } from '../../../../../../lib/album';
 
 // Función para migrar/completar datos bilingües faltantes
 const migrateWeddingData = (data: Record<string, unknown>): WeddingData => {
@@ -79,6 +86,17 @@ const migrateWeddingData = (data: Record<string, unknown>): WeddingData => {
       enabled: std.enabled === true,
       place: typeof std.place === 'string' ? std.place : '',
       message: typeof msg === 'string' ? { es: msg, en: '' } : { es: msg?.es || '', en: msg?.en || '' },
+    };
+  }
+
+  // Spec 32 — modo "Día del evento": se conserva tal cual para que guardar otra pestaña no lo borre.
+  if (data.eventDay && typeof data.eventDay === 'object') {
+    const ed = data.eventDay as Partial<Record<'enabled' | 'showTable' | 'showFloorPlan' | 'showAlbum', unknown>>;
+    migrated.eventDay = {
+      enabled: ed.enabled === true,
+      showTable: ed.showTable !== false,
+      showFloorPlan: ed.showFloorPlan !== false,
+      showAlbum: ed.showAlbum !== false,
     };
   }
 
@@ -451,6 +469,13 @@ function WeddingEditorContent() {
   // sigue midiendo solo el contenido de la invitación.
   const saveTheDateTab = { id: 'saveTheDate', label: 'Aparta la fecha', icon: CalendarHeart };
   const saveTheDateOn = !!weddingData?.saveTheDate?.enabled;
+  // Spec 32 — "Día del evento" va justo después, también fuera del contador.
+  const eventDayTab = { id: 'eventDay', label: 'Día del evento', icon: Armchair };
+  const eventDayOn = !!weddingData?.eventDay?.enabled;
+  const specialTabs = [
+    { ...saveTheDateTab, on: saveTheDateOn, onLabel: 'Activo' },
+    { ...eventDayTab, on: eventDayOn, onLabel: 'Habilitado' },
+  ];
 
   // NOTA: Galería OCULTA según solicitud del usuario
   const tabs = [
@@ -602,28 +627,31 @@ function WeddingEditorContent() {
             </button>
           </div>
           <div className="flex flex-col gap-1">
-            <button
-              type="button"
-              onClick={() => setActiveTab(saveTheDateTab.id)}
-              title={sidebarCollapsed ? saveTheDateTab.label : undefined}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm text-left transition-colors ${
-                sidebarCollapsed ? 'justify-center' : ''
-              } ${activeTab === saveTheDateTab.id ? 'bg-[rgba(198,102,60,0.08)] text-[#AE5730] font-semibold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'}`}
-            >
-              <CalendarHeart className="h-[18px] w-[18px] flex-shrink-0" />
-              {!sidebarCollapsed && (
-                <>
-                  <span className="flex-1">{saveTheDateTab.label}</span>
-                  <span
-                    className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                      saveTheDateOn ? 'bg-[#F0FDF4] text-[#15803D]' : 'bg-[#F4F4F5] text-[#52525B]'
-                    }`}
-                  >
-                    {saveTheDateOn ? 'Activo' : 'Apagado'}
-                  </span>
-                </>
-              )}
-            </button>
+            {specialTabs.map((special) => (
+              <button
+                key={special.id}
+                type="button"
+                onClick={() => setActiveTab(special.id)}
+                title={sidebarCollapsed ? special.label : undefined}
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm text-left transition-colors ${
+                  sidebarCollapsed ? 'justify-center' : ''
+                } ${activeTab === special.id ? 'bg-[rgba(198,102,60,0.08)] text-[#AE5730] font-semibold' : 'text-[#3F3F46] hover:bg-[#FAFAFA] font-semibold'}`}
+              >
+                <special.icon className="h-[18px] w-[18px] flex-shrink-0" />
+                {!sidebarCollapsed && (
+                  <>
+                    <span className="flex-1">{special.label}</span>
+                    <span
+                      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                        special.on ? 'bg-[#F0FDF4] text-[#15803D]' : 'bg-[#F4F4F5] text-[#52525B]'
+                      }`}
+                    >
+                      {special.on ? special.onLabel : 'Apagado'}
+                    </span>
+                  </>
+                )}
+              </button>
+            ))}
             <div className="h-px bg-[rgba(0,0,0,0.06)] mx-1 my-1.5" />
             {tabs.map((tab) => (
               <AdminSidebarNavItem
@@ -641,12 +669,15 @@ function WeddingEditorContent() {
 
         {/* Chips de sección — móvil */}
         <div className="md:hidden bg-white border-b border-[rgba(0,0,0,0.08)] px-4 py-3 flex gap-2 overflow-x-auto">
-          <AdminSectionChip
-            icon={saveTheDateTab.icon}
-            label={saveTheDateTab.label}
-            active={activeTab === saveTheDateTab.id}
-            onClick={() => setActiveTab(saveTheDateTab.id)}
-          />
+          {specialTabs.map((special) => (
+            <AdminSectionChip
+              key={special.id}
+              icon={special.icon}
+              label={special.label}
+              active={activeTab === special.id}
+              onClick={() => setActiveTab(special.id)}
+            />
+          ))}
           {tabs.map((tab) => (
             <AdminSectionChip
               key={tab.id}
@@ -664,6 +695,15 @@ function WeddingEditorContent() {
           <div className="max-w-5xl">
             {activeTab === saveTheDateTab.id && (
               <SaveTheDateSection
+                data={weddingData}
+                weddingId={weddingId}
+                locale={locale}
+                onChange={(field, value) => updateWeddingData(field, value)}
+                goToTab={setActiveTab}
+              />
+            )}
+            {activeTab === eventDayTab.id && (
+              <EventDaySection
                 data={weddingData}
                 weddingId={weddingId}
                 locale={locale}
@@ -2655,7 +2695,7 @@ function SaveTheDateSection({
             <ExternalLink className="h-3.5 w-3.5" />
           </a>
           <a
-            href={`${publicUrl}?vista=completa`}
+            href={`${publicUrl}?preview=full`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-11 items-center justify-center gap-2 px-4 rounded-[10px] bg-white text-[#0A0A0A] border border-[rgba(0,0,0,0.14)] text-sm font-semibold no-underline hover:bg-[#FAFAFA]"
@@ -2664,6 +2704,238 @@ function SaveTheDateSection({
             <ExternalLink className="h-3.5 w-3.5" />
           </a>
         </div>
+      </section>
+    </div>
+  );
+}
+
+// Spec 32 — pestaña "Día del evento". Se publica con "Guardar cambios", como el resto del Editor.
+// Diseño: canvas https://claude.ai/artifact/Nw2hnnHYqKFG3qiHiJ4962 (Editor · pestaña Día del evento).
+function EventDaySection({
+  data,
+  weddingId,
+  locale,
+  onChange,
+  goToTab,
+}: {
+  data: WeddingData | null;
+  weddingId: string;
+  locale: string;
+  onChange: (field: string, value: string | boolean | object) => void;
+  goToTab: (tab: string) => void;
+}) {
+  const { guests } = usePanelData();
+  const config = { ...DEFAULT_EVENT_DAY, ...(data?.eventDay ?? {}) };
+  const update = (patch: Partial<typeof config>) => onChange('eventDay', { ...config, ...patch });
+  const albumOn = data ? isAlbumEnabled(data) : false;
+  const saveTheDateOn = !!data?.saveTheDate?.enabled;
+
+  const starts = data ? eventDayStartsAt(data) : null;
+  const ends = data ? eventDayEndsAt(data) : null;
+  const dayLabel = starts
+    ? starts.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: ALBUM_TIME_ZONE })
+    : '';
+
+  // Personas confirmadas sin mesa: mismos datos que Mesas, solo lectura (no crea asientos).
+  const [seats, setSeats] = useState<FirebaseTableSeat[] | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    seatService
+      .getWeddingSeats(weddingId)
+      .then((list) => {
+        if (!cancelled) setSeats(list);
+      })
+      .catch(() => {
+        if (!cancelled) setSeats(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [weddingId]);
+  const unseated =
+    seats === null
+      ? null
+      : guests
+          .filter((g) => resolveGuestAttendance(g) === 'confirmed')
+          .reduce((sum, g) => {
+            const count = getSeatedGuestCount(g);
+            const own = seats.filter((s) => s.guestId === g.id);
+            if (own.length === 0) return sum + (g.tableId ? 0 : count);
+            let missing = 0;
+            for (let i = 0; i < count; i += 1) if (!own.find((s) => s.seatIndex === i)?.tableId) missing += 1;
+            return sum + missing;
+          }, 0);
+
+  const previewGuests = guests
+    .filter((g) => !!g.guestId && resolveGuestAttendance(g) !== 'declined')
+    .sort((a, b) => a.name.localeCompare(b.name, 'es'));
+  const [previewGuestId, setPreviewGuestId] = useState('');
+  const selected = previewGuests.find((g) => g.id === previewGuestId) || previewGuests[0];
+  const previewUrl = selected
+    ? `/${selected.language || locale}/wedding/${weddingId}?guest=${encodeURIComponent(selected.guestId as string)}&preview=event-day`
+    : '';
+
+  const toggle = (on: boolean, label: string, onClick: () => void, size: 'lg' | 'sm' = 'sm', disabled = false) => (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className={`relative flex-shrink-0 mt-0.5 rounded-full transition-colors disabled:cursor-not-allowed ${size === 'lg' ? 'h-7 w-12' : 'h-[26px] w-11'} ${on ? 'bg-[#AE5730]' : 'bg-[#D4D4D8]'}`}
+    >
+      <span
+        className={`absolute top-[3px] rounded-full bg-white shadow transition-all ${size === 'lg' ? 'h-[22px] w-[22px]' : 'h-5 w-5'} ${
+          on ? (size === 'lg' ? 'left-[23px]' : 'left-[21px]') : 'left-[3px]'
+        }`}
+      />
+    </button>
+  );
+  const linkBtn = (tab: string, label: string) => (
+    <button type="button" onClick={() => goToTab(tab)} className="font-semibold text-[#AE5730] underline">
+      {label}
+    </button>
+  );
+  const option = (key: 'showTable' | 'showFloorPlan' | 'showAlbum', title: string, help: string, disabled = false) => (
+    <div className={`flex items-start gap-3.5 py-3.5 border-t border-[rgba(0,0,0,0.06)] ${disabled ? 'opacity-60' : ''}`}>
+      {toggle(!disabled && config[key], title, () => update({ [key]: !config[key] }), 'sm', disabled)}
+      <div className="flex flex-col gap-0.5">
+        <span className="text-sm font-semibold text-[#0A0A0A]">{title}</span>
+        <span className="text-[13px] leading-relaxed text-[#71717A]">{help}</span>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-5">
+      <div className="space-y-1.5">
+        <h2 className="text-[26px] text-[#0A0A0A]" style={displayFont}>Día del evento</h2>
+        <p className="text-sm leading-relaxed text-[#3F3F46] max-w-[640px]">
+          El día de la boda, el link de cada invitado abre primero un pase con su mesa, el plano del salón y el botón de fotos. La invitación completa queda abajo.
+        </p>
+      </div>
+
+      <section className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] px-4 sm:px-[22px] py-5 space-y-3.5">
+        <div className="flex items-start gap-4">
+          {toggle(config.enabled, 'Habilitar el modo Día del evento', () => update({ enabled: !config.enabled }), 'lg')}
+          <div className="flex-1 flex flex-col gap-1">
+            <span className="text-[15px] font-semibold text-[#0A0A0A]">Habilitar el modo Día del evento</span>
+            <span className="text-[13px] leading-relaxed text-[#71717A]">
+              Se activa solo el día de la boda. Antes y después, tus invitados ven la invitación como siempre.
+            </span>
+          </div>
+          <span
+            className={`hidden sm:inline-flex flex-shrink-0 h-[26px] items-center px-2.5 rounded-full text-xs font-semibold ${
+              config.enabled ? 'bg-[#F0FDF4] text-[#15803D]' : 'bg-[#F4F4F5] text-[#52525B]'
+            }`}
+          >
+            {config.enabled ? 'Habilitado' : 'Apagado'}
+          </span>
+        </div>
+        {starts && ends ? (
+          <div className="flex gap-2.5 items-start rounded-[10px] px-3.5 py-3 text-[13px] leading-normal text-[#3F3F46] bg-[rgba(198,102,60,0.06)] border border-[rgba(174,87,48,0.25)]">
+            <Clock className="h-4 w-4 flex-shrink-0 mt-0.5 text-[#AE5730]" />
+            <span>
+              Se activa el <span className="font-semibold">{dayLabel}, de 00:00 a 06:00 del día siguiente</span> (hora de Ciudad de México). La fecha sale de la pestaña {linkBtn('event', 'Evento')}.
+            </span>
+          </div>
+        ) : (
+          <div className="flex gap-2.5 items-start bg-[#FFFBEB] border border-[#FDE68A] rounded-[10px] px-3.5 py-3 text-[13px] leading-normal text-[#78350F]">
+            <TriangleAlert className="h-4 w-4 flex-shrink-0 mt-0.5 text-[#B45309]" />
+            <span>Agrega la fecha en {linkBtn('event', 'Evento')} para que el modo se active.</span>
+          </div>
+        )}
+        {saveTheDateOn && (
+          <div className="flex gap-2.5 items-start bg-[#FFFBEB] border border-[#FDE68A] rounded-[10px] px-3.5 py-3 text-[13px] leading-normal text-[#78350F]">
+            <TriangleAlert className="h-4 w-4 flex-shrink-0 mt-0.5 text-[#B45309]" />
+            <span>
+              {linkBtn('saveTheDate', 'Aparta la fecha')} está encendido. El save the date tiene prioridad: tus invitados no verán el pase mientras esté activo. Tú sí puedes revisarlo con “Ver pase”.
+            </span>
+          </div>
+        )}
+        <div className="flex gap-2.5 items-start bg-[#F4F4F5] rounded-[10px] px-3.5 py-2.5 text-[13px] leading-normal text-[#3F3F46]">
+          <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <span>
+            Tus invitados no verán el cambio hasta que pulses <span className="font-semibold">Guardar cambios</span>.
+          </span>
+        </div>
+      </section>
+
+      <section className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] px-4 sm:px-[22px] py-5">
+        <h3 className="text-[15px] font-semibold text-[#0A0A0A] mb-2">Qué ve cada invitado en su pase</h3>
+        {option('showTable', 'Mostrar su mesa', 'El nombre de la mesa de cada persona de la invitación. Quien no tenga mesa verá “Tu lugar te lo indicarán a tu llegada”.')}
+        {option('showFloorPlan', 'Mostrar el plano del salón', 'Con su mesa resaltada. Solo aparece si su mesa ya está colocada en el Plano de Mesas.')}
+        {option(
+          'showAlbum',
+          'Mostrar el botón de fotos',
+          albumOn ? '“Comparte tus fotos”, el mismo que ya aparece en la invitación el día de la boda.' : 'Activa el álbum en Fotos para mostrar este botón.',
+          !albumOn
+        )}
+      </section>
+
+      {unseated !== null && unseated > 0 && (
+        <section className="flex flex-wrap gap-3.5 items-start bg-[#FFFBEB] border border-[#FDE68A] rounded-[14px] px-4 sm:px-5 py-4">
+          <TriangleAlert className="h-5 w-5 flex-shrink-0 mt-px text-[#B45309]" />
+          <div className="flex-1 min-w-[200px] flex flex-col gap-1">
+            <span className="text-sm font-semibold text-[#78350F]">
+              {unseated === 1 ? '1 persona confirmada aún no tiene mesa' : `${unseated} personas confirmadas aún no tienen mesa`}
+            </span>
+            <span className="text-[13px] leading-relaxed text-[#92400E]">En su pase verán “Tu lugar te lo indicarán a tu llegada”.</span>
+          </div>
+          <a
+            href={`/${locale}/admin/panel/${weddingId}/tables`}
+            className="flex-shrink-0 inline-flex min-h-[36px] items-center px-3.5 rounded-lg border border-[#F59E0B] bg-white text-[13px] font-semibold text-[#78350F] no-underline"
+          >
+            Ir a Mesas
+          </a>
+        </section>
+      )}
+
+      <section className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] px-4 sm:px-[22px] py-5 space-y-3.5">
+        <div className="space-y-1">
+          <h3 className="text-[15px] font-semibold text-[#0A0A0A]">Revisa cómo se ve</h3>
+          <p className="text-[13px] leading-relaxed text-[#71717A]">
+            Elige un invitado y abre su pase como si fuera el día de la boda. Muestra lo último que guardaste. Solo tú lo ves así; tus invitados lo verán en la fecha.
+          </p>
+        </div>
+        {previewGuests.length > 0 ? (
+          <div className="flex flex-wrap items-end gap-2.5">
+            <div className="flex-[1_1_320px] flex flex-col gap-1.5">
+              <label htmlFor="ed-guest" className="text-[13px] font-semibold text-[#27272A]">Invitado</label>
+              <div className="relative">
+              {/* Flecha propia: la nativa queda pegada al borde y descentrada según el navegador. */}
+              <select
+                id="ed-guest"
+                value={selected?.id || ''}
+                onChange={(e) => setPreviewGuestId(e.target.value)}
+                className="w-full h-[46px] appearance-none pl-3.5 pr-11 border border-[rgba(0,0,0,0.14)] rounded-lg bg-white text-sm text-[#0A0A0A] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[rgba(0,0,0,0.08)] focus:border-[#111111]"
+              >
+                {previewGuests.map((g) => {
+                  const count = getSeatedGuestCount(g);
+                  return (
+                    <option key={g.id} value={g.id}>
+                      {g.name} · {count === 1 ? '1 persona' : `${count} personas`}
+                    </option>
+                  );
+                })}
+              </select>
+              <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#71717A]" />
+              </div>
+            </div>
+            <a
+              href={previewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-[46px] items-center justify-center gap-2 px-[18px] rounded-[10px] bg-[#111111] text-white text-sm font-semibold no-underline hover:bg-black"
+            >
+              Ver pase
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        ) : (
+          <p className="text-[13px] text-[#71717A]">Agrega invitados para ver cómo se ve su pase.</p>
+        )}
       </section>
     </div>
   );

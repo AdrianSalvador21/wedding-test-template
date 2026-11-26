@@ -102,6 +102,7 @@ const ALLOWED_QUERY_PARAMS = new Set([
   'utm_content',
   'utm_term',
   'gclid',
+  'preview',
   'vista',
 ]);
 
